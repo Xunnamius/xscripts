@@ -159,7 +159,8 @@ module.exports = {
         'jest/prefer-mock-promise-shorthand': 'off',
         'jest/no-conditional-in-test': 'off',
         'jest/no-conditional-expect': 'off',
-        'jest/prefer-each': 'off'
+        'jest/prefer-each': 'off',
+        'jest/prefer-importing-jest-globals': 'off'
       }
     }
   ],
