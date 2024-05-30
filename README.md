@@ -12,10 +12,8 @@
 
 # xscripts
 
-This is a highly-opinionated personal tool for interacting with various
-disparate networks, systems, and other resources of interest to me.
-
-These used to be several CLIs, but the time has come to bring them together!
+This is a highly-opinionated personal tool for building, linting, and deploying
+my NPM-based projects. Similar in intent to [kcd-scripts][1].
 
 ---
 
@@ -209,3 +207,4 @@ specification. Contributions of any kind welcome!
 [x-repo-pr-compare]: https://github.com/xunnamius/xscripts/compare
 [x-repo-sponsor]: https://github.com/sponsors/Xunnamius
 [x-repo-support]: /.github/SUPPORT.md
+[1]: https://github.com/kentcdodds/kcd-scripts
