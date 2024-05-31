@@ -260,16 +260,6 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureInvalidConfig()
-
-#### Parameters
-
-• **key**: `string`
-
-#### Returns
-
-`string`
-
 ### AssertionFailureInvocationNotAllowed()
 
 #### Parameters
@@ -308,6 +298,12 @@ A collection of possible error and warning messages.
 
 `string`
 
+### CleanCalledWithoutForce()
+
+#### Returns
+
+`string`
+
 ### CommandNotImplemented()
 
 #### Returns
@@ -319,12 +315,6 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **path**: `string`
-
-#### Returns
-
-`string`
-
-### ConfigSaveFailure()
 
 #### Returns
 
@@ -345,12 +335,6 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **givenOptions**: `Record`\<`string`, `unknown`\>
-
-#### Returns
-
-`string`
-
-### FailedCloudflareIpFetch()
 
 #### Returns
 
@@ -408,16 +392,6 @@ A collection of possible error and warning messages.
 
 `string`
 
-### MissingConfigurationKey()
-
-#### Parameters
-
-• **key**: `string`
-
-#### Returns
-
-`string`
-
 ## Source
 
-[src/error.ts:17](https://github.com/Xunnamius/xscripts/blob/7129e155987055d658c285b3a31d449ff5e71ba7/src/error.ts#L17)
+[src/error.ts:17](https://github.com/Xunnamius/xscripts/blob/89d81a3e405096de202bc1f6be61ab5d58fc3e1e/src/error.ts#L17)

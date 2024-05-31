@@ -2,11 +2,11 @@
 
 ***
 
-[@-xun/scripts](../../README.md) / [commands](../README.md) / default
+[@-xun/scripts](../../README.md) / [commands](../README.md) / command
 
-# Function: default()
+# Function: command()
 
-> **default**(`__namedParameters`): `Promise`\<`object`\>
+> **command**(`__namedParameters`): `Promise`\<`object`\>
 
 ## Parameters
 
@@ -54,4 +54,4 @@
 
 ## Source
 
-[src/commands/index.ts:15](https://github.com/Xunnamius/xscripts/blob/7129e155987055d658c285b3a31d449ff5e71ba7/src/commands/index.ts#L15)
+[src/commands/index.ts:15](https://github.com/Xunnamius/xscripts/blob/89d81a3e405096de202bc1f6be61ab5d58fc3e1e/src/commands/index.ts#L15)

@@ -10,6 +10,8 @@
 
 ### Type Aliases
 
+- [BuilderFunction](type-aliases/BuilderFunction.md)
+- [BuilderObject](type-aliases/BuilderObject.md)
 - [ExtendedBuilderObject](type-aliases/ExtendedBuilderObject.md)
 - [GlobalCliArguments](type-aliases/GlobalCliArguments.md)
 - [WithGlobalOptionsReturnType](type-aliases/WithGlobalOptionsReturnType.md)

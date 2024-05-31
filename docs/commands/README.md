@@ -14,4 +14,10 @@
 
 ### Functions
 
-- [default](functions/default.md)
+- [command](functions/command.md)
+
+## References
+
+### default
+
+Renames and re-exports [command](functions/command.md)
