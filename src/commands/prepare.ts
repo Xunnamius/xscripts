@@ -1,5 +1,6 @@
 import { ChildConfiguration } from '@black-flag/core';
 
+import { run } from 'multiverse/run';
 import { CustomExecutionContext } from 'universe/configure';
 import { LogTag, standardSuccessMessage } from 'universe/constant';
 
@@ -18,7 +19,7 @@ export default async function command({
   debug_,
   state
 }: CustomExecutionContext) {
-  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>({});
+  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>();
 
   return {
     builder,
@@ -34,7 +35,19 @@ export default async function command({
 
         logStartTime({ log: genericLogger, startTime });
 
-        genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+        const isInCiEnvironment = !!process.env.CI;
+        const isInDevelopmentEnvironment =
+          process.env.NODE_ENV === undefined || process.env.NODE_ENV === 'development';
+
+        debug('isInCiEnvironment: %O', isInCiEnvironment);
+        debug('isInDevelopmentEnvironment: %O', isInDevelopmentEnvironment);
+
+        if (!isInCiEnvironment && isInDevelopmentEnvironment) {
+          await run('npx', ['husky'], { stdout: 'inherit', stderr: 'inherit' });
+          genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+        } else {
+          genericLogger([LogTag.IF_NOT_QUIETED], 'skipped installing husky git hooks');
+        }
       }
     )
   } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
