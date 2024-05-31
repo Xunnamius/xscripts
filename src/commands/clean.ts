@@ -1,8 +1,17 @@
-import { ChildConfiguration } from '@black-flag/core';
+import { ChildConfiguration, CliError } from '@black-flag/core';
+import { rimraf as forceDeletePaths } from 'rimraf';
+
+import { run } from 'multiverse/run';
 
 import { CustomExecutionContext } from 'universe/configure';
-import { LogTag, standardSuccessMessage } from 'universe/constant';
 
+import {
+  LogTag,
+  defaultCleanExcludedPaths,
+  standardSuccessMessage
+} from 'universe/constant';
+
+import { ErrorMessage } from 'universe/error';
 import {
   GlobalCliArguments,
   logStartTime,
@@ -11,32 +20,81 @@ import {
   withGlobalOptionsHandling
 } from 'universe/util';
 
-export type CustomCliArguments = GlobalCliArguments;
+const matchNothing = '(?!)';
 
-export { command };
+export type CustomCliArguments = GlobalCliArguments & {
+  excludePaths: string[];
+  force: boolean;
+};
+
 export default async function command({
   log: genericLogger,
   debug_,
-  state
+  state: { startTime }
 }: CustomExecutionContext) {
-  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>({});
+  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>({
+    'exclude-paths': {
+      array: true,
+      default: defaultCleanExcludedPaths,
+      describe: 'Paths matching these regular expressions will never be deleted'
+    },
+    force: {
+      boolean: true,
+      default: false,
+      describe: 'Actually perform the deletion rather than the default dry run'
+    }
+  });
 
   return {
     builder,
-    description: 'Remove all files ignored by git (with exceptions)',
-    usage: makeUsageString(),
+    description:
+      'Permanently delete paths ignored by or unknown to git (with exceptions)',
+    usage: makeUsageString(
+      '$1. You must pass `--force` for any deletions to actually take place.\n\nNote that the regular expressions provided via --exclude-paths are computed with the "i" and "u" flags. If you want to pass an empty array to --exclude-paths, use `--exclude-paths \'\'`'
+    ),
     handler: await withGlobalOptionsHandling<CustomCliArguments>(
       builderData,
-      async function () {
+      async function ({ excludePaths, force }) {
         const debug = debug_.extend('handler');
         debug('entered handler');
 
-        const { startTime } = state;
+        const excludeRegExps = excludePaths.map(
+          (path) => new RegExp(path || matchNothing, 'iu')
+        );
+
+        debug('excludePaths: %O', excludePaths);
+        debug('excludeRegExps: %O', excludeRegExps);
 
         logStartTime({ log: genericLogger, startTime });
+
+        const ignoredPaths = (
+          await run(
+            'git',
+            ['ls-files', '--exclude-standard', '--ignored', '--others', '--directory'],
+            { reject: true }
+          )
+        ).stdout.split('\n');
+
+        debug('raw ignored paths: %O', ignoredPaths);
+
+        const finalIgnoredPaths = ignoredPaths.filter(
+          (path) => !excludeRegExps.some((regExp) => path.match(regExp))
+        );
+
+        debug('final ignored paths: %O', finalIgnoredPaths);
+        genericLogger([LogTag.IF_NOT_HUSHED], 'Deletion targets: %O', finalIgnoredPaths);
+
+        if (force) {
+          genericLogger([LogTag.IF_NOT_HUSHED], 'Performing deletions...');
+          await forceDeletePaths(finalIgnoredPaths);
+        } else {
+          throw new CliError(ErrorMessage.CleanCalledWithoutForce());
+        }
 
         genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
       }
     )
   } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
 }
+
+export { command };

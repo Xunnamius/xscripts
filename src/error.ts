@@ -22,17 +22,8 @@ export const ErrorMessage = {
   AssertionFailureUnequalDemandOptions() {
     return 'Assertion failed: special demandOptions array feature requires matching arrays';
   },
-  AssertionFailureInvalidConfig(key: string) {
-    return `Assertion failed: loaded configuration value was invalid for key "${key}"`;
-  },
-  MissingConfigurationKey(key: string) {
-    return `missing config key "${key}". Use the 'xscripts config set' to add it`;
-  },
-  ConfigSaveFailure() {
-    return 'failed to commit configuration changes to filesystem';
-  },
-  FailedCloudflareIpFetch() {
-    return 'failed to fetch Cloudflare IPs';
+  CleanCalledWithoutForce() {
+    return 'no deletions were performed (try again with --force)';
   },
   DidNotProvideAtLeastOneOfSeveralOptions(givenOptions: Record<string, unknown>) {
     const possibleOptions = Object.keys(givenOptions);

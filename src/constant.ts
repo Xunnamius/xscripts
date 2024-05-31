@@ -38,3 +38,15 @@ export enum LogTag {
  * https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124?permalink_comment_id=4481079#gistcomment-4481079
  */
 export const ansiRedColorCodes = [1, 9, 52, 88, 124, 160, 196];
+
+/**
+ * These are the default regular expressions matching paths that are excluded
+ * from deletion when running the "clean" command.
+ */
+export const defaultCleanExcludedPaths: string[] = [
+  '^.env$',
+  '^.vscode/',
+  '^.husky/',
+  '^next-env.d.ts$',
+  '^node_modules/'
+];
