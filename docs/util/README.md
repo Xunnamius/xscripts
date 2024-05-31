@@ -18,6 +18,7 @@
 
 ### Functions
 
+- [findProjectRoot](functions/findProjectRoot.md)
 - [logStartTime](functions/logStartTime.md)
 - [makeUsageString](functions/makeUsageString.md)
 - [toFirstLowerCase](functions/toFirstLowerCase.md)

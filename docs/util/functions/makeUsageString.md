@@ -20,4 +20,4 @@ Generate standard command usage text.
 
 ## Source
 
-[src/util.ts:62](https://github.com/Xunnamius/xscripts/blob/89d81a3e405096de202bc1f6be61ab5d58fc3e1e/src/util.ts#L62)
+[src/util.ts:63](https://github.com/Xunnamius/xscripts/blob/5489de7bb7a868e6076ae9406ce323b1b3f709f2/src/util.ts#L63)

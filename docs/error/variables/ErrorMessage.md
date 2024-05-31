@@ -208,6 +208,12 @@ A collection of possible error and warning messages.
 
 `string`
 
+### AssertionFailureBadPackageJson()
+
+#### Returns
+
+`string`
+
 ### AssertionFailureBadParameterCombination()
 
 #### Returns
@@ -265,6 +271,12 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **name**: `string`
+
+#### Returns
+
+`string`
+
+### AssertionFailureMissingPackageJson()
 
 #### Returns
 
@@ -394,4 +406,4 @@ A collection of possible error and warning messages.
 
 ## Source
 
-[src/error.ts:17](https://github.com/Xunnamius/xscripts/blob/89d81a3e405096de202bc1f6be61ab5d58fc3e1e/src/error.ts#L17)
+[src/error.ts:17](https://github.com/Xunnamius/xscripts/blob/5489de7bb7a868e6076ae9406ce323b1b3f709f2/src/error.ts#L17)
