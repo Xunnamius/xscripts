@@ -1,4 +1,5 @@
 import assert from 'node:assert';
+import { dirname } from 'node:path';
 
 import { $executionContext, CliError, type Configuration } from '@black-flag/core';
 import { Options } from 'yargs';
@@ -414,6 +415,16 @@ export async function withGlobalOptionsHandling<
 
     await customHandler(argv);
   };
+}
+
+/**
+ * Safely imports the nearest package.json file without using `require` or
+ * `import`.
+ */
+export async function findProjectRoot(): Promise<string> {
+  const pkgJsonPath = await (await import('pkg-up')).pkgUp();
+  assert(pkgJsonPath, ErrorMessage.AssertionFailureMissingPackageJson());
+  return dirname(pkgJsonPath);
 }
 
 /**

@@ -13,6 +13,8 @@ import {
 
 export type CustomCliArguments = GlobalCliArguments;
 
+// TODO: npx update-browserslist-db@latest
+
 export default async function command({
   log: genericLogger,
   debug_,

@@ -16,6 +16,12 @@ export class TaskError extends Error {
 /* istanbul ignore next */
 export const ErrorMessage = {
   ...UpstreamErrorMessage,
+  AssertionFailureMissingPackageJson() {
+    return 'Assertion failed: cannot find suitable package.json file';
+  },
+  AssertionFailureBadPackageJson() {
+    return 'Assertion failed: cannot load given package.json file';
+  },
   AssertionFailureCannotUseDoubleFeature() {
     return 'Assertion failed: cannot use both special options features at once';
   },
