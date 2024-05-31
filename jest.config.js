@@ -20,7 +20,7 @@ module.exports = {
   // ? Minimum of 2 concurrent tests executed at once; maximum of cpu cores - 1
   maxConcurrency: Math.max(require('node:os').cpus().length - 1, 2),
   verbose: false,
-  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/src/'],
   // ! If changed, also update these aliases in tsconfig.json,
   // ! babel.config.js, webpack.config.js, next.config.ts, and .eslintrc.js
   moduleNameMapper: {
