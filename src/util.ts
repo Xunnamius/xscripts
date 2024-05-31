@@ -86,24 +86,17 @@ export function logStartTime({
   );
 }
 
-type BuilderObject<CustomCliArguments extends GlobalCliArguments> = Exclude<
+export type BuilderObject<CustomCliArguments extends GlobalCliArguments> = Exclude<
   Configuration<CustomCliArguments, CustomExecutionContext>['builder'],
   // eslint-disable-next-line @typescript-eslint/ban-types
   Function
 >;
 
-type BuilderFunction<CustomCliArguments extends GlobalCliArguments> = Extract<
+export type BuilderFunction<CustomCliArguments extends GlobalCliArguments> = Extract<
   Configuration<CustomCliArguments, CustomExecutionContext>['builder'],
   // eslint-disable-next-line @typescript-eslint/ban-types
   Function
 >;
-
-/**
- * Returns `true` iff `setA` and `setB` are equal-enough sets.
- */
-function areEqualSets(setA: Set<unknown>, setB: Set<unknown>) {
-  return setA.size === setB.size && [...setA].every((item) => setB.has(item));
-}
 
 export type WithGlobalOptionsReturnType<CustomCliArguments extends GlobalCliArguments> = [
   builder: (
@@ -421,6 +414,13 @@ export async function withGlobalOptionsHandling<
 
     await customHandler(argv);
   };
+}
+
+/**
+ * Returns `true` iff `setA` and `setB` are equal-enough sets.
+ */
+function areEqualSets(setA: Set<unknown>, setB: Set<unknown>) {
+  return setA.size === setB.size && [...setA].every((item) => setB.has(item));
 }
 
 function getOptionsFromArgv(

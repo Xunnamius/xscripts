@@ -18,7 +18,7 @@ export default async function command({
   debug_,
   state
 }: CustomExecutionContext) {
-  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>({});
+  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>();
 
   return {
     builder,
