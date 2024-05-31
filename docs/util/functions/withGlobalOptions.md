@@ -51,4 +51,4 @@ functionality:
 
 ## Source
 
-[src/util.ts:148](https://github.com/Xunnamius/xscripts/blob/5489de7bb7a868e6076ae9406ce323b1b3f709f2/src/util.ts#L148)
+[src/util.ts:148](https://github.com/Xunnamius/xscripts/blob/6426d70a844a1c3242d719bd648b2a5caf61a12c/src/util.ts#L148)

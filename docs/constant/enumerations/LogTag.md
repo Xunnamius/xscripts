@@ -17,7 +17,7 @@ depending on program state.
 
 #### Source
 
-[src/constant.ts:33](https://github.com/Xunnamius/xscripts/blob/5489de7bb7a868e6076ae9406ce323b1b3f709f2/src/constant.ts#L33)
+[src/constant.ts:33](https://github.com/Xunnamius/xscripts/blob/6426d70a844a1c3242d719bd648b2a5caf61a12c/src/constant.ts#L33)
 
 ***
 
@@ -27,7 +27,7 @@ depending on program state.
 
 #### Source
 
-[src/constant.ts:32](https://github.com/Xunnamius/xscripts/blob/5489de7bb7a868e6076ae9406ce323b1b3f709f2/src/constant.ts#L32)
+[src/constant.ts:32](https://github.com/Xunnamius/xscripts/blob/6426d70a844a1c3242d719bd648b2a5caf61a12c/src/constant.ts#L32)
 
 ***
 
@@ -37,4 +37,4 @@ depending on program state.
 
 #### Source
 
-[src/constant.ts:31](https://github.com/Xunnamius/xscripts/blob/5489de7bb7a868e6076ae9406ce323b1b3f709f2/src/constant.ts#L31)
+[src/constant.ts:31](https://github.com/Xunnamius/xscripts/blob/6426d70a844a1c3242d719bd648b2a5caf61a12c/src/constant.ts#L31)

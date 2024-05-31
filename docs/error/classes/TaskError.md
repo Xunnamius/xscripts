@@ -32,7 +32,7 @@ An `Error` class where the first letter of the message is capitalized.
 
 #### Source
 
-[src/error.ts:8](https://github.com/Xunnamius/xscripts/blob/5489de7bb7a868e6076ae9406ce323b1b3f709f2/src/error.ts#L8)
+[src/error.ts:8](https://github.com/Xunnamius/xscripts/blob/6426d70a844a1c3242d719bd648b2a5caf61a12c/src/error.ts#L8)
 
 ## Properties
 
