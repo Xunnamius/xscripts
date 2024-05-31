@@ -13,7 +13,6 @@ import {
 
 export type CustomCliArguments = GlobalCliArguments;
 
-export { command };
 export default async function command({
   log: genericLogger,
   debug_,
@@ -40,3 +39,5 @@ export default async function command({
     )
   } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
 }
+
+export { command };

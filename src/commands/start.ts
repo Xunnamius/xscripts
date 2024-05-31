@@ -13,7 +13,6 @@ import {
 
 export type CustomCliArguments = GlobalCliArguments;
 
-export { command };
 export default async function command({
   log: genericLogger,
   debug_,
@@ -23,7 +22,7 @@ export default async function command({
 
   return {
     builder,
-    description: 'Deploy a local production environment, if applicable',
+    description: 'Run a CLI or deploy a local production environment, if applicable',
     usage: makeUsageString(),
     handler: await withGlobalOptionsHandling<CustomCliArguments>(
       builderData,
@@ -40,3 +39,5 @@ export default async function command({
     )
   } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
 }
+
+export { command };

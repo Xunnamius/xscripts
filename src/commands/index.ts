@@ -35,3 +35,5 @@ export default async function command({ debug_ }: CustomExecutionContext) {
     )
   } satisfies RootConfiguration<CustomCliArguments, CustomExecutionContext>;
 }
+
+export { command };
