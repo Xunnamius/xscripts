@@ -14,6 +14,8 @@
 - [BuilderObject](type-aliases/BuilderObject.md)
 - [ExtendedBuilderObject](type-aliases/ExtendedBuilderObject.md)
 - [GlobalCliArguments](type-aliases/GlobalCliArguments.md)
+- [ProjectMetaAttribute](type-aliases/ProjectMetaAttribute.md)
+- [ProjectMetadata](type-aliases/ProjectMetadata.md)
 - [WithGlobalOptionsReturnType](type-aliases/WithGlobalOptionsReturnType.md)
 
 ### Variables
@@ -23,6 +25,7 @@
 ### Functions
 
 - [findProjectRoot](functions/findProjectRoot.md)
+- [getProjectMetadata](functions/getProjectMetadata.md)
 - [isAccessible](functions/isAccessible.md)
 - [logStartTime](functions/logStartTime.md)
 - [makeUsageString](functions/makeUsageString.md)

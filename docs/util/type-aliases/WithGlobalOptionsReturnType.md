@@ -14,4 +14,4 @@
 
 ## Source
 
-[src/util.ts:103](https://github.com/Xunnamius/xscripts/blob/380c055b2920c8b96b65dc89b97b6497f996c452/src/util.ts#L103)
+[src/util.ts:103](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/util.ts#L103)

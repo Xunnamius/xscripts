@@ -12,4 +12,4 @@ This is the simple CLI entry point executed directly by node.
 
 ## Source
 
-[src/cli.ts:15](https://github.com/Xunnamius/xscripts/blob/380c055b2920c8b96b65dc89b97b6497f996c452/src/cli.ts#L15)
+[src/cli.ts:15](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/cli.ts#L15)

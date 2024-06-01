@@ -418,4 +418,4 @@ A collection of possible error and warning messages.
 
 ## Source
 
-[src/error.ts:17](https://github.com/Xunnamius/xscripts/blob/380c055b2920c8b96b65dc89b97b6497f996c452/src/error.ts#L17)
+[src/error.ts:17](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/error.ts#L17)

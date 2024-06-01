@@ -54,4 +54,4 @@
 
 ## Source
 
-[src/commands/index.ts:15](https://github.com/Xunnamius/xscripts/blob/380c055b2920c8b96b65dc89b97b6497f996c452/src/commands/index.ts#L15)
+[src/commands/index.ts:15](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/commands/index.ts#L15)
