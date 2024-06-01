@@ -17,19 +17,25 @@ export class TaskError extends Error {
 export const ErrorMessage = {
   ...UpstreamErrorMessage,
   AssertionFailureMissingPackageJson() {
-    return 'Assertion failed: cannot find suitable package.json file';
+    return 'assertion failed: cannot find suitable package.json file';
   },
   AssertionFailureBadPackageJson() {
-    return 'Assertion failed: cannot load given package.json file';
+    return 'assertion failed: cannot load given package.json file';
   },
   AssertionFailureCannotUseDoubleFeature() {
-    return 'Assertion failed: cannot use both special options features at once';
+    return 'assertion failed: cannot use both special options features at once';
   },
   AssertionFailureUnequalDemandOptions() {
-    return 'Assertion failed: special demandOptions array feature requires matching arrays';
+    return 'assertion failed: special demandOptions array feature requires matching arrays';
+  },
+  AssertionFailureCannotBeCliAndNextJs() {
+    return 'assertion failed: project must either provide a CLI or be a Next.js project';
   },
   CleanCalledWithoutForce() {
     return 'no deletions were performed (try again with --force)';
+  },
+  UnsupportedCommand() {
+    return 'this project does not support this command';
   },
   DidNotProvideAtLeastOneOfSeveralOptions(givenOptions: Record<string, unknown>) {
     const possibleOptions = Object.keys(givenOptions);

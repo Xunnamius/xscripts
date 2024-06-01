@@ -1,4 +1,5 @@
 import assert from 'node:assert';
+import { promises as fs } from 'node:fs';
 import { dirname } from 'node:path';
 
 import { $executionContext, CliError, type Configuration } from '@black-flag/core';
@@ -426,6 +427,34 @@ export async function findProjectRoot(): Promise<string> {
   assert(pkgJsonPath, ErrorMessage.AssertionFailureMissingPackageJson());
   return dirname(pkgJsonPath);
 }
+
+/**
+ * Sugar for `await access(path, fsConstants)` that returns `true` or `false`
+ * rather than throwing or returning `void`.
+ */
+export async function isAccessible(
+  /**
+   * The path to perform an access check against.
+   */
+  path: string,
+  /**
+   * The type of access check to perform.
+   *
+   * @default fs.constants.R_OK
+   * @see {@link fs.constants}
+   */
+  fsConstants = fs.constants.R_OK
+) {
+  return fs.access(path, fsConstants).then(
+    () => true,
+    () => false
+  );
+}
+
+/**
+ * Sugar for `(await import('node:fs)).promises.constants`.
+ */
+export const fsConstants = fs.constants;
 
 /**
  * Returns `true` iff `setA` and `setB` are equal-enough sets.

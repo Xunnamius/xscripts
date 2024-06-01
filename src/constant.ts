@@ -39,14 +39,4 @@ export enum LogTag {
  */
 export const ansiRedColorCodes = [1, 9, 52, 88, 124, 160, 196];
 
-/**
- * These are the default regular expressions matching paths that are excluded
- * from deletion when running the "clean" command.
- */
-export const defaultCleanExcludedPaths: string[] = [
-  '^.env$',
-  '^.vscode/',
-  '^.husky/',
-  '^next-env.d.ts$',
-  '^node_modules/'
-];
+export const wellKnownCliDistPath = 'dist/src/cli.js';
