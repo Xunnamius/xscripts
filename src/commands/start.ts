@@ -1,15 +1,21 @@
-import { ChildConfiguration } from '@black-flag/core';
+import { ChildConfiguration, CliError } from '@black-flag/core';
+import assert from 'node:assert';
 
 import { CustomExecutionContext } from 'universe/configure';
-import { LogTag, standardSuccessMessage } from 'universe/constant';
+import { LogTag, wellKnownCliDistPath } from 'universe/constant';
+import { ErrorMessage } from 'universe/error';
 
 import {
   GlobalCliArguments,
+  fsConstants,
+  isAccessible,
   logStartTime,
   makeUsageString,
   withGlobalOptions,
   withGlobalOptionsHandling
 } from 'universe/util';
+
+import { runWithInheritedIo } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments;
 
@@ -18,7 +24,7 @@ export default async function command({
   debug_,
   state
 }: CustomExecutionContext) {
-  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>({});
+  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>();
 
   return {
     builder,
@@ -34,7 +40,44 @@ export default async function command({
 
         logStartTime({ log: genericLogger, startTime });
 
-        genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+        const isNextProject = await isAccessible('next.config.js');
+        const isCliProject = await isAccessible(
+          wellKnownCliDistPath,
+          fsConstants.R_OK | fsConstants.X_OK
+        );
+
+        debug('is next.js project: %O', isNextProject);
+        debug('is CLI project: %O', isCliProject);
+
+        assert(
+          !(isNextProject && isCliProject),
+          ErrorMessage.AssertionFailureCannotBeCliAndNextJs()
+        );
+
+        const passControlMessage = (runtime: string) =>
+          `--- control passed to ${runtime} runtime ---`;
+
+        try {
+          if (isCliProject) {
+            genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('CLI'));
+            await runWithInheritedIo(wellKnownCliDistPath);
+          } else if (isNextProject) {
+            genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
+            await runWithInheritedIo('next', ['start']);
+          } else {
+            throw new CliError(ErrorMessage.UnsupportedCommand());
+          }
+        } catch (error) {
+          const error_ =
+            error &&
+            typeof error === 'object' &&
+            'exitCode' in error &&
+            typeof error.exitCode === 'number'
+              ? new CliError('', { suggestedExitCode: error.exitCode })
+              : error;
+
+          throw error_;
+        }
       }
     )
   } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
