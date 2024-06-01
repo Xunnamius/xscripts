@@ -90,10 +90,12 @@ export const configureErrorHandlingEpilogue: ConfigureErrorHandlingEpilogue<
       context.log.newline([IF_NOT_SILENCED], 'alternate');
     }
 
-    context.log.error(
-      [IF_NOT_SILENCED],
-      `❌ Execution failed: ${toFirstLowerCase(message)}`
-    );
+    if (message) {
+      context.log.error(
+        [IF_NOT_SILENCED],
+        `❌ Execution failed: ${toFirstLowerCase(message)}`
+      );
+    }
 
     if (
       !context.state.isQuieted &&
