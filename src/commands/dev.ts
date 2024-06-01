@@ -1,15 +1,19 @@
-import { ChildConfiguration } from '@black-flag/core';
+import { ChildConfiguration, CliError } from '@black-flag/core';
 
 import { CustomExecutionContext } from 'universe/configure';
-import { LogTag, standardSuccessMessage } from 'universe/constant';
+import { LogTag } from 'universe/constant';
+import { ErrorMessage } from 'universe/error';
 
 import {
   GlobalCliArguments,
+  getProjectMetadata,
   logStartTime,
   makeUsageString,
   withGlobalOptions,
   withGlobalOptionsHandling
 } from 'universe/util';
+
+import { run, runWithInheritedIo } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments;
 
@@ -34,7 +38,49 @@ export default async function command({
 
         logStartTime({ log: genericLogger, startTime });
 
-        genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+        const { attributes } = await getProjectMetadata();
+        const passControlMessage = (runtime: string) =>
+          `--- control passed to ${runtime} runtime ---`;
+
+        const acquirePort = async () => {
+          // TODO: replace this when acquire-port gets programmatic API
+          const port = (await run('npx', ['-q', 'acquire-port'])).stdout;
+          debug('acquired port: %O', port);
+
+          return port;
+        };
+
+        try {
+          if (attributes.includes('next')) {
+            const port = await acquirePort();
+            genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
+            await runWithInheritedIo('next', ['-p', port]);
+          } else if (attributes.includes('webpack')) {
+            const port = await acquirePort();
+
+            genericLogger(
+              [LogTag.IF_NOT_QUIETED],
+              passControlMessage('Webpack dev server')
+            );
+
+            await runWithInheritedIo('webpack', ['serve', '--port', port], {
+              extendEnv: true,
+              env: { USE_WEBPACK_DEV_CONFIG: 'true', NODE_ENV: 'development' }
+            });
+          } else {
+            throw new CliError(ErrorMessage.UnsupportedCommand());
+          }
+        } catch (error) {
+          const error_ =
+            error &&
+            typeof error === 'object' &&
+            'exitCode' in error &&
+            typeof error.exitCode === 'number'
+              ? new CliError('', { suggestedExitCode: error.exitCode })
+              : error;
+
+          throw error_;
+        }
       }
     )
   } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
