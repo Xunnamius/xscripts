@@ -1,11 +1,13 @@
 import { ChildConfiguration } from '@black-flag/core';
 
-import { run } from 'multiverse/run';
+import { runWithInheritedIo } from 'multiverse/run';
 import { CustomExecutionContext } from 'universe/configure';
 import { LogTag, standardSuccessMessage } from 'universe/constant';
 
 import {
   GlobalCliArguments,
+  fsConstants,
+  isAccessible,
   logStartTime,
   makeUsageString,
   withGlobalOptions,
@@ -43,7 +45,21 @@ export default async function command({
         debug('isInDevelopmentEnvironment: %O', isInDevelopmentEnvironment);
 
         if (!isInCiEnvironment && isInDevelopmentEnvironment) {
-          await run('npx', ['husky'], { stdout: 'inherit', stderr: 'inherit' });
+          await runWithInheritedIo('npx', ['husky']);
+
+          const hasPostCheckout = await isAccessible(
+            '.husky/post-checkout',
+            fsConstants.R_OK | fsConstants.X_OK
+          );
+
+          if (hasPostCheckout) {
+            await runWithInheritedIo('.husky/post-checkout');
+          } else {
+            debug(
+              'skipped executing .husky/post-checkout since it does not exist or is not executable by current process'
+            );
+          }
+
           genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
         } else {
           genericLogger([LogTag.IF_NOT_QUIETED], 'skipped installing husky git hooks');
