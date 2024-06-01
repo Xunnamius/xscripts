@@ -410,9 +410,9 @@ export interface RunOptions extends execa.Options {
   reject?: boolean;
 }
 
-// TODO: XXX: make this into a separate (run) package
+// TODO: XXX: make this into a separate (run) package (actually, throw this out)
 // ! By default, does NOT reject on bad exit code (set reject: true to override)
-export async function run(file: string, args?: string[], options?: RunOptions) {
+async function run(file: string, args?: string[], options?: RunOptions) {
   let result: ExecaReturnValue & { code: ExecaReturnValue['exitCode'] };
   // eslint-disable-next-line prefer-const
   result = (await execa(file, args, { reject: false, ...options })) as typeof result;

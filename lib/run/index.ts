@@ -1,55 +1,53 @@
 import execa from 'execa';
 import { debugFactory } from 'multiverse/debug-extended';
 
-import type { ExecaReturnValue, ExecaSyncError } from 'execa';
+import type { Options as RunOptions, ExecaReturnValue as RunReturnType } from 'execa';
 
-const debug = debugFactory('@xunnamius/run:runtime');
-
-/**
- * Options passed to execa.
- *
- * @see https://github.com/sindresorhus/execa#options
- */
-export interface RunOptions extends execa.Options {
-  /**
-   * Setting this to `true` rejects the promise instead of resolving it with the
-   * error.
-   *
-   * @default false
-   */
-  reject?: boolean;
-}
-
-export type RunReturnType = ExecaReturnValue &
-  ExecaSyncError & { code: ExecaReturnValue['exitCode'] };
+const debug = debugFactory('@-xun/run:runtime');
 
 /**
- * Runs (executes) `file` with the given arguments (`args`) with respect to the
- * given `options`.
+ * Runs (executes) `file` with the given `args` with respect to the given
+ * `options`.
  *
- * Note that, by default, this function does NOT reject on a
- * non-zero exit code. Set `reject: true` to override this.
+ * Note that, by default, this function rejects on a non-zero exit code.
+ * Set `reject: false` to override this, or use {@link runNoRejectOnBadExit}.
  */
 export async function run(file: string, args?: string[], options?: RunOptions) {
   debug(`executing command: ${file}${args ? ` ${args.join(' ')}` : ''}`);
 
-  const result = (await execa(file, args, {
-    reject: false,
-    ...options
-  })) as RunReturnType;
+  const result = (await execa(file, args, options)) as RunReturnType;
 
-  result.code = result.exitCode;
   debug('execution result: %O', result);
   return result;
 }
 
 /**
- * Returns a function that, when called, runs (executes) `file` with the given
- * arguments (`args`) with respect to the given `options`. These parameters can
- * be overridden during individual invocations.
+ * Runs (executes) `file` with the given `args` with respect to the given
+ * `options` (merged with `{ stdout: 'inherit', stderr: 'inherit' }`).
  *
- * Note that, by default, this function does NOT reject on a
- * non-zero exit code. Set `reject: true` to override this.
+ * Note that, by default, this function rejects on a non-zero exit code.
+ * Set `reject: false` to override this, or use {@link runNoRejectOnBadExit}.
+ */
+export async function runWithInheritedIo(
+  ...[file, args, options]: Parameters<typeof run>
+) {
+  return run(file, args, { ...options, stdout: 'inherit', stderr: 'inherit' });
+}
+
+/**
+ * Runs (executes) `file` with the given `args` with respect to the given
+ * `options`. This function DOES NOT REJECT on a non-zero exit code.
+ */
+export async function runNoRejectOnBadExit(
+  ...[file, args, options]: Parameters<typeof run>
+) {
+  return run(file, args, { ...options, reject: false });
+}
+
+/**
+ * Returns a function that, when called, runs (executes) `file` with the given
+ * `args` with respect to the given `options`. These parameters can be
+ * overridden during individual invocations.
  */
 export function runnerFactory(file: string, args?: string[], options?: RunOptions) {
   const factoryArgs = args;
@@ -58,3 +56,5 @@ export function runnerFactory(file: string, args?: string[], options?: RunOption
   return (args?: string[], options?: RunOptions) =>
     run(file, args || factoryArgs, { ...factoryOptions, ...options });
 }
+
+export { RunOptions, RunReturnType };
