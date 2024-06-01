@@ -1,7 +1,11 @@
 import execa from 'execa';
 import { debugFactory } from 'multiverse/debug-extended';
 
-import type { Options as RunOptions, ExecaReturnValue as RunReturnType } from 'execa';
+import type {
+  ExecaReturnValue,
+  Options as RunOptions,
+  ExecaReturnValue as RunReturnType
+} from 'execa';
 
 const debug = debugFactory('@-xun/run:runtime');
 
@@ -31,7 +35,9 @@ export async function run(file: string, args?: string[], options?: RunOptions) {
 export async function runWithInheritedIo(
   ...[file, args, options]: Parameters<typeof run>
 ) {
-  return run(file, args, { ...options, stdout: 'inherit', stderr: 'inherit' });
+  return run(file, args, { ...options, stdout: 'inherit', stderr: 'inherit' }) as Promise<
+    ExecaReturnValue<string> & { stdout: never; stderr: never; all: never }
+  >;
 }
 
 /**
