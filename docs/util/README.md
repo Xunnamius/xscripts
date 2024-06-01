@@ -16,9 +16,14 @@
 - [GlobalCliArguments](type-aliases/GlobalCliArguments.md)
 - [WithGlobalOptionsReturnType](type-aliases/WithGlobalOptionsReturnType.md)
 
+### Variables
+
+- [fsConstants](variables/fsConstants.md)
+
 ### Functions
 
 - [findProjectRoot](functions/findProjectRoot.md)
+- [isAccessible](functions/isAccessible.md)
 - [logStartTime](functions/logStartTime.md)
 - [makeUsageString](functions/makeUsageString.md)
 - [toFirstLowerCase](functions/toFirstLowerCase.md)

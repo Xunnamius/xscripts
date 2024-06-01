@@ -24,4 +24,4 @@ Prints a timestamp indicating the beginning of execution.
 
 ## Source
 
-[src/util.ts:74](https://github.com/Xunnamius/xscripts/blob/6426d70a844a1c3242d719bd648b2a5caf61a12c/src/util.ts#L74)
+[src/util.ts:75](https://github.com/Xunnamius/xscripts/blob/380c055b2920c8b96b65dc89b97b6497f996c452/src/util.ts#L75)
