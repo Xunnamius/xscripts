@@ -1,5 +1,4 @@
 import { ChildConfiguration, CliError } from '@black-flag/core';
-import assert from 'node:assert';
 
 import { CustomExecutionContext } from 'universe/configure';
 import { LogTag, wellKnownCliDistPath } from 'universe/constant';
@@ -7,8 +6,7 @@ import { ErrorMessage } from 'universe/error';
 
 import {
   GlobalCliArguments,
-  fsConstants,
-  isAccessible,
+  getProjectMetadata,
   logStartTime,
   makeUsageString,
   withGlobalOptions,
@@ -40,28 +38,15 @@ export default async function command({
 
         logStartTime({ log: genericLogger, startTime });
 
-        const isNextProject = await isAccessible('next.config.js');
-        const isCliProject = await isAccessible(
-          wellKnownCliDistPath,
-          fsConstants.R_OK | fsConstants.X_OK
-        );
-
-        debug('is next.js project: %O', isNextProject);
-        debug('is CLI project: %O', isCliProject);
-
-        assert(
-          !(isNextProject && isCliProject),
-          ErrorMessage.AssertionFailureCannotBeCliAndNextJs()
-        );
-
+        const { attributes } = await getProjectMetadata();
         const passControlMessage = (runtime: string) =>
           `--- control passed to ${runtime} runtime ---`;
 
         try {
-          if (isCliProject) {
+          if (attributes.includes('cli')) {
             genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('CLI'));
             await runWithInheritedIo(wellKnownCliDistPath);
-          } else if (isNextProject) {
+          } else if (attributes.includes('next')) {
             genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
             await runWithInheritedIo('next', ['start']);
           } else {

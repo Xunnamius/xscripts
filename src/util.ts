@@ -6,7 +6,7 @@ import { $executionContext, CliError, type Configuration } from '@black-flag/cor
 import { Options } from 'yargs';
 
 import { CustomExecutionContext } from 'universe/configure';
-import { LogTag, globalLoggerNamespace } from 'universe/constant';
+import { LogTag, globalLoggerNamespace, wellKnownCliDistPath } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
 
 import {
@@ -452,9 +452,58 @@ export async function isAccessible(
 }
 
 /**
+ * Metadata attributes that describe the capabilities and scope of a project.
+ */
+export type ProjectMetaAttribute = 'next' | 'cli' | 'webpack';
+
+/**
+ * Metadata about the current project.
+ */
+export type ProjectMetadata = {
+  attributes: ProjectMetaAttribute[];
+};
+
+/**
  * Sugar for `(await import('node:fs)).promises.constants`.
  */
 export const fsConstants = fs.constants;
+
+/**
+ * Return metadata about the current project.
+ */
+export async function getProjectMetadata(): Promise<ProjectMetadata> {
+  const debug = createDebugLogger({
+    namespace: `${globalLoggerNamespace}:getProjectMetadata`
+  });
+
+  const attributes: ProjectMetaAttribute[] = [];
+  let isNextProject = false;
+  let isCliProject = false;
+
+  if (await isAccessible('next.config.js')) {
+    isNextProject = true;
+    attributes.push('next');
+  }
+
+  if (await isAccessible(wellKnownCliDistPath, fsConstants.R_OK | fsConstants.X_OK)) {
+    isCliProject = true;
+    attributes.push('cli');
+  }
+
+  if (await isAccessible('webpack.config.js', fsConstants.R_OK)) {
+    attributes.push('webpack');
+  }
+
+  assert(
+    !(isNextProject && isCliProject),
+    ErrorMessage.AssertionFailureCannotBeCliAndNextJs()
+  );
+
+  const metadata: ProjectMetadata = { attributes };
+  debug('project metadata: %O', metadata);
+
+  return metadata;
+}
 
 /**
  * Returns `true` iff `setA` and `setB` are equal-enough sets.
