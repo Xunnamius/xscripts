@@ -13,7 +13,7 @@ import {
   withGlobalOptionsHandling
 } from 'universe/util';
 
-import { runWithInheritedIo } from 'multiverse/run';
+import { run } from 'multiverse/run';
 
 const matchNothing = '(?!)';
 
@@ -76,7 +76,7 @@ export default async function command({
         logStartTime({ log: genericLogger, startTime });
 
         const ignoredPaths = (
-          await runWithInheritedIo('git', [
+          await run('git', [
             'ls-files',
             '--exclude-standard',
             '--ignored',
