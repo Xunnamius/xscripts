@@ -1,17 +1,10 @@
 import { ChildConfiguration, CliError } from '@black-flag/core';
 import { rimraf as forceDeletePaths } from 'rimraf';
 
-import { run } from 'multiverse/run';
-
 import { CustomExecutionContext } from 'universe/configure';
-
-import {
-  LogTag,
-  defaultCleanExcludedPaths,
-  standardSuccessMessage
-} from 'universe/constant';
-
+import { LogTag, standardSuccessMessage } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
+
 import {
   GlobalCliArguments,
   logStartTime,
@@ -20,7 +13,22 @@ import {
   withGlobalOptionsHandling
 } from 'universe/util';
 
+import { runWithInheritedIo } from 'multiverse/run';
+
 const matchNothing = '(?!)';
+
+/**
+ * These are the default regular expressions matching paths that are excluded
+ * from deletion when running the "clean" command.
+ */
+const defaultCleanExcludedPaths: string[] = [
+  '^.env$',
+  '^.vscode/',
+  '^.husky/',
+  '^.turbo/',
+  '^next-env.d.ts$',
+  '^node_modules/'
+];
 
 export type CustomCliArguments = GlobalCliArguments & {
   excludePaths: string[];
@@ -68,11 +76,13 @@ export default async function command({
         logStartTime({ log: genericLogger, startTime });
 
         const ignoredPaths = (
-          await run(
-            'git',
-            ['ls-files', '--exclude-standard', '--ignored', '--others', '--directory'],
-            { reject: true }
-          )
+          await runWithInheritedIo('git', [
+            'ls-files',
+            '--exclude-standard',
+            '--ignored',
+            '--others',
+            '--directory'
+          ])
         ).stdout.split('\n');
 
         debug('raw ignored paths: %O', ignoredPaths);
