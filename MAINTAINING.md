@@ -89,7 +89,7 @@ cp .env.default .env
 npm ci
 
 # 2. Reset the working directory to a clean state (deletes all ignored files).
-npx xscripts clean --force
+npm run clean -- --force
 
 # 3. Lint all files.
 npm run lint:all
