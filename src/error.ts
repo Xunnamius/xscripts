@@ -1,6 +1,5 @@
 import { ErrorMessage as UpstreamErrorMessage } from '@black-flag/core/util';
-import { toSentenceCase } from 'universe/util';
-
+import { toSentenceCase, type ProjectMetaAttribute } from 'universe/util';
 /**
  * An `Error` class where the first letter of the message is capitalized.
  */
@@ -31,11 +30,23 @@ export const ErrorMessage = {
   AssertionFailureCannotBeCliAndNextJs() {
     return 'assertion failed: project must either provide a CLI or be a Next.js project';
   },
+  AssertionFailureBadArgumentCombination(firstArgument: string, secondArgument: string) {
+    return `cannot provide both "${firstArgument}" and "${secondArgument}" arguments`;
+  },
   CleanCalledWithoutForce() {
     return 'no deletions were performed (try again with --force)';
   },
   UnsupportedCommand() {
     return 'this project does not support this command';
+  },
+  IgnoredArguments(args: string[]) {
+    return `the following command arguments were ignored: ${args.join(', ')}`;
+  },
+  WrongProjectAttributes(
+    expected: ProjectMetaAttribute[],
+    actual: ProjectMetaAttribute[]
+  ) {
+    return `expected a project with the following attributes: ${expected.join(', ')}; saw ${actual.join(', ')} instead`;
   },
   DidNotProvideAtLeastOneOfSeveralOptions(givenOptions: Record<string, unknown>) {
     const possibleOptions = Object.keys(givenOptions);
