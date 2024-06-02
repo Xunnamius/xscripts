@@ -118,6 +118,13 @@ export type ExtendedBuilderObject = {
   };
 };
 
+export type LimitedBuilderFunctionParameters<
+  CustomCliArguments extends GlobalCliArguments,
+  P = Parameters<BuilderFunction<CustomCliArguments>>
+> = P extends [infer R, ...infer S]
+  ? [R & { options: never; option: never }, ...S]
+  : never;
+
 /**
  * Returns a builder function (alongside a live data context) that wraps
  * `customBuilder` to provide standard CLI options (i.e. silent, etc). Most if
@@ -140,18 +147,18 @@ export type ExtendedBuilderObject = {
  *    two options was given. Providing such a value for `demandOption` on one
  *    command but not the other will result in an assertion failure.
  *
- * 3. Handles command grouping automatically. However, not that this function
+ * 3. Handles command grouping automatically. However, note that this function
  *    handles command grouping for you **only if you return an options object**
  *    and **only if you add options via said options object**. Specifically:
  *    calling `blackFlag.options(...)` within `customBuilder` will cause
- *    undefined behavior.
+ *    undefined behavior. This is enforced by intellisense.
  */
 export async function withGlobalOptions<CustomCliArguments extends GlobalCliArguments>(
   customBuilder?:
     | ExtendedBuilderObject
     | ((
-        ...args: Parameters<BuilderFunction<CustomCliArguments>>
-      ) => ExtendedBuilderObject),
+        ...args: LimitedBuilderFunctionParameters<CustomCliArguments>
+      ) => ExtendedBuilderObject | void),
   hasVersion = false
 ): Promise<WithGlobalOptionsReturnType<CustomCliArguments>> {
   const handlerPreCheckData: WithGlobalOptionsReturnType<CustomCliArguments>[1]['handlerPreCheckData'] =
@@ -197,9 +204,13 @@ export async function withGlobalOptions<CustomCliArguments extends GlobalCliArgu
     // ? since we're going to be doing some light mutating
     const result = Object.fromEntries(
       Object.entries(
-        typeof customBuilder === 'function'
-          ? customBuilder(blackFlag, helpOrVersionSet, argv)
-          : customBuilder || {}
+        (typeof customBuilder === 'function'
+          ? customBuilder(
+              blackFlag as LimitedBuilderFunctionParameters<CustomCliArguments>[0],
+              helpOrVersionSet,
+              argv
+            )
+          : customBuilder) || {}
       ).map(([k, v]) => [k, { ...v }])
     );
 
@@ -454,7 +465,7 @@ export async function isAccessible(
 /**
  * Metadata attributes that describe the capabilities and scope of a project.
  */
-export type ProjectMetaAttribute = 'next' | 'cli' | 'webpack';
+export type ProjectMetaAttribute = 'next' | 'cli' | 'webpack' | 'vercel';
 
 /**
  * Metadata about the current project.
@@ -494,6 +505,13 @@ export async function getProjectMetadata(): Promise<ProjectMetadata> {
     attributes.push('webpack');
   }
 
+  if (
+    (await isAccessible('vercel.json', fsConstants.R_OK)) ||
+    (await isAccessible('.vercel/project.json', fsConstants.R_OK))
+  ) {
+    attributes.push('vercel');
+  }
+
   assert(
     !(isNextProject && isCliProject),
     ErrorMessage.AssertionFailureCannotBeCliAndNextJs()
@@ -503,6 +521,15 @@ export async function getProjectMetadata(): Promise<ProjectMetadata> {
   debug('project metadata: %O', metadata);
 
   return metadata;
+}
+
+export function hasExitCode(error: unknown): error is object & { exitCode: number } {
+  return !!(
+    error &&
+    typeof error === 'object' &&
+    'exitCode' in error &&
+    typeof error.exitCode === 'number'
+  );
 }
 
 /**
