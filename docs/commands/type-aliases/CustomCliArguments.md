@@ -10,4 +10,4 @@
 
 ## Source
 
-[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/commands/index.ts#L13)
+[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/commands/index.ts#L13)

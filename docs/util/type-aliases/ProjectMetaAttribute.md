@@ -6,10 +6,10 @@
 
 # Type alias: ProjectMetaAttribute
 
-> **ProjectMetaAttribute**: `"next"` \| `"cli"` \| `"webpack"`
+> **ProjectMetaAttribute**: `"next"` \| `"cli"` \| `"webpack"` \| `"vercel"`
 
 Metadata attributes that describe the capabilities and scope of a project.
 
 ## Source
 
-[src/util.ts:457](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/util.ts#L457)
+[src/util.ts:468](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/util.ts#L468)

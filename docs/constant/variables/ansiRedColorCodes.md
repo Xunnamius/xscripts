@@ -13,4 +13,4 @@ https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124?permalink_commen
 
 ## Source
 
-[src/constant.ts:40](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/constant.ts#L40)
+[src/constant.ts:40](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/constant.ts#L40)

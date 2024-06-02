@@ -13,4 +13,4 @@ occur.
 
 ## Source
 
-[src/constant.ts:9](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/constant.ts#L9)
+[src/constant.ts:9](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/constant.ts#L9)

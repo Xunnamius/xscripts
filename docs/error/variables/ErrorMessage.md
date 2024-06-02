@@ -198,6 +198,18 @@ A collection of possible error and warning messages.
 
 `string`
 
+### AssertionFailureBadArgumentCombination()
+
+#### Parameters
+
+• **firstArgument**: `string`
+
+• **secondArgument**: `string`
+
+#### Returns
+
+`string`
+
 ### AssertionFailureBadConfigurationPath()
 
 #### Parameters
@@ -380,6 +392,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### IgnoredArguments()
+
+#### Parameters
+
+• **args**: `string`[]
+
+#### Returns
+
+`string`
+
 ### InvalidCharacters()
 
 #### Parameters
@@ -416,6 +438,18 @@ A collection of possible error and warning messages.
 
 `string`
 
+### WrongProjectAttributes()
+
+#### Parameters
+
+• **expected**: [`ProjectMetaAttribute`](../../util/type-aliases/ProjectMetaAttribute.md)[]
+
+• **actual**: [`ProjectMetaAttribute`](../../util/type-aliases/ProjectMetaAttribute.md)[]
+
+#### Returns
+
+`string`
+
 ## Source
 
-[src/error.ts:17](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/error.ts#L17)
+[src/error.ts:16](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/error.ts#L16)

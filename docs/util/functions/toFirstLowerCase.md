@@ -20,4 +20,4 @@ Lower-cases the first letter of `str`.
 
 ## Source
 
-[src/util.ts:57](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/util.ts#L57)
+[src/util.ts:57](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/util.ts#L57)

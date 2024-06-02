@@ -29,11 +29,11 @@ functionality:
    two options was given. Providing such a value for `demandOption` on one
    command but not the other will result in an assertion failure.
 
-3. Handles command grouping automatically. However, not that this function
+3. Handles command grouping automatically. However, note that this function
    handles command grouping for you **only if you return an options object**
    and **only if you add options via said options object**. Specifically:
    calling `blackFlag.options(...)` within `customBuilder` will cause
-   undefined behavior.
+   undefined behavior. This is enforced by intellisense.
 
 ## Type parameters
 
@@ -41,7 +41,7 @@ functionality:
 
 ## Parameters
 
-• **customBuilder?**: [`ExtendedBuilderObject`](../type-aliases/ExtendedBuilderObject.md) \| (...`args`) => [`ExtendedBuilderObject`](../type-aliases/ExtendedBuilderObject.md)
+• **customBuilder?**: [`ExtendedBuilderObject`](../type-aliases/ExtendedBuilderObject.md) \| (...`args`) => `void` \| [`ExtendedBuilderObject`](../type-aliases/ExtendedBuilderObject.md)
 
 • **hasVersion?**: `boolean`= `false`
 
@@ -51,4 +51,4 @@ functionality:
 
 ## Source
 
-[src/util.ts:149](https://github.com/Xunnamius/xscripts/blob/4eeba0093c58c5ae075542203854b4a3add2907a/src/util.ts#L149)
+[src/util.ts:156](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/util.ts#L156)
