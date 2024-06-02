@@ -7,6 +7,7 @@ import { ErrorMessage } from 'universe/error';
 import {
   GlobalCliArguments,
   getProjectMetadata,
+  hasExitCode,
   logStartTime,
   makeUsageString,
   withGlobalOptions,
@@ -71,15 +72,9 @@ export default async function command({
             throw new CliError(ErrorMessage.UnsupportedCommand());
           }
         } catch (error) {
-          const error_ =
-            error &&
-            typeof error === 'object' &&
-            'exitCode' in error &&
-            typeof error.exitCode === 'number'
-              ? new CliError('', { suggestedExitCode: error.exitCode })
-              : error;
-
-          throw error_;
+          throw hasExitCode(error)
+            ? new CliError('', { suggestedExitCode: error.exitCode })
+            : error;
         }
       }
     )
