@@ -13,6 +13,8 @@ import {
 
 export type CustomCliArguments = GlobalCliArguments;
 
+// TODO: skip reinstalling node_modules if dir exists unless --force-reinstall
+
 export default async function command({
   log: genericLogger,
   debug_,
