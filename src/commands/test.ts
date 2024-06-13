@@ -1,43 +1,45 @@
-import { ChildConfiguration } from '@black-flag/core';
+import { type ChildConfiguration } from '@black-flag/core';
 
-import { CustomExecutionContext } from 'universe/configure';
-import { LogTag, standardSuccessMessage } from 'universe/constant';
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 
 import {
-  GlobalCliArguments,
+  LogTag,
   logStartTime,
-  makeUsageString,
-  withGlobalOptions,
-  withGlobalOptionsHandling
-} from 'universe/util';
+  standardSuccessMessage
+} from 'multiverse/@-xun/cli-utils/logging';
+
+import {
+  withStandardBuilder,
+  withStandardUsage
+} from 'multiverse/@-xun/cli-utils/extensions';
 
 export type CustomCliArguments = GlobalCliArguments;
 
-export default async function command({
+export default function command({
   log: genericLogger,
   debug_,
   state
-}: CustomExecutionContext) {
-  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>({});
+}: GlobalExecutionContext) {
+  const [builder, withStandardHandler] = withStandardBuilder<
+    CustomCliArguments,
+    GlobalExecutionContext
+  >({
+    // TODO
+  });
 
   return {
     builder,
     description: 'Run available unit, integration, and/or e2e tests',
-    usage: makeUsageString(),
-    handler: await withGlobalOptionsHandling<CustomCliArguments>(
-      builderData,
-      async function () {
-        const debug = debug_.extend('handler');
-        debug('entered handler');
+    usage: withStandardUsage(),
+    handler: withStandardHandler(async function () {
+      const debug = debug_.extend('handler');
+      debug('entered handler');
 
-        const { startTime } = state;
+      const { startTime } = state;
 
-        logStartTime({ log: genericLogger, startTime });
+      logStartTime({ log: genericLogger, startTime });
 
-        genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
-      }
-    )
-  } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
+      genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+    })
+  } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
 }
-
-export { command };

@@ -1,73 +1,67 @@
-import { ChildConfiguration, CliError } from '@black-flag/core';
+import { CliError, type ChildConfiguration } from '@black-flag/core';
 
-import { CustomExecutionContext } from 'universe/configure';
-import { LogTag, wellKnownCliDistPath } from 'universe/constant';
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { wellKnownCliDistPath } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
+import { getProjectMetadata, hasExitCode } from 'universe/util';
+
+import { LogTag, logStartTime } from 'multiverse/@-xun/cli-utils/logging';
 
 import {
-  GlobalCliArguments,
-  getProjectMetadata,
-  hasExitCode,
-  logStartTime,
-  makeUsageString,
-  withGlobalOptions,
-  withGlobalOptionsHandling
-} from 'universe/util';
+  withStandardBuilder,
+  withStandardUsage
+} from 'multiverse/@-xun/cli-utils/extensions';
 
 import { runWithInheritedIo } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments;
 
-export default async function command({
+export default function command({
   log: genericLogger,
   debug_,
   state
-}: CustomExecutionContext) {
-  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>(
-    (blackFlag) => {
-      blackFlag.strict(false);
-    }
-  );
+}: GlobalExecutionContext) {
+  const [builder, withStandardHandler] = withStandardBuilder<
+    CustomCliArguments,
+    GlobalExecutionContext
+  >((blackFlag) => {
+    blackFlag.strict(false);
+  });
 
   return {
     builder,
     description: 'Run a CLI or deploy a local production environment, if applicable',
-    usage: makeUsageString(),
-    handler: await withGlobalOptionsHandling<CustomCliArguments>(
-      builderData,
-      async function ({ _: args_ }) {
-        const debug = debug_.extend('handler');
-        debug('entered handler');
+    usage: withStandardUsage(),
+    handler: withStandardHandler(async function ({ _: args_ }) {
+      const debug = debug_.extend('handler');
+      debug('entered handler');
 
-        const { startTime } = state;
+      const { startTime } = state;
 
-        logStartTime({ log: genericLogger, startTime });
+      logStartTime({ log: genericLogger, startTime });
 
-        const args = args_.map((a) => a.toString());
-        debug('additional (passthrough) args: %O', args);
+      const args = args_.map((a) => a.toString());
+      debug('additional (passthrough) args: %O', args);
 
-        const { attributes } = await getProjectMetadata();
-        const passControlMessage = (runtime: string) =>
-          `--- control passed to ${runtime} runtime ---`;
+      const { attributes } = await getProjectMetadata();
+      const passControlMessage = (runtime: string) =>
+        `--- control passed to ${runtime} runtime ---`;
 
-        try {
-          if (attributes.includes('cli')) {
-            genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('CLI'));
-            await runWithInheritedIo(wellKnownCliDistPath, args);
-          } else if (attributes.includes('next')) {
-            genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
-            await runWithInheritedIo('next', ['start', ...args]);
-          } else {
-            throw new CliError(ErrorMessage.UnsupportedCommand());
-          }
-        } catch (error) {
-          throw hasExitCode(error)
-            ? new CliError('', { suggestedExitCode: error.exitCode })
-            : error;
+      try {
+        if (attributes.includes('cli')) {
+          genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('CLI'));
+          await runWithInheritedIo(wellKnownCliDistPath, args);
+        } else if (attributes.includes('next')) {
+          genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
+          await runWithInheritedIo('next', ['start', ...args]);
+        } else {
+          throw new CliError(ErrorMessage.UnsupportedCommand());
         }
+      } catch (error) {
+        throw hasExitCode(error)
+          ? new CliError('', { suggestedExitCode: error.exitCode })
+          : error;
       }
-    )
-  } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
+    })
+  } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
 }
-
-export { command };

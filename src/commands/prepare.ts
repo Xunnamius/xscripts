@@ -1,72 +1,72 @@
-import { ChildConfiguration } from '@black-flag/core';
+import { type ChildConfiguration } from '@black-flag/core';
 
-import { runWithInheritedIo } from 'multiverse/run';
-import { CustomExecutionContext } from 'universe/configure';
-import { LogTag, standardSuccessMessage } from 'universe/constant';
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { fsConstants, isAccessible } from 'universe/util';
 
 import {
-  GlobalCliArguments,
-  fsConstants,
-  isAccessible,
+  LogTag,
   logStartTime,
-  makeUsageString,
-  withGlobalOptions,
-  withGlobalOptionsHandling
-} from 'universe/util';
+  standardSuccessMessage
+} from 'multiverse/@-xun/cli-utils/logging';
+
+import {
+  withStandardBuilder,
+  withStandardUsage
+} from 'multiverse/@-xun/cli-utils/extensions';
+
+import { runWithInheritedIo } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments;
 
-export default async function command({
+export default function command({
   log: genericLogger,
   debug_,
   state
-}: CustomExecutionContext) {
-  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>();
+}: GlobalExecutionContext) {
+  const [builder, withStandardHandler] = withStandardBuilder<
+    CustomCliArguments,
+    GlobalExecutionContext
+  >();
 
   return {
     builder,
     description: 'Run relevant project initializations upon initial install',
-    usage: makeUsageString(),
-    handler: await withGlobalOptionsHandling<CustomCliArguments>(
-      builderData,
-      async function () {
-        const debug = debug_.extend('handler');
-        debug('entered handler');
+    usage: withStandardUsage(),
+    handler: withStandardHandler(async function () {
+      const debug = debug_.extend('handler');
+      debug('entered handler');
 
-        const { startTime } = state;
+      const { startTime } = state;
 
-        logStartTime({ log: genericLogger, startTime });
+      logStartTime({ log: genericLogger, startTime });
 
-        const isInCiEnvironment = !!process.env.CI;
-        const isInDevelopmentEnvironment =
-          process.env.NODE_ENV === undefined || process.env.NODE_ENV === 'development';
+      const isInCiEnvironment = !!process.env.CI;
+      const isInDevelopmentEnvironment =
+        process.env.NODE_ENV === undefined || process.env.NODE_ENV === 'development';
 
-        debug('isInCiEnvironment: %O', isInCiEnvironment);
-        debug('isInDevelopmentEnvironment: %O', isInDevelopmentEnvironment);
+      debug('isInCiEnvironment: %O', isInCiEnvironment);
+      debug('isInDevelopmentEnvironment: %O', isInDevelopmentEnvironment);
 
-        if (!isInCiEnvironment && isInDevelopmentEnvironment) {
-          await runWithInheritedIo('npx', ['husky']);
+      if (!isInCiEnvironment && isInDevelopmentEnvironment) {
+        await runWithInheritedIo('npx', ['husky']);
 
-          const hasPostCheckout = await isAccessible(
-            '.husky/post-checkout',
-            fsConstants.R_OK | fsConstants.X_OK
-          );
+        const hasPostCheckout = await isAccessible(
+          '.husky/post-checkout',
+          fsConstants.R_OK | fsConstants.X_OK
+        );
 
-          if (hasPostCheckout) {
-            await runWithInheritedIo('.husky/post-checkout');
-          } else {
-            debug(
-              'skipped executing .husky/post-checkout since it does not exist or is not executable by current process'
-            );
-          }
-
-          genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+        if (hasPostCheckout) {
+          await runWithInheritedIo('.husky/post-checkout');
         } else {
-          genericLogger([LogTag.IF_NOT_QUIETED], 'skipped installing husky git hooks');
+          debug(
+            'skipped executing .husky/post-checkout since it does not exist or is not executable by current process'
+          );
         }
-      }
-    )
-  } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
-}
 
-export { command };
+        genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+      } else {
+        genericLogger([LogTag.IF_NOT_QUIETED], 'skipped installing husky git hooks');
+      }
+    })
+  } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
+}

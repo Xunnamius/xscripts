@@ -1,20 +1,25 @@
 import { globalDebuggerNamespace, globalLoggerNamespace } from 'universe/constant';
 
+import { createDebugLogger, createGenericLogger } from 'multiverse/rejoinder';
+
 import {
   makeStandardConfigureErrorHandlingEpilogue,
   makeStandardConfigureExecutionContext
 } from 'multiverse/@-xun/cli-utils/configure';
 
-import { type StandardExecutionContext } from 'multiverse/@-xun/cli-utils/extensions';
-
-import { createDebugLogger, createGenericLogger } from 'multiverse/rejoinder';
+import {
+  type StandardCommonCliArguments,
+  type StandardExecutionContext
+} from 'multiverse/@-xun/cli-utils/extensions';
 
 const rootGenericLogger = createGenericLogger({ namespace: globalLoggerNamespace });
 const rootDebugLogger = createDebugLogger({ namespace: globalDebuggerNamespace });
 
 export { $executionContext } from '@black-flag/core';
 
-export type CustomExecutionContext = StandardExecutionContext;
+export type GlobalExecutionContext = StandardExecutionContext;
+
+export type GlobalCliArguments = StandardCommonCliArguments;
 
 export const configureExecutionContext = makeStandardConfigureExecutionContext({
   rootGenericLogger,

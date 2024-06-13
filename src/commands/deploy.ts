@@ -1,43 +1,187 @@
-import { ChildConfiguration } from '@black-flag/core';
+import assert from 'node:assert';
 
-import { CustomExecutionContext } from 'universe/configure';
-import { LogTag, standardSuccessMessage } from 'universe/constant';
+import { type ChildConfiguration } from '@black-flag/core';
+
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { ErrorMessage } from 'universe/error';
+import { getProjectMetadata } from 'universe/util';
 
 import {
-  GlobalCliArguments,
+  LogTag,
   logStartTime,
-  makeUsageString,
-  withGlobalOptions,
-  withGlobalOptionsHandling
-} from 'universe/util';
+  standardSuccessMessage
+} from 'multiverse/@-xun/cli-utils/logging';
 
-export type CustomCliArguments = GlobalCliArguments;
+import {
+  withStandardBuilder,
+  withStandardUsage
+} from 'multiverse/@-xun/cli-utils/extensions';
 
-export default async function command({
+export enum DeployTarget {
+  Vercel = 'vercel',
+  Ssh = 'ssh'
+}
+
+export const deployTargets = Object.values(DeployTarget);
+
+export type CustomCliArguments = GlobalCliArguments & { target: DeployTarget } & (
+    | {
+        target: DeployTarget.Vercel;
+        production: boolean;
+        preview: boolean;
+      }
+    | {
+        target: DeployTarget.Ssh;
+        host: string;
+        toPath: string;
+      }
+  );
+
+export default function command({
   log: genericLogger,
   debug_,
   state
-}: CustomExecutionContext) {
-  const [builder, builderData] = await withGlobalOptions<CustomCliArguments>({});
+}: GlobalExecutionContext) {
+  const [builder, withStandardHandler] = withStandardBuilder<
+    CustomCliArguments,
+    GlobalExecutionContext
+  >({
+    target: {
+      description: 'Select deployment target and strategy',
+      demandThisOption: true,
+      choices: deployTargets,
+      subOptionOf: {
+        target: {
+          when: () => true,
+          update(oldOptionConfig, argv) {
+            return {
+              ...oldOptionConfig,
+              choices: [argv.target]
+            };
+          }
+        }
+      }
+    },
+    production: {
+      alias: ['prod'],
+      boolean: true,
+      description: 'Deploy to the remote production environment',
+      requires: { target: DeployTarget.Vercel },
+      subOptionOf: {
+        target: {
+          when: (target: DeployTarget) => target !== DeployTarget.Vercel,
+          update(oldOptionConfig) {
+            return {
+              ...oldOptionConfig,
+              hidden: true
+            };
+          }
+        }
+      }
+    },
+    preview: {
+      boolean: true,
+      description: 'Deploy to the remote preview environment',
+      requires: { target: DeployTarget.Vercel },
+      subOptionOf: {
+        target: {
+          when: (target: DeployTarget) => target !== DeployTarget.Vercel,
+          update(oldOptionConfig) {
+            return {
+              ...oldOptionConfig,
+              hidden: true
+            };
+          }
+        }
+      }
+    },
+    host: {
+      string: true,
+      description: 'The ssh deploy host',
+      requires: { target: DeployTarget.Ssh },
+      demandThisOptionIf: { target: DeployTarget.Ssh },
+      subOptionOf: {
+        target: {
+          when: (target: DeployTarget) => target !== DeployTarget.Ssh,
+          update(oldOptionConfig) {
+            return {
+              ...oldOptionConfig,
+              hidden: true
+            };
+          }
+        }
+      }
+    },
+    'to-path': {
+      string: true,
+      description: 'The ssh deploy destination path',
+      requires: { target: DeployTarget.Ssh },
+      demandThisOptionIf: { target: DeployTarget.Ssh },
+      subOptionOf: {
+        target: {
+          when: (target: DeployTarget) => target !== DeployTarget.Ssh,
+          update(oldOptionConfig) {
+            return {
+              ...oldOptionConfig,
+              hidden: true
+            };
+          }
+        }
+      }
+    }
+  });
 
   return {
     builder,
     description: 'Deploy distributes to the appropriate remote',
-    usage: makeUsageString(),
-    handler: await withGlobalOptionsHandling<CustomCliArguments>(
-      builderData,
-      async function () {
-        const debug = debug_.extend('handler');
-        debug('entered handler');
+    usage: withStandardUsage(),
+    handler: withStandardHandler(async function ({ production, preview, target }) {
+      const debug = debug_.extend('handler');
+      debug('entered handler');
 
-        const { startTime } = state;
+      const { startTime } = state;
 
-        logStartTime({ log: genericLogger, startTime });
+      logStartTime({ log: genericLogger, startTime });
 
-        genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+      const { attributes } = await getProjectMetadata();
+      const deployMessage = (deployTarget: string) =>
+        `Deploying distributables to ${deployTarget} target...`;
+
+      switch (target) {
+        case DeployTarget.Vercel: {
+          assert(
+            attributes.includes(DeployTarget.Vercel),
+            ErrorMessage.WrongProjectAttributes(attributes, [DeployTarget.Vercel])
+          );
+
+          if (production && !preview) {
+            await deployToVercelProduction();
+          } else if (preview && !production) {
+            await deployToVercelPreview();
+          } else {
+            await deployToVercelPreview();
+            await deployToVercelProduction();
+          }
+
+          break;
+        }
+
+        case DeployTarget.Ssh: {
+          genericLogger([LogTag.IF_NOT_QUIETED], deployMessage('ssh'));
+
+          break;
+        }
       }
-    )
-  } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
-}
 
-export { command };
+      genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+
+      async function deployToVercelProduction() {
+        genericLogger([LogTag.IF_NOT_QUIETED], deployMessage('vercel (production)'));
+      }
+
+      async function deployToVercelPreview() {
+        genericLogger([LogTag.IF_NOT_QUIETED], deployMessage('vercel (preview)'));
+      }
+    })
+  } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
+}
