@@ -125,7 +125,8 @@ export const standardCommonCliArguments = {
  * {@link StandardCommonCliArguments}.
  *
  * Note that this array purposely excludes `'help'` and `'version'`, which are
- * considered standard common CLI arguments by this package.
+ * considered standard common CLI arguments by this package and are therefore
+ * automatically included when appropriate.
  */
 export const standardCommonCliArgumentsKeys = Object.keys(
   standardCommonCliArguments
@@ -137,7 +138,10 @@ export const standardCommonCliArgumentsKeys = Object.keys(
  * projects.
  *
  * This function is a relatively thin wrapper around
- * {@link withBuilderExtensions}.
+ * {@link withBuilderExtensions}. It also disables
+ * [`duplicate-arguments-array`](https://github.com/yargs/yargs-parser?tab=readme-ov-file#duplicate-arguments-array)
+ * and enables
+ * [`strip-dashed`](https://github.com/yargs/yargs-parser?tab=readme-ov-file#strip-dashed) and [`strip-aliased`](https://github.com/yargs/yargs-parser?tab=readme-ov-file#strip-aliased) in yargs-parser.
  */
 export function withStandardBuilder<
   CustomCliArguments extends StandardCommonCliArguments,
@@ -209,7 +213,15 @@ export function withStandardBuilder<
 
       debug('entered standardBuilder');
 
+      debug('updating "Commands:" string to "Subcommands:"');
       blackFlag.updateStrings({ 'Commands:': 'Subcommands:' });
+
+      debug('reconfiguring yargs-parser');
+      blackFlag.parserConfiguration({
+        'duplicate-arguments-array': false,
+        'strip-aliased': true,
+        'strip-dashed': true
+      });
 
       debug('invoking withBuilderExtensions::builder');
       const returnedCliArguments = builder(blackFlag, helpOrVersionSet, argv);

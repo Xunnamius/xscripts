@@ -192,12 +192,14 @@ export type ExtendedBuilderObject<CustomCliArguments extends Record<string, unkn
       | Record<string, string | number | boolean>
       | Record<string, string | number | boolean>[];
     /**
-     * `check` is declarative sugar around `yargs::check()` that is applied
-     * specifically to the option being configured. This function receives the
-     * `currentArgumentValue`, which you are free to type as you please, and the
-     * fully parsed `argv`. If this function throws, the exception will bubble.
-     * If this function returns an instance of `Error`, a string, or any
-     * non-truthy value, Black Flag will throw a `CliError` on your behalf.
+     * `check` is the declarative option-specific version of vanilla yargs's
+     * `yargs::check()`.
+     *
+     * This function receives the `currentArgumentValue`, which you are free to
+     * type as you please, and the fully parsed `argv`. If this function throws,
+     * the exception will bubble. If this function returns an instance of
+     * `Error`, a string, or any non-truthy value (including `undefined` or not
+     * returning anything), Black Flag will throw a `CliError` on your behalf.
      *
      * See [the
      * documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#check)
@@ -372,15 +374,30 @@ export function withBuilderExtensions<
       );
 
       debug('result: %O', result);
-      debug('argv is defined: %O', !!argv);
+      debug('current argv: %O', !!argv);
 
       // TODO: automatic grouping must happen on both first pass and second pass
       // TODO: and there must be no caching/overlap between them (b/c of
       // TODO: subOptionOf). Also, each pass should clear optionMetadata entirely
 
-      // TODO: on first pass, apply subOptionOf & delete it (don't modify real config obj)
+      // TODO: on first pass: rename demandThisOption to demandOption, apply
+      // TODO: applicable configurations (except subOptionOf) and elide the
+      // TODO: others (to prevent yargs from seeing them), and then do
+      // TODO: first-pass-automatic-grouping. Skip optionMetadata collection for
+      // TODO: now
 
-      // TODO: on second pass, throw if subOptionOf is seen
+      // TODO: at beginning of second pass, apply subOptionOf & delete it (don't
+      // TODO: modify real config obj). Thus begins the 2nd half of second pass
+      // TODO: where subOptionOf configuration has been successfully applied
+
+      // TODO: apply subOptionOf by ignoring keys without corresponding args in
+      // TODO: argv. Then collect all update functions with matching whens, then
+      // TODO: apply those updates top to bottom. End result = new config
+
+      // TODO: on 2nd half, throw if subOptionOf is seen, otherwise do
+      // TODO: second-pass-automatic-grouping and optionMetadata collection.
+      // TODO: Also collect the defaulted arguments at this point and stash them
+      // TODO: away for later use in the handler
 
       // TODO: redo all of this wrt the above notes
       if (Object.keys(result).length) {
@@ -543,7 +560,15 @@ export function withBuilderExtensions<
         debug('entered withHandlerExtensions::handler wrapper function');
         debug('option metadata: %O', optionMetadata);
 
-        // TODO: operate on a version of argv where defaulted args are deleted
+        // TODO: delete all the defaults from argv (modify the real argv object)
+
+        debug('current argv (defaults deleted): %O', !!argv);
+
+        // TODO: run requires checks
+
+        // TODO: run conflicts checks
+
+        // TODO: run demandThisOptionIf checks
 
         // TODO: run demandThisOptionOr checks
         optionMetadata.atLeastOneOfOptions
@@ -555,11 +580,15 @@ export function withBuilderExtensions<
           .map((constraint) => getOptionsFromArgv(constraint, argv))
           .forEach((options) => ensureMutualExclusivityOfOptions(options));
 
-        // TODO: run implies checks (no contradictions allowed)
+        // TODO: run implies checks (similar to requires checks; no
+        // TODO: contradictions allowed)
 
-        // TODO: return to using normal argv, merge argv with implies objects
+        // TODO: merge argv with any deleted defaults, merge argv with implies
+        // TODO: objects
 
-        // TODO: run custom checks on normal argv
+        debug('final argv (defaults and implies merged): %O', !!argv);
+
+        // TODO: run custom checks on final argv and handle return types/errors
 
         await customHandler(argv);
 
