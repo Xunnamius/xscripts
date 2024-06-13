@@ -374,7 +374,15 @@ export function withBuilderExtensions<
       debug('result: %O', result);
       debug('argv is defined: %O', !!argv);
 
-      // TODO: redo all of this
+      // TODO: automatic grouping must happen on both first pass and second pass
+      // TODO: and there must be no caching/overlap between them (b/c of
+      // TODO: subOptionOf). Also, each pass should clear optionMetadata entirely
+
+      // TODO: on first pass, apply subOptionOf & delete it (don't modify real config obj)
+
+      // TODO: on second pass, throw if subOptionOf is seen
+
+      // TODO: redo all of this wrt the above notes
       if (Object.keys(result).length) {
         const requiredMutuallyExclusiveOptionsSet = new Map<Set<string>, string[]>();
         const requiredAtLeastOneOptionsSet = new Map<Set<string>, string[]>();
