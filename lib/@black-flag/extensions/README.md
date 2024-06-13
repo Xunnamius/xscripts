@@ -1172,6 +1172,7 @@ export default function command({ state }: CustomExecutionContext) {
     preview: {
       boolean: true,
       description: 'Deploy to the remote preview environment',
+      default: true,
       requires: { target: DeployTarget.Vercel },
       subOptionOf: {
         target: {
