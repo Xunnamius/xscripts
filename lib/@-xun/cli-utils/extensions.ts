@@ -143,7 +143,7 @@ export function withStandardBuilder<
   CustomCliArguments extends StandardCommonCliArguments,
   CustomExecutionContext extends ExecutionContext
 >(
-  customBuilder: Parameters<
+  customBuilder?: Parameters<
     typeof withBuilderExtensions<CustomCliArguments, CustomExecutionContext>
   >[0],
   {
