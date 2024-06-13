@@ -10,7 +10,7 @@ import {
 } from 'multiverse/rejoinder';
 
 import { TaskError } from './error';
-import { type StandardExecutionContext } from './index';
+import { type StandardExecutionContext } from './extensions';
 import { LogTag, MAX_LOG_ERROR_ENTRIES } from './logging';
 import { toFirstLowerCase, toSentenceCase } from './util';
 

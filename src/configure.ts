@@ -5,7 +5,7 @@ import {
   makeStandardConfigureExecutionContext
 } from 'multiverse/@-xun/cli-utils/configure';
 
-import { type StandardExecutionContext } from 'multiverse/@-xun/cli-utils/index';
+import { type StandardExecutionContext } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { createDebugLogger, createGenericLogger } from 'multiverse/rejoinder';
 
