@@ -198,18 +198,6 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureBadArgumentCombination()
-
-#### Parameters
-
-• **firstArgument**: `string`
-
-• **secondArgument**: `string`
-
-#### Returns
-
-`string`
-
 ### AssertionFailureBadConfigurationPath()
 
 #### Parameters
@@ -239,12 +227,6 @@ A collection of possible error and warning messages.
 `string`
 
 ### AssertionFailureCannotExecuteMultipleTimes()
-
-#### Returns
-
-`string`
-
-### AssertionFailureCannotUseDoubleFeature()
 
 #### Returns
 
@@ -316,12 +298,6 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureUnequalDemandOptions()
-
-#### Returns
-
-`string`
-
 ### AssertionFailureUseParseAsyncInstead()
 
 #### Returns
@@ -345,6 +321,18 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **path**: `string`
+
+#### Returns
+
+`string`
+
+### DemandedXorViolation()
+
+#### Parameters
+
+• **firstArgument**: `string`
+
+• **secondArgument**: `string`
 
 #### Returns
 
@@ -452,4 +440,4 @@ A collection of possible error and warning messages.
 
 ## Source
 
-[src/error.ts:16](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/error.ts#L16)
+[src/error.ts:10](https://github.com/Xunnamius/xscripts/blob/c8ed653392f2f548c08b4816b4826c1422ed8244/src/error.ts#L10)

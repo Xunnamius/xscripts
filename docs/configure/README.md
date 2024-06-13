@@ -10,7 +10,8 @@
 
 ### Type Aliases
 
-- [CustomExecutionContext](type-aliases/CustomExecutionContext.md)
+- [GlobalCliArguments](type-aliases/GlobalCliArguments.md)
+- [GlobalExecutionContext](type-aliases/GlobalExecutionContext.md)
 
 ### Variables
 

@@ -20,7 +20,7 @@
 
 • **argv**: `Omit`\<`Partial`\<`Arguments`\>, *typeof* [`$executionContext`](../variables/$executionContext.md)\> & `object`
 
-• **context**: [`CustomExecutionContext`](../type-aliases/CustomExecutionContext.md)
+• **context**: `StandardExecutionContext`
 
 ## Returns
 
@@ -28,4 +28,4 @@
 
 ## Source
 
-[src/configure.ts:80](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/configure.ts#L80)
+[src/configure.ts:29](https://github.com/Xunnamius/xscripts/blob/c8ed653392f2f548c08b4816b4826c1422ed8244/src/configure.ts#L29)

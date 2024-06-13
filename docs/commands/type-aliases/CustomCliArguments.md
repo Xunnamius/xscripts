@@ -6,8 +6,8 @@
 
 # Type alias: CustomCliArguments
 
-> **CustomCliArguments**: [`GlobalCliArguments`](../../util/type-aliases/GlobalCliArguments.md)
+> **CustomCliArguments**: [`GlobalCliArguments`](../../configure/type-aliases/GlobalCliArguments.md)
 
 ## Source
 
-[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/commands/index.ts#L13)
+[src/commands/index.ts:11](https://github.com/Xunnamius/xscripts/blob/c8ed653392f2f548c08b4816b4826c1422ed8244/src/commands/index.ts#L11)

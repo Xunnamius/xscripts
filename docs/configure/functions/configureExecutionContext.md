@@ -18,4 +18,4 @@
 
 ## Source
 
-[src/configure.ts:65](https://github.com/Xunnamius/xscripts/blob/b453fa840778101fac1e5f79d0e006f610b3882e/src/configure.ts#L65)
+[src/configure.ts:24](https://github.com/Xunnamius/xscripts/blob/c8ed653392f2f548c08b4816b4826c1422ed8244/src/configure.ts#L24)

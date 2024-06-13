@@ -10,14 +10,8 @@
 
 ### Type Aliases
 
-- [BuilderFunction](type-aliases/BuilderFunction.md)
-- [BuilderObject](type-aliases/BuilderObject.md)
-- [ExtendedBuilderObject](type-aliases/ExtendedBuilderObject.md)
-- [GlobalCliArguments](type-aliases/GlobalCliArguments.md)
-- [LimitedBuilderFunctionParameters](type-aliases/LimitedBuilderFunctionParameters.md)
 - [ProjectMetaAttribute](type-aliases/ProjectMetaAttribute.md)
 - [ProjectMetadata](type-aliases/ProjectMetadata.md)
-- [WithGlobalOptionsReturnType](type-aliases/WithGlobalOptionsReturnType.md)
 
 ### Variables
 
@@ -29,10 +23,3 @@
 - [getProjectMetadata](functions/getProjectMetadata.md)
 - [hasExitCode](functions/hasExitCode.md)
 - [isAccessible](functions/isAccessible.md)
-- [logStartTime](functions/logStartTime.md)
-- [makeUsageString](functions/makeUsageString.md)
-- [toFirstLowerCase](functions/toFirstLowerCase.md)
-- [toSentenceCase](functions/toSentenceCase.md)
-- [toSpacedSentenceCase](functions/toSpacedSentenceCase.md)
-- [withGlobalOptions](functions/withGlobalOptions.md)
-- [withGlobalOptionsHandling](functions/withGlobalOptionsHandling.md)
