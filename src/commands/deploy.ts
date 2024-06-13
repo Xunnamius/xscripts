@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 
-import { type ChildConfiguration } from '@black-flag/core';
+import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
@@ -83,6 +83,14 @@ export default function command({
       boolean: true,
       description: 'Deploy to the remote preview environment',
       default: true,
+      check: function (preview, argv) {
+        return (
+          argv.target !== DeployTarget.Vercel ||
+          preview ||
+          argv.production ||
+          ErrorMessage.MustChooseDeployEnvironment()
+        );
+      },
       requires: { target: DeployTarget.Vercel },
       subOptionOf: {
         target: {
@@ -155,13 +163,12 @@ export default function command({
             ErrorMessage.WrongProjectAttributes(attributes, [DeployTarget.Vercel])
           );
 
-          if (production && !preview) {
+          if (production) {
             await deployToVercelProduction();
-          } else if (preview && !production) {
+          }
+
+          if (preview) {
             await deployToVercelPreview();
-          } else {
-            await deployToVercelPreview();
-            await deployToVercelProduction();
           }
 
           break;

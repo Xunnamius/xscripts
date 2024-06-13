@@ -26,5 +26,8 @@ export const ErrorMessage = {
     actual: ProjectMetaAttribute[]
   ) {
     return `expected a project with the following attributes: ${expected.join(', ')}; saw ${actual.join(', ')} instead`;
+  },
+  MustChooseDeployEnvironment() {
+    return 'must choose either --preview or --production deployment environment';
   }
 };
