@@ -1227,8 +1227,8 @@ export default function command({ state }: CustomExecutionContext) {
     usage: withUsageExtensions('$1.\n\nSupports both Vercel and SSH targets!'),
     handler: withHandlerExtensions<CustomCliArguments>(async function ({
       target,
-      production: productionOnly,
-      preview: previewOnly,
+      production,
+      preview,
       host,
       toPath
     }) {
@@ -1236,7 +1236,7 @@ export default function command({ state }: CustomExecutionContext) {
 
       switch (target) {
         case DeployTarget.Vercel: {
-          // if(productionOnly) ...
+          // if(production) ...
           break;
         }
 
