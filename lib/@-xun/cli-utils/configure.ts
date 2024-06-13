@@ -21,13 +21,30 @@ import type {
 
 const { IF_NOT_SILENCED, IF_NOT_QUIETED, IF_NOT_HUSHED } = LogTag;
 
+/**
+ * Returns a {@link ConfigureExecutionContext} instance considered standard
+ * across [Xunnamius](https://github.com/Xunnamius)'s CLI projects.
+ */
 export function makeStandardConfigureExecutionContext({
   rootDebugLogger,
   rootGenericLogger,
   withListr2Support = false
 }: {
+  /**
+   * The generic logging function used whenever the CLI wants to send text to
+   * stdout.
+   */
   rootGenericLogger: ExtendedLogger;
+  /**
+   * The generic logging function used whenever the CLI wants to send text to
+   * stderr.
+   */
   rootDebugLogger: ExtendedDebugger;
+  /**
+   * If `true`, support for Listr2 tasks will be enabled for this program.
+   *
+   * @default false
+   */
   withListr2Support?: boolean;
 }): ConfigureExecutionContext {
   return function (context) {
@@ -47,6 +64,10 @@ export function makeStandardConfigureExecutionContext({
   };
 }
 
+/**
+ * Returns a {@link ConfigureErrorHandlingEpilogue} instance considered standard
+ * across [Xunnamius](https://github.com/Xunnamius)'s CLI projects.
+ */
 export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHandlingEpilogue<StandardExecutionContext> {
   return async function (
     ...[{ message, error }, _argv, context]: Parameters<
