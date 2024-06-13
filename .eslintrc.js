@@ -62,6 +62,10 @@ const rules = {
   '@typescript-eslint/no-var-requires': 'off',
   // ? I'll be good, I promise
   '@typescript-eslint/no-non-null-assertion': 'off',
+  '@typescript-eslint/consistent-type-imports': [
+    'error',
+    { disallowTypeAnnotations: false, fixStyle: 'inline-type-imports' }
+  ],
   'no-unused-vars': 'off',
   'unicorn/no-keyword-prefix': 'warn',
   'unicorn/prefer-string-replace-all': 'warn',
