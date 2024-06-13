@@ -20,7 +20,7 @@ import { LogTag } from './logging';
 
 const globalDebuggerNamespace = '@-xun/cli-utils';
 
-export { withUsageExtensions } from 'multiverse/@black-flag/extensions/index';
+export { withUsageExtensions as withStandardUsage } from 'multiverse/@black-flag/extensions/index';
 
 /**
  * This {@link ExecutionContext} subtype contains state related to
