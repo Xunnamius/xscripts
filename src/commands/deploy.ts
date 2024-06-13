@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 
-import { CliError, type ChildConfiguration } from '@black-flag/core';
+import { type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
