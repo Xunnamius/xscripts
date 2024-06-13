@@ -41,6 +41,8 @@ Black Flag's declarative powers.
   - [`withBuilderExtensions`](#withbuilderextensions)
   - [`withUsageExtensions`](#withusageextensions)
 - [Example](#example)
+  - [Example 1](#example-1)
+  - [Example 2](#example-2)
 - [Appendix](#appendix)
   - [Differences between Black Flag Extensions and Yargs](#differences-between-black-flag-extensions-and-yargs)
   - [Black Flag versus Black Flag Extensions](#black-flag-versus-black-flag-extensions)
@@ -932,8 +934,12 @@ Common Options:
 
 ## Example
 
+In this section are two example implementations of a "deploy" command.
+
+### Example 1
+
 Suppose we wanted a "deploy" command with the following somewhat contrived
-features:
+feature set:
 
 - Ability to deploy to a Vercel production target, a Vercel preview target, or
   to a remote target via SSH.
@@ -946,8 +952,10 @@ features:
   - If both `--only-preview=false` and `--only-production=false`, deploy to
     _both_ the preview and production environments.
 
-- When deploying to a remote target via SSH, require a `--host` and `--to-path`
-  be provided.
+  - If both `--only-preview=true` and `--only-production=true`, throw an error.
+
+- When deploying to a remote target via SSH, require both a `--host` and
+  `--to-path` be provided.
 
   - If `--host` or `--to-path` are provided, they must be accompanied by
     `--target=ssh` since these options don't make sense if `--target` is
@@ -1058,6 +1066,190 @@ export default function command({ state }: CustomExecutionContext) {
 }
 ```
 
+### Example 2
+
+Suppose we wanted a "deploy" command with the following [more realistic][34]
+feature set:
+
+- Ability to deploy to a Vercel production target, a Vercel preview target, or
+  to a remote target via SSH.
+
+- When deploying to Vercel, allow the user to choose to deploy to preview
+  (`--preview`), or to production (`--production`), or both.
+
+  - Deploy to the preview target only by default.
+
+  - If both `--preview=false` and `--production=false`, deploy to both the
+    preview and production environments.
+
+  - If both `--preview=true` and `--production=true`, deploy to both the preview
+    and production environments.
+
+- When deploying to a remote target via SSH, require a `--host` and `--to-path`
+  be provided.
+
+  - If `--host` or `--to-path` are provided, they must be accompanied by
+    `--target=ssh` since these options don't make sense if `--target` is
+    something else.
+
+- Output more useful and extremely specific help text depending on the
+  combination of arguments received.
+
+What follows is an example implementation:
+
+```typescript
+import { type ChildConfiguration } from '@black-flag/core';
+import {
+  withBuilderExtensions,
+  withUsageExtensions
+} from '@black-flag/extensions';
+
+import { type CustomExecutionContext } from '../configure.ts';
+
+export enum DeployTarget {
+  Vercel = 'vercel',
+  Ssh = 'ssh'
+}
+
+export const deployTargets = Object.values(DeployTarget);
+
+export type CustomCliArguments = { target: DeployTarget } & (
+  | {
+      target: DeployTarget.Vercel;
+      production: boolean;
+      preview: boolean;
+    }
+  | {
+      target: DeployTarget.Ssh;
+      host: string;
+      toPath: string;
+    }
+);
+
+export default function command({ state }: CustomExecutionContext) {
+  const [builder, withHandlerExtensions] = withBuilderExtensions<
+    CustomCliArguments,
+    GlobalExecutionContext
+  >({
+    target: {
+      description: 'Select deployment target and strategy',
+      demandThisOption: true,
+      choices: deployTargets,
+      subOptionOf: {
+        target: {
+          // Since subOptionOf runs on 2nd parse, target MUST be a DeployTarget
+          // by the time subOptionOf is considered. Yay!
+          when: () => true,
+          update(oldOptionConfig, argv) {
+            return {
+              ...oldOptionConfig,
+              choices: [argv.target]
+            };
+          }
+        }
+      }
+    },
+    production: {
+      alias: ['prod'],
+      boolean: true,
+      description: 'Deploy to the remote production environment',
+      requires: { target: DeployTarget.Vercel },
+      subOptionOf: {
+        target: {
+          // Since subOptionOf runs on 2nd parse, target MUST be defined (as
+          // a DeployTarget) by the time subOptionOf is considered. If it
+          // weren't, we'd have to ensure target was not undefined, too. Boo!
+          when: (target: DeployTarget) => target !== DeployTarget.Vercel,
+          update(oldOptionConfig) {
+            return {
+              ...oldOptionConfig,
+              hidden: true
+            };
+          }
+        }
+      }
+    },
+    preview: {
+      boolean: true,
+      description: 'Deploy to the remote preview environment',
+      requires: { target: DeployTarget.Vercel },
+      subOptionOf: {
+        target: {
+          when: (target: DeployTarget) => target !== DeployTarget.Vercel,
+          update(oldOptionConfig) {
+            return {
+              ...oldOptionConfig,
+              hidden: true
+            };
+          }
+        }
+      }
+    },
+    host: {
+      string: true,
+      description: 'The ssh deploy host',
+      requires: { target: DeployTarget.Ssh },
+      demandThisOptionIf: { target: DeployTarget.Ssh },
+      subOptionOf: {
+        target: {
+          when: (target: DeployTarget) => target !== DeployTarget.Ssh,
+          update(oldOptionConfig) {
+            return {
+              ...oldOptionConfig,
+              hidden: true
+            };
+          }
+        }
+      }
+    },
+    'to-path': {
+      string: true,
+      description: 'The ssh deploy destination path',
+      requires: { target: DeployTarget.Ssh },
+      demandThisOptionIf: { target: DeployTarget.Ssh },
+      subOptionOf: {
+        target: {
+          when: (target: DeployTarget) => target !== DeployTarget.Ssh,
+          update(oldOptionConfig) {
+            return {
+              ...oldOptionConfig,
+              hidden: true
+            };
+          }
+        }
+      }
+    }
+  });
+
+  return {
+    builder,
+    description: 'Deploy distributes to the appropriate remote',
+    usage: withUsageExtensions('$1.\n\nSupports both Vercel and SSH targets!'),
+    handler: withHandlerExtensions<CustomCliArguments>(async function ({
+      target,
+      production: productionOnly,
+      preview: previewOnly,
+      host,
+      toPath
+    }) {
+      // if(state[...]) ...
+
+      switch (target) {
+        case DeployTarget.Vercel: {
+          // if(productionOnly) ...
+          break;
+        }
+
+        case DeployTarget.Ssh: {
+          // ...
+          break;
+        }
+      }
+    })
+  } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
+}
+```
+
 ## Appendix
 
 Further documentation can be found under [`docs/`][x-repo-docs].
@@ -1116,7 +1308,7 @@ export function builder(blackFlag) {
 > The yargs API can and should still be invoked for purposes other than defining
 > options on a command, e.g. `blackFlag.strict(false)`.
 
-To this end, the following [yargs API functions][34] are soft-disabled via
+To this end, the following [yargs API functions][35] are soft-disabled via
 intellisense:
 
 - `option`
@@ -1125,15 +1317,15 @@ intellisense:
 However, no attempt is made by BFE to restrict your use of the yargs API at
 runtime. Therefore, using yargs's API to work around these artificial
 limitations, e.g. in your command's [`builder`][26] function or via the
-[`configureExecutionPrologue`][35] hook, will result in **undefined behavior**.
+[`configureExecutionPrologue`][36] hook, will result in **undefined behavior**.
 
 ### Black Flag versus Black Flag Extensions
 
-The goal of [Black Flag (@black-flag/core)][36] is to be as close to a drop-in
+The goal of [Black Flag (@black-flag/core)][37] is to be as close to a drop-in
 replacement as possible for vanilla yargs, specifically for users of
-[`yargs::commandDir()`][37]. This means Black Flag must go out of its way to
+[`yargs::commandDir()`][38]. This means Black Flag must go out of its way to
 maintain 1:1 parity with the vanilla yargs API ([with a few minor
-exceptions][38]).
+exceptions][39]).
 
 As a consequence, yargs's imperative nature tends to leak through Black Flag's
 abstraction at certain points, such as with [the `blackFlag` parameter of the
@@ -1141,10 +1333,10 @@ abstraction at certain points, such as with [the `blackFlag` parameter of the
 yargs's killer features without Black Flag getting in the way.
 
 However, this comes with costs. For one, the yargs's API has suffered from a bit
-of feature creep over the years. A result of this is a rigid API [with][39]
-[an][17] [abundance][40] [of][41] [footguns][42] and an [inability][43] to
-[address][44] them without introducing [massively][45] [breaking][46]
-[changes][47].
+of feature creep over the years. A result of this is a rigid API [with][40]
+[an][17] [abundance][41] [of][42] [footguns][43] and an [inability][44] to
+[address][45] them without introducing [massively][46] [breaking][47]
+[changes][48].
 
 BFE takes the "YOLO" approach by exporting several functions that build on top
 of Black Flag's feature set without worrying too much about maintaining 1:1
@@ -1340,19 +1532,20 @@ specification. Contributions of any kind welcome!
 [31]: https://yargs.js.org/docs#api-reference-groupkeys-groupname
 [32]: https://
 [33]: ./docs/functions/withUsageExtensions.md
-[34]: https://yargs.js.org/docs#api-reference
-[35]:
+[34]: https://github.com/Xunnamius/xscripts/blob/main/src/commands/deploy.ts
+[35]: https://yargs.js.org/docs#api-reference
+[36]:
   https://github.com/Xunnamius/black-flag/blob/main/docs/index/type-aliases/ConfigureExecutionPrologue.md
-[36]: https://npm.im/@black-flag/core
-[37]: https://yargs.js.org/docs#api-reference-commanddirdirectory-opts
-[38]:
+[37]: https://npm.im/@black-flag/core
+[38]: https://yargs.js.org/docs#api-reference-commanddirdirectory-opts
+[39]:
   https://github.com/Xunnamius/black-flag?tab=readme-ov-file#differences-between-black-flag-and-yargs
-[39]: https://github.com/yargs/yargs/issues/1323
-[40]: https://github.com/yargs/yargs/issues/2340
-[41]: https://github.com/yargs/yargs/issues/1322
-[42]: https://github.com/yargs/yargs/issues/2089
-[43]: https://github.com/yargs/yargs/issues/1975
-[44]: https://github.com/yargs/yargs-parser/issues/412
-[45]: https://github.com/yargs/yargs/issues/1680
-[46]: https://github.com/yargs/yargs/issues/1599
-[47]: https://github.com/yargs/yargs/issues/1611
+[40]: https://github.com/yargs/yargs/issues/1323
+[41]: https://github.com/yargs/yargs/issues/2340
+[42]: https://github.com/yargs/yargs/issues/1322
+[43]: https://github.com/yargs/yargs/issues/2089
+[44]: https://github.com/yargs/yargs/issues/1975
+[45]: https://github.com/yargs/yargs-parser/issues/412
+[46]: https://github.com/yargs/yargs/issues/1680
+[47]: https://github.com/yargs/yargs/issues/1599
+[48]: https://github.com/yargs/yargs/issues/1611
