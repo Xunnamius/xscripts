@@ -26,6 +26,7 @@ const matchNothing = '(?!)';
 const defaultCleanExcludedPaths: string[] = [
   '^.env$',
   '^.vscode/',
+  '^.vercel/',
   '^.husky/',
   '^.turbo/',
   '^next-env.d.ts$',
