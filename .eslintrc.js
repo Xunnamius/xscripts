@@ -121,7 +121,9 @@ const rules = {
   // ? I don't think so
   'unicorn/no-negated-condition': 'off',
   // ? No
-  'unicorn/import-style': 'off'
+  'unicorn/import-style': 'off',
+  // ? Broken in latest unicorn versions
+  'unicorn/throw-new-error': 'off'
 };
 
 module.exports = {
