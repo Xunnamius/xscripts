@@ -1,4 +1,5 @@
 import assert from 'node:assert';
+import { isNativeError } from 'node:util/types';
 
 import {
   CliError,
@@ -7,6 +8,7 @@ import {
   type Arguments,
   type Configuration
 } from '@black-flag/core';
+
 import { type EffectorProgram, type ExecutionContext } from '@black-flag/core/util';
 import isEqual from 'lodash.isequal';
 
@@ -15,8 +17,7 @@ import { createDebugLogger } from 'multiverse/rejoinder';
 import { ErrorMessage, type KeyValueEntry } from './error';
 import { $exists, $genesis } from './symbols';
 
-import { isNativeError } from 'node:util/types';
-import type { Entries, Entry, StringKeyOf } from 'type-fest';
+import type { Entries, StringKeyOf } from 'type-fest';
 
 const globalDebuggerNamespace = '@black-flag/extensions';
 
