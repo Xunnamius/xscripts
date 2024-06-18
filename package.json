@@ -95,6 +95,7 @@
     "@types/debug": "^4.1.12",
     "core-js": "3.37.1",
     "debug": "^4.3.5",
+    "lodash.isequal": "^4.5.0",
     "pkg-up": "^5.0.0",
     "rimraf": "^5.0.7",
     "supports-color": "^8.1.1"
@@ -117,6 +118,7 @@
     "@types/ip6addr": "^0.2.6",
     "@types/jest": "^29.5.12",
     "@types/jmespath": "^0.15.2",
+    "@types/lodash.isequal": "^4.5.8",
     "@types/lodash.mergewith": "^4.6.9",
     "@types/merge-descriptors": "^1.0.3",
     "@types/node": "^20.13.0",
