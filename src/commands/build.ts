@@ -24,7 +24,7 @@ export default function command({
     CustomCliArguments,
     GlobalExecutionContext
   >({
-    // TODO
+    // TODO (build command for next projects needs to use NODE_ENV=production)
   });
 
   return {
