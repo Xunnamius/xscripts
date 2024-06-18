@@ -259,7 +259,8 @@ export type BfeBuilderObjectValueExtensions<
    */
   subOptionOf?: Record<
     string,
-    BfeSubOptionOfExtensionValue<CustomCliArguments, CustomExecutionContext>[]
+    | BfeSubOptionOfExtensionValue<CustomCliArguments, CustomExecutionContext>
+    | BfeSubOptionOfExtensionValue<CustomCliArguments, CustomExecutionContext>[]
   >;
   /**
    * `default` will set a default value for an argument. This is equivalent to
@@ -545,7 +546,9 @@ export function withBuilderExtensions<
           if (subOptionOf) {
             debug('evaluating suboption configuration for %O', subOption);
 
-            Object.entries(subOptionOf).forEach(([superOption, updaters]) => {
+            Object.entries(subOptionOf).forEach(([superOption, updaters_]) => {
+              const updaters = [updaters_].flat();
+
               debug(
                 'saw entry for super-option %O (%O potential updates)',
                 superOption,
