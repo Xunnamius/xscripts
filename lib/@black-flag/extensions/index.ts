@@ -1,33 +1,330 @@
 import assert from 'node:assert';
 
-import { CliError, type Configuration } from '@black-flag/core';
-import { type ExecutionContext } from '@black-flag/core/util';
-import { type Options } from 'yargs';
+import {
+  CliError,
+  FrameworkExitCode,
+  isCliError,
+  type Arguments,
+  type Configuration
+} from '@black-flag/core';
+import { type EffectorProgram, type ExecutionContext } from '@black-flag/core/util';
+import isEqual from 'lodash.isequal';
 
 import { createDebugLogger } from 'multiverse/rejoinder';
+
+import { ErrorMessage, type KeyValueEntry } from './error';
+import { $exists, $genesis } from './symbols';
+
+import { isNativeError } from 'node:util/types';
+import type { Entries, Entry, StringKeyOf } from 'type-fest';
 
 const globalDebuggerNamespace = '@black-flag/extensions';
 
 /**
- * The object value type of an {@link ExtendedBuilderObject}.
+ * Internal metadata derived from analysis of a {@link BfeBuilderObject}.
  */
-export type ExtendedOption =
+type OptionsMetadata = {
+  required: FlattenedExtensionValue[];
+  conflicted: FlattenedExtensionValue[];
+  implied: FlattenedExtensionValue[];
+  demandedIf: FlattenedExtensionValue[];
+  demanded: string[];
+  demandedAtLeastOne: FlattenedExtensionValue[];
+  demandedMutuallyExclusive: FlattenedExtensionValue[];
+  optional: string[];
+  defaults: Record<string, unknown>;
+  checks: Record<
+    string,
+    NonNullable<
+      BfeBuilderObjectValueExtensions<Record<string, unknown>, ExecutionContext>['check']
+    >
+  >;
+};
+
+/**
+ * A flattened {@link BfeBuilderObjectValueExtensionObject} value type with
+ * additional data (i.e. {@link $exists} values and {@link $genesis} keys).
+ */
+type FlattenedExtensionValue = Record<
+  string,
+  BfeBuilderObjectValueExtensionObject[string] | typeof $exists
+> & { [$genesis]?: string };
+
+/**
+ * The function type of the `builder` export accepted by Black Flag.
+ */
+export type BfBuilderFunction<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+> = Extract<
+  Configuration<CustomCliArguments, CustomExecutionContext>['builder'],
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  Function
+>;
+
+/**
+ * The object type of the `builder` export accepted by Black Flag.
+ */
+export type BfBuilderObject<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+> = Exclude<
+  Configuration<CustomCliArguments, CustomExecutionContext>['builder'],
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  Function
+>;
+
+/**
+ * The object value type of a {@link BfBuilderObject}.
+ *
+ * Equivalent to `yargs.Options` as of yargs\@17.7.2.
+ */
+export type BfBuilderObjectValue<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+> = BfBuilderObject<CustomCliArguments, CustomExecutionContext>[string];
+
+/**
+ * The generic object value type of a {@link BfBuilderObject}.
+ */
+export type BfGenericBuilderObjectValue = BfBuilderObjectValue<
+  Record<string, unknown>,
+  ExecutionContext
+>;
+
+/**
+ * A version of the object type of the `builder` export accepted by Black Flag
+ * that supports BFE's additional functionality.
+ */
+export type BfeBuilderObject<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+> = {
+  [key: string]: BfeBuilderObjectValue<CustomCliArguments, CustomExecutionContext>;
+};
+
+/**
+ * The object value type of a {@link BfeBuilderObject}.
+ */
+export type BfeBuilderObjectValue<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+> = BfeBuilderObjectValueWithoutExtensions &
+  BfeBuilderObjectValueExtensions<CustomCliArguments, CustomExecutionContext>;
+
+/**
+ * An object containing only those properties recognized by
+ * BFE.
+ *
+ * This type + {@link BfeBuilderObjectValueWithoutExtensions} =
+ * {@link BfeBuilderObjectValue}.
+ */
+export type BfeBuilderObjectValueExtensions<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+> = {
+  /**
+   * `requires` enables checks to ensure the specified arguments, or
+   * argument-value pairs, are given conditioned on the existence of another
+   * argument. For example:
+   *
+   * ```jsonc
+   * {
+   *   "x": { "requires": "y" }, // ◄ Disallows x without y
+   *   "y": {}
+   * }
+   * ```
+   */
+  requires?: BfeBuilderObjectValueExtensionValue;
+  /**
+   * `conflicts` enables checks to ensure the specified arguments, or
+   * argument-value pairs, are _never_ given conditioned on the existence of
+   * another argument. For example:
+   *
+   * ```jsonc
+   * {
+   *   "x": { "conflicts": "y" }, // ◄ Disallows y if x is given
+   *   "y": {}
+   * }
+   * ```
+   */
+  conflicts?: BfeBuilderObjectValueExtensionValue;
+  /**
+   * `demandThisOptionIf` enables checks to ensure an argument is given when at
+   * least one of the specified groups of arguments, or argument-value pairs, is
+   * also given. For example:
+   *
+   * ```jsonc
+   * {
+   *   "x": {},
+   *   "y": { "demandThisOptionIf": "x" }, // ◄ Demands y if x is given
+   *   "z": { "demandThisOptionIf": "x" } // ◄ Demands z if x is given
+   * }
+   * ```
+   */
+  demandThisOptionIf?: BfeBuilderObjectValueExtensionValue;
+  /**
+   * `demandThisOption` enables checks to ensure an argument is always given.
+   * This is equivalent to `demandOption` from vanilla yargs. For example:
+   *
+   * ```jsonc
+   * {
+   *   "x": { "demandThisOption": true }, // ◄ Disallows ∅, y
+   *   "y": { "demandThisOption": false }
+   * }
+   * ```
+   */
+  demandThisOption?: BfGenericBuilderObjectValue['demandOption'];
+  /**
+   * `demandThisOptionOr` enables non-optional inclusive disjunction checks per
+   * group. Put another way, `demandThisOptionOr` enforces a "logical or"
+   * relation within groups of required options. For example:
+   *
+   * ```jsonc
+   * {
+   *   "x": { "demandThisOptionOr": ["y", "z"] }, // ◄ Demands x or y or z
+   *   "y": { "demandThisOptionOr": ["x", "z"] },
+   *   "z": { "demandThisOptionOr": ["x", "y"] }
+   * }
+   * ```
+   */
+  demandThisOptionOr?: BfeBuilderObjectValueExtensionValue;
+  /**
+   * `demandThisOptionXor` enables non-optional exclusive disjunction checks per
+   * exclusivity group. Put another way, `demandThisOptionXor` enforces mutual
+   * exclusivity within groups of required options. For example:
+   *
+   * ```jsonc
+   * {
+   *   // ▼ Disallows ∅, z, w, xy, xyw, xyz, xyzw
+   *   "x": { "demandThisOptionXor": ["y"] },
+   *   "y": { "demandThisOptionXor": ["x"] },
+   *   // ▼ Disallows ∅, x, y, zw, xzw, yzw, xyzw
+   *   "z": { "demandThisOptionXor": ["w"] },
+   *   "w": { "demandThisOptionXor": ["z"] }
+   * }
+   * ```
+   */
+  demandThisOptionXor?: BfeBuilderObjectValueExtensionValue;
+  /**
+   * `implies` will set a default value for the specified arguments conditioned
+   * on the existence of another argument. If any of the specified arguments are
+   * explicitly given, their values must match the specified argument-value
+   * pairs respectively (which is the behavior of `requires`). For this reason,
+   * `implies` only accepts one or more argument-value pairs and not raw
+   * strings. For example:
+   *
+   * ```jsonc
+   * {
+   *   "x": { "implies": { "y": true } }, // ◄ x is now synonymous with xy
+   *   "y": {}
+   * }
+   * ```
+   *
+   * For describing more complex implications, see `subOptionOf`.
+   */
+  implies?:
+    | Exclude<BfeBuilderObjectValueExtensionValue, string | Array<unknown>>
+    | Exclude<BfeBuilderObjectValueExtensionValue, string | Array<unknown>>[];
+  /**
+   * `check` is the declarative option-specific version of vanilla yargs's
+   * `yargs::check()`.
+   *
+   * This function receives the `currentArgumentValue`, which you are free to
+   * type as you please, and the fully parsed `argv`. If this function throws,
+   * the exception will bubble. If this function returns an instance of `Error`,
+   * a string, or any non-truthy value (including `undefined` or not returning
+   * anything), Black Flag will throw a `CliError` on your behalf.
+   *
+   * See [the
+   * documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#check)
+   * for details.
+   */
+  check?: (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    currentArgumentValue: any,
+    argv: Arguments<CustomCliArguments, CustomExecutionContext>
+  ) => unknown;
+  /**
+   * `subOptionOf` is declarative sugar around Black Flag's support for double
+   * argument parsing, allowing you to describe the relationship between options
+   * and the suboptions whose configurations they determine.
+   *
+   * See [the
+   * documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#suboptionof)
+   * for details.
+   *
+   * For describing simpler implicative relations, see `implies`.
+   */
+  subOptionOf?: Record<
+    string,
+    BfeSubOptionOfExtensionValue<CustomCliArguments, CustomExecutionContext>[]
+  >;
+  /**
+   * `default` will set a default value for an argument. This is equivalent to
+   * `default` from vanilla yargs.
+   *
+   * However, unlike vanilla yargs and Black Flag, this default value is applied
+   * towards the end of BFE's execution, enabling its use alongside keys like
+   * `conflicts`. See [the
+   * documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#support-for-default-with-conflictsrequiresetc)
+   * for details.
+   */
+  default?: unknown;
+};
+
+/**
+ * The string/object/array type of a {@link BfeBuilderObjectValueExtensions}.
+ *
+ * This type is a superset of {@link BfeBuilderObjectValueExtensionObject}.
+ */
+export type BfeBuilderObjectValueExtensionValue =
   | string
-  | Record<string, string | number | boolean>
-  | (string | Record<string, string | number | boolean>)[];
+  | BfeBuilderObjectValueExtensionObject
+  | (string | BfeBuilderObjectValueExtensionObject)[];
 
 /**
- * @see {@link ExtendedBuilderObject}
+ * The object type of a {@link BfeBuilderObjectValueExtensions}.
+ *
+ * This type is a subset of {@link BfeBuilderObjectValueExtensionValue}.
  */
-export type ExtendedBuilderObjectValueWithoutSubOptionOf<
-  CustomCliArguments extends Record<string, unknown>
-> = Omit<ExtendedBuilderObject<CustomCliArguments>[string], 'subOptionOf'>;
+export type BfeBuilderObjectValueExtensionObject = Record<string, unknown>;
 
 /**
- * @see {@link ExtendedBuilderObject['subOptionOf']}
+ * An object containing a subset of only those properties recognized by
+ * Black Flag (and, consequentially, vanilla yargs). Also excludes
+ * properties that conflict with {@link BfeBuilderObjectValueExtensions} and/or
+ * are deprecated by vanilla yargs.
+ *
+ * This type + {@link BfeBuilderObjectValueExtensions} =
+ * {@link BfeBuilderObjectValue}.
+ *
+ * This type is a subset of {@link BfBuilderObjectValue}.
  */
-export type SubOptionConfigurationValue<
-  CustomCliArguments extends Record<string, unknown>
+export type BfeBuilderObjectValueWithoutExtensions = Omit<
+  BfGenericBuilderObjectValue,
+  'conflicts' | 'implies' | 'demandOption' | 'demand' | 'require' | 'required' | 'default'
+>;
+
+/**
+ * A {@link BfeBuilderObjectValue} instance with the `subOptionOf` BFE key
+ * omitted.
+ */
+export type BfeBuilderObjectValueWithoutSubOptionOfExtension<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+> = Omit<
+  BfeBuilderObjectValue<CustomCliArguments, CustomExecutionContext>,
+  'subOptionOf'
+>;
+
+/**
+ * The array element type of
+ * {@link BfeBuilderObjectValueExtensions.subOptionOf}.
+ */
+export type BfeSubOptionOfExtensionValue<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
 > = {
   /**
    * This function receives the `superOptionValue` of the "super option" (i.e.
@@ -35,8 +332,11 @@ export type SubOptionConfigurationValue<
    * type as you please, and the fully parsed `argv`. This function must return
    * a boolean indicating whether the `update` function should run or not.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  when: (superOptionValue: any, argv: CustomCliArguments) => boolean;
+  when: (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    superOptionValue: any,
+    argv: Arguments<CustomCliArguments, CustomExecutionContext>
+  ) => boolean;
   /**
    * This function receives the current configuration for this option
    * (`oldOptionConfig`) and the fully parsed `argv`, and must return the new
@@ -53,183 +353,44 @@ export type SubOptionConfigurationValue<
    * ```
    */
   update: (
-    oldOptionConfig: ExtendedBuilderObjectValueWithoutSubOptionOf<CustomCliArguments>,
-    argv: CustomCliArguments
-  ) => ExtendedBuilderObjectValueWithoutSubOptionOf<CustomCliArguments>;
+    oldOptionConfig: BfeBuilderObjectValueWithoutSubOptionOfExtension<
+      CustomCliArguments,
+      CustomExecutionContext
+    >,
+    argv: Arguments<CustomCliArguments, CustomExecutionContext>
+  ) => BfeBuilderObjectValueWithoutSubOptionOfExtension<
+    CustomCliArguments,
+    CustomExecutionContext
+  >;
 };
 
 /**
- * The object value type of the `builder` export accepted by Black Flag.
+ * This function implements several additional optionals-related units of
+ * functionality. This function is meant to take the place of a command's
+ * `builder` export.
+ *
+ * This type cannot be instantiated by direct means. Instead, it is created and
+ * returned by {@link withBuilderExtensions}.
+ *
+ * @see {@link withBuilderExtensions}
  */
-export type BuilderObject<
+export type BfeBuilderFunction<
   CustomCliArguments extends Record<string, unknown>,
   CustomExecutionContext extends ExecutionContext
-> = Exclude<
-  Configuration<CustomCliArguments, CustomExecutionContext>['builder'],
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  Function
->;
+> = (
+  ...args: Parameters<BfBuilderFunction<CustomCliArguments, CustomExecutionContext>>
+) => BfBuilderObject<CustomCliArguments, CustomExecutionContext>;
 
 /**
- * The function value type of the `builder` export accepted by Black Flag.
+ * A version of Black Flag's `builder` function parameters that exclude yargs
+ * methods that are not supported by BFE.
+ *
+ * @see {@link withBuilderExtensions}
  */
-export type BuilderFunction<
-  CustomCliArguments extends Record<string, unknown>,
-  CustomExecutionContext extends ExecutionContext
-> = Extract<
-  Configuration<CustomCliArguments, CustomExecutionContext>['builder'],
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  Function
->;
-
-/**
- * A version of the object value type of the `builder` export accepted by Black
- * Flag that supports \@black-flag/extensions's additional functionality.
- */
-export type ExtendedBuilderObject<CustomCliArguments extends Record<string, unknown>> = {
-  [key: string]: Omit<Options, 'conflicts' | 'implies' | 'demandOption'> & {
-    /**
-     * `requires` enables checks to ensure the specified arguments, or
-     * argument-value pairs, are given conditioned on the existence of another
-     * argument. For example:
-     *
-     * ```jsonc
-     * {
-     *   "x": { "requires": "y" }, // ◄ Disallows x without y
-     *   "y": {}
-     * }
-     * ```
-     */
-    requires?: ExtendedOption;
-    /**
-     * `conflicts` enables checks to ensure the specified arguments, or
-     * argument-value pairs, are _never_ given conditioned on the existence of
-     * another argument. For example:
-     *
-     * ```jsonc
-     * {
-     *   "x": { "conflicts": "y" }, // ◄ Disallows y if x is given
-     *   "y": {}
-     * }
-     * ```
-     */
-    conflicts?: ExtendedOption;
-    /**
-     * `demandThisOptionIf` enables checks to ensure an argument is given when
-     * at least one of the specified groups of arguments, or argument-value
-     * pairs, is also given. For example:
-     *
-     * ```jsonc
-     * {
-     *   "x": {},
-     *   "y": { "demandThisOptionIf": "x" }, // ◄ Demands y if x is given
-     *   "z": { "demandThisOptionIf": "x" } // ◄ Demands z if x is given
-     * }
-     * ```
-     */
-    demandThisOptionIf?: ExtendedOption;
-    /**
-     * `demandThisOption` enables checks to ensure an argument is always given.
-     * This is equivalent to `demandOption` from vanilla yargs. For example:
-     *
-     * ```jsonc
-     * {
-     *   "x": { "demandThisOption": true }, // ◄ Disallows ∅, y
-     *   "y": { "demandThisOption": false }
-     * }
-     * ```
-     */
-    demandThisOption?: Options['demandOption'];
-    /**
-     * `demandThisOptionOr` enables non-optional inclusive disjunction checks
-     * per group. Put another way, `demandThisOptionOr` enforces a "logical or"
-     * relation within groups of required options. For example:
-     *
-     * ```jsonc
-     * {
-     *   "x": { "demandThisOptionOr": ["y", "z"] }, // ◄ Demands x or y or z
-     *   "y": { "demandThisOptionOr": ["x", "z"] },
-     *   "z": { "demandThisOptionOr": ["x", "y"] }
-     * }
-     * ```
-     */
-    demandThisOptionOr?: ExtendedOption;
-    /**
-     * `demandThisOptionXor` enables non-optional exclusive disjunction checks
-     * per exclusivity group. Put another way, `demandThisOptionXor` enforces
-     * mutual exclusivity within groups of required options. For example:
-     *
-     * ```jsonc
-     * {
-     *   // ▼ Disallows ∅, z, w, xy, xyw, xyz, xyzw
-     *   "x": { "demandThisOptionXor": ["y"] },
-     *   "y": { "demandThisOptionXor": ["x"] },
-     *   // ▼ Disallows ∅, x, y, zw, xzw, yzw, xyzw
-     *   "z": { "demandThisOptionXor": ["w"] },
-     *   "w": { "demandThisOptionXor": ["z"] }
-     * }
-     * ```
-     */
-    demandThisOptionXor?: ExtendedOption;
-    /**
-     * `implies` will set a default value for the specified arguments
-     * conditioned on the existence of another argument. If any of the specified
-     * arguments are explicitly given, their values must match the specified
-     * argument-value pairs respectively (which is the behavior of `requires`).
-     * For this reason, `implies` only accepts one or more argument-value pairs
-     * and not raw strings. For example:
-     *
-     * ```jsonc
-     * {
-     *   "x": { "implies": { "y": true } }, // ◄ x is now synonymous with xy
-     *   "y": {}
-     * }
-     * ```
-     *
-     * For describing more complex implications, see `subOptionOf`.
-     */
-    implies?:
-      | Record<string, string | number | boolean>
-      | Record<string, string | number | boolean>[];
-    /**
-     * `check` is the declarative option-specific version of vanilla yargs's
-     * `yargs::check()`.
-     *
-     * This function receives the `currentArgumentValue`, which you are free to
-     * type as you please, and the fully parsed `argv`. If this function throws,
-     * the exception will bubble. If this function returns an instance of
-     * `Error`, a string, or any non-truthy value (including `undefined` or not
-     * returning anything), Black Flag will throw a `CliError` on your behalf.
-     *
-     * See [the
-     * documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#check)
-     * for details.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    check?: (currentArgumentValue: any, argv: CustomCliArguments) => unknown;
-    /**
-     * `subOptionOf` is declarative sugar around Black Flag's support for double
-     * argument parsing, allowing you to describe the relationship between
-     * options and the suboptions whose configurations they determine.
-     *
-     * See [the
-     * documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#suboptionof)
-     * for details.
-     *
-     * For describing simpler implicative relations, see `implies`.
-     */
-    subOptionOf?: Record<string, SubOptionConfigurationValue<CustomCliArguments>>;
-  };
-};
-
-/**
- * A version of Black Flag's builder function parameters that excludes yargs
- * methods that are not supported by \@black-flag/extensions.
- */
-export type LimitedBuilderFunctionParameters<
+export type BfeCustomBuilderFunctionParameters<
   CustomCliArguments extends Record<string, unknown>,
   CustomExecutionContext extends ExecutionContext,
-  P = Parameters<BuilderFunction<CustomCliArguments, CustomExecutionContext>>
+  P = Parameters<BfBuilderFunction<CustomCliArguments, CustomExecutionContext>>
 > = P extends [infer R, ...infer S]
   ? [R & { options: never; option: never }, ...S]
   : never;
@@ -239,7 +400,7 @@ export type LimitedBuilderFunctionParameters<
  * functionality. The return value of this function is meant to take the place
  * of a command's `handler` export.
  *
- * This function cannot be imported directly. Instead, it is created and
+ * This type cannot be instantiated by direct means. Instead, it is created and
  * returned by {@link withBuilderExtensions}.
  *
  * @see {@link withBuilderExtensions}
@@ -252,23 +413,6 @@ export type WithHandlerExtensions<
 ) => Configuration<CustomCliArguments, CustomExecutionContext>['handler'];
 
 /**
- * This function implements several additional optionals-related units of
- * functionality. This function is meant to take the place of a command's
- * `builder` export.
- *
- * This function cannot be imported directly. Instead, it is created and
- * returned by {@link withBuilderExtensions}.
- *
- * @see {@link withBuilderExtensions}
- */
-export type ExtendedBuilderFunction<
-  CustomCliArguments extends Record<string, unknown>,
-  CustomExecutionContext extends ExecutionContext
-> = (
-  ...args: Parameters<BuilderFunction<CustomCliArguments, CustomExecutionContext>>
-) => BuilderObject<CustomCliArguments, CustomExecutionContext>;
-
-/**
  * The array of extended exports and high-order functions returned by
  * {@link withBuilderExtensions}.
  */
@@ -276,15 +420,15 @@ export type WithBuilderExtensionsReturnType<
   CustomCliArguments extends Record<string, unknown>,
   CustomExecutionContext extends ExecutionContext
 > = [
-  builder: ExtendedBuilderFunction<CustomCliArguments, CustomExecutionContext>,
+  builder: BfeBuilderFunction<CustomCliArguments, CustomExecutionContext>,
   withHandlerExtensions: WithHandlerExtensions<CustomCliArguments, CustomExecutionContext>
 ];
 
 /**
- * A settings object that further configures the behavior of
+ * A configuration object that further configures the behavior of
  * {@link withBuilderExtensions}.
  */
-export type WithBuilderExtensionsSettings<
+export type WithBuilderExtensionsConfig<
   CustomCliArguments extends Record<string, unknown>
 > = {
   /**
@@ -324,17 +468,17 @@ export function withBuilderExtensions<
   CustomExecutionContext extends ExecutionContext
 >(
   customBuilder?:
-    | ExtendedBuilderObject<CustomCliArguments>
+    | BfeBuilderObject<CustomCliArguments, CustomExecutionContext>
     | ((
-        ...args: LimitedBuilderFunctionParameters<
+        ...args: BfeCustomBuilderFunctionParameters<
           CustomCliArguments,
           CustomExecutionContext
         >
-      ) => ExtendedBuilderObject<CustomCliArguments> | void),
+      ) => BfeBuilderObject<CustomCliArguments, CustomExecutionContext> | void),
   {
     commonOptions = ['help'],
     disableAutomaticGrouping = false
-  }: WithBuilderExtensionsSettings<CustomCliArguments> = {}
+  }: WithBuilderExtensionsConfig<CustomCliArguments> = {}
 ): WithBuilderExtensionsReturnType<CustomCliArguments, CustomExecutionContext> {
   const debug_ = createDebugLogger({
     namespace: `${globalDebuggerNamespace}:withBuilderExtensions`
@@ -342,214 +486,167 @@ export function withBuilderExtensions<
 
   debug_('entered withBuilderExtensions function');
 
-  const optionMetadata = {
-    atLeastOneOfOptions: [] as string[][],
-    mutuallyConflictedOptions: [] as string[][]
-  };
+  let optionsMetadata: OptionsMetadata | undefined = undefined;
+
+  // * Dealing with defaulted keys is a little tricky since we need to pass them
+  // * to yargs for proper help text generation while also somehow getting yargs
+  // * to ignore them when constructing argv. The solution is to unset defaulted
+  // * arguments that are equal to their defaults at the start of the second
+  // * pass, and then do the same thing again at the start of the handler
+  // * extension's execution, and then manually inserting the defaults into argv
+  // * before doing implications/checks. We need to keep the BF instances around
+  // * to accomplish all of that.
+  let latestBfInstance: EffectorProgram | undefined = undefined;
 
   debug_('exited withBuilderExtensions function');
 
   return [
     function builder(blackFlag, helpOrVersionSet, argv) {
       const debug = debug_.extend('builder');
+      const isFirstPass = !argv;
+      const isSecondPass = !isFirstPass;
 
       debug('entered withBuilderExtensions::builder wrapper function');
-      debug('calling customBuilder (if a function) and returning builder object');
 
+      debug('isFirstPass: %O', isFirstPass);
+      debug('isSecondPass: %O', isSecondPass);
+      debug('current argv: %O', argv);
+
+      latestBfInstance = blackFlag as unknown as EffectorProgram;
+
+      // ? We delete defaulted arguments from argv so that the end developer's
+      // ? custom builder doesn't see them either
+      deleteDefaultedArguments({ argv });
+
+      debug('calling customBuilder (if a function) and returning builder object');
       // ? We make a semi-shallow clone of whatever options object we're passed
       // ? since there's a good chance we may be committing some light mutating
-      const result = Object.fromEntries(
-        Object.entries(
-          (typeof customBuilder === 'function'
-            ? customBuilder(
-                blackFlag as LimitedBuilderFunctionParameters<
-                  CustomCliArguments,
-                  CustomExecutionContext
-                >[0],
-                helpOrVersionSet,
-                argv
-              )
-            : customBuilder) || {}
-        ).map(([k, v]) => [k, { ...v }])
+      const builderObject = structuredClone(
+        (typeof customBuilder === 'function'
+          ? customBuilder(
+              blackFlag as BfeCustomBuilderFunctionParameters<
+                CustomCliArguments,
+                CustomExecutionContext
+              >[0],
+              helpOrVersionSet,
+              argv
+            )
+          : customBuilder) || {}
       );
 
-      debug('result: %O', result);
-      debug('current argv: %O', !!argv);
+      debug('builderObject: %O', builderObject);
 
-      // TODO: automatic grouping must happen on both first pass and second pass
-      // TODO: and there must be no caching/overlap between them (b/c of
-      // TODO: subOptionOf). Also, each pass should clear optionMetadata entirely
+      if (isSecondPass) {
+        // * Apply the subOptionOf key per option config and then elide it
+        Object.entries(builderObject).forEach(([subOption, subOptionConfig]) => {
+          const { subOptionOf } = subOptionConfig;
 
-      // TODO: on first pass: rename demandThisOption to demandOption, apply
-      // TODO: applicable configurations (except subOptionOf) and elide the
-      // TODO: others (to prevent yargs from seeing them), and then do
-      // TODO: first-pass-automatic-grouping. Skip optionMetadata collection for
-      // TODO: now
+          if (subOptionOf) {
+            debug('evaluating suboption configuration for %O', subOption);
 
-      // TODO: at beginning of second pass, apply subOptionOf & delete it (don't
-      // TODO: modify real config obj). Thus begins the 2nd half of second pass
-      // TODO: where subOptionOf configuration has been successfully applied
+            Object.entries(subOptionOf).forEach(([superOption, updaters]) => {
+              debug(
+                'saw entry for super-option %O (%O potential updates)',
+                superOption,
+                updaters.length
+              );
 
-      // TODO: apply subOptionOf by ignoring keys without corresponding args in
-      // TODO: argv. Then collect all update functions with matching whens, then
-      // TODO: apply those updates top to bottom. End result = new config
+              updaters.forEach(({ when, update }, index) => {
+                if (superOption in argv && when(argv[superOption], argv)) {
+                  subOptionConfig = update(subOptionConfig, argv);
+                  debug(
+                    'accepted configuration update #%O to suboption "%O": %O',
+                    index + 1,
+                    subOption,
+                    subOptionConfig
+                  );
+                } else {
+                  debug(
+                    'rejected configuration update #%O to suboption "%O": when() returned falsy',
+                    index + 1,
+                    subOption
+                  );
+                }
+              });
+            });
 
-      // TODO: on 2nd half, throw if subOptionOf is seen, otherwise do
-      // TODO: second-pass-automatic-grouping and optionMetadata collection.
-      // TODO: Also collect the defaulted arguments at this point and stash them
-      // TODO: away for later use in the handler
-
-      // TODO: redo all of this wrt the above notes
-      if (Object.keys(result).length) {
-        const requiredMutuallyExclusiveOptionsSet = new Map<Set<string>, string[]>();
-        const requiredAtLeastOneOptionsSet = new Map<Set<string>, string[]>();
-        const requiredOptions: string[] = [];
-        const optionalOptions: string[] = [];
-
-        for (const [option, optionConfig] of Object.entries(result)) {
-          const { demandOption, conflicts } = optionConfig;
-
-          // TODO: remove this limitation
-          if (demandOption && conflicts) {
-            // ? We do not allow both features to be used simultaneously
-            assert(
-              typeof demandOption === 'boolean',
-              ErrorMessage.AssertionFailureCannotUseDoubleFeature()
-            );
-            optionConfig.demandOption = false;
-
-            const rawKey = new Set<string>([
-              ...(Array.isArray(conflicts)
-                ? conflicts
-                : typeof conflicts === 'string'
-                  ? [conflicts]
-                  : Object.keys(conflicts)),
-              option
-            ]);
-
-            const key =
-              [...requiredMutuallyExclusiveOptionsSet.keys()].find((potentialKey) =>
-                areEqualSets(rawKey, potentialKey)
-              ) || rawKey;
-
-            requiredMutuallyExclusiveOptionsSet.set(key, [
-              ...(requiredMutuallyExclusiveOptionsSet.get(key) || []),
-              option
-            ]);
-          } else if (Array.isArray(demandOption)) {
-            // ! Ensures demandOption is given to yargs as a valid type
-            optionConfig.demandOption = false;
-
-            const rawKey = new Set<string>([...demandOption, option]);
-
-            const key =
-              [...requiredAtLeastOneOptionsSet.keys()].find((potentialKey) =>
-                areEqualSets(rawKey, potentialKey)
-              ) || rawKey;
-
-            requiredAtLeastOneOptionsSet.set(key, [
-              ...(requiredAtLeastOneOptionsSet.get(key) || []),
-              option
-            ]);
-          } else {
-            (demandOption ? requiredOptions : optionalOptions).push(option);
+            builderObject[subOption] = subOptionConfig;
+            debug('applied suboption configuration for %O', builderObject[subOption]);
           }
-        }
 
+          delete subOptionConfig.subOptionOf;
+        });
+      }
+
+      const optionLocalMetadata = analyzeBuilderObject({ builderObject });
+      debug('option local metadata: %O', optionsMetadata);
+
+      // * Automatic grouping happens on both first pass and second pass
+      if (!disableAutomaticGrouping) {
         debug(
-          'requiredMutuallyExclusiveOptionsGroups: %O',
-          requiredMutuallyExclusiveOptionsSet
+          `commencing automatic options grouping (${isFirstPass ? 'first' : 'second'} pass)`
         );
 
-        // TODO: add count to mutual exclusive groups same as or-groups
+        const { demanded, demandedAtLeastOne, demandedMutuallyExclusive, optional } =
+          optionLocalMetadata;
 
-        for (const [
-          _,
-          mutuallyConflictedOptions
-        ] of requiredMutuallyExclusiveOptionsSet) {
-          if (mutuallyConflictedOptions.length > 1) {
-            if (!!argv) {
-              optionMetadata.mutuallyConflictedOptions.push(mutuallyConflictedOptions);
-              debug('pushed to option metadata.mutuallyConflictedOptions');
-            }
-
-            // TODO: do not do if automatic grouping is disabled
-            blackFlag.group(
-              mutuallyConflictedOptions,
-              'Required Options (mutually exclusive):'
-            );
-
-            debug(
-              'added "Required (mutually exclusive)" grouping: %O',
-              mutuallyConflictedOptions
-            );
-          }
+        if (demanded.length) {
+          blackFlag.group(demanded, 'Required Options:');
+          debug('added "Required" grouping: %O', demanded);
         }
 
-        debug('requiredAtLeastOneOptionsGroups: %O', requiredAtLeastOneOptionsSet);
+        demandedAtLeastOne.forEach((group, index) => {
+          const count = index + 1;
+          const options = Object.keys(group);
 
-        let count = 0;
-
-        for (const [
-          atLeastOneOfDemandedSet,
-          atLeastOneOfOptions
-        ] of requiredAtLeastOneOptionsSet) {
-          const atLeastOneOfOptionsSet = new Set(atLeastOneOfOptions);
-          if (!areEqualSets(atLeastOneOfDemandedSet, atLeastOneOfOptionsSet)) {
-            debug.error(
-              'unequal sets (atLeastOneOfDemandedSet != atLeastOneOfOptionsSet): %O != %O',
-              atLeastOneOfDemandedSet,
-              atLeastOneOfOptionsSet
-            );
-
-            debug.error(atLeastOneOfDemandedSet);
-            debug.error(atLeastOneOfOptionsSet);
-            assert.fail(ErrorMessage.AssertionFailureUnequalDemandOptions());
-          }
-
-          if (!!argv) {
-            optionMetadata.atLeastOneOfOptions.push(atLeastOneOfOptions);
-            debug('pushed to option metadata.atLeastOneOfOptions');
-          }
-
-          // TODO: do not do if automatic grouping is disabled
           blackFlag.group(
-            atLeastOneOfOptions,
-            `Required Options ${requiredAtLeastOneOptionsSet.size > 1 ? `${++count} ` : ''}(at least one):`
+            options,
+            `Required Options ${demandedAtLeastOne.length > 1 ? `${count} ` : ''}(at least one):`
           );
-          debug(
-            `added "Required (at least one)" grouping #%O: %O`,
-            count,
-            atLeastOneOfOptions
+
+          debug(`added "Required (at least one)" grouping #%O: %O`, count, options);
+        });
+
+        demandedMutuallyExclusive.forEach((group, index) => {
+          const count = index + 1;
+          const options = Object.keys(group);
+
+          blackFlag.group(
+            options,
+            `Required Options ${demandedAtLeastOne.length > 1 ? `${count} ` : ''}(mutually exclusive):`
           );
+
+          debug(`added "Required (mutually exclusive)" grouping #%O: %O`, count, options);
+        });
+
+        if (optional.length) {
+          blackFlag.group(optional, 'Optional Options:');
+          debug('added "Optional" grouping: %O', optional);
         }
 
-        if (requiredOptions.length) {
-          // TODO: do not do if automatic grouping is disabled
-          blackFlag.group(requiredOptions, 'Required Options:');
-          debug('added "Required" grouping: %O', requiredOptions);
+        if (commonOptions.length) {
+          const commonOptions_ = commonOptions.map((o) => String(o));
+          blackFlag.group(commonOptions_, 'Common Options:');
+          debug('added "Common" grouping: %O', commonOptions_);
         }
-
-        if (optionalOptions.length) {
-          // TODO: do not do if automatic grouping is disabled
-          blackFlag.group(optionalOptions, 'Optional Options:');
-          debug('added "Optional" grouping: %O', optionalOptions);
-        }
-      }
-
-      debug('option metadata: %O', optionMetadata);
-
-      if (!disableAutomaticGrouping) {
-        const commonOptions_ = commonOptions.map((o) => String(o));
-        blackFlag.group(commonOptions_, 'Common Options:');
-        debug('added "Common" grouping: %O', commonOptions_);
       } else {
-        debug('skipped creating "Common" grouping');
+        debug(
+          `automatic options grouping disabled (at ${isFirstPass ? 'first' : 'second'} pass)`
+        );
       }
 
+      if (isSecondPass) {
+        optionsMetadata = optionLocalMetadata;
+        debug('stored option local metadata => option metadata');
+      }
+
+      debug('transmuting BFE builder to BF builder');
+      const finalBuilderObject = transmuteBFEBuilderToBFBuilder({ builderObject });
+
+      debug('final transmuted builderObject: %O', finalBuilderObject);
       debug('exited withBuilderExtensions::builder wrapper function');
 
-      return result as BuilderObject<CustomCliArguments, CustomExecutionContext>;
+      return finalBuilderObject;
     },
     function withHandlerExtensions(customHandler) {
       return async function handler(argv) {
@@ -558,37 +655,188 @@ export function withBuilderExtensions<
         });
 
         debug('entered withHandlerExtensions::handler wrapper function');
-        debug('option metadata: %O', optionMetadata);
+        debug('option metadata: %O', optionsMetadata);
 
-        // TODO: delete all the defaults from argv (modify the real argv object)
+        hardAssert(optionsMetadata, ErrorMessage.IllegalHandlerInvocation());
 
-        debug('current argv (defaults deleted): %O', !!argv);
+        debug('current argv: %O', argv);
+        deleteDefaultedArguments({ argv });
+        debug('current argv (defaults deleted): %O', argv);
 
-        // TODO: run requires checks
+        const argvKeys = new Set(
+          Object.keys(argv).filter((k) => {
+            return !['_', '$0', '--'].includes(k);
+          })
+        );
 
-        // TODO: run conflicts checks
+        // * Run requires checks
+        optionsMetadata.required.forEach(({ [$genesis]: requirer, ...requireds }) => {
+          hardAssert(
+            requirer !== undefined,
+            ErrorMessage.MetadataInvariantViolated('requires')
+          );
 
-        // TODO: run demandThisOptionIf checks
+          if (argvKeys.has(requirer)) {
+            const missingRequiredKeyValues: Entries<typeof requireds> = [];
 
-        // TODO: run demandThisOptionOr checks
-        optionMetadata.atLeastOneOfOptions
-          .map((constraint) => getOptionsFromArgv(constraint, argv))
-          .forEach((options) => ensureAtLeastOneOptionWasGiven(options));
+            Object.entries(requireds).forEach((required) => {
+              const [key, value] = required;
 
-        // TODO: run demandThisOptionXor checks
-        optionMetadata.mutuallyConflictedOptions
-          .map((constraint) => getOptionsFromArgv(constraint, argv))
-          .forEach((options) => ensureMutualExclusivityOfOptions(options));
+              // ? isEqual(argv[key], $exists) will always be false
+              if (!argvKeys.has(key) || !isEqual(argv[key], value)) {
+                missingRequiredKeyValues.push(required);
+              }
+            });
 
-        // TODO: run implies checks (similar to requires checks; no
-        // TODO: contradictions allowed)
+            softAssert(
+              !missingRequiredKeyValues.length,
+              ErrorMessage.RequiresViolation(requirer, missingRequiredKeyValues)
+            );
+          }
+        });
 
-        // TODO: merge argv with any deleted defaults, merge argv with implies
-        // TODO: objects
+        // * Run conflicts checks
+        optionsMetadata.conflicted.forEach(
+          ({ [$genesis]: conflicter, ...conflicteds }) => {
+            hardAssert(
+              conflicter !== undefined,
+              ErrorMessage.MetadataInvariantViolated('conflicts')
+            );
 
-        debug('final argv (defaults and implies merged): %O', !!argv);
+            if (argvKeys.has(conflicter)) {
+              const seenConflictingKeyValues: Entries<typeof conflicteds> = [];
 
-        // TODO: run custom checks on final argv and handle return types/errors
+              Object.entries(conflicteds).forEach((keyValue) => {
+                const [key, value] = keyValue;
+
+                if (
+                  argvKeys.has(key) &&
+                  (value === $exists || isEqual(argv[key], value))
+                ) {
+                  seenConflictingKeyValues.push(keyValue);
+                }
+              });
+
+              softAssert(
+                !seenConflictingKeyValues.length,
+                ErrorMessage.ConflictsViolation(conflicter, seenConflictingKeyValues)
+              );
+            }
+          }
+        );
+
+        // * Run demandThisOptionIf checks
+        optionsMetadata.demandedIf.forEach(({ [$genesis]: demanded, ...demanders }) => {
+          hardAssert(
+            demanded !== undefined,
+            ErrorMessage.MetadataInvariantViolated('demandThisOptionIf')
+          );
+
+          const sawDemanded = argvKeys.has(demanded);
+
+          Object.entries(demanders).forEach((demander, index, demandersEntries) => {
+            const [key, value] = demander;
+            const sawADemander =
+              argvKeys.has(key) && (value === $exists || isEqual(argv[key], value));
+
+            softAssert(
+              !sawADemander || sawDemanded,
+              ErrorMessage.DemandIfViolation(
+                demanded,
+                // ? Ensure the failing demander is listed as the first arg
+                [demander, ...demandersEntries.toSpliced(index, 1)]
+              )
+            );
+          });
+        });
+
+        // * Run demandThisOptionOr checks
+        optionsMetadata.demandedAtLeastOne.forEach((group) => {
+          const groupEntries = Object.entries(group);
+          const sawAtLeastOne = groupEntries.some((keyValue) => {
+            const [key, value] = keyValue;
+            return argvKeys.has(key) && (value === $exists || isEqual(argv[key], value));
+          });
+
+          softAssert(sawAtLeastOne, ErrorMessage.DemandOrViolation(groupEntries));
+        });
+
+        // * Run demandThisOptionXor checks
+        optionsMetadata.demandedMutuallyExclusive.forEach((group) => {
+          const groupEntries = Object.entries(group);
+          let sawAtLeastOne: KeyValueEntry | undefined = undefined;
+
+          groupEntries.forEach((keyValue) => {
+            const [key, value] = keyValue;
+
+            if (argvKeys.has(key) && (value === $exists || isEqual(argv[key], value))) {
+              softAssert(
+                sawAtLeastOne === undefined,
+                ErrorMessage.DemandSpecificXorViolation(sawAtLeastOne!, keyValue)
+              );
+
+              sawAtLeastOne = keyValue;
+            }
+          });
+
+          softAssert(
+            sawAtLeastOne !== undefined,
+            ErrorMessage.DemandGenericXorViolation(groupEntries)
+          );
+        });
+
+        // ? Take advantage of our loop through optionsMetadata.implied to
+        // ? keep track of this information for later
+        const impliedKeyValues: Record<string, unknown> = {};
+
+        // * Run implies checks
+        optionsMetadata.implied.forEach(({ [$genesis]: implier, ...implications }) => {
+          hardAssert(
+            implier !== undefined,
+            ErrorMessage.MetadataInvariantViolated('implies')
+          );
+
+          if (argvKeys.has(implier)) {
+            impliedKeyValues[implier] = implications;
+
+            const seenConflictingKeyValues: Entries<typeof implications> = [];
+
+            Object.entries(implications).forEach((keyValue) => {
+              const [key, value] = keyValue;
+
+              if (argvKeys.has(key) && !isEqual(argv[key], value)) {
+                seenConflictingKeyValues.push(keyValue);
+              }
+            });
+
+            softAssert(
+              !seenConflictingKeyValues.length,
+              ErrorMessage.ImpliesViolation(implier, seenConflictingKeyValues)
+            );
+          }
+        });
+
+        // * Merge argv with any deleted defaults
+        Object.assign(argv, optionsMetadata.defaults);
+
+        // * Merge argv with implied values (overriding any defaults)
+        Object.assign(argv, impliedKeyValues);
+
+        debug('final argv (defaults and implies merged): %O', argv);
+
+        // * Run custom checks on final argv
+        Object.entries(optionsMetadata.checks).forEach(([currentArgument, checkFn]) => {
+          const result = checkFn(argv[currentArgument], argv);
+
+          if (!result || typeof result === 'string' || isNativeError(result)) {
+            throw isCliError(result)
+              ? result
+              : new CliError(
+                  (result as string | Error | false) ||
+                    ErrorMessage.CheckFailed(currentArgument)
+                );
+          }
+        });
 
         await customHandler(argv);
 
@@ -596,6 +844,34 @@ export function withBuilderExtensions<
       };
     }
   ];
+
+  function deleteDefaultedArguments({
+    argv
+  }: {
+    argv: Arguments<CustomCliArguments, CustomExecutionContext> | undefined;
+  }): void {
+    if (!latestBfInstance || !argv || !optionsMetadata) {
+      debug_('deleteDefaultedArguments sentinel failed, execution skipped');
+      return;
+    }
+
+    const defaultedOptions = (
+      latestBfInstance as unknown as { parsed?: { defaulted?: Record<string, true> } }
+    ).parsed?.defaulted;
+
+    hardAssert(defaultedOptions, ErrorMessage.UnexpectedlyFalsyDetailedArguments());
+
+    Object.keys(defaultedOptions).forEach((defaultedOption) => {
+      const expectedDefaultValue = optionsMetadata?.defaults?.[defaultedOption];
+
+      if (
+        defaultedOption in argv &&
+        isEqual(argv[defaultedOption], expectedDefaultValue)
+      ) {
+        delete argv[defaultedOption];
+      }
+    });
+  }
 }
 
 /**
@@ -609,44 +885,252 @@ export function withUsageExtensions(altDescription = '$1.') {
   return `Usage: $000\n\n${altDescription}`.trim();
 }
 
-// Returns `true` iff `setA` and `setB` are equal-enough sets.
-function areEqualSets(setA: Set<unknown>, setB: Set<unknown>) {
-  return setA.size === setB.size && [...setA].every((item) => setB.has(item));
+/**
+ * Throw a {@link CliError} with the given string message, which
+ * causes Black Flag to exit with the {@link FrameworkExitCode.DefaultError}
+ * status code.
+ *
+ * Use this function to assert end user error.
+ */
+function softAssert(value: unknown, message: string): asserts value {
+  assert(
+    value,
+    new CliError(message, {
+      showHelp: true,
+      suggestedExitCode: FrameworkExitCode.DefaultError
+    })
+  );
 }
 
-function getOptionsFromArgv(
-  targetOptionsNames: string[],
-  optionsGiven: Record<string, unknown>
-): Record<string, unknown> {
-  return Object.fromEntries([
-    ...targetOptionsNames.map((name) => [name, undefined]),
-    ...Object.entries(optionsGiven).filter(([name]) => targetOptionsNames.includes(name))
-  ]);
+/**
+ * Throw a so-called "FrameworkError" with the given string message, which
+ * causes Black Flag to exit with the {@link FrameworkExitCode.AssertionFailed}
+ * status code.
+ *
+ * Use this function to assert developer errors that end users can do nothing
+ * about.
+ */
+function hardAssert(value: unknown, message: string): asserts value {
+  assert(
+    value,
+    new CliError(ErrorMessage.FrameworkError(message), {
+      showHelp: true,
+      suggestedExitCode: FrameworkExitCode.AssertionFailed
+    })
+  );
 }
 
-function ensureMutualExclusivityOfOptions(optionsEntries: Record<string, unknown>) {
-  let sawOne = false;
-  Object.values(optionsEntries).every((value) => {
-    if (sawOne) {
-      throw new CliError(
-        ErrorMessage.DidNotProvideExactlyOneOfSeveralOptions(optionsEntries),
-        { showHelp: true }
-      );
+function transmuteBFEBuilderToBFBuilder<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+>({
+  builderObject
+}: {
+  builderObject: BfeBuilderObject<CustomCliArguments, CustomExecutionContext>;
+}): BfBuilderObject<CustomCliArguments, CustomExecutionContext> {
+  const vanillaYargsBuilderObject: BfBuilderObject<
+    CustomCliArguments,
+    CustomExecutionContext
+  > = {};
+
+  for (const [option, builderObjectValue] of Object.entries(builderObject)) {
+    const [{ demandThisOption }, vanillaYargsBuilderObjectValue] =
+      separateExtensionsFromBuilderObjectValue({ builderObjectValue });
+
+    if (demandThisOption !== undefined) {
+      (vanillaYargsBuilderObjectValue as BfGenericBuilderObjectValue).demandOption =
+        demandThisOption;
     }
 
-    sawOne = value !== undefined;
-  });
+    vanillaYargsBuilderObject[option] = vanillaYargsBuilderObjectValue;
+  }
+
+  return vanillaYargsBuilderObject;
 }
 
-function ensureAtLeastOneOptionWasGiven(optionsEntries: Record<string, unknown>) {
-  const sawAtLeastOne = Object.values(optionsEntries).some(
-    (value) => value !== undefined
-  );
+function analyzeBuilderObject<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+>({
+  builderObject
+}: {
+  builderObject: BfeBuilderObject<CustomCliArguments, CustomExecutionContext>;
+}) {
+  const metadata: OptionsMetadata = {
+    required: [],
+    conflicted: [],
+    implied: [],
+    demandedIf: [],
+    demanded: [],
+    demandedAtLeastOne: [],
+    demandedMutuallyExclusive: [],
+    optional: [],
+    defaults: {},
+    checks: {}
+  };
 
-  if (!sawAtLeastOne) {
-    throw new CliError(
-      ErrorMessage.DidNotProvideAtLeastOneOfSeveralOptions(optionsEntries),
-      { showHelp: true }
+  for (const [option, builderObjectValue] of Object.entries(builderObject)) {
+    const [
+      {
+        requires,
+        conflicts,
+        check,
+        // ? eslint does not like "default" as a variable name for some reason
+        default: default_,
+        implies,
+        demandThisOptionIf,
+        demandThisOption,
+        demandThisOptionOr,
+        demandThisOptionXor
+      }
+    ] = separateExtensionsFromBuilderObjectValue({ builderObjectValue });
+
+    if (requires !== undefined) {
+      const normalizedOption = flattenExtensionValue(requires);
+      addToSet(metadata.required, { ...normalizedOption, [$genesis]: option });
+    }
+
+    if (conflicts !== undefined) {
+      const normalizedOption = flattenExtensionValue(conflicts);
+      addToSet(metadata.conflicted, { ...normalizedOption, [$genesis]: option });
+    }
+
+    if (check !== undefined) {
+      // ? Assert bivariance
+      metadata.checks[option] = check as (typeof metadata.checks)[string];
+    }
+
+    if (default_ !== undefined) {
+      metadata.defaults[option] = default_;
+    }
+
+    if (implies !== undefined) {
+      const normalizedOption = flattenExtensionValue(implies);
+      addToSet(metadata.implied, { ...normalizedOption, [$genesis]: option });
+    }
+
+    const isDemanded = !!(
+      demandThisOption ||
+      demandThisOptionIf ||
+      demandThisOptionOr ||
+      demandThisOptionXor
     );
+
+    if (demandThisOption !== undefined) {
+      metadata.demanded.push(option);
+    }
+
+    if (demandThisOptionIf !== undefined) {
+      const normalizedOption = flattenExtensionValue(demandThisOptionIf);
+      addToSet(metadata.demandedIf, { ...normalizedOption, [$genesis]: option });
+    }
+
+    if (demandThisOptionOr !== undefined) {
+      const normalizedOption = flattenExtensionValue(demandThisOptionOr);
+      addToSet(metadata.demandedAtLeastOne, { ...normalizedOption, [option]: $exists });
+    }
+
+    if (demandThisOptionXor !== undefined) {
+      const normalizedOption = flattenExtensionValue(demandThisOptionXor);
+      addToSet(metadata.demandedMutuallyExclusive, {
+        ...normalizedOption,
+        [option]: $exists
+      });
+    }
+
+    if (!isDemanded) {
+      metadata.optional.push(option);
+    }
+  }
+
+  return metadata;
+}
+
+/**
+ * This function returns an array where the first element is a
+ * {@link BfeBuilderObjectValueExtensions} instance with all properties defined
+ * and the second element is a {@link BfeBuilderObjectValueWithoutExtensions}
+ * instance.
+ */
+function separateExtensionsFromBuilderObjectValue<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+>({
+  builderObjectValue: builderObjectValue
+}: {
+  builderObjectValue: BfeBuilderObject<
+    CustomCliArguments,
+    CustomExecutionContext
+  >[string];
+}): [
+  {
+    // ? Ensure bfeConfig always has all of BFE's properties
+    [Key in StringKeyOf<
+      BfeBuilderObjectValueExtensions<CustomCliArguments, CustomExecutionContext>
+    >]:
+      | BfeBuilderObjectValueExtensions<CustomCliArguments, CustomExecutionContext>[Key]
+      | undefined;
+  },
+  BfeBuilderObjectValueWithoutExtensions
+] {
+  const {
+    check,
+    conflicts,
+    // ? eslint does not like "default" as a variable name for some reason
+    default: default_,
+    demandThisOption,
+    demandThisOptionIf,
+    demandThisOptionOr,
+    demandThisOptionXor,
+    implies,
+    requires,
+    subOptionOf,
+    ...vanillaYargsConfig
+  } = builderObjectValue;
+
+  const bfeConfig = {
+    check,
+    conflicts,
+    demandThisOption,
+    demandThisOptionIf,
+    demandThisOptionOr,
+    demandThisOptionXor,
+    implies,
+    requires,
+    subOptionOf
+  };
+
+  return [{ ...bfeConfig, default: default_ }, vanillaYargsConfig];
+}
+
+function flattenExtensionValue(
+  extendedOption: BfeBuilderObjectValueExtensionValue
+): FlattenedExtensionValue {
+  const mergedConfig: FlattenedExtensionValue = {};
+
+  if (Array.isArray(extendedOption)) {
+    extendedOption.forEach((option) => mergeInto(option));
+  } else {
+    mergeInto(extendedOption);
+  }
+
+  return mergedConfig;
+
+  function mergeInto(
+    option: Exclude<BfeBuilderObjectValueExtensionValue, Array<unknown>>
+  ) {
+    if (typeof option === 'string') {
+      mergedConfig[option] = $exists;
+    } else {
+      Object.assign(mergedConfig, option);
+    }
+  }
+}
+
+function addToSet(arrayAsSet: unknown[], element: unknown) {
+  const hasElement = arrayAsSet.find((item) => isEqual(item, element));
+
+  if (!hasElement) {
+    arrayAsSet.push(element);
   }
 }

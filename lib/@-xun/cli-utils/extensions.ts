@@ -3,8 +3,8 @@ import { type ExecutionContext } from '@black-flag/core/util';
 
 import {
   withBuilderExtensions,
-  type ExtendedBuilderObject,
-  type LimitedBuilderFunctionParameters,
+  type BfeBuilderObject,
+  type BfeCustomBuilderFunctionParameters,
   type WithBuilderExtensionsReturnType
 } from 'multiverse/@black-flag/extensions/index';
 
@@ -88,7 +88,7 @@ export type StandardCommonCliArguments = {
 };
 
 /**
- * This {@link ExtendedBuilderObject} instance describes the CLI arguments
+ * This {@link BfeBuilderObject} instance describes the CLI arguments
  * available in the `argv` object of any command that uses
  * {@link withStandardBuilder} to construct its `builder`.
  *
@@ -117,7 +117,7 @@ export const standardCommonCliArguments = {
     implies: { quiet: true, hush: true },
     description: 'No output will be generated (implies --quiet)'
   }
-} as const satisfies ExtendedBuilderObject<Record<string, unknown>>;
+} as const satisfies BfeBuilderObject<Record<string, unknown>>;
 
 /**
  * This is an array of the keys in {@link standardCommonCliArguments}, each of
@@ -186,7 +186,7 @@ export function withStandardBuilder<
       const customCliArguments =
         (typeof customBuilder === 'function'
           ? customBuilder(
-              blackFlag as LimitedBuilderFunctionParameters<
+              blackFlag as BfeCustomBuilderFunctionParameters<
                 CustomCliArguments,
                 CustomExecutionContext
               >[0],
