@@ -1,6 +1,6 @@
 /* eslint-disable jest/prefer-lowercase-title */
 describe('::withBuilderExtensions', () => {
-  describe('BFE "requires" configuration', () => {
+  describe('"requires" configuration', () => {
     it('[readme #1] ensures all args given conditioned on existence of other arg', () => {
       expect.hasAssertions();
     });
@@ -10,7 +10,7 @@ describe('::withBuilderExtensions', () => {
     });
   });
 
-  describe('BFE "conflicts" configuration', () => {
+  describe('"conflicts" configuration', () => {
     it('[readme #1] ensures all args not given conditioned on existence of other arg', () => {
       expect.hasAssertions();
     });
@@ -20,7 +20,7 @@ describe('::withBuilderExtensions', () => {
     });
   });
 
-  describe('BFE "implies" configuration', () => {
+  describe('"implies" configuration', () => {
     it('[readme #1] updates argv conditioned on existence of some arg (other args not given)', () => {
       expect.hasAssertions();
     });
@@ -38,7 +38,7 @@ describe('::withBuilderExtensions', () => {
     });
   });
 
-  describe('BFE "demandThisOptionIf" configuration', () => {
+  describe('"demandThisOptionIf" configuration', () => {
     it('[readme #1] ensures arg is given conditioned on existence of one or more args', () => {
       expect.hasAssertions();
     });
@@ -48,13 +48,13 @@ describe('::withBuilderExtensions', () => {
     });
   });
 
-  describe('BFE "demandThisOption" configuration', () => {
+  describe('"demandThisOption" configuration', () => {
     it('[readme #1] ensures arg is given', () => {
       expect.hasAssertions();
     });
   });
 
-  describe('BFE "demandThisOptionOr" configuration', () => {
+  describe('"demandThisOptionOr" configuration', () => {
     it('[readme #1] ensures at least one of the provided args is given', () => {
       expect.hasAssertions();
     });
@@ -64,7 +64,7 @@ describe('::withBuilderExtensions', () => {
     });
   });
 
-  describe('BFE "demandThisOptionXor" configuration', () => {
+  describe('"demandThisOptionXor" configuration', () => {
     it('[readme #1] ensures exactly one of the provided args is given', () => {
       expect.hasAssertions();
     });
@@ -74,7 +74,7 @@ describe('::withBuilderExtensions', () => {
     });
   });
 
-  describe('BFE "check" configuration', () => {
+  describe('"check" configuration', () => {
     it('allows typing the check function as desired', () => {
       expect.hasAssertions();
     });
@@ -112,7 +112,7 @@ describe('::withBuilderExtensions', () => {
     });
   });
 
-  describe('BFE "subOptionOf" configuration', () => {
+  describe('"subOptionOf" configuration', () => {
     it('supports both invocation signatures for updater objects (array and object forms)', () => {
       expect.hasAssertions();
     });
@@ -147,23 +147,23 @@ describe('::withBuilderExtensions', () => {
     // TODO: not alias, not camelCase
   });
 
-  test('BFE configurations coexist peacefully with defaults', () => {
+  test('configurations coexist peacefully with defaults', () => {
     expect.hasAssertions();
   });
 
-  test('BFE checks (except "demandThisOption") are run at the end of the second parsing pass', () => {
+  test('checks (except "demandThisOption") are run at the end of the second parsing pass', () => {
     expect.hasAssertions();
   });
 
-  test('BFE checks (except "check") ignore defaults', () => {
+  test('checks (except "check") ignore defaults', () => {
     expect.hasAssertions();
   });
 
-  test('BFE custom builder functions do not see defaulted args', () => {
+  test('custom builder functions do not see defaulted args', () => {
     expect.hasAssertions();
   });
 
-  test('BFE custom builder functions disable BF option/options methods via intellisense', () => {
+  test('custom builder functions disable BF option/options methods via intellisense', () => {
     expect.hasAssertions();
   });
 
@@ -175,7 +175,7 @@ describe('::withBuilderExtensions', () => {
     expect.hasAssertions();
   });
 
-  describe('Automatic Grouping of Related Options', () => {
+  describe('automatic grouping of related options', () => {
     it('creates five automatic groupings with default common options', () => {
       expect.hasAssertions();
     });
