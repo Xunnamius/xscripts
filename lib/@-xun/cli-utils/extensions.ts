@@ -88,9 +88,9 @@ export type StandardCommonCliArguments = {
 };
 
 /**
- * This {@link BfeBuilderObject} instance describes the CLI arguments
- * available in the `argv` object of any command that uses
- * {@link withStandardBuilder} to construct its `builder`.
+ * This {@link BfeBuilderObject} instance describes the CLI arguments available
+ * in the `argv` object of any command that uses {@link withStandardBuilder} to
+ * construct its `builder`.
  *
  * This object is manually synchronized with {@link StandardCommonCliArguments},
  * but the keys may differ slightly (e.g. hyphens may be elided in favor of
@@ -117,7 +117,7 @@ export const standardCommonCliArguments = {
     implies: { quiet: true, hush: true },
     description: 'No output will be generated (implies --quiet)'
   }
-} as const satisfies BfeBuilderObject<Record<string, unknown>>;
+} as const satisfies BfeBuilderObject<Record<string, unknown>, StandardExecutionContext>;
 
 /**
  * This is an array of the keys in {@link standardCommonCliArguments}, each of
@@ -141,7 +141,10 @@ export const standardCommonCliArgumentsKeys = Object.keys(
  * {@link withBuilderExtensions}. It also disables
  * [`duplicate-arguments-array`](https://github.com/yargs/yargs-parser?tab=readme-ov-file#duplicate-arguments-array)
  * and enables
- * [`strip-dashed`](https://github.com/yargs/yargs-parser?tab=readme-ov-file#strip-dashed) and [`strip-aliased`](https://github.com/yargs/yargs-parser?tab=readme-ov-file#strip-aliased) in yargs-parser.
+ * [`strip-dashed`](https://github.com/yargs/yargs-parser?tab=readme-ov-file#strip-dashed)
+ * and
+ * [`strip-aliased`](https://github.com/yargs/yargs-parser?tab=readme-ov-file#strip-aliased)
+ * in yargs-parser.
  */
 export function withStandardBuilder<
   CustomCliArguments extends StandardCommonCliArguments,
@@ -154,7 +157,8 @@ export function withStandardBuilder<
     enableVersionOption = false
   }: {
     /**
-     * Set to `true` to include `'version'` in the `commonOptions` setting for {@link withBuilderExtensions}.
+     * Set to `true` to include `'version'` in the `commonOptions` setting for
+     * {@link withBuilderExtensions}.
      *
      * @default false
      */

@@ -1,4 +1,3 @@
-/* eslint-disable jest/prefer-lowercase-title */
 describe('::withBuilderExtensions', () => {
   describe('"requires" configuration', () => {
     it('[readme #1] ensures all args given conditioned on existence of other arg', () => {
