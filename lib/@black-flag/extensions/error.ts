@@ -31,8 +31,8 @@ export const ErrorMessage = {
   ImpliesViolation(implier: string, seenConflictingKeyValues: KeyValueEntries) {
     return `the following arguments as given conflict with the implications of "${implier}":${keyValuesToString(seenConflictingKeyValues)}`;
   },
-  DemandIfViolation(demanded: string, demanders: KeyValueEntries) {
-    return `the argument "${demanded}" must be given if any of the following are given:${keyValuesToString(demanders)}`;
+  DemandIfViolation(demanded: string, demander: KeyValueEntry) {
+    return `the argument "${demanded}" must be given whenever the following is given: ${keyValuesToString([demander])}`;
   },
   DemandOrViolation(demanded: KeyValueEntries) {
     return `at least one of the following arguments must be given:${keyValuesToString(demanded)}`;
@@ -68,5 +68,8 @@ function keyValueToString(keyValueEntry: KeyValueEntry) {
     }
   })();
 
-  return value === $exists ? key : `${key}=${stringifiedValue}`;
+  return (
+    (typeof key !== 'string' || key.length === 1 ? '-' : '--') +
+    (value === $exists ? key : `${key}=${stringifiedValue}`)
+  );
 }

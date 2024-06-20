@@ -9,7 +9,11 @@ import {
   type Configuration
 } from '@black-flag/core';
 
-import { type EffectorProgram, type ExecutionContext } from '@black-flag/core/util';
+import {
+  CommandNotImplementedError,
+  type EffectorProgram,
+  type ExecutionContext
+} from '@black-flag/core/util';
 import isEqual from 'lodash.isequal';
 
 import { createDebugLogger } from 'multiverse/rejoinder';
@@ -394,7 +398,7 @@ export type BfeCustomBuilderFunctionParameters<
   CustomExecutionContext extends ExecutionContext,
   P = Parameters<BfBuilderFunction<CustomCliArguments, CustomExecutionContext>>
 > = P extends [infer R, ...infer S]
-  ? [R & { options: never; option: never }, ...S]
+  ? [blackFlag: R & { options: never; option: never }, ...S]
   : never;
 
 /**
@@ -411,7 +415,7 @@ export type WithHandlerExtensions<
   CustomCliArguments extends Record<string, unknown>,
   CustomExecutionContext extends ExecutionContext
 > = (
-  customHandler: Configuration<CustomCliArguments, CustomExecutionContext>['handler']
+  customHandler?: Configuration<CustomCliArguments, CustomExecutionContext>['handler']
 ) => Configuration<CustomCliArguments, CustomExecutionContext>['handler'];
 
 /**
@@ -687,7 +691,10 @@ export function withBuilderExtensions<
               const [key, value] = required;
 
               // ? isEqual(argv[key], $exists) will always be false
-              if (!argvKeys.has(key) || !isEqual(argv[key], value)) {
+              if (
+                !argvKeys.has(key) ||
+                (value !== $exists && !isEqual(argv[key], value))
+              ) {
                 missingRequiredKeyValues.push(required);
               }
             });
@@ -738,18 +745,14 @@ export function withBuilderExtensions<
 
           const sawDemanded = argvKeys.has(demanded);
 
-          Object.entries(demanders).forEach((demander, index, demandersEntries) => {
+          Object.entries(demanders).forEach((demander) => {
             const [key, value] = demander;
             const sawADemander =
               argvKeys.has(key) && (value === $exists || isEqual(argv[key], value));
 
             softAssert(
               !sawADemander || sawDemanded,
-              ErrorMessage.DemandIfViolation(
-                demanded,
-                // ? Ensure the failing demander is listed as the first arg
-                [demander, ...demandersEntries.toSpliced(index, 1)]
-              )
+              ErrorMessage.DemandIfViolation(demanded, demander)
             );
           });
         });
@@ -774,10 +777,12 @@ export function withBuilderExtensions<
             const [key, value] = keyValue;
 
             if (argvKeys.has(key) && (value === $exists || isEqual(argv[key], value))) {
-              softAssert(
-                sawAtLeastOne === undefined,
-                ErrorMessage.DemandSpecificXorViolation(sawAtLeastOne!, keyValue)
-              );
+              if (sawAtLeastOne !== undefined) {
+                softAssert(
+                  false,
+                  ErrorMessage.DemandSpecificXorViolation(sawAtLeastOne, keyValue)
+                );
+              }
 
               sawAtLeastOne = keyValue;
             }
@@ -801,7 +806,7 @@ export function withBuilderExtensions<
           );
 
           if (argvKeys.has(implier)) {
-            impliedKeyValues[implier] = implications;
+            Object.assign(impliedKeyValues, implications);
 
             const seenConflictingKeyValues: Entries<typeof implications> = [];
 
@@ -809,7 +814,7 @@ export function withBuilderExtensions<
               const [key, value] = keyValue;
 
               if (argvKeys.has(key) && !isEqual(argv[key], value)) {
-                seenConflictingKeyValues.push(keyValue);
+                seenConflictingKeyValues.push([key, argv[key]]);
               }
             });
 
@@ -842,7 +847,7 @@ export function withBuilderExtensions<
           }
         });
 
-        await customHandler(argv);
+        await (customHandler || defaultHandler)(argv);
 
         debug('exited withHandlerExtensions::handler wrapper function');
       };
@@ -897,13 +902,12 @@ export function withUsageExtensions(altDescription = '$1.') {
  * Use this function to assert end user error.
  */
 function softAssert(value: unknown, message: string): asserts value {
-  assert(
-    value,
-    new CliError(message, {
+  if (!value) {
+    throw new CliError(message, {
       showHelp: true,
       suggestedExitCode: FrameworkExitCode.DefaultError
-    })
-  );
+    });
+  }
 }
 
 /**
@@ -915,13 +919,12 @@ function softAssert(value: unknown, message: string): asserts value {
  * about.
  */
 function hardAssert(value: unknown, message: string): asserts value {
-  assert(
-    value,
-    new CliError(ErrorMessage.FrameworkError(message), {
+  if (!value) {
+    throw new CliError(ErrorMessage.FrameworkError(message), {
       showHelp: true,
       suggestedExitCode: FrameworkExitCode.AssertionFailed
-    })
-  );
+    });
+  }
 }
 
 function transmuteBFEBuilderToBFBuilder<
@@ -1137,4 +1140,8 @@ function addToSet(arrayAsSet: unknown[], element: unknown) {
   if (!hasElement) {
     arrayAsSet.push(element);
   }
+}
+
+function defaultHandler() {
+  throw new CommandNotImplementedError();
 }
