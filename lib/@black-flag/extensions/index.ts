@@ -595,7 +595,7 @@ export function withBuilderExtensions<
         });
       }
 
-      const optionLocalMetadata = analyzeBuilderObject({ builderObject });
+      const optionLocalMetadata = analyzeBuilderObject({ builderObject, commonOptions });
       debug('option local metadata: %O', optionsMetadata);
 
       // * Automatic grouping happens on both first pass and second pass
@@ -981,9 +981,13 @@ function analyzeBuilderObject<
   CustomCliArguments extends Record<string, unknown>,
   CustomExecutionContext extends ExecutionContext
 >({
-  builderObject
+  builderObject,
+  commonOptions
 }: {
   builderObject: BfeBuilderObject<CustomCliArguments, CustomExecutionContext>;
+  commonOptions: NonNullable<
+    WithBuilderExtensionsConfig<CustomCliArguments>['commonOptions']
+  >;
 }) {
   const metadata: OptionsMetadata = {
     required: [],
@@ -998,6 +1002,7 @@ function analyzeBuilderObject<
     checks: {}
   };
 
+  // ? This first loop resolves all groupings except "optional options"
   for (const [option, builderObjectValue] of Object.entries(builderObject)) {
     const [
       {
@@ -1038,13 +1043,6 @@ function analyzeBuilderObject<
       addToSet(metadata.implied, { ...normalizedOption, [$genesis]: option });
     }
 
-    const isDemanded = !!(
-      demandThisOption ||
-      demandThisOptionIf ||
-      demandThisOptionOr ||
-      demandThisOptionXor
-    );
-
     if (demandThisOption !== undefined) {
       metadata.demanded.push(option);
     }
@@ -1066,8 +1064,19 @@ function analyzeBuilderObject<
         [option]: $exists
       });
     }
+  }
 
-    if (!isDemanded) {
+  // ? This second loop lets us see which options are actually optional after
+  // ? all the groupings have been resolved
+  for (const [option] of Object.entries(builderObject)) {
+    const isExplicitlyDemanded = !!(
+      metadata.demanded.includes(option) ||
+      metadata.demandedAtLeastOne.some((record) => option in record) ||
+      metadata.demandedMutuallyExclusive.some((record) => option in record)
+    );
+
+    // ? An option cannot be in both common options and optional options
+    if (!isExplicitlyDemanded && !commonOptions.includes(option)) {
       metadata.optional.push(option);
     }
   }

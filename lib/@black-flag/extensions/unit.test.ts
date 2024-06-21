@@ -2453,14 +2453,124 @@ describe('::withBuilderExtensions', () => {
   describe('automatic grouping of related options', () => {
     it('creates five automatic groupings with default common options', async () => {
       expect.hasAssertions();
+
+      const mockGroupMethod = jest.fn();
+
+      const runner = makeMockBuilderRunner({
+        group: mockGroupMethod,
+        customBuilder: {
+          a: { requires: 'b' },
+          b: { conflicts: 'c' },
+          c: { implies: { d: -1 } },
+          d: { demandThisOptionIf: 'b' },
+          e: { demandThisOption: true },
+          f: { demandThisOptionOr: 'd' },
+          g: { demandThisOptionXor: 'h' },
+          h: { check: (_h, _argv) => true },
+          i: {
+            subOptionOf: { q: { when: () => true, update: { requires: 'b' } } }
+          },
+          j: {
+            subOptionOf: { q: { when: () => true, update: { conflicts: 'c' } } }
+          },
+          k: {
+            subOptionOf: { q: { when: () => true, update: { implies: { d: -1 } } } }
+          },
+          l: {
+            subOptionOf: { q: { when: () => true, update: { demandThisOptionIf: 'b' } } }
+          },
+          m: {
+            subOptionOf: { q: { when: () => true, update: { demandThisOption: true } } }
+          },
+          n: {
+            subOptionOf: { q: { when: () => true, update: { demandThisOptionOr: 'd' } } }
+          },
+          o: {
+            subOptionOf: {
+              q: { when: () => true, update: { demandThisOptionXor: 'h' } }
+            }
+          },
+          p: {
+            subOptionOf: {
+              q: { when: () => true, update: { check: (_h, _argv) => true } }
+            }
+          },
+          q: {}
+        }
+      });
+
+      const { handlerResult } = await runner({ q: false });
+
+      expect(handlerResult).toSatisfy(isCliError);
+      expect(mockGroupMethod.mock.calls).toStrictEqual([
+        // * First pass
+        [['e'], 'Required Options:'],
+        [['d', 'f'], 'Required Options (at least one):'],
+        [['h', 'g'], 'Required Options (mutually exclusive):'],
+        [
+          ['a', 'b', 'c', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q'],
+          'Optional Options:'
+        ],
+        [['help'], 'Common Options:'],
+        // * Second pass
+        [['e', 'm'], 'Required Options:'],
+        [['d', 'f'], 'Required Options 1 (at least one):'],
+        [['d', 'n'], 'Required Options 2 (at least one):'],
+        [['h', 'g'], 'Required Options 1 (mutually exclusive):'],
+        [['h', 'o'], 'Required Options 2 (mutually exclusive):'],
+        [['a', 'b', 'c', 'i', 'j', 'k', 'l', 'p', 'q'], 'Optional Options:'],
+        [['help'], 'Common Options:']
+      ]);
     });
 
-    it('can configure common options', async () => {
+    it('can configure common options (cannot be in both optional and common options)', async () => {
       expect.hasAssertions();
+
+      const mockGroupMethod = jest.fn();
+
+      const runner = makeMockBuilderRunner({
+        group: mockGroupMethod,
+        customBuilder: {
+          a: { requires: 'b' },
+          b: {}
+        },
+        builderExtensionsConfig: { commonOptions: ['help', 'version', 'a'] }
+      });
+
+      const { handlerResult } = await runner({});
+
+      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      expect(mockGroupMethod.mock.calls).toStrictEqual([
+        // * First pass
+        [['b'], 'Optional Options:'],
+        [['help', 'version', 'a'], 'Common Options:'],
+        // * Second pass
+        [['b'], 'Optional Options:'],
+        [['help', 'version', 'a'], 'Common Options:']
+      ]);
     });
 
     it('can be disabled', async () => {
       expect.hasAssertions();
+
+      const mockGroupMethod = jest.fn();
+
+      const runner = makeMockBuilderRunner({
+        group: mockGroupMethod,
+        customBuilder: {
+          a: { requires: 'b' },
+          b: {}
+        },
+        builderExtensionsConfig: {
+          commonOptions: ['help', 'version', 'a'],
+          disableAutomaticGrouping: true
+        }
+      });
+
+      const { handlerResult } = await runner({});
+
+      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      expect(mockGroupMethod.mock.calls).toStrictEqual([]);
     });
   });
 });
@@ -2487,16 +2597,18 @@ function makeMockBuilderRunner({
   builderExtensionsConfig,
   customBuilder,
   customHandler,
-  context = {}
+  context = {},
+  group = jest.fn()
 }: {
   customBuilder?: Parameters<typeof withBuilderExtensions>[0];
   builderExtensionsConfig?: Parameters<typeof withBuilderExtensions>[1];
   customHandler?: Parameters<ReturnType<typeof withBuilderExtensions>[1]>[0];
   context?: PartialDeep<ExecutionContext>;
+  group?: typeof jest.fn;
 } = {}) {
-  const blackFlag_ = {
-    group: jest.fn()
-  } as unknown as Parameters<ReturnType<typeof withBuilderExtensions>[0]>[0];
+  const blackFlag_ = { group } as unknown as Parameters<
+    ReturnType<typeof withBuilderExtensions>[0]
+  >[0];
 
   return async function mockRunner(
     dummyArgv: Record<string, unknown>,
