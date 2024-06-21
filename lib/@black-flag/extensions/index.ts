@@ -360,16 +360,21 @@ export type BfeSubOptionOfExtensionValue<
    * }
    * ```
    */
-  update: (
-    oldOptionConfig: BfeBuilderObjectValueWithoutSubOptionOfExtension<
-      CustomCliArguments,
-      CustomExecutionContext
-    >,
-    argv: Arguments<CustomCliArguments, CustomExecutionContext>
-  ) => BfeBuilderObjectValueWithoutSubOptionOfExtension<
-    CustomCliArguments,
-    CustomExecutionContext
-  >;
+  update:
+    | ((
+        oldOptionConfig: BfeBuilderObjectValueWithoutSubOptionOfExtension<
+          CustomCliArguments,
+          CustomExecutionContext
+        >,
+        argv: Arguments<CustomCliArguments, CustomExecutionContext>
+      ) => BfeBuilderObjectValueWithoutSubOptionOfExtension<
+        CustomCliArguments,
+        CustomExecutionContext
+      >)
+    | BfeBuilderObjectValueWithoutSubOptionOfExtension<
+        CustomCliArguments,
+        CustomExecutionContext
+      >;
 };
 
 /**
@@ -563,7 +568,9 @@ export function withBuilderExtensions<
 
               updaters.forEach(({ when, update }, index) => {
                 if (superOption in argv && when(argv[superOption], argv)) {
-                  subOptionConfig = update(subOptionConfig, argv);
+                  subOptionConfig =
+                    typeof update === 'function' ? update(subOptionConfig, argv) : update;
+
                   debug(
                     'accepted configuration update #%O to suboption "%O": %O',
                     index + 1,

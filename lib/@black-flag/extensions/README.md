@@ -592,7 +592,11 @@ export const builder = function (yargs, _, argv) {
   } else {
     // This code block represents the fallback
     return {
-      lang: { choices: ['node', 'python'], demandOption: true },
+      lang: {
+        choices: ['node', 'python'],
+        demandOption: true,
+        default: 'python'
+      },
       version: { string: true, default: 'latest' }
     };
   }
@@ -728,7 +732,7 @@ export const [builder, withHandlerExtensions] = withBuilderExtensions({
             check: function (currentZArgValue, fullArgv) {
               return (
                 currentZArgValue.length >= 2 ||
-                `"z" must be an array of two or more strings', only saw: ${currentZArgValue.length}`
+                `"z" must be an array of two or more strings, only saw: ${currentZArgValue.length ?? 0}`
               );
             }
           };
@@ -759,6 +763,7 @@ export const [builder, withHandlerExtensions] = withBuilderExtensions(
         // ▼ These two are our fallback or "baseline" configurations for --lang
         choices: ['node', 'python'],
         demandThisOption: true,
+        default: 'python',
 
         subOptionOf: {
           // ▼ Yep, --lang is also a suboption of --lang

@@ -1290,30 +1290,649 @@ describe('::withBuilderExtensions', () => {
   describe('"subOptionOf" configuration', () => {
     it('supports both invocation signatures for updater objects (array and object forms)', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            choices: ['a', 'b', 'c']
+          },
+          y: {
+            number: true,
+            description: 'A number',
+            subOptionOf: {
+              x: {
+                when: (currentXArgValue) => currentXArgValue === 'a',
+                update: {
+                  description: 'This is a switch specifically for the "a" choice'
+                }
+              }
+            }
+          },
+          z: {
+            boolean: true,
+            description: 'A useful context-sensitive flag',
+            subOptionOf: {
+              x: [
+                {
+                  when: (currentXArgValue) => currentXArgValue === 'a',
+                  update: (oldXArgumentConfig) => {
+                    return {
+                      ...oldXArgumentConfig,
+                      description: 'This is a switch specifically for the "a" choice'
+                    };
+                  }
+                },
+                {
+                  when: (currentXArgValue) => currentXArgValue === 'a',
+                  update: (oldXArgumentConfig) => ({
+                    ...oldXArgumentConfig,
+                    string: true
+                  })
+                }
+              ]
+            }
+          }
+        }
+      });
+
+      {
+        const { firstPassResult, secondPassResult } = await runner({ x: 'b' });
+
+        expect(firstPassResult).toStrictEqual({
+          x: {
+            choices: ['a', 'b', 'c']
+          },
+          y: {
+            number: true,
+            description: 'A number'
+          },
+          z: {
+            boolean: true,
+            description: 'A useful context-sensitive flag'
+          }
+        });
+
+        expect(firstPassResult).toStrictEqual(secondPassResult);
+      }
+
+      {
+        const { firstPassResult, secondPassResult } = await runner({ x: 'a' });
+
+        expect(firstPassResult).toStrictEqual({
+          x: {
+            choices: ['a', 'b', 'c']
+          },
+          y: {
+            number: true,
+            description: 'A number'
+          },
+          z: {
+            boolean: true,
+            description: 'A useful context-sensitive flag'
+          }
+        });
+
+        expect(secondPassResult).toStrictEqual({
+          x: {
+            choices: ['a', 'b', 'c']
+          },
+          y: {
+            description: 'This is a switch specifically for the "a" choice'
+          },
+          z: {
+            boolean: true,
+            description: 'This is a switch specifically for the "a" choice',
+            string: true
+          }
+        });
+      }
     });
 
     it('overwrites previous configuration entirely with updater result', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            choices: ['a', 'b', 'c']
+          },
+          y: {
+            number: true,
+            description: 'A number',
+            subOptionOf: {
+              x: {
+                when: (currentXArgValue) => currentXArgValue === 'a',
+                update: {
+                  description: 'This is a switch specifically for the "a" choice'
+                }
+              }
+            }
+          }
+        }
+      });
+
+      const { firstPassResult, secondPassResult } = await runner({ x: 'a' });
+
+      expect(firstPassResult).toStrictEqual({
+        x: {
+          choices: ['a', 'b', 'c']
+        },
+        y: {
+          number: true,
+          description: 'A number'
+        }
+      });
+
+      expect(secondPassResult).toStrictEqual({
+        x: {
+          choices: ['a', 'b', 'c']
+        },
+        y: {
+          description: 'This is a switch specifically for the "a" choice'
+        }
+      });
     });
 
     it('facilitates object spread when overwriting previous configuration via updater result', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            choices: ['a', 'b', 'c']
+          },
+          y: {
+            number: true,
+            description: 'A number',
+            subOptionOf: {
+              x: {
+                when: (currentXArgValue) => currentXArgValue === 'a',
+                update: (oldConfig) => ({
+                  ...oldConfig,
+                  description: 'This is a switch specifically for the "a" choice'
+                })
+              }
+            }
+          }
+        }
+      });
+
+      const { firstPassResult, secondPassResult } = await runner({ x: 'a' });
+
+      expect(firstPassResult).toStrictEqual({
+        x: {
+          choices: ['a', 'b', 'c']
+        },
+        y: {
+          number: true,
+          description: 'A number'
+        }
+      });
+
+      expect(secondPassResult).toStrictEqual({
+        x: {
+          choices: ['a', 'b', 'c']
+        },
+        y: {
+          number: true,
+          description: 'This is a switch specifically for the "a" choice'
+        }
+      });
     });
 
     it('ignores subOptionOf updater objects when corresponding super-arg is not given alongside sub-arg', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            choices: ['a', 'b', 'c']
+          },
+          y: {
+            number: true,
+            description: 'A number',
+            subOptionOf: {
+              x: {
+                when: (currentXArgValue) => currentXArgValue === 'a',
+                update: (oldConfig) => ({
+                  ...oldConfig,
+                  description: 'This is a switch specifically for the "a" choice'
+                })
+              }
+            }
+          }
+        }
+      });
+
+      const { firstPassResult, secondPassResult } = await runner({ y: 4 });
+
+      expect(firstPassResult).toStrictEqual({
+        x: {
+          choices: ['a', 'b', 'c']
+        },
+        y: {
+          number: true,
+          description: 'A number'
+        }
+      });
+
+      expect(secondPassResult).toStrictEqual(firstPassResult);
     });
 
     it('ignores nested/returned subOptionOf keys in resolved configurations', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            choices: ['a', 'b', 'c']
+          },
+          y: {
+            number: true,
+            description: 'A number',
+            subOptionOf: {
+              x: {
+                when: (currentXArgValue) => currentXArgValue === 'a',
+                update: (oldConfig) => ({
+                  ...oldConfig,
+                  description: 'This is a switch specifically for the "a" choice',
+                  subOptionOf: {
+                    x: { bad: true }
+                  }
+                })
+              }
+            }
+          }
+        }
+      });
+
+      const { firstPassResult, secondPassResult } = await runner({ x: 'a' });
+
+      expect(firstPassResult).toStrictEqual({
+        x: {
+          choices: ['a', 'b', 'c']
+        },
+        y: {
+          number: true,
+          description: 'A number'
+        }
+      });
+
+      expect(secondPassResult).toStrictEqual({
+        x: {
+          choices: ['a', 'b', 'c']
+        },
+        y: {
+          number: true,
+          description: 'This is a switch specifically for the "a" choice'
+        }
+      });
+    });
+
+    it('allows options to be a sub-option of itself', async () => {
+      expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            choices: ['a', 'b', 'c'],
+            subOptionOf: {
+              x: {
+                when: (currentXArgValue) => currentXArgValue !== 'a',
+                update: () => ({
+                  description: 'This is a switch specifically for the "a" choice',
+                  string: true
+                })
+              }
+            }
+          }
+        }
+      });
+
+      const { firstPassResult, secondPassResult } = await runner({ x: 'c' });
+
+      expect(firstPassResult).toStrictEqual({
+        x: {
+          choices: ['a', 'b', 'c']
+        }
+      });
+
+      expect(secondPassResult).toStrictEqual({
+        x: {
+          description: 'This is a switch specifically for the "a" choice',
+          string: true
+        }
+      });
     });
 
     it("[readme #1] enables declarative use of Black Flag's dynamic options support", async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            choices: ['a', 'b', 'c'],
+            demandThisOption: true,
+            description: 'A choice'
+          },
+          y: {
+            number: true,
+            description: 'A number'
+          },
+          z: {
+            boolean: true,
+            description: 'A useful context-sensitive flag',
+            subOptionOf: {
+              x: [
+                {
+                  when: (currentXArgValue) => currentXArgValue === 'a',
+                  update: (oldXArgumentConfig) => {
+                    return {
+                      ...oldXArgumentConfig,
+                      description: 'This is a switch specifically for the "a" choice'
+                    };
+                  }
+                },
+                {
+                  when: (currentXArgValue) => currentXArgValue !== 'a',
+                  update: {
+                    string: true,
+                    description: 'This former-flag now accepts a string instead'
+                  }
+                }
+              ],
+              y: {
+                when: (currentYArgValue, fullArgv) =>
+                  fullArgv.x === 'a' && currentYArgValue > 5,
+                update: {
+                  array: true,
+                  demandThisOption: true,
+                  description:
+                    'This former-flag now accepts an array of two or more strings',
+                  check: function (currentZArgValue) {
+                    return (
+                      currentZArgValue.length >= 2 ||
+                      `"z" must be an array of two or more strings, only saw: ${currentZArgValue.length ?? 0}`
+                    );
+                  }
+                }
+              },
+              'does-not-exist': []
+            }
+          }
+        }
+      });
+
+      const expectedXY = {
+        x: {
+          choices: ['a', 'b', 'c'],
+          demandOption: true,
+          description: 'A choice'
+        },
+        y: {
+          number: true,
+          description: 'A number'
+        }
+      };
+
+      const expectedXYZFirstPass = {
+        ...expectedXY,
+        z: {
+          boolean: true,
+          description: 'A useful context-sensitive flag'
+        }
+      };
+
+      {
+        const { firstPassResult, secondPassResult } = await runner({
+          x: 'a'
+        });
+
+        expect(firstPassResult).toStrictEqual(expectedXYZFirstPass);
+        expect(secondPassResult).toStrictEqual({
+          ...expectedXY,
+          z: {
+            boolean: true,
+            description: 'This is a switch specifically for the "a" choice'
+          }
+        });
+      }
+
+      {
+        const { firstPassResult, secondPassResult } = await runner({
+          x: 'b'
+        });
+
+        expect(firstPassResult).toStrictEqual(expectedXYZFirstPass);
+        expect(secondPassResult).toStrictEqual({
+          ...expectedXY,
+          z: {
+            string: true,
+            description: 'This former-flag now accepts a string instead'
+          }
+        });
+      }
+
+      {
+        const { firstPassResult, secondPassResult } = await runner({
+          y: 1
+        });
+
+        expect(firstPassResult).toStrictEqual(expectedXYZFirstPass);
+        expect(secondPassResult).toStrictEqual(expectedXYZFirstPass);
+      }
+
+      {
+        const { firstPassResult, secondPassResult } = await runner({
+          z: true
+        });
+
+        expect(firstPassResult).toStrictEqual(expectedXYZFirstPass);
+        expect(secondPassResult).toStrictEqual(expectedXYZFirstPass);
+      }
+
+      {
+        const { firstPassResult, secondPassResult } = await runner({
+          x: 'a',
+          y: 5
+        });
+
+        expect(firstPassResult).toStrictEqual(expectedXYZFirstPass);
+        expect(secondPassResult).toStrictEqual({
+          ...expectedXY,
+          z: {
+            boolean: true,
+            description: 'This is a switch specifically for the "a" choice'
+          }
+        });
+      }
+
+      {
+        const { firstPassResult, secondPassResult, handlerResult } = await runner({
+          x: 'a',
+          y: 10
+        });
+
+        expect(firstPassResult).toStrictEqual(expectedXYZFirstPass);
+        expect(secondPassResult).toStrictEqual({
+          ...expectedXY,
+          z: {
+            array: true,
+            demandOption: true,
+            description: 'This former-flag now accepts an array of two or more strings'
+          }
+        });
+
+        // ? Since z isn't given, z's checks are skipped (otherwise they'd fail)
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { firstPassResult, secondPassResult, handlerResult } = await runner({
+          x: 'a',
+          y: 10,
+          z: true
+        });
+
+        expect(firstPassResult).toStrictEqual(expectedXYZFirstPass);
+        expect(secondPassResult).toStrictEqual({
+          ...expectedXY,
+          z: {
+            array: true,
+            demandOption: true,
+            description: 'This former-flag now accepts an array of two or more strings'
+          }
+        });
+
+        expect(handlerResult).toMatchObject({
+          message: '"z" must be an array of two or more strings, only saw: 0'
+        });
+      }
+
+      {
+        const { firstPassResult, secondPassResult, handlerResult } = await runner({
+          x: 'a',
+          y: 10,
+          z: ['str1']
+        });
+
+        expect(firstPassResult).toStrictEqual(expectedXYZFirstPass);
+        expect(secondPassResult).toStrictEqual({
+          ...expectedXY,
+          z: {
+            array: true,
+            demandOption: true,
+            description: 'This former-flag now accepts an array of two or more strings'
+          }
+        });
+
+        expect(handlerResult).toMatchObject({
+          message: '"z" must be an array of two or more strings, only saw: 1'
+        });
+      }
+
+      {
+        const { firstPassResult, secondPassResult, handlerResult } = await runner({
+          x: 'a',
+          y: 10,
+          z: ['str1', 'str2']
+        });
+
+        expect(firstPassResult).toStrictEqual(expectedXYZFirstPass);
+        expect(secondPassResult).toStrictEqual({
+          ...expectedXY,
+          z: {
+            array: true,
+            demandOption: true,
+            description: 'This former-flag now accepts an array of two or more strings'
+          }
+        });
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
     });
 
     it('[readme #2] rewrite of demo init command functions identically to original', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: () => {
+          return {
+            lang: {
+              choices: ['node', 'python'],
+              demandThisOption: true,
+              default: 'python',
+              subOptionOf: {
+                lang: [
+                  {
+                    when: (lang) => lang === 'node',
+                    update: {
+                      choices: ['node'],
+                      demandThisOption: true
+                    }
+                  },
+                  {
+                    when: (lang) => lang !== 'node',
+                    update: {
+                      choices: ['python'],
+                      demandThisOption: true
+                    }
+                  }
+                ]
+              }
+            },
+            version: {
+              string: true,
+              default: 'latest',
+              subOptionOf: {
+                lang: [
+                  {
+                    when: (lang) => lang === 'node',
+                    update: {
+                      choices: ['19.8', '20.9', '21.1'],
+                      default: '21.1'
+                    }
+                  },
+                  {
+                    when: (lang) => lang !== 'node',
+                    update: {
+                      choices: ['3.10', '3.11', '3.12'],
+                      default: '3.12'
+                    }
+                  }
+                ]
+              }
+            }
+          };
+        }
+      });
+
+      const expectedFirstPass = {
+        lang: {
+          choices: ['node', 'python'],
+          demandOption: true
+        },
+        version: {
+          string: true
+        }
+      };
+
+      {
+        const { firstPassResult, secondPassResult } = await runner({});
+
+        expect(firstPassResult).toStrictEqual(expectedFirstPass);
+        expect(secondPassResult).toStrictEqual(expectedFirstPass);
+      }
+
+      {
+        const { firstPassResult, secondPassResult } = await runner({ lang: 'node' });
+
+        expect(firstPassResult).toStrictEqual(expectedFirstPass);
+        expect(secondPassResult).toStrictEqual({
+          lang: {
+            choices: ['node'],
+            demandOption: true
+          },
+          version: {
+            choices: ['19.8', '20.9', '21.1']
+          }
+        });
+      }
+
+      {
+        const { firstPassResult, secondPassResult } = await runner({ lang: 'python' });
+
+        expect(firstPassResult).toStrictEqual(expectedFirstPass);
+        expect(secondPassResult).toStrictEqual({
+          lang: {
+            choices: ['python'],
+            demandOption: true
+          },
+          version: {
+            choices: ['3.10', '3.11', '3.12']
+          }
+        });
+      }
     });
   });
 
@@ -1322,27 +1941,21 @@ describe('::withBuilderExtensions', () => {
     // TODO: not alias, not camelCase
   });
 
-  test('configurations coexist peacefully with defaults', async () => {
+  test('checks (except "check") ignore (coexist peacefully with) defaults', async () => {
     expect.hasAssertions();
   });
 
-  test('checks (except "demandThisOption") are run at the end of the second parsing pass', async () => {
+  // ? yargs needs to see the default key to generate proper help text, but
+  // ? we need to make sure defaults play nice with requires/implies/conflicts
+  test('yargs/BF sees "default" key but custom builder functions do not see defaulted args', async () => {
     expect.hasAssertions();
   });
 
-  test('checks (except "check") ignore defaults', async () => {
+  test('defaults do not override implications/argv', async () => {
     expect.hasAssertions();
   });
 
-  test('defaults do not override argv', async () => {
-    expect.hasAssertions();
-  });
-
-  test('custom builder functions do not see defaulted args', async () => {
-    expect.hasAssertions();
-  });
-
-  test('custom builder functions disable BF option/options methods via intellisense', async () => {
+  test('implications do not override argv', async () => {
     expect.hasAssertions();
   });
 
@@ -1350,7 +1963,11 @@ describe('::withBuilderExtensions', () => {
     expect.hasAssertions();
   });
 
-  test('mirrored configurations are ignored, redundant groups are discarded, and arg-vals are successively overridden', async () => {
+  test('arg-vals are successively overridden', async () => {
+    expect.hasAssertions();
+  });
+
+  test('multi arg-vals are supported', async () => {
     expect.hasAssertions();
   });
 
