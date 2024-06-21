@@ -1,5 +1,8 @@
-import assert from 'node:assert';
 import { isNativeError } from 'node:util/types';
+
+import clone from 'lodash.clone';
+import cloneDeepWith from 'lodash.clonedeepwith';
+import isEqual from 'lodash.isequal';
 
 import {
   CliError,
@@ -14,14 +17,13 @@ import {
   type EffectorProgram,
   type ExecutionContext
 } from '@black-flag/core/util';
-import isEqual from 'lodash.isequal';
 
 import { createDebugLogger } from 'multiverse/rejoinder';
 
 import { ErrorMessage, type KeyValueEntry } from './error';
 import { $exists, $genesis } from './symbols';
 
-import type { Entries, StringKeyOf } from 'type-fest';
+import type { Entries, Promisable, StringKeyOf } from 'type-fest';
 
 const globalDebuggerNamespace = '@black-flag/extensions';
 
@@ -233,7 +235,7 @@ export type BfeBuilderObjectValueExtensions<
     | Exclude<BfeBuilderObjectValueExtensionValue, string | Array<unknown>>[];
   /**
    * `check` is the declarative option-specific version of vanilla yargs's
-   * `yargs::check()`.
+   * `yargs::check()`. Also supports async and promise-returning functions.
    *
    * This function receives the `currentArgumentValue`, which you are free to
    * type as you please, and the fully parsed `argv`. If this function throws,
@@ -249,7 +251,7 @@ export type BfeBuilderObjectValueExtensions<
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     currentArgumentValue: any,
     argv: Arguments<CustomCliArguments, CustomExecutionContext>
-  ) => unknown;
+  ) => Promisable<unknown>;
   /**
    * `subOptionOf` is declarative sugar around Black Flag's support for double
    * argument parsing, allowing you to describe the relationship between options
@@ -525,9 +527,9 @@ export function withBuilderExtensions<
       deleteDefaultedArguments({ argv });
 
       debug('calling customBuilder (if a function) and returning builder object');
-      // ? We make a semi-shallow clone of whatever options object we're passed
+      // ? We make a deep clone of whatever options object we're passed
       // ? since there's a good chance we may be committing some light mutating
-      const builderObject = structuredClone(
+      const builderObject = superiorClone(
         (typeof customBuilder === 'function'
           ? customBuilder(
               blackFlag as BfeCustomBuilderFunctionParameters<
@@ -690,7 +692,6 @@ export function withBuilderExtensions<
             Object.entries(requireds).forEach((required) => {
               const [key, value] = required;
 
-              // ? isEqual(argv[key], $exists) will always be false
               if (
                 !argvKeys.has(key) ||
                 (value !== $exists && !isEqual(argv[key], value))
@@ -825,27 +826,33 @@ export function withBuilderExtensions<
           }
         });
 
-        // * Merge argv with any deleted defaults
-        Object.assign(argv, optionsMetadata.defaults);
-
-        // * Merge argv with implied values (overriding any defaults)
-        Object.assign(argv, impliedKeyValues);
+        Object.assign(
+          argv,
+          // ? given overrides implied overrides defaults are merged into argv
+          Object.assign({}, optionsMetadata.defaults, impliedKeyValues, argv)
+        );
 
         debug('final argv (defaults and implies merged): %O', argv);
 
+        // ? We want to run the check functions sequentially and in definition
+        // ? order since that's what the documentation promises
         // * Run custom checks on final argv
-        Object.entries(optionsMetadata.checks).forEach(([currentArgument, checkFn]) => {
-          const result = checkFn(argv[currentArgument], argv);
+        for (const [currentArgument, checkFn] of Object.entries(optionsMetadata.checks)) {
+          if (currentArgument in argv) {
+            // ! checkFn might return a promise (or be async), watch out!
+            // eslint-disable-next-line no-await-in-loop
+            const result = await checkFn(argv[currentArgument], argv);
 
-          if (!result || typeof result === 'string' || isNativeError(result)) {
-            throw isCliError(result)
-              ? result
-              : new CliError(
-                  (result as string | Error | false) ||
-                    ErrorMessage.CheckFailed(currentArgument)
-                );
+            if (!result || typeof result === 'string' || isNativeError(result)) {
+              throw isCliError(result)
+                ? result
+                : new CliError(
+                    (result as string | Error | false) ||
+                      ErrorMessage.CheckFailed(currentArgument)
+                  );
+            }
           }
-        });
+        }
 
         await (customHandler || defaultHandler)(argv);
 
@@ -1144,4 +1151,20 @@ function addToSet(arrayAsSet: unknown[], element: unknown) {
 
 function defaultHandler() {
   throw new CommandNotImplementedError();
+}
+
+/**
+ * A smarter more useful cloning algorithm based on "structured clone" that
+ * passes through as-is items that cannot be cloned.
+ */
+function superiorClone<T>(o: T): T {
+  return cloneDeepWith(o, (value) => {
+    const attempt = clone(value);
+
+    if (attempt && typeof attempt === 'object' && Object.keys(attempt).length === 0) {
+      return value;
+    }
+
+    return undefined;
+  });
 }

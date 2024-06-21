@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { isNativeError } from 'node:util/types';
 
@@ -6,7 +7,7 @@ import {
   type ExecutionContext
 } from '@black-flag/core/util';
 
-import { $executionContext, type Arguments } from '@black-flag/core';
+import { $executionContext, isCliError, type Arguments } from '@black-flag/core';
 import deepMerge from 'lodash.merge';
 
 import { ErrorMessage } from './error';
@@ -967,40 +968,322 @@ describe('::withBuilderExtensions', () => {
   });
 
   describe('"check" configuration', () => {
-    it('allows typing the check function as desired', async () => {
-      expect.hasAssertions();
-    });
-
     it('re-throws thrown exceptions as-is', async () => {
       expect.hasAssertions();
+
+      const error = new Error(`"x" must be between 0 and 10 (inclusive), saw: -1`);
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            check: function (currentXArgValue: number) {
+              if (currentXArgValue < 0 || currentXArgValue > 10) {
+                throw error;
+              }
+
+              return true;
+            }
+          }
+        }
+      });
+
+      {
+        const { handlerResult } = await runner({ x: 5 });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: -1 });
+        expect(handlerResult).toBe(error);
+      }
     });
 
     it('throws returned exceptions as-is', async () => {
       expect.hasAssertions();
+
+      const error = new Error(`"x" must be between 0 and 10 (inclusive), saw: -1`);
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            check: function (currentXArgValue: number) {
+              if (currentXArgValue < 0 || currentXArgValue > 10) {
+                return error;
+              }
+
+              return true;
+            }
+          }
+        }
+      });
+
+      {
+        const { handlerResult } = await runner({ x: 5 });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: -1 });
+        expect(handlerResult).toSatisfy(isCliError);
+        expect(handlerResult).toMatchObject({
+          message: `"x" must be between 0 and 10 (inclusive), saw: -1`
+        });
+      }
     });
 
     it('throws CliError(string) if string is returned', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            check: function (currentXArgValue: number) {
+              if (currentXArgValue < 0 || currentXArgValue > 10) {
+                return `"x" must be between 0 and 10 (inclusive), saw: -1`;
+              }
+
+              return true;
+            }
+          }
+        }
+      });
+
+      {
+        const { handlerResult } = await runner({ x: 5 });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: -1 });
+        expect(handlerResult).toSatisfy(isCliError);
+        expect(handlerResult).toMatchObject({
+          message: `"x" must be between 0 and 10 (inclusive), saw: -1`
+        });
+      }
     });
 
     it('throws CliError if an otherwise non-truthy (or void) value is returned', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            check: function (currentXArgValue: number) {
+              if (currentXArgValue < 0 || currentXArgValue > 10) {
+                return;
+              }
+
+              return true;
+            }
+          }
+        }
+      });
+
+      {
+        const { handlerResult } = await runner({ x: 5 });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: -1 });
+        expect(handlerResult).toSatisfy(isCliError);
+        expect(handlerResult).not.toSatisfy(isCommandNotImplementedError);
+      }
     });
 
     it('runs checks in definition order', async () => {
       expect.hasAssertions();
+
+      const runOrder: number[] = [];
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            check: function () {
+              runOrder.push(1);
+              return true;
+            }
+          },
+          y: {
+            check: function () {
+              runOrder.push(2);
+              return true;
+            }
+          },
+          z: {
+            check: function () {
+              runOrder.push(3);
+              return true;
+            }
+          }
+        }
+      });
+
+      {
+        await runner({ x: true, y: true, z: true });
+        expect(runOrder).toStrictEqual([1, 2, 3]);
+      }
+    });
+
+    it('skips checks for arguments that are not given', async () => {
+      expect.hasAssertions();
+
+      const runOrder: number[] = [];
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            check: function () {
+              runOrder.push(1);
+              return true;
+            }
+          },
+          y: {
+            check: function () {
+              runOrder.push(2);
+              return true;
+            }
+          },
+          z: {
+            check: function () {
+              runOrder.push(3);
+              return true;
+            }
+          }
+        }
+      });
+
+      {
+        await runner({ y: true });
+        expect(runOrder).toStrictEqual([2]);
+      }
     });
 
     it('sees defaults', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            default: 1
+          },
+          y: {
+            check: (_, argv) => argv.x === 1
+          }
+        }
+      });
+
+      const { handlerResult } = await runner({ y: true });
+      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+    });
+
+    it('supports async checks', async () => {
+      expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            default: 1
+          },
+          y: {
+            check: async (_, argv) => argv.x !== 1
+          }
+        }
+      });
+
+      const { handlerResult } = await runner({ y: true });
+      expect(handlerResult).toSatisfy(isCliError);
+      expect(handlerResult).not.toSatisfy(isCommandNotImplementedError);
     });
 
     it('sees implications (final arv)', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            default: 1
+          },
+          y: {
+            implies: { x: 'one' },
+            check: (_, argv) => argv.x === 'one'
+          }
+        }
+      });
+
+      const { handlerResult } = await runner({ y: true });
+      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
     });
 
     it('[readme #1] example implementation functions as intended', async () => {
       expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: {
+            number: true,
+            check: function (currentXArgValue /*, fullArgv*/) {
+              if (currentXArgValue < 0 || currentXArgValue > 10) {
+                throw new Error(
+                  `"x" must be between 0 and 10 (inclusive), saw: ${currentXArgValue}`
+                );
+              }
+
+              return true;
+            }
+          },
+          y: {
+            boolean: true,
+            default: false,
+            requires: 'x',
+            check: function (currentYArgValue, fullArgv) {
+              if (currentYArgValue && (fullArgv.x as number) <= 5) {
+                throw new Error(
+                  `"x" must be greater than 5 to use 'y', saw: ${fullArgv.x}`
+                );
+              }
+
+              return true;
+            }
+          }
+        }
+      });
+
+      {
+        const { handlerResult } = await runner({ x: 1 });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: true });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.RequiresViolation('y', [['x', $exists]])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ x: 2, y: false });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: 6, y: true });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: 3, y: true });
+        expect(handlerResult).toMatchObject({
+          message: `"x" must be greater than 5 to use 'y', saw: 3`
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ x: -1 });
+        expect(handlerResult).toMatchObject({
+          message: `"x" must be between 0 and 10 (inclusive), saw: -1`
+        });
+      }
     });
   });
 
@@ -1048,6 +1331,10 @@ describe('::withBuilderExtensions', () => {
   });
 
   test('checks (except "check") ignore defaults', async () => {
+    expect.hasAssertions();
+  });
+
+  test('defaults do not override argv', async () => {
     expect.hasAssertions();
   });
 
