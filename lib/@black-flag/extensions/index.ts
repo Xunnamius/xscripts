@@ -955,12 +955,20 @@ function transmuteBFEBuilderToBFBuilder<
   > = {};
 
   for (const [option, builderObjectValue] of Object.entries(builderObject)) {
-    const [{ demandThisOption }, vanillaYargsBuilderObjectValue] =
+    const [bfeBuilderObjectValue, vanillaYargsBuilderObjectValue] =
       separateExtensionsFromBuilderObjectValue({ builderObjectValue });
+
+    const { demandThisOption } = bfeBuilderObjectValue;
 
     if (demandThisOption !== undefined) {
       (vanillaYargsBuilderObjectValue as BfGenericBuilderObjectValue).demandOption =
         demandThisOption;
+    }
+
+    // ? We add it back here so that vanilla yargs will include it in help text
+    if (bfeBuilderObjectValue.default !== undefined) {
+      (vanillaYargsBuilderObjectValue as BfGenericBuilderObjectValue).default =
+        bfeBuilderObjectValue.default;
     }
 
     vanillaYargsBuilderObject[option] = vanillaYargsBuilderObjectValue;

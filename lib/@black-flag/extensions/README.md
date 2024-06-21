@@ -832,6 +832,11 @@ existence of the [`default`][8] key until near the end of BFE's execution.
 > `withBuilderExtensions` will _not_ see any defaulted values. However, your
 > command handlers will.
 
+> Note that an explicitly `undefined` default, i.e. `{ default: undefined }`,
+> will be deleted from the configuration object and completely ignored by BFE,
+> Black Flag, and yargs. This differs from yargs's default behavior, which is to
+> recognize `undefined` defaults.
+
 Defaults are set _before_ any [`check`][9] functions are run, _before_ any
 [implications][14] are set, and _before_ the relevant command [`handler`][22] is
 invoked, but _after_ all other BFE checks have succeeded. This enables the use

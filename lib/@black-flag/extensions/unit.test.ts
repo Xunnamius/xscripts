@@ -14,6 +14,7 @@ import { ErrorMessage } from './error';
 import { withBuilderExtensions } from './index';
 import { $exists } from './symbols';
 
+import isEqual from 'lodash.isequal';
 import type { PartialDeep } from 'type-fest';
 
 describe('::withBuilderExtensions', () => {
@@ -353,7 +354,14 @@ describe('::withBuilderExtensions', () => {
       });
 
       {
-        await runner({}, { y: false });
+        const { firstPassResult, secondPassResult } = await runner({}, { y: false });
+
+        expect(firstPassResult).toStrictEqual({
+          x: {},
+          y: { default: false }
+        });
+
+        expect(firstPassResult).toStrictEqual(secondPassResult);
 
         const { x, y } = getFinalArgv();
         expect(x).toBeUndefined();
@@ -361,7 +369,17 @@ describe('::withBuilderExtensions', () => {
       }
 
       {
-        await runner({ x: true }, { y: false });
+        const { firstPassResult, secondPassResult } = await runner(
+          { x: true },
+          { y: false }
+        );
+
+        expect(firstPassResult).toStrictEqual({
+          x: {},
+          y: { default: false }
+        });
+
+        expect(firstPassResult).toStrictEqual(secondPassResult);
 
         const { x, y } = getFinalArgv();
         expect(x).toBeTrue();
@@ -1173,7 +1191,19 @@ describe('::withBuilderExtensions', () => {
         }
       });
 
-      const { handlerResult } = await runner({ y: true });
+      const { firstPassResult, secondPassResult, handlerResult } = await runner(
+        {
+          y: true
+        },
+        { x: 1 }
+      );
+
+      expect(firstPassResult).toStrictEqual({
+        x: { default: 1 },
+        y: {}
+      });
+
+      expect(firstPassResult).toStrictEqual(secondPassResult);
       expect(handlerResult).toSatisfy(isCommandNotImplementedError);
     });
 
@@ -1191,7 +1221,19 @@ describe('::withBuilderExtensions', () => {
         }
       });
 
-      const { handlerResult } = await runner({ y: true });
+      const { firstPassResult, secondPassResult, handlerResult } = await runner(
+        {
+          y: true
+        },
+        { x: 1 }
+      );
+
+      expect(firstPassResult).toStrictEqual({
+        x: { default: 1 },
+        y: {}
+      });
+
+      expect(firstPassResult).toStrictEqual(secondPassResult);
       expect(handlerResult).toSatisfy(isCliError);
       expect(handlerResult).not.toSatisfy(isCommandNotImplementedError);
     });
@@ -1211,7 +1253,19 @@ describe('::withBuilderExtensions', () => {
         }
       });
 
-      const { handlerResult } = await runner({ y: true });
+      const { firstPassResult, secondPassResult, handlerResult } = await runner(
+        {
+          y: true
+        },
+        { x: 1 }
+      );
+
+      expect(firstPassResult).toStrictEqual({
+        x: { default: 1 },
+        y: {}
+      });
+
+      expect(firstPassResult).toStrictEqual(secondPassResult);
       expect(handlerResult).toSatisfy(isCommandNotImplementedError);
     });
 
@@ -1250,7 +1304,24 @@ describe('::withBuilderExtensions', () => {
       });
 
       {
-        const { handlerResult } = await runner({ x: 1 });
+        const { firstPassResult, secondPassResult, handlerResult } = await runner(
+          {
+            x: 1
+          },
+          { y: false }
+        );
+
+        expect(firstPassResult).toStrictEqual({
+          x: {
+            number: true
+          },
+          y: {
+            boolean: true,
+            default: false
+          }
+        });
+
+        expect(firstPassResult).toStrictEqual(secondPassResult);
         expect(handlerResult).toSatisfy(isCommandNotImplementedError);
       }
 
@@ -1279,7 +1350,7 @@ describe('::withBuilderExtensions', () => {
       }
 
       {
-        const { handlerResult } = await runner({ x: -1 });
+        const { handlerResult } = await runner({ x: -1 }, { y: false });
         expect(handlerResult).toMatchObject({
           message: `"x" must be between 0 and 10 (inclusive), saw: -1`
         });
@@ -1832,7 +1903,7 @@ describe('::withBuilderExtensions', () => {
       }
     });
 
-    it('[readme #2] rewrite of demo init command functions identically to original', async () => {
+    it('[readme #2] rewrite of demo init command builds identically to original', async () => {
       expect.hasAssertions();
 
       const runner = makeMockBuilderRunner({
@@ -1890,22 +1961,30 @@ describe('::withBuilderExtensions', () => {
       const expectedFirstPass = {
         lang: {
           choices: ['node', 'python'],
-          demandOption: true
+          demandOption: true,
+          default: 'python'
         },
         version: {
-          string: true
+          string: true,
+          default: 'latest'
         }
       };
 
       {
-        const { firstPassResult, secondPassResult } = await runner({});
+        const { firstPassResult, secondPassResult } = await runner(
+          {},
+          { version: 'latest' }
+        );
 
         expect(firstPassResult).toStrictEqual(expectedFirstPass);
         expect(secondPassResult).toStrictEqual(expectedFirstPass);
       }
 
       {
-        const { firstPassResult, secondPassResult } = await runner({ lang: 'node' });
+        const { firstPassResult, secondPassResult } = await runner(
+          { lang: 'node' },
+          { version: '21.1' }
+        );
 
         expect(firstPassResult).toStrictEqual(expectedFirstPass);
         expect(secondPassResult).toStrictEqual({
@@ -1914,13 +1993,17 @@ describe('::withBuilderExtensions', () => {
             demandOption: true
           },
           version: {
-            choices: ['19.8', '20.9', '21.1']
+            choices: ['19.8', '20.9', '21.1'],
+            default: '21.1'
           }
         });
       }
 
       {
-        const { firstPassResult, secondPassResult } = await runner({ lang: 'python' });
+        const { firstPassResult, secondPassResult } = await runner(
+          { lang: 'python' },
+          { version: '3.12' }
+        );
 
         expect(firstPassResult).toStrictEqual(expectedFirstPass);
         expect(secondPassResult).toStrictEqual({
@@ -1929,38 +2012,64 @@ describe('::withBuilderExtensions', () => {
             demandOption: true
           },
           version: {
-            choices: ['3.10', '3.11', '3.12']
+            choices: ['3.10', '3.11', '3.12'],
+            default: '3.12'
           }
         });
       }
     });
   });
 
-  test('options passed to BFE configurations must be exact names and not aliases', async () => {
-    expect.hasAssertions();
-    // TODO: not alias, not camelCase
-  });
-
-  test('checks (except "check") ignore (coexist peacefully with) defaults', async () => {
-    expect.hasAssertions();
-  });
-
   // ? yargs needs to see the default key to generate proper help text, but
   // ? we need to make sure defaults play nice with requires/implies/conflicts
   test('yargs/BF sees "default" key but custom builder functions do not see defaulted args', async () => {
+    expect.assertions(5);
+
+    const runner = makeMockBuilderRunner({
+      customBuilder: (_bf, _, argv) => {
+        expect(argv).toSatisfy((x) => {
+          return (
+            x === undefined ||
+            // ? Doing Object.fromEntries(Object.entries(x)) lets us skip symbols
+            isEqual(Object.fromEntries(Object.entries(x)), { _: [], $0: 'fake' })
+          );
+        });
+
+        return {
+          x: { default: 1 }
+        };
+      }
+    });
+
+    {
+      const { firstPassResult, secondPassResult, handlerResult } = await runner(
+        {},
+        { x: 1 }
+      );
+
+      expect(firstPassResult).toStrictEqual({ x: { default: 1 } });
+      expect(secondPassResult).toStrictEqual({ x: { default: 1 } });
+      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+    }
+  });
+
+  test('checks (except "check") ignore (coexist peacefully with) defaults coming in from yargs-parser', async () => {
     expect.hasAssertions();
+    // TODO: simulate defaults coming in from yargs-parser
   });
 
   test('defaults do not override implications/argv', async () => {
     expect.hasAssertions();
+    // TODO: simulate defaults coming in from yargs-parser too
   });
 
   test('implications do not override argv', async () => {
     expect.hasAssertions();
   });
 
-  test('custom command handlers see final argv', async () => {
+  test('custom command handlers see final argv (including defaults)', async () => {
     expect.hasAssertions();
+    // TODO: simulate defaults coming in from yargs-parser
   });
 
   test('arg-vals are successively overridden', async () => {
