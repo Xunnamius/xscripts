@@ -2055,33 +2055,377 @@ describe('::withBuilderExtensions', () => {
 
   test('checks (except "check") ignore (coexist peacefully with) defaults coming in from yargs-parser', async () => {
     expect.hasAssertions();
-    // TODO: simulate defaults coming in from yargs-parser
+
+    {
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          a: { requires: 'b', default: 1 },
+          b: { conflicts: 'c', default: 2 },
+          c: { implies: { d: -1 }, default: 3 },
+          d: { demandThisOptionIf: 'b', default: 4 },
+          e: { demandThisOption: true, default: 5 },
+          f: { demandThisOptionOr: 'd', default: 6 },
+          g: { demandThisOptionXor: 'h', default: 7 },
+          h: {
+            check: (_h, _argv) => true,
+            default: 8
+          },
+          i: {
+            default: 9,
+            subOptionOf: { d: { when: (d) => d === -1, update: { default: 10 } } }
+          }
+        }
+      });
+
+      const { firstPassResult, secondPassResult, handlerResult } = await runner(
+        {},
+        { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9 }
+      );
+
+      expect(firstPassResult).toStrictEqual({
+        a: { default: 1 },
+        b: { default: 2 },
+        c: { default: 3 },
+        d: { default: 4 },
+        e: { default: 5, demandOption: true },
+        f: { default: 6 },
+        g: { default: 7 },
+        h: { default: 8 },
+        i: { default: 9 }
+      });
+
+      expect(firstPassResult).toStrictEqual(secondPassResult);
+      expect(handlerResult).toMatchObject({
+        message: ErrorMessage.DemandOrViolation([
+          ['d', $exists],
+          ['f', $exists]
+        ])
+      });
+    }
+
+    {
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          a: { requires: 'b', default: 1 },
+          b: { conflicts: 'c', default: 2 },
+          c: { implies: { d: -1 }, default: 3 },
+          d: { demandThisOptionIf: 'b', default: 4 },
+          e: { demandThisOption: true, default: 5 },
+          f: { demandThisOptionOr: 'd', default: 6 },
+          g: { demandThisOptionXor: 'h', default: 7 },
+          h: {
+            check: (_h, _argv) => true,
+            default: 8
+          },
+          i: {
+            default: 9,
+            subOptionOf: { d: { when: (d) => d === -1, update: { default: 10 } } }
+          }
+        }
+      });
+
+      const { firstPassResult, secondPassResult, handlerResult } = await runner(
+        { f: -6 },
+        { a: 1, b: 2, c: 3, d: 4, e: 5, g: 7, h: 8, i: 9 }
+      );
+
+      expect(firstPassResult).toStrictEqual(secondPassResult);
+      expect(handlerResult).toMatchObject({
+        message: ErrorMessage.DemandGenericXorViolation([
+          ['h', $exists],
+          ['g', $exists]
+        ])
+      });
+    }
+
+    {
+      const runner = makeMockBuilderRunner({
+        customHandler(argv) {
+          expect(argv).toStrictEqual({
+            a: 1,
+            b: 2,
+            c: 3,
+            d: 4,
+            e: 5,
+            f: -6,
+            g: -7,
+            h: 8,
+            i: 9,
+            _: expect.anything(),
+            $0: expect.anything(),
+            [$executionContext]: expect.anything()
+          });
+        },
+        customBuilder: {
+          a: { requires: 'b', default: 1 },
+          b: { conflicts: 'c', default: 2 },
+          c: { implies: { d: -1 }, default: 3 },
+          d: { demandThisOptionIf: 'b', default: 4 },
+          e: { demandThisOption: true, default: 5 },
+          f: { demandThisOptionOr: 'd', default: 6 },
+          g: { demandThisOptionXor: 'h', default: 7 },
+          h: {
+            check: (_h, _argv) => true,
+            default: 8
+          },
+          i: {
+            default: 9,
+            subOptionOf: { d: { when: (d) => d === -1, update: { default: 10 } } }
+          }
+        }
+      });
+
+      const { firstPassResult, secondPassResult, handlerResult } = await runner(
+        { f: -6, g: -7 },
+        { a: 1, b: 2, c: 3, d: 4, e: 5, h: 8, i: 9 }
+      );
+
+      expect(firstPassResult).toStrictEqual(secondPassResult);
+      expect(handlerResult).toBeUndefined();
+    }
+
+    {
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          a: { requires: 'b', default: 1 },
+          b: { conflicts: 'c', default: 2 },
+          c: { implies: { d: -1 }, default: 3 },
+          d: { demandThisOptionIf: 'b', default: 4 },
+          e: { demandThisOption: true, default: 5 },
+          f: { demandThisOptionOr: 'd', default: 6 },
+          g: { demandThisOptionXor: 'h', default: 7 },
+          h: {
+            default: 8,
+            check: (_h, argv) => {
+              expect(argv).toStrictEqual({
+                a: 1,
+                b: 2,
+                c: 3,
+                d: 4,
+                e: 5,
+                f: -6,
+                g: 7,
+                h: -8,
+                i: 9,
+                _: expect.anything(),
+                $0: expect.anything(),
+                [$executionContext]: expect.anything()
+              });
+
+              return true;
+            }
+          },
+          i: {
+            default: 9,
+            subOptionOf: { d: { when: (d) => d === -1, update: { default: 10 } } }
+          }
+        }
+      });
+
+      const { firstPassResult, secondPassResult, handlerResult } = await runner(
+        { f: -6, h: -8 },
+        { a: 1, b: 2, c: 3, d: 4, e: 5, g: 7, i: 9 }
+      );
+
+      expect(firstPassResult).toStrictEqual(secondPassResult);
+      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+    }
   });
 
   test('defaults do not override implications/argv', async () => {
-    expect.hasAssertions();
-    // TODO: simulate defaults coming in from yargs-parser too
-  });
+    expect.assertions(2);
 
-  test('implications do not override argv', async () => {
-    expect.hasAssertions();
+    const runner = makeMockBuilderRunner({
+      customHandler(argv) {
+        expect(argv).toStrictEqual({
+          x: true,
+          y: 1,
+          z: 4,
+          w: 10,
+          _: expect.anything(),
+          $0: expect.anything(),
+          [$executionContext]: expect.anything()
+        });
+      },
+      customBuilder: {
+        x: { implies: { y: 1, z: 4, w: 10 } },
+        y: { default: 2 },
+        z: { default: 3 },
+        w: { default: 5 }
+      }
+    });
+
+    {
+      const { handlerResult } = await runner({ x: true, w: 10 }, { y: 2, z: 3 });
+      expect(handlerResult).toBeUndefined();
+    }
   });
 
   test('custom command handlers see final argv (including defaults)', async () => {
-    expect.hasAssertions();
-    // TODO: simulate defaults coming in from yargs-parser
+    expect.assertions(2);
+
+    const runner = makeMockBuilderRunner({
+      customHandler(argv) {
+        expect(argv).toStrictEqual({
+          x: true,
+          y: 1,
+          z: 1,
+          a: 1,
+          _: expect.anything(),
+          $0: expect.anything(),
+          [$executionContext]: expect.anything()
+        });
+      },
+      customBuilder: {
+        x: { subOptionOf: { x: { when: () => true, update: { implies: { a: 1 } } } } },
+        y: { subOptionOf: { x: { when: () => true, update: { default: 1 } } } },
+        z: { default: 1 },
+        w: { implies: { b: 1 } },
+        a: {},
+        b: {}
+      }
+    });
+
+    {
+      const { handlerResult } = await runner({ x: true }, { y: 1, z: 1 });
+      expect(handlerResult).toBeUndefined();
+    }
   });
 
   test('arg-vals are successively overridden', async () => {
     expect.hasAssertions();
+
+    const runner = makeMockBuilderRunner({
+      customBuilder: {
+        a: { requires: [{ b: 1 }, { b: 2 }, { b: 3 }] },
+        b: { conflicts: [{ c: 1 }, { c: 2 }, { c: 3 }] },
+        c: { implies: [{ d: 1 }, { d: 2 }, { d: 3 }] },
+        d: { demandThisOptionIf: [{ e: 1 }, { e: 2 }, { e: 3 }] },
+        e: { demandThisOptionOr: [{ f: 1 }, { f: 2 }, { f: 3 }] },
+        f: { demandThisOptionXor: [{ g: 1 }, { g: 2 }, { g: 3 }] }
+      }
+    });
+
+    {
+      const { handlerResult } = await runner({});
+
+      expect(handlerResult).toMatchObject({
+        message: ErrorMessage.DemandOrViolation([
+          ['f', 3],
+          ['e', $exists]
+        ])
+      });
+    }
+
+    {
+      const { handlerResult } = await runner({ f: 3, a: true });
+
+      expect(handlerResult).toMatchObject({
+        message: ErrorMessage.RequiresViolation('a', [['b', 3]])
+      });
+    }
+
+    {
+      const { handlerResult } = await runner({ f: 3, a: true, b: 3, c: 3 });
+
+      expect(handlerResult).toMatchObject({
+        message: ErrorMessage.ConflictsViolation('b', [['c', 3]])
+      });
+    }
+
+    {
+      const { handlerResult } = await runner({ f: 3, a: true, b: 3, c: true, d: true });
+
+      expect(handlerResult).toMatchObject({
+        message: ErrorMessage.ImpliesViolation('c', [['d', true]])
+      });
+    }
+
+    {
+      const { handlerResult } = await runner({ f: 3, a: true, b: 3, c: true, e: 3 });
+
+      expect(handlerResult).toMatchObject({
+        message: ErrorMessage.DemandIfViolation('d', ['e', 3])
+      });
+    }
+
+    {
+      const { handlerResult } = await runner({
+        a: true,
+        b: 3,
+        c: true,
+        d: 3,
+        e: 3
+      });
+
+      expect(handlerResult).toMatchObject({
+        message: ErrorMessage.DemandGenericXorViolation([
+          ['g', 3],
+          ['f', $exists]
+        ])
+      });
+    }
+
+    {
+      const { handlerResult } = await runner({
+        a: true,
+        b: 3,
+        c: true,
+        d: 3,
+        e: 3,
+        g: 3
+      });
+
+      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+    }
   });
 
   test('multi arg-vals are supported', async () => {
     expect.hasAssertions();
+
+    const runner = makeMockBuilderRunner({
+      customBuilder: {
+        a: { requires: { b: 1, c: 2, d: 3 } },
+        b: { conflicts: { e: 1, f: 2, g: 3 } }
+      }
+    });
+
+    {
+      const { handlerResult } = await runner({});
+      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+    }
+
+    {
+      const { handlerResult } = await runner({ a: true });
+
+      expect(handlerResult).toMatchObject({
+        message: ErrorMessage.RequiresViolation('a', [
+          ['b', 1],
+          ['c', 2],
+          ['d', 3]
+        ])
+      });
+    }
+
+    {
+      const { handlerResult } = await runner({ b: true, e: 1, f: 2, g: 3 });
+
+      expect(handlerResult).toMatchObject({
+        message: ErrorMessage.ConflictsViolation('b', [
+          ['e', 1],
+          ['f', 2],
+          ['g', 3]
+        ])
+      });
+    }
   });
 
   test('passing undefined to withHandlerExtensions throws CommandNotImplementedError', async () => {
     expect.hasAssertions();
+
+    const runner = makeMockBuilderRunner();
+    const { handlerResult } = await runner({});
+    expect(handlerResult).toSatisfy(isCommandNotImplementedError);
   });
 
   it('throws framework error if withHandlerExtensions is invoked before metadata is available', async () => {
