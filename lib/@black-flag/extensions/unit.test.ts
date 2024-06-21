@@ -11,7 +11,7 @@ import { $executionContext, isCliError, type Arguments } from '@black-flag/core'
 import deepMerge from 'lodash.merge';
 
 import { ErrorMessage } from './error';
-import { withBuilderExtensions } from './index';
+import { withBuilderExtensions, withUsageExtensions } from './index';
 import { $exists } from './symbols';
 
 import isEqual from 'lodash.isequal';
@@ -2578,10 +2578,23 @@ describe('::withBuilderExtensions', () => {
 describe('::withUsageExtensions', () => {
   it('outputs consistent usage string template when called without parameters', async () => {
     expect.hasAssertions();
+    expect(withUsageExtensions()).toBe('Usage: $000\n\n$1.');
   });
 
   it('appends passed parameter to consistent usage string template', async () => {
     expect.hasAssertions();
+    expect(withUsageExtensions('new description')).toBe(
+      'Usage: $000\n\nnew description.'
+    );
+  });
+
+  test('[readme #1] example functions as expected', async () => {
+    expect.hasAssertions();
+
+    const str =
+      "$1.\n\nAdditional description text that only appears in this command's help text.";
+
+    expect(withUsageExtensions(str)).toBe(`Usage: $000\n\n${str}`);
   });
 });
 
