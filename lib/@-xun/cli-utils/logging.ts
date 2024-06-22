@@ -23,12 +23,6 @@ export enum LogTag {
 }
 
 /**
- * These color codes correspond to a reddish color on the console.
- * https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124?permalink_comment_id=4481079#gistcomment-4481079
- */
-export const ansiRedColorCodes = [1, 9, 52, 88, 124, 160, 196];
-
-/**
  * Prints a timestamp indicating the beginning of execution.
  */
 export function logStartTime({
