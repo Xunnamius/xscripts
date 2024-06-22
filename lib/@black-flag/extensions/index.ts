@@ -34,6 +34,7 @@ type OptionsMetadata = {
   required: FlattenedExtensionValue[];
   conflicted: FlattenedExtensionValue[];
   implied: FlattenedExtensionValue[];
+  implyLoosely: string[];
   demandedIf: FlattenedExtensionValue[];
   demanded: string[];
   demandedAtLeastOne: FlattenedExtensionValue[];
@@ -233,6 +234,15 @@ export type BfeBuilderObjectValueExtensions<
   implies?:
     | Exclude<BfeBuilderObjectValueExtensionValue, string | Array<unknown>>
     | Exclude<BfeBuilderObjectValueExtensionValue, string | Array<unknown>>[];
+  /**
+   * When `looseImplications` is set to `true`, any implied arguments, when
+   * explicitly given on the command line, will _override_ their configured
+   * implications instead of causing an error.
+   *
+   * @default false
+   * @see {@link BfeBuilderObjectValueExtensions.implies}
+   */
+  looseImplications?: boolean;
   /**
    * `check` is the declarative option-specific version of vanilla yargs's
    * `yargs::check()`. Also supports async and promise-returning functions.
@@ -816,26 +826,28 @@ export function withBuilderExtensions<
           if (argvKeys.has(implier)) {
             Object.assign(impliedKeyValues, implications);
 
-            const seenConflictingKeyValues: Entries<typeof implications> = [];
+            if (!optionsMetadata!.implyLoosely.includes(implier)) {
+              const seenConflictingKeyValues: Entries<typeof implications> = [];
 
-            Object.entries(implications).forEach((keyValue) => {
-              const [key, value] = keyValue;
+              Object.entries(implications).forEach((keyValue) => {
+                const [key, value] = keyValue;
 
-              if (argvKeys.has(key) && !isEqual(argv[key], value)) {
-                seenConflictingKeyValues.push([key, argv[key]]);
-              }
-            });
+                if (argvKeys.has(key) && !isEqual(argv[key], value)) {
+                  seenConflictingKeyValues.push([key, argv[key]]);
+                }
+              });
 
-            softAssert(
-              !seenConflictingKeyValues.length,
-              ErrorMessage.ImpliesViolation(implier, seenConflictingKeyValues)
-            );
+              softAssert(
+                !seenConflictingKeyValues.length,
+                ErrorMessage.ImpliesViolation(implier, seenConflictingKeyValues)
+              );
+            }
           }
         });
 
         Object.assign(
           argv,
-          // ? given overrides implied overrides defaults are merged into argv
+          // ? given overrides implied > overrides defaults > merged into argv
           Object.assign({}, optionsMetadata.defaults, impliedKeyValues, argv)
         );
 
@@ -993,6 +1005,7 @@ function analyzeBuilderObject<
     required: [],
     conflicted: [],
     implied: [],
+    implyLoosely: [],
     demandedIf: [],
     demanded: [],
     demandedAtLeastOne: [],
@@ -1012,6 +1025,7 @@ function analyzeBuilderObject<
         // ? eslint does not like "default" as a variable name for some reason
         default: default_,
         implies,
+        looseImplications,
         demandThisOptionIf,
         demandThisOption,
         demandThisOptionOr,
@@ -1041,6 +1055,10 @@ function analyzeBuilderObject<
     if (implies !== undefined) {
       const normalizedOption = flattenExtensionValue(implies);
       addToSet(metadata.implied, { ...normalizedOption, [$genesis]: option });
+    }
+
+    if (looseImplications) {
+      metadata.implyLoosely.push(option);
     }
 
     if (demandThisOption !== undefined) {
@@ -1121,6 +1139,7 @@ function separateExtensionsFromBuilderObjectValue<
     demandThisOptionOr,
     demandThisOptionXor,
     implies,
+    looseImplications,
     requires,
     subOptionOf,
     ...vanillaYargsConfig
@@ -1134,6 +1153,7 @@ function separateExtensionsFromBuilderObjectValue<
     demandThisOptionOr,
     demandThisOptionXor,
     implies,
+    looseImplications,
     requires,
     subOptionOf
   };
