@@ -23,7 +23,7 @@ import { createDebugLogger } from 'multiverse/rejoinder';
 import { ErrorMessage, type KeyValueEntry } from './error';
 import { $exists, $genesis } from './symbols';
 
-import type { Entries, Promisable, StringKeyOf } from 'type-fest';
+import type { Entries, LiteralUnion, Promisable, StringKeyOf } from 'type-fest';
 
 const globalDebuggerNamespace = '@black-flag/extensions';
 
@@ -476,7 +476,10 @@ export type WithBuilderExtensionsConfig<
    *
    * @default ['help']
    */
-  commonOptions?: readonly (keyof CustomCliArguments | 'help' | 'version')[];
+  commonOptions?: readonly LiteralUnion<
+    keyof CustomCliArguments | 'help' | 'version',
+    string
+  >[];
 };
 
 /**
@@ -873,6 +876,7 @@ export function withBuilderExtensions<
           }
         }
 
+        debug('invoking customHandler (or defaultHandler if undefined)');
         await (customHandler || defaultHandler)(argv);
 
         debug('exited withHandlerExtensions::handler wrapper function');
