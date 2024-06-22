@@ -222,9 +222,7 @@ export function withStandardBuilder<
 
       debug('reconfiguring yargs-parser');
       blackFlag.parserConfiguration({
-        'duplicate-arguments-array': false,
-        'strip-aliased': true,
-        'strip-dashed': true
+        'duplicate-arguments-array': false
       });
 
       debug('invoking withBuilderExtensions::builder');
