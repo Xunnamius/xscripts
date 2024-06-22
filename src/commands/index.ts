@@ -14,7 +14,7 @@ export default function command({ debug_ }: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
-  >(undefined, { enableVersionOption: true });
+  >(undefined, { additionalCommonOptions: ['version'] });
 
   return {
     name: 'xscripts',

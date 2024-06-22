@@ -1,10 +1,11 @@
 import { $executionContext } from '@black-flag/core';
-import { type ExecutionContext } from '@black-flag/core/util';
+import { CommandNotImplementedError, type ExecutionContext } from '@black-flag/core/util';
 
 import {
   withBuilderExtensions,
   type BfeBuilderObject,
   type BfeCustomBuilderFunctionParameters,
+  type WithBuilderExtensionsConfig,
   type WithBuilderExtensionsReturnType
 } from 'multiverse/@black-flag/extensions/index';
 
@@ -148,21 +149,28 @@ export const standardCommonCliArgumentsKeys = Object.keys(
  */
 export function withStandardBuilder<
   CustomCliArguments extends StandardCommonCliArguments,
-  CustomExecutionContext extends ExecutionContext
+  CustomExecutionContext extends StandardExecutionContext
 >(
   customBuilder?: Parameters<
     typeof withBuilderExtensions<CustomCliArguments, CustomExecutionContext>
   >[0],
   {
-    enableVersionOption = false
-  }: {
+    additionalCommonOptions = [],
+    disableAutomaticGrouping
+  }: Omit<WithBuilderExtensionsConfig<CustomCliArguments>, 'commonOptions'> & {
     /**
-     * Set to `true` to include `'version'` in the `commonOptions` setting for
-     * {@link withBuilderExtensions}.
+     * An array of zero or more string keys of `CustomCliArguments`, with the
+     * optional addition of `'version'` (`'help'` is always included), that
+     * should be grouped under _"Common Options"_ when [automatic grouping of
+     * related
+     * options](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#automatic-grouping-of-related-options)
+     * is enabled.
      *
-     * @default false
+     * This setting is ignored if `disableAutomaticGrouping === true`.
+     *
+     * @default []
      */
-    enableVersionOption?: boolean;
+    additionalCommonOptions?: WithBuilderExtensionsConfig<CustomCliArguments>['commonOptions'];
   } = {}
 ): WithBuilderExtensionsReturnType<CustomCliArguments, CustomExecutionContext> {
   const debug_ = createDebugLogger({
@@ -173,9 +181,10 @@ export function withStandardBuilder<
 
   const commonOptions = [
     'help',
-    ...(enableVersionOption ? (['version'] as const) : []),
-    ...standardCommonCliArgumentsKeys
-  ] as const;
+    ...(additionalCommonOptions.includes('version') ? ['version'] : []),
+    ...standardCommonCliArgumentsKeys,
+    ...additionalCommonOptions.filter((opt) => opt !== 'version')
+  ];
 
   debug_('commonOptions: %O', commonOptions);
 
@@ -206,13 +215,13 @@ export function withStandardBuilder<
         ...customCliArguments
       };
     },
-    { commonOptions }
+    { commonOptions, disableAutomaticGrouping }
   );
 
   debug_('exited withStandardBuilder function');
 
   return [
-    function standardBuilder(blackFlag, helpOrVersionSet, argv) {
+    function standardBuilder(blackFlag, helpOrVersionSet, rawArgv) {
       const debug = debug_.extend('standardBuilder');
 
       debug('entered standardBuilder');
@@ -226,7 +235,7 @@ export function withStandardBuilder<
       });
 
       debug('invoking withBuilderExtensions::builder');
-      const returnedCliArguments = builder(blackFlag, helpOrVersionSet, argv);
+      const returnedCliArguments = builder(blackFlag, helpOrVersionSet, rawArgv);
 
       debug('exited standardBuilder');
       return returnedCliArguments;
@@ -234,47 +243,55 @@ export function withStandardBuilder<
     function withStandardHandler(
       customHandler: Parameters<typeof withHandlerExtensions>[0]
     ) {
-      return async function handler(argv) {
-        const {
-          hush,
-          quiet,
-          silent,
-          [$executionContext]: { state }
-        } = argv;
-
+      return async function handler(rawArgv) {
         const tags = new Set<LogTag>();
         const debug = createDebugLogger({
           namespace: '${globalLoggerNamespace}:withStandardHandler'
         });
 
         debug('entered withStandardHandler wrapper');
-        debug('hush: %O', hush);
-        debug('quiet: %O', quiet);
-        debug('silent: %O', silent);
 
-        if (silent) {
-          tags.add(LogTag.IF_NOT_SILENCED);
-          state.isSilenced = true;
-          state.showHelpOnFail = false;
-        }
+        debug('manually invoking withHandlerExtensions');
+        await withHandlerExtensions(async (argv) => {
+          const {
+            hush,
+            quiet,
+            silent,
+            [$executionContext]: { state }
+          } = argv;
 
-        if (quiet) {
-          tags.add(LogTag.IF_NOT_QUIETED);
-          state.isQuieted = true;
-        }
+          debug('hush: %O', hush);
+          debug('quiet: %O', quiet);
+          debug('silent: %O', silent);
 
-        if (hush) {
-          tags.add(LogTag.IF_NOT_HUSHED);
-          state.isHushed = true;
-        }
+          if (silent) {
+            tags.add(LogTag.IF_NOT_SILENCED);
+            state.isSilenced = true;
+            state.showHelpOnFail = false;
+          }
 
-        disableLoggingByTag({ tags: Array.from(tags) });
+          if (quiet) {
+            tags.add(LogTag.IF_NOT_QUIETED);
+            state.isQuieted = true;
+          }
 
-        debug('invoking withHandlerExtensions with customHandler');
-        await withHandlerExtensions(customHandler)(argv);
+          if (hush) {
+            tags.add(LogTag.IF_NOT_HUSHED);
+            state.isHushed = true;
+          }
+
+          disableLoggingByTag({ tags: Array.from(tags) });
+
+          debug('invoking customHandler (or defaultHandler if undefined)');
+          await (customHandler || defaultHandler)(argv);
+        })(rawArgv);
 
         debug('exited withStandardHandler wrapper');
       };
     }
   ];
+}
+
+function defaultHandler() {
+  throw new CommandNotImplementedError();
 }
