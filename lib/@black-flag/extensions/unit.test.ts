@@ -339,6 +339,48 @@ describe('::withBuilderExtensions', () => {
       }
     });
 
+    it(`does not throw when an arg's value conflicts with an implication but "looseImplications" is enabled`, async () => {
+      expect.hasAssertions();
+
+      {
+        const runner = makeMockBuilderRunner({
+          customHandler(argv) {
+            finalArgvX = argv.x;
+            finalArgvY = argv.y;
+          },
+          customBuilder: {
+            x: { implies: { y: true } },
+            y: {}
+          }
+        });
+
+        const { handlerResult } = await runner({ x: true, y: false });
+
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.ImpliesViolation('x', [['y', false]])
+        });
+      }
+
+      {
+        const runner = makeMockBuilderRunner({
+          customHandler(argv) {
+            finalArgvX = argv.x;
+            finalArgvY = argv.y;
+          },
+          customBuilder: {
+            x: { implies: { y: true }, looseImplications: true },
+            y: {}
+          }
+        });
+
+        await runner({ x: true, y: false });
+
+        const { x, y } = getFinalArgv();
+        expect(x).toBeTrue();
+        expect(y).toBeFalse();
+      }
+    });
+
     it('[readme #2] override configured defaults', async () => {
       expect.hasAssertions();
 
@@ -2600,11 +2642,669 @@ describe('::withUsageExtensions', () => {
 
 test('example #1 functions as expected', async () => {
   expect.hasAssertions();
+
+  let finalArgv: unknown = undefined;
+
+  const runner = makeMockBuilderRunner({
+    customHandler(argv) {
+      finalArgv = Object.fromEntries(
+        Object.entries(argv).filter(([key]) => !['$0', '_'].includes(key))
+      );
+    },
+    customBuilder: () => {
+      finalArgv = undefined;
+      return {
+        target: {
+          demandThisOption: true,
+          choices: deployTargets,
+          description: 'Select deployment target and strategy'
+        },
+        'only-production': {
+          alias: ['production', 'prod'],
+          boolean: true,
+          implies: { 'only-preview': false },
+          requires: { target: DeployTarget.Vercel },
+          default: false,
+          description: 'Only deploy to the remote production environment'
+        },
+        'only-preview': {
+          alias: ['preview'],
+          boolean: true,
+          implies: { 'only-production': false },
+          requires: { target: DeployTarget.Vercel },
+          default: true,
+          description: 'Only deploy to the remote preview environment'
+        },
+        host: {
+          string: true,
+          requires: { target: DeployTarget.Ssh },
+          demandThisOptionIf: { target: DeployTarget.Ssh },
+          description: 'The host to use'
+        },
+        'to-path': {
+          string: true,
+          requires: { target: DeployTarget.Ssh },
+          demandThisOptionIf: { target: DeployTarget.Ssh },
+          description: 'The deploy destination path to use'
+        }
+      };
+    }
+  });
+
+  {
+    const { handlerResult } = await runner({ target: DeployTarget.Vercel });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      'only-preview': true,
+      'only-production': false
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      'only-preview': true
+    });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      'only-preview': true,
+      'only-production': false
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      'only-production': true
+    });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      'only-preview': false,
+      'only-production': true
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      'only-preview': false
+    });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      'only-preview': false,
+      'only-production': false
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      'only-production': false
+    });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      'only-preview': false,
+      'only-production': false
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      'only-preview': false,
+      'only-production': false
+    });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      'only-preview': false,
+      'only-production': false
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Ssh,
+      host: 'prime',
+      'to-path': '/path/'
+    });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Ssh,
+      host: 'prime',
+      'to-path': '/path/',
+      'only-preview': true,
+      'only-production': false
+    });
+  }
+
+  // * Nonsense
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      'only-preview': true,
+      'only-production': true
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.ImpliesViolation('only-production', [['only-preview', true]])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({ target: DeployTarget.Ssh });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.DemandIfViolation('host', ['target', DeployTarget.Ssh])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({ target: DeployTarget.Ssh, host: 'prime' });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.DemandIfViolation('to-path', ['target', DeployTarget.Ssh])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Ssh,
+      'to-path': '/path/'
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.DemandIfViolation('host', ['target', DeployTarget.Ssh])
+    });
+  }
+
+  {
+    const { firstPassResult, secondPassResult } = await runner({});
+
+    expect((firstPassResult as any).target).toContainEntry(['demandOption', true]);
+    expect(firstPassResult).toStrictEqual(secondPassResult);
+  }
+
+  {
+    const { handlerResult } = await runner({ host: 'prime' });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({ 'to-path': '/path/' });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('to-path', [['target', DeployTarget.Ssh]])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({ host: 'prime', 'to-path': '/path/' });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      host: 'prime',
+      'to-path': '/path/'
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Ssh,
+      'only-preview': true
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('only-preview', [
+        ['target', DeployTarget.Vercel]
+      ])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Ssh,
+      'only-preview': false
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('only-preview', [
+        ['target', DeployTarget.Vercel]
+      ])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Ssh,
+      'only-preview': true,
+      'only-production': true
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('only-production', [
+        ['target', DeployTarget.Vercel]
+      ])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      'only-preview': true,
+      host: 'prime'
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('only-preview', [
+        ['target', DeployTarget.Vercel]
+      ])
+    });
+  }
 });
 
 test('example #2 functions as expected', async () => {
   expect.hasAssertions();
+
+  let finalArgv: unknown = undefined;
+
+  const runner = makeMockBuilderRunner({
+    customHandler(argv) {
+      finalArgv = Object.fromEntries(
+        Object.entries(argv).filter(([key]) => !['$0', '_'].includes(key))
+      );
+    },
+    customBuilder: () => {
+      finalArgv = undefined;
+      return {
+        target: {
+          description: 'Select deployment target and strategy',
+          demandThisOption: true,
+          choices: deployTargets,
+          subOptionOf: {
+            target: {
+              when: () => true,
+              update(oldOptionConfig, { target }) {
+                return {
+                  ...oldOptionConfig,
+                  choices: [target as string]
+                };
+              }
+            }
+          }
+        },
+        production: {
+          alias: ['prod'],
+          boolean: true,
+          description: 'Deploy to the remote production environment',
+          requires: { target: DeployTarget.Vercel },
+          implies: { preview: false },
+          looseImplications: true,
+          subOptionOf: {
+            target: {
+              when: (target: DeployTarget) => target !== DeployTarget.Vercel,
+              update(oldOptionConfig) {
+                return {
+                  ...oldOptionConfig,
+                  hidden: true
+                };
+              }
+            }
+          }
+        },
+        preview: {
+          boolean: true,
+          description: 'Deploy to the remote preview environment',
+          requires: { target: DeployTarget.Vercel },
+          default: true,
+          check: function (preview, argv) {
+            return (
+              argv.target !== DeployTarget.Vercel ||
+              preview ||
+              argv.production ||
+              'must choose either --preview or --production deployment environment'
+            );
+          },
+          subOptionOf: {
+            target: {
+              when: (target: DeployTarget) => target !== DeployTarget.Vercel,
+              update(oldOptionConfig) {
+                return {
+                  ...oldOptionConfig,
+                  hidden: true
+                };
+              }
+            }
+          }
+        },
+        host: {
+          string: true,
+          description: 'The ssh deploy host',
+          requires: { target: DeployTarget.Ssh },
+          demandThisOptionIf: { target: DeployTarget.Ssh },
+          subOptionOf: {
+            target: {
+              when: (target: DeployTarget) => target !== DeployTarget.Ssh,
+              update(oldOptionConfig) {
+                return {
+                  ...oldOptionConfig,
+                  hidden: true
+                };
+              }
+            }
+          }
+        },
+        'to-path': {
+          string: true,
+          description: 'The ssh deploy destination path',
+          requires: { target: DeployTarget.Ssh },
+          demandThisOptionIf: { target: DeployTarget.Ssh },
+          subOptionOf: {
+            target: {
+              when: (target: DeployTarget) => target !== DeployTarget.Ssh,
+              update(oldOptionConfig) {
+                return {
+                  ...oldOptionConfig,
+                  hidden: true
+                };
+              }
+            }
+          }
+        }
+      };
+    }
+  });
+
+  {
+    const { secondPassResult, handlerResult } = await runner({
+      target: DeployTarget.Vercel
+    });
+
+    expect(secondPassResult).toStrictEqual({
+      target: {
+        description: 'Select deployment target and strategy',
+        demandOption: true,
+        choices: [DeployTarget.Vercel]
+      },
+      production: {
+        alias: ['prod'],
+        boolean: true,
+        description: 'Deploy to the remote production environment'
+      },
+      preview: {
+        boolean: true,
+        description: 'Deploy to the remote preview environment',
+        default: true
+      },
+      host: {
+        string: true,
+        description: 'The ssh deploy host',
+        hidden: true
+      },
+      'to-path': {
+        string: true,
+        description: 'The ssh deploy destination path',
+        hidden: true
+      }
+    });
+
+    expect(handlerResult).toBeUndefined();
+
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      preview: true
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      preview: true
+    });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      preview: true
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      production: true
+    });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      preview: false,
+      production: true
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      preview: true,
+      production: true
+    });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      preview: true,
+      production: true
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Ssh,
+      host: 'prime',
+      'to-path': '/path/'
+    });
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Ssh,
+      host: 'prime',
+      'to-path': '/path/',
+      preview: true
+    });
+  }
+
+  // * Nonsense
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      preview: false
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: 'must choose either --preview or --production deployment environment'
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      production: false
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: 'must choose either --preview or --production deployment environment'
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      preview: false,
+      production: false
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: 'must choose either --preview or --production deployment environment'
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({ target: DeployTarget.Ssh });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.DemandIfViolation('host', ['target', DeployTarget.Ssh])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({ target: DeployTarget.Ssh, host: 'prime' });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.DemandIfViolation('to-path', ['target', DeployTarget.Ssh])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Ssh,
+      'to-path': '/path/'
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.DemandIfViolation('host', ['target', DeployTarget.Ssh])
+    });
+  }
+
+  {
+    const { firstPassResult, secondPassResult } = await runner({});
+
+    expect((firstPassResult as any).target).toContainEntry(['demandOption', true]);
+    expect(firstPassResult).toStrictEqual(secondPassResult);
+  }
+
+  {
+    const { handlerResult } = await runner({ host: 'prime' });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({ 'to-path': '/path/' });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('to-path', [['target', DeployTarget.Ssh]])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({ host: 'prime', 'to-path': '/path/' });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Vercel,
+      host: 'prime',
+      'to-path': '/path/'
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Ssh,
+      preview: true
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('preview', [
+        ['target', DeployTarget.Vercel]
+      ])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Ssh,
+      preview: false
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('preview', [
+        ['target', DeployTarget.Vercel]
+      ])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      target: DeployTarget.Ssh,
+      preview: true,
+      production: true
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('production', [
+        ['target', DeployTarget.Vercel]
+      ])
+    });
+  }
+
+  {
+    const { handlerResult } = await runner({
+      preview: true,
+      host: 'prime'
+    });
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('preview', [
+        ['target', DeployTarget.Vercel]
+      ])
+    });
+  }
 });
+
+enum DeployTarget {
+  Vercel = 'vercel',
+  Ssh = 'ssh'
+}
+
+const deployTargets = Object.values(DeployTarget);
 
 function makeMockBuilderRunner({
   builderExtensionsConfig,
