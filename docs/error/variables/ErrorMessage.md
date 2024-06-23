@@ -526,4 +526,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:10](https://github.com/Xunnamius/xscripts/blob/b57a6be3f30c8c0a2692b256135acbd661d0e92b/src/error.ts#L10)
+[src/error.ts:10](https://github.com/Xunnamius/xscripts/blob/4daa0986ccf09c4199915254d8a1d8095507731a/src/error.ts#L10)

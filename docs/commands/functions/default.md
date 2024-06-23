@@ -46,4 +46,4 @@
 
 ## Defined in
 
-[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/b57a6be3f30c8c0a2692b256135acbd661d0e92b/src/commands/index.ts#L13)
+[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/4daa0986ccf09c4199915254d8a1d8095507731a/src/commands/index.ts#L13)
