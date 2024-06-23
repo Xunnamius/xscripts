@@ -101,7 +101,7 @@
     "supports-color": "^8.1.1"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.4.1",
+    "@-xun/scripts": "^1.5.0",
     "@arethetypeswrong/cli": "^0.15.3",
     "@babel/cli": "^7.24.7",
     "@babel/eslint-parser": "^7.24.7",
