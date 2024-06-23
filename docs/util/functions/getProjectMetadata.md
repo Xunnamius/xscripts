@@ -16,4 +16,4 @@ Return metadata about the current project.
 
 ## Source
 
-[src/util.ts:63](https://github.com/Xunnamius/xscripts/blob/c8ed653392f2f548c08b4816b4826c1422ed8244/src/util.ts#L63)
+[src/util.ts:63](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/src/util.ts#L63)

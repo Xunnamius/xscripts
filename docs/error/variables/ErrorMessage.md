@@ -304,6 +304,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### CheckFailed()
+
+#### Parameters
+
+• **currentArgument**: `string`
+
+#### Returns
+
+`string`
+
 ### CleanCalledWithoutForce()
 
 #### Returns
@@ -326,33 +336,57 @@ A collection of possible error and warning messages.
 
 `string`
 
-### DemandedXorViolation()
+### ConflictsViolation()
 
 #### Parameters
 
-• **firstArgument**: `string`
+• **conflicter**: `string`
 
-• **secondArgument**: `string`
+• **seenConflictingKeyValues**: `ObjectEntries`\<`object`\>
 
 #### Returns
 
 `string`
 
-### DidNotProvideAtLeastOneOfSeveralOptions()
+### DemandGenericXorViolation()
 
 #### Parameters
 
-• **givenOptions**: `Record`\<`string`, `unknown`\>
+• **demanded**: `ObjectEntries`\<`object`\>
 
 #### Returns
 
 `string`
 
-### DidNotProvideExactlyOneOfSeveralOptions()
+### DemandIfViolation()
 
 #### Parameters
 
-• **givenOptions**: `Record`\<`string`, `unknown`\>
+• **demanded**: `string`
+
+• **demander**: `ObjectEntry`\<`object`\>
+
+#### Returns
+
+`string`
+
+### DemandOrViolation()
+
+#### Parameters
+
+• **demanded**: `ObjectEntries`\<`object`\>
+
+#### Returns
+
+`string`
+
+### DemandSpecificXorViolation()
+
+#### Parameters
+
+• **firstArgument**: `ObjectEntry`\<`object`\>
+
+• **secondArgument**: `ObjectEntry`\<`object`\>
 
 #### Returns
 
@@ -390,6 +424,24 @@ A collection of possible error and warning messages.
 
 `string`
 
+### IllegalHandlerInvocation()
+
+#### Returns
+
+`string`
+
+### ImpliesViolation()
+
+#### Parameters
+
+• **implier**: `string`
+
+• **seenConflictingKeyValues**: `ObjectEntries`\<`object`\>
+
+#### Returns
+
+`string`
+
 ### InvalidCharacters()
 
 #### Parameters
@@ -420,6 +472,40 @@ A collection of possible error and warning messages.
 
 `string`
 
+### MetadataInvariantViolated()
+
+#### Parameters
+
+• **afflictedKey**: `string`
+
+#### Returns
+
+`string`
+
+### MustChooseDeployEnvironment()
+
+#### Returns
+
+`string`
+
+### RequiresViolation()
+
+#### Parameters
+
+• **requirer**: `string`
+
+• **missingRequiredKeyValues**: `ObjectEntries`\<`object`\>
+
+#### Returns
+
+`string`
+
+### UnexpectedlyFalsyDetailedArguments()
+
+#### Returns
+
+`string`
+
 ### UnsupportedCommand()
 
 #### Returns
@@ -440,4 +526,4 @@ A collection of possible error and warning messages.
 
 ## Source
 
-[src/error.ts:10](https://github.com/Xunnamius/xscripts/blob/c8ed653392f2f548c08b4816b4826c1422ed8244/src/error.ts#L10)
+[src/error.ts:10](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/src/error.ts#L10)

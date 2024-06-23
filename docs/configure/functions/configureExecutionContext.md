@@ -6,7 +6,7 @@
 
 # Function: configureExecutionContext()
 
-> **configureExecutionContext**(`context`): `Promisable`\<`ExecutionContext`\>
+> **configureExecutionContext**(`context`): `Promisable`\<`StandardExecutionContext`\>
 
 ## Parameters
 
@@ -14,8 +14,8 @@
 
 ## Returns
 
-`Promisable`\<`ExecutionContext`\>
+`Promisable`\<`StandardExecutionContext`\>
 
 ## Source
 
-[src/configure.ts:24](https://github.com/Xunnamius/xscripts/blob/c8ed653392f2f548c08b4816b4826c1422ed8244/src/configure.ts#L24)
+[src/configure.ts:24](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/src/configure.ts#L24)

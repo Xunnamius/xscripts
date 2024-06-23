@@ -18,7 +18,7 @@
 
 ### builder
 
-> **builder**: `ExtendedBuilderFunction`\<`StandardCommonCliArguments`, `StandardExecutionContext`\>
+> **builder**: `BfeBuilderFunction`\<`StandardCommonCliArguments`, `StandardExecutionContext`\>
 
 ### description
 
@@ -46,4 +46,4 @@
 
 ## Source
 
-[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/c8ed653392f2f548c08b4816b4826c1422ed8244/src/commands/index.ts#L13)
+[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/src/commands/index.ts#L13)
