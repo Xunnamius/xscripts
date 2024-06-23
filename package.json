@@ -56,8 +56,8 @@
     "/README.md"
   ],
   "scripts": {
-    "__test:repeat:all": "echo 'Repeating test suite [initializing]...'; (i=0; while [ \"$((( i += 1 ) <= 100 ))\" -ne 0 ]; do sleep 0.1 && echo \"\\r\\033[1A\\033[0KRepeating test suite [run $i/100]...\" && JEST_SILENT_REPORTER_SHOW_WARNINGS=true NODE_ENV=test npx jest --reporters=jest-silent-reporter || exit; done) && echo \"All tests passed! Congrats!\"",
-    "__test:repeat:unit": "echo 'Repeating test suite [initializing]...'; (i=0; while [ \"$((( i += 1 ) <= 100 ))\" -ne 0 ]; do sleep 0.1 && echo \"\\r\\033[1A\\033[0KRepeating test suite [run $i/100]...\" && JEST_SILENT_REPORTER_SHOW_WARNINGS=true NODE_ENV=test npx jest --reporters=jest-silent-reporter --testPathIgnorePatterns '/(integration|e2e).*?\\.test\\.tsx?' '/dist/' || exit; done) && echo \"All tests passed! Congrats!\"",
+    "__test:repeat:all": "echo 'Repeating test suite [initializing]...'; (i=0; while [ \"$((( i += 1 ) <= 100 ))\" -ne 0 ]; do sleep 0.1 && echo \"\\r\\033[1A\\033[0KRepeating test suite [run $i/100]...\" && JEST_SILENT_REPORTER_SHOW_WARNINGS=true NODE_ENV=test DEBUG_COLORS=false npx jest --reporters=jest-silent-reporter || exit; done) && echo \"All tests passed! Congrats!\"",
+    "__test:repeat:unit": "echo 'Repeating test suite [initializing]...'; (i=0; while [ \"$((( i += 1 ) <= 100 ))\" -ne 0 ]; do sleep 0.1 && echo \"\\r\\033[1A\\033[0KRepeating test suite [run $i/100]...\" && JEST_SILENT_REPORTER_SHOW_WARNINGS=true NODE_ENV=test DEBUG_COLORS=false npx jest --reporters=jest-silent-reporter --testPathIgnorePatterns '/(integration|e2e).*?\\.test\\.tsx?' '/dist/' || exit; done) && echo \"All tests passed! Congrats!\"",
     "build": "npm run build:dist --",
     "build:changelog": "conventional-changelog --outfile CHANGELOG.md --config ./conventional.config.js --release-count 0 --skip-unstable && (if [ \"$CHANGELOG_SKIP_TITLE\" != 'true' ]; then { node -e 'console.log(require(\"./conventional.config.js\").changelogTitle)'; cat CHANGELOG.md; } > CHANGELOG.md.ignore && mv CHANGELOG.md.ignore CHANGELOG.md; fi) && NODE_ENV=format remark --output --frail CHANGELOG.md && prettier --write CHANGELOG.md",
     "build:dist": "echo '> Generating types...' && NODE_ENV=production tsc --project tsconfig.types.json --incremental false && tsconfig-replace-paths --project tsconfig.types.json && echo '> Building distributables...' && NODE_ENV=production-cjs babel src --extensions .ts --out-dir ./dist/src && NODE_ENV=production-cjs babel lib --extensions .ts --out-dir ./dist/lib && rm -rf ./dist/lib/**/*test* && echo '> Adding new entry to node_modules/.bin and making it executable via chmod...' && ln -sf ./dist/src/cli.js node_modules/.bin/xscripts && chmod +x ./dist/src/cli.js",
@@ -71,16 +71,16 @@
     "prepare": "./node_modules/@-xun/scripts/dist/src/cli.js prepare",
     "start": "./node_modules/@-xun/scripts/dist/src/cli.js start --",
     "test": "npm run test:unit --",
-    "test:all": "attw --pack . && NODE_ENV=test jest --coverage",
-    "test:e2e": "NODE_ENV=test jest 'e2e.*?\\.test\\.tsx?'",
-    "test:integration": "NODE_ENV=test jest '/integration.*?\\.test\\.tsx?'",
-    "test:integration:client": "NODE_ENV=test jest '/integration-client.*?\\.test\\.tsx?'",
-    "test:integration:compile": "NODE_ENV=test jest '/integration-compile.*?\\.test\\.tsx?'",
-    "test:integration:externals": "NODE_ENV=test jest '/integration-external.*?\\.test\\.tsx?'",
-    "test:integration:node": "NODE_ENV=test jest '/integration-node.*?\\.test\\.tsx?'",
+    "test:all": "attw --pack . && NODE_ENV=test DEBUG_COLORS=false jest --coverage",
+    "test:e2e": "NODE_ENV=test DEBUG_COLORS=false jest 'e2e.*?\\.test\\.tsx?'",
+    "test:integration": "NODE_ENV=test DEBUG_COLORS=false jest '/integration.*?\\.test\\.tsx?'",
+    "test:integration:client": "NODE_ENV=test DEBUG_COLORS=false jest '/integration-client.*?\\.test\\.tsx?'",
+    "test:integration:compile": "NODE_ENV=test DEBUG_COLORS=false jest '/integration-compile.*?\\.test\\.tsx?'",
+    "test:integration:externals": "NODE_ENV=test DEBUG_COLORS=false jest '/integration-external.*?\\.test\\.tsx?'",
+    "test:integration:node": "NODE_ENV=test DEBUG_COLORS=false jest '/integration-node.*?\\.test\\.tsx?'",
     "test:repeat:all": "npm run __test:repeat:all --silent",
     "test:repeat:unit": "npm run __test:repeat:unit --silent",
-    "test:unit": "NODE_ENV=test jest '/unit-.*\\.test\\.tsx?'"
+    "test:unit": "NODE_ENV=test DEBUG_COLORS=false jest '/unit-.*\\.test\\.tsx?'"
   },
   "config": {
     "plugin-build": {
