@@ -1,6 +1,6 @@
 import { type ChildConfiguration } from '@black-flag/core';
 import { getRunContext } from '@projector-js/core/project';
-import { TAB } from 'multiverse/rejoinder';
+import { SHORT_TAB } from 'multiverse/rejoinder';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { findProjectRoot } from 'universe/util';
@@ -55,15 +55,18 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       debug('root package.json contents: %O', rootPkgJson);
       debug('workspaces package json contents: %O', workspacePkgsJson);
 
-      for (const { name, scripts } of [rootPkgJson, ...workspacePkgsJson]) {
+      const packages = [rootPkgJson, ...workspacePkgsJson];
+
+      for (const { name, scripts } of packages) {
         const pkgName = name || '(unnamed package)';
-        const pkgLogger = genericLogger.extend(`[${pkgName}]`);
+        const pkgLogger =
+          packages.length > 1 ? genericLogger.extend(`[${pkgName}]`) : genericLogger;
 
         pkgLogger(
           [LogTag.IF_NOT_QUIETED],
           `Available NPM run commands for ${pkgName}:\n\n` +
-            TAB +
-            Object.keys(scripts || {}).join(`\n${TAB}`) +
+            SHORT_TAB +
+            Object.keys(scripts || {}).join(`\n${SHORT_TAB}`) +
             '\n'
         );
       }
