@@ -82,9 +82,12 @@ module.exports = {
           'babel-plugin-transform-rewrite-imports',
           {
             appendExtension: '.js',
+            // TODO: fix this whole thing (do this index rewrite automatically)
             replaceExtensions: {
               '^../package.json$': '../../package.json',
               '../debug-extended.js': '../debug-extended/index.js',
+              '../rejoinder.js': '../rejoinder/index.js',
+              '../@black-flag/extensions': '../@black-flag/extensions/index.js',
               '^(([^/]*/)*lib/[^/]+)$': '$1/index'
             }
           }
