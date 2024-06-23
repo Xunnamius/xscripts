@@ -22,7 +22,7 @@ export default function command({ debug_ }: GlobalExecutionContext) {
     description:
       "A collection of commands for interacting with Xunnamius's NPM-based projects",
     usage: withStandardUsage(),
-    handler: withStandardHandler(async function (_argv) {
+    handler: withStandardHandler(async function () {
       const debug = debug_.extend('handler');
       debug('entered handler');
       throw new CommandNotImplementedError();

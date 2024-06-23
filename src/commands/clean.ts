@@ -15,6 +15,7 @@ import {
   withStandardUsage
 } from 'multiverse/@-xun/cli-utils/extensions';
 
+import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { run } from 'multiverse/run';
 
 const matchNothing = '(?!)';
@@ -39,7 +40,7 @@ export type CustomCliArguments = GlobalCliArguments & {
 };
 
 export default function command({
-  log: genericLogger,
+  log,
   debug_,
   state: { startTime }
 }: GlobalExecutionContext) {
@@ -66,7 +67,12 @@ export default function command({
     usage: withStandardUsage(
       '$1. You must pass `--force` for any deletions to actually take place.\n\nNote that the regular expressions provided via --exclude-paths are computed with the "i" and "u" flags. If you want to pass an empty array to --exclude-paths, use `--exclude-paths \'\'`'
     ),
-    handler: withStandardHandler(async function ({ excludePaths, force }) {
+    handler: withStandardHandler(async function ({
+      $0: scriptFullName,
+      excludePaths,
+      force
+    }) {
+      const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
       debug('entered handler');
 
@@ -77,7 +83,7 @@ export default function command({
       debug('excludePaths: %O', excludePaths);
       debug('excludeRegExps: %O', excludeRegExps);
 
-      logStartTime({ log: genericLogger, startTime });
+      logStartTime({ log, startTime });
 
       const ignoredPaths = (
         await run('git', [

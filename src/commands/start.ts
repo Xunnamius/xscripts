@@ -12,15 +12,12 @@ import {
   withStandardUsage
 } from 'multiverse/@-xun/cli-utils/extensions';
 
+import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { runWithInheritedIo } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments;
 
-export default function command({
-  log: genericLogger,
-  debug_,
-  state
-}: GlobalExecutionContext) {
+export default function command({ log, debug_, state }: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -32,13 +29,14 @@ export default function command({
     builder,
     description: 'Run a CLI or deploy a local production environment, if applicable',
     usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ _: args_ }) {
+    handler: withStandardHandler(async function ({ $0: scriptFullName, _: args_ }) {
+      const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
       debug('entered handler');
 
       const { startTime } = state;
 
-      logStartTime({ log: genericLogger, startTime });
+      logStartTime({ log, startTime });
 
       const args = args_.map((a) => a.toString());
       debug('additional (passthrough) args: %O', args);

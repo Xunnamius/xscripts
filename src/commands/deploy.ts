@@ -17,6 +17,8 @@ import {
   withStandardUsage
 } from 'multiverse/@-xun/cli-utils/extensions';
 
+import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+
 export enum DeployTarget {
   Vercel = 'vercel',
   Ssh = 'ssh'
@@ -37,11 +39,7 @@ export type CustomCliArguments = GlobalCliArguments & { target: DeployTarget } &
       }
   );
 
-export default function command({
-  log: genericLogger,
-  debug_,
-  state
-}: GlobalExecutionContext) {
+export default function command({ log, debug_, state }: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -146,13 +144,19 @@ export default function command({
     builder,
     description: 'Deploy distributes to the appropriate remote',
     usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ production, preview, target }) {
+    handler: withStandardHandler(async function ({
+      $0: scriptFullName,
+      production,
+      preview,
+      target
+    }) {
+      const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
       debug('entered handler');
 
       const { startTime } = state;
 
-      logStartTime({ log: genericLogger, startTime });
+      logStartTime({ log, startTime });
 
       const { attributes } = await getProjectMetadata();
       const deployMessage = (deployTarget: string) =>

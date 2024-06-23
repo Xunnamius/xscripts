@@ -13,15 +13,13 @@ import {
   withStandardUsage
 } from 'multiverse/@-xun/cli-utils/extensions';
 
+import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+
 export type CustomCliArguments = GlobalCliArguments;
 
 // TODO: skip reinstalling node_modules if dir exists unless --force-reinstall
 
-export default function command({
-  log: genericLogger,
-  debug_,
-  state
-}: GlobalExecutionContext) {
+export default function command({ log, debug_, state }: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -33,13 +31,14 @@ export default function command({
     builder,
     description: 'Pack and release existing production-ready distributables',
     usage: withStandardUsage(),
-    handler: withStandardHandler(async function () {
+    handler: withStandardHandler(async function ({ $0: scriptFullName }) {
+      const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
       debug('entered handler');
 
       const { startTime } = state;
 
-      logStartTime({ log: genericLogger, startTime });
+      logStartTime({ log, startTime });
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
