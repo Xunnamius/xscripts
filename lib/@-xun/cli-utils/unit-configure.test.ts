@@ -297,7 +297,7 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
     }
   });
 
-  it('does not include duplicate messages in causal stack output', async () => {
+  it('does not include duplicate messages in causal stack output (including doubly-nested main message)', async () => {
     expect.hasAssertions();
 
     {
@@ -377,6 +377,25 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
           [expect.stringContaining(' test:<error>     ⮕  1')],
           [expect.stringContaining(' test:<error>     ⮕  3')],
           [expect.stringContaining(' test:<error>     ⮕  final')],
+          [''],
+          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+        ]);
+      });
+    }
+
+    {
+      const { meta, argv, context } = await makeMocks({ withListr2Support: true });
+
+      await withMockedOutput(async ({ errorSpy }) => {
+        await makeStandardConfigureErrorHandlingEpilogue()(
+          { ...meta, error: new Error(meta.message, { cause: meta.message }) },
+          argv,
+          context
+        );
+
+        expect(errorSpy.mock.calls).toStrictEqual([
+          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
           [''],
           [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
           [expect.stringContaining(' test:<error>     ❗ Dummy task error')]

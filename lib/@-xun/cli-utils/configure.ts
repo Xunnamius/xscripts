@@ -97,7 +97,7 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
 
           // ? Do not output duplicate messages
           if (currentMessage === previousMessage) {
-            if (pushMessageIfFinal(causalStack, subError)) {
+            if (pushMessageIfFinal(causalStack, subError, previousMessage)) {
               break;
             } else {
               continue;
@@ -119,7 +119,7 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
             shouldBreak = true;
           } else {
             // ? If the next message isn't an Error, it'll be the final message
-            shouldBreak = pushMessageIfFinal(causalStack, subError);
+            shouldBreak = pushMessageIfFinal(causalStack, subError, previousMessage);
           }
 
           if (shouldBreak) {
@@ -152,19 +152,27 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
         }
       }
     }
-
-    /**
-     * Returns `true` if the message is final (and loop should break). Returns
-     * `false` otherwise.
-     */
-    function pushMessageIfFinal(causalStack: string[], subError: Error): boolean {
-      // ? If the next message isn't an Error, it will be the final message
-      if (subError.cause && !isNativeError(subError.cause)) {
-        causalStack.push(`${TAB}⮕  ${String(subError.cause)}`);
-        return true;
-      }
-
-      return false;
-    }
   };
+}
+
+/**
+ * Returns `true` if the message is final (and loop should break). Returns
+ * `false` otherwise.
+ */
+function pushMessageIfFinal(
+  causalStack: string[],
+  subError: Error,
+  previousMessage: string
+): boolean {
+  // ? If the next message isn't an Error, it will be the final message
+  if (subError.cause && !isNativeError(subError.cause)) {
+    const finalMessage = String(subError.cause);
+    if (finalMessage !== previousMessage) {
+      causalStack.push(`${TAB}⮕  ${finalMessage}`);
+    }
+
+    return true;
+  }
+
+  return false;
 }
