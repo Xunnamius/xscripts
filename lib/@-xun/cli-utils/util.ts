@@ -26,3 +26,11 @@ export function toSpacedSentenceCase(str: string) {
 export function toFirstLowerCase(str: string) {
   return str[0].toLocaleLowerCase() + str.slice(1);
 }
+
+/**
+ * Takes a scriptName and returns its "base name," i.e. the trailing name
+ * component.
+ */
+export function scriptBasename(scriptFullName: string) {
+  return scriptFullName.split(' ').at(-1)!;
+}

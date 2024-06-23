@@ -1,4 +1,9 @@
-import { toFirstLowerCase, toSentenceCase, toSpacedSentenceCase } from './util';
+import {
+  scriptBasename,
+  toFirstLowerCase,
+  toSentenceCase,
+  toSpacedSentenceCase
+} from './util';
 
 describe('::toSentenceCase', () => {
   it('upper-cases the first letter of the passed string', async () => {
@@ -23,5 +28,14 @@ describe('::toFirstLowerCase', () => {
   it('lower-cases the first letter of the passed string', async () => {
     expect.hasAssertions();
     expect(toFirstLowerCase('Test Best Rest')).toBe('test Best Rest');
+  });
+});
+
+describe('::scriptBasename', () => {
+  it('gets trailing name component from string', async () => {
+    expect.hasAssertions();
+
+    expect(scriptBasename('Test Best Rest')).toBe('Rest');
+    expect(scriptBasename('test')).toBe('test');
   });
 });
