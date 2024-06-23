@@ -156,9 +156,14 @@ const metadata = {
 };
 
 /**
- * A string of spaces representing a CLI "tab".
+ * A string of spaces representing a CLI "tab" (four spaces).
  */
 export const TAB = '    ';
+
+/**
+ * A string of spaces representing a short CLI "tab" (two spaces).
+ */
+export const SHORT_TAB = '  ';
 
 // eslint-disable-next-line no-console
 const consoleLog = (...args: unknown[]) => console.log(...args);
