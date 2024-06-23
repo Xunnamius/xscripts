@@ -10,6 +10,6 @@
 
 This is the simple CLI entry point executed directly by node.
 
-## Source
+## Defined in
 
-[src/cli.ts:15](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/src/cli.ts#L15)
+[src/cli.ts:15](https://github.com/Xunnamius/xscripts/blob/b57a6be3f30c8c0a2692b256135acbd661d0e92b/src/cli.ts#L15)

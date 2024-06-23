@@ -4,10 +4,10 @@
 
 [@-xun/scripts](../../README.md) / [configure](../README.md) / GlobalExecutionContext
 
-# Type alias: GlobalExecutionContext
+# Type Alias: GlobalExecutionContext
 
 > **GlobalExecutionContext**: `StandardExecutionContext`
 
-## Source
+## Defined in
 
-[src/configure.ts:20](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/src/configure.ts#L20)
+[src/configure.ts:20](https://github.com/Xunnamius/xscripts/blob/b57a6be3f30c8c0a2692b256135acbd661d0e92b/src/configure.ts#L20)

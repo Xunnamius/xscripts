@@ -4,10 +4,10 @@
 
 [@-xun/scripts](../../README.md) / [configure](../README.md) / GlobalCliArguments
 
-# Type alias: GlobalCliArguments
+# Type Alias: GlobalCliArguments
 
 > **GlobalCliArguments**: `StandardCommonCliArguments`
 
-## Source
+## Defined in
 
-[src/configure.ts:22](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/src/configure.ts#L22)
+[src/configure.ts:22](https://github.com/Xunnamius/xscripts/blob/b57a6be3f30c8c0a2692b256135acbd661d0e92b/src/configure.ts#L22)

@@ -15,6 +15,6 @@ Safely imports the nearest package.json file without using `require` or
 
 `Promise`\<`string`\>
 
-## Source
+## Defined in
 
-[src/util.ts:14](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/src/util.ts#L14)
+[src/util.ts:14](https://github.com/Xunnamius/xscripts/blob/b57a6be3f30c8c0a2692b256135acbd661d0e92b/src/util.ts#L14)

@@ -30,9 +30,9 @@ An `Error` class where the first letter of the message is capitalized.
 
 `Error.constructor`
 
-#### Source
+#### Defined in
 
-[lib/@-xun/cli-utils/error.ts:8](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/lib/@-xun/cli-utils/error.ts#L8)
+[lib/@-xun/cli-utils/error.ts:8](https://github.com/Xunnamius/xscripts/blob/b57a6be3f30c8c0a2692b256135acbd661d0e92b/lib/@-xun/cli-utils/error.ts#L8)
 
 ## Properties
 
@@ -44,7 +44,7 @@ An `Error` class where the first letter of the message is capitalized.
 
 `Error.cause`
 
-#### Source
+#### Defined in
 
 node\_modules/typescript/lib/lib.es2022.error.d.ts:24
 
@@ -58,7 +58,7 @@ node\_modules/typescript/lib/lib.es2022.error.d.ts:24
 
 `Error.message`
 
-#### Source
+#### Defined in
 
 node\_modules/typescript/lib/lib.es5.d.ts:1077
 
@@ -72,7 +72,7 @@ node\_modules/typescript/lib/lib.es5.d.ts:1077
 
 `Error.name`
 
-#### Source
+#### Defined in
 
 node\_modules/typescript/lib/lib.es5.d.ts:1076
 
@@ -86,7 +86,7 @@ node\_modules/typescript/lib/lib.es5.d.ts:1076
 
 `Error.stack`
 
-#### Source
+#### Defined in
 
 node\_modules/typescript/lib/lib.es5.d.ts:1078
 
@@ -116,7 +116,7 @@ https://v8.dev/docs/stack-trace-api#customizing-stack-traces
 
 `Error.prepareStackTrace`
 
-#### Source
+#### Defined in
 
 node\_modules/@types/node/globals.d.ts:28
 
@@ -130,7 +130,7 @@ node\_modules/@types/node/globals.d.ts:28
 
 `Error.stackTraceLimit`
 
-#### Source
+#### Defined in
 
 node\_modules/@types/node/globals.d.ts:30
 
@@ -156,6 +156,6 @@ Create .stack property on a target object
 
 `Error.captureStackTrace`
 
-#### Source
+#### Defined in
 
 node\_modules/@types/node/globals.d.ts:21

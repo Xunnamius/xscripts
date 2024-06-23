@@ -17,7 +17,7 @@ rather than throwing or returning `void`.
 
 The path to perform an access check against.
 
-• **fsConstants**: `number`= `fs.constants.R_OK`
+• **fsConstants**: `number` = `fs.constants.R_OK`
 
 The type of access check to perform.
 
@@ -35,6 +35,6 @@ fs.constants
 
 `Promise`\<`boolean`\>
 
-## Source
+## Defined in
 
-[src/util.ts:24](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/src/util.ts#L24)
+[src/util.ts:24](https://github.com/Xunnamius/xscripts/blob/b57a6be3f30c8c0a2692b256135acbd661d0e92b/src/util.ts#L24)

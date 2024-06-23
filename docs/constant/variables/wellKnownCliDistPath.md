@@ -8,6 +8,6 @@
 
 > `const` **wellKnownCliDistPath**: `"dist/src/cli.js"` = `'dist/src/cli.js'`
 
-## Source
+## Defined in
 
-[src/constant.ts:11](https://github.com/Xunnamius/xscripts/blob/f52038b9aa1e95c5b046334684163687ebd170b8/src/constant.ts#L11)
+[src/constant.ts:11](https://github.com/Xunnamius/xscripts/blob/b57a6be3f30c8c0a2692b256135acbd661d0e92b/src/constant.ts#L11)
