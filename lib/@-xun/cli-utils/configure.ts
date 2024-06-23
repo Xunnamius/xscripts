@@ -46,7 +46,7 @@ export function makeStandardConfigureExecutionContext({
    * @default false
    */
   withListr2Support?: boolean;
-}): ConfigureExecutionContext {
+}): ConfigureExecutionContext<StandardExecutionContext> {
   return function (context) {
     return {
       ...context,
@@ -60,7 +60,7 @@ export function makeStandardConfigureExecutionContext({
         isHushed: false,
         startTime: new Date()
       }
-    };
+    } as StandardExecutionContext;
   };
 }
 
@@ -75,52 +75,62 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
     >
   ) {
     // ? Pretty print error output depending on how silent we're supposed to be
-    if (!context.state.isSilenced) {
+    if (message && !context.state.isSilenced) {
       if (context.state.didOutputHelpOrVersionText) {
         context.log.newline([IF_NOT_SILENCED], 'alternate');
       }
 
-      if (message) {
-        context.log.error(
-          [IF_NOT_SILENCED],
-          `❌ Execution failed: ${toFirstLowerCase(message)}`
-        );
-      }
+      context.log.error(
+        [IF_NOT_SILENCED],
+        `❌ Execution failed: ${toFirstLowerCase(message)}`
+      );
 
-      if (
-        !context.state.isQuieted &&
-        isNativeError(error) &&
-        error.cause &&
-        // ? Don't repeat what has already been output
-        error.cause !== message
-      ) {
+      if (!context.state.isQuieted && isNativeError(error)) {
+        const causalStack: string[] = [];
+
         for (
-          let count = 0, subError: Error | undefined = error;
-          subError?.cause && count < MAX_LOG_ERROR_ENTRIES;
-          count++
+          let previousMessage = message, subError: Error | undefined = error;
+          subError && causalStack.length < MAX_LOG_ERROR_ENTRIES;
+          subError = isNativeError(subError.cause) ? subError.cause : undefined
         ) {
-          if (isNativeError(subError.cause)) {
-            if (count === 0) {
-              if (!subError.cause.cause) {
-                break;
-              }
+          const currentMessage = subError.message;
 
-              context.log.error([IF_NOT_QUIETED], '❌ Causal stack:');
+          // ? Do not output duplicate messages
+          if (currentMessage === previousMessage) {
+            if (pushMessageIfFinal(causalStack, subError)) {
+              break;
+            } else {
+              continue;
             }
+          }
 
-            context.log.error(
-              [IF_NOT_QUIETED],
-              `${TAB}⮕  ${subError.cause instanceof TaskError ? toFirstLowerCase(subError.cause.message) : subError.cause.message}`
-            );
-            subError = subError.cause;
+          previousMessage = currentMessage;
+
+          // ? Push the current message onto the causal stack
+          causalStack.push(
+            `${TAB}⮕  ${subError instanceof TaskError ? toFirstLowerCase(currentMessage) : currentMessage}`
+          );
+
+          let shouldBreak = false;
+
+          // ? If we're over max count, indicate messages clipped
+          if (causalStack.length >= MAX_LOG_ERROR_ENTRIES) {
+            causalStack.push('(remaining entries have been hidden)');
+            shouldBreak = true;
           } else {
-            context.log.error([IF_NOT_QUIETED], `${TAB}⮕  ${String(subError.cause)}`);
-            subError = undefined;
+            // ? If the next message isn't an Error, it'll be the final message
+            shouldBreak = pushMessageIfFinal(causalStack, subError);
           }
 
-          if (count + 1 >= MAX_LOG_ERROR_ENTRIES) {
-            context.log.error([IF_NOT_QUIETED], `(remaining entries have been hidden)`);
+          if (shouldBreak) {
+            break;
           }
+        }
+
+        if (causalStack.length) {
+          context.log.newline([IF_NOT_QUIETED], 'alternate');
+          context.log.error([IF_NOT_QUIETED], '❌ Causal stack:');
+          causalStack.forEach((item) => context.log.error([IF_NOT_QUIETED], item));
         }
       }
 
@@ -129,7 +139,7 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
         !context.state.isHushed &&
         context.taskManager.errors.length > 0
       ) {
-        context.log.newline([IF_NOT_HUSHED]);
+        context.log.newline([IF_NOT_HUSHED], 'alternate');
         context.log.error([IF_NOT_HUSHED], '❌ Fatal task errors:');
 
         for (const taskError of context.taskManager.errors) {
@@ -141,6 +151,20 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
           }
         }
       }
+    }
+
+    /**
+     * Returns `true` if the message is final (and loop should break). Returns
+     * `false` otherwise.
+     */
+    function pushMessageIfFinal(causalStack: string[], subError: Error): boolean {
+      // ? If the next message isn't an Error, it will be the final message
+      if (subError.cause && !isNativeError(subError.cause)) {
+        causalStack.push(`${TAB}⮕  ${String(subError.cause)}`);
+        return true;
+      }
+
+      return false;
     }
   };
 }
