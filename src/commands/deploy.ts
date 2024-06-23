@@ -53,10 +53,10 @@ export default function command({
       subOptionOf: {
         target: {
           when: () => true,
-          update(oldOptionConfig, argv) {
+          update(oldOptionConfig, { target }) {
             return {
               ...oldOptionConfig,
-              choices: [argv.target]
+              choices: [target]
             };
           }
         }
@@ -67,6 +67,8 @@ export default function command({
       boolean: true,
       description: 'Deploy to the remote production environment',
       requires: { target: DeployTarget.Vercel },
+      implies: { preview: false },
+      looseImplications: true,
       subOptionOf: {
         target: {
           when: (target: DeployTarget) => target !== DeployTarget.Vercel,
@@ -82,16 +84,16 @@ export default function command({
     preview: {
       boolean: true,
       description: 'Deploy to the remote preview environment',
+      requires: { target: DeployTarget.Vercel },
       default: true,
-      check: function (preview, argv) {
+      check: function (preview, { target, production }) {
         return (
-          argv.target !== DeployTarget.Vercel ||
+          target !== DeployTarget.Vercel ||
           preview ||
-          argv.production ||
-          ErrorMessage.MustChooseDeployEnvironment()
+          production ||
+          'must choose either --preview or --production deployment environment'
         );
       },
-      requires: { target: DeployTarget.Vercel },
       subOptionOf: {
         target: {
           when: (target: DeployTarget) => target !== DeployTarget.Vercel,
