@@ -1,5 +1,6 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/no-keyword-prefix */
+import assert from 'node:assert';
 import { promises as fs } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join as joinPath, resolve as resolvePath } from 'node:path';
@@ -365,6 +366,24 @@ export function protectedImportFactory(path: string) {
 }
 
 // TODO: XXX: make this into a separate (mock-output) package
+
+export type MockedOutputOptions = {
+  /**
+   * If `true`, whenever `process.env.DEBUG` is present, output functions will
+   * still be spied on but their implementations will not be mocked, allowing
+   * debug output to make it to the screen.
+   *
+   * @default true
+   */
+  passthroughOutputIfDebugging?: boolean;
+  /**
+   * Call `::mockRestore` on one or more output functions currently being spied
+   * upon.
+   */
+  passthrough?: ('log' | 'warn' | 'error' | 'info' | 'stdout' | 'stderr')[];
+};
+
+// TODO: XXX: make this into a separate (mock-output) package
 export async function withMockedOutput(
   fn: (spies: {
     logSpy: jest.SpyInstance;
@@ -372,32 +391,98 @@ export async function withMockedOutput(
     errorSpy: jest.SpyInstance;
     infoSpy: jest.SpyInstance;
     stdoutSpy: jest.SpyInstance;
-    stdErrSpy: jest.SpyInstance;
-  }) => unknown
+    stderrSpy: jest.SpyInstance;
+  }) => unknown,
+  { passthrough = [], passthroughOutputIfDebugging = true }: MockedOutputOptions = {}
 ) {
-  const logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
-  const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
-  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
-  const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => undefined);
-  const stdoutSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
-  const stdErrSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => true);
+  const spies = {
+    logSpy: jest.spyOn(console, 'log'),
+    warnSpy: jest.spyOn(console, 'warn'),
+    errorSpy: jest.spyOn(console, 'error'),
+    infoSpy: jest.spyOn(console, 'info'),
+    stdoutSpy: jest.spyOn(process.stdout, 'write'),
+    stderrSpy: jest.spyOn(process.stderr, 'write')
+  };
+
+  const $wasAccessed = Symbol('was-accessed');
+  const noDebugPassthrough = !process.env.DEBUG || !passthroughOutputIfDebugging;
+
+  for (const [name, spy] of Object.entries(spies)) {
+    // ? If we're debugging, show all outputs instead of swallowing them
+    if (
+      noDebugPassthrough &&
+      !passthrough.includes(name as (typeof passthrough)[number])
+    ) {
+      if (name.startsWith('std')) {
+        spy.mockImplementation(() => true);
+      } else {
+        // @ts-expect-error: TypeScript isn't smart enough to figure this out
+        spy.mockImplementation(() => undefined);
+      }
+    }
+
+    // ? Sometimes useful warnings/errors and what not are swallowed when all we
+    // ? really wanted was to track log/stdout calls, or vice-versa. To prevent
+    // ? this, we expect that our spies have not been called at all UNLESS the
+    // ? caller of withMockedOutput uses the spy (accesses a property).
+    let wasAccessed = false;
+    // @ts-expect-error: TypeScript isn't smart enough to figure this out
+    spies[name as keyof typeof spies] =
+      //
+      new Proxy(spy, {
+        get(target, property) {
+          if (property === $wasAccessed) {
+            return wasAccessed;
+          }
+
+          wasAccessed = true;
+
+          const value: unknown =
+            // @ts-expect-error: TypeScript isn't smart enough to figure this out
+            target[property];
+
+          if (value instanceof Function) {
+            return function (...args: unknown[]) {
+              // ? "this-recovering" code
+              return value.apply(target, args);
+            };
+          }
+
+          return value;
+        }
+      });
+  }
 
   try {
-    await fn({
-      logSpy,
-      warnSpy,
-      errorSpy,
-      infoSpy,
-      stdoutSpy,
-      stdErrSpy
-    });
+    await fn(spies);
+
+    // ? Let us know when output was swallowed unexpectedly
+    for (const [name, spy] of Object.entries(spies)) {
+      if (
+        noDebugPassthrough &&
+        !passthrough.includes(name as (typeof passthrough)[number])
+      ) {
+        const wasAccessed = (spy as typeof spy & { [$wasAccessed]: boolean })[
+          $wasAccessed
+        ];
+
+        assert(typeof wasAccessed === 'boolean');
+
+        if (!wasAccessed) {
+          expect({
+            'failing-spy': name,
+            'unexpected-output': spy.mock.calls
+          }).toStrictEqual({ 'failing-spy': name, 'unexpected-output': [] });
+        }
+      }
+    }
   } finally {
-    logSpy.mockRestore();
-    warnSpy.mockRestore();
-    errorSpy.mockRestore();
-    infoSpy.mockRestore();
-    stdoutSpy.mockRestore();
-    stdErrSpy.mockRestore();
+    spies.logSpy.mockRestore();
+    spies.warnSpy.mockRestore();
+    spies.errorSpy.mockRestore();
+    spies.infoSpy.mockRestore();
+    spies.stdoutSpy.mockRestore();
+    spies.stderrSpy.mockRestore();
   }
 }
 
