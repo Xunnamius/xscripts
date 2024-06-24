@@ -18,4 +18,4 @@ Metadata about the current project.
 
 ## Defined in
 
-[src/util.ts:51](https://github.com/Xunnamius/xscripts/blob/4daa0986ccf09c4199915254d8a1d8095507731a/src/util.ts#L51)
+[src/util.ts:51](https://github.com/Xunnamius/xscripts/blob/a81742e25e05086f0ea05fd2898f977d0cd4c168/src/util.ts#L51)
