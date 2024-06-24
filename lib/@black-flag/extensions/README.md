@@ -378,6 +378,9 @@ This configuration allows the following arguments: no arguments (`∅`), `‑x`,
 `‑y=...`, `‑x ‑y=...`, `‑xz`, `-xz y=...`; and disallows: `‑z`, `‑y=one`,
 `‑y=... ‑z`.
 
+Note that a more powerful implementation of `demandThisOptionIf` can be achieved
+via [`subOptionOf`][25].
+
 ---
 
 ##### `demandThisOption`
@@ -1272,34 +1275,57 @@ export default function command({ state }: CustomExecutionContext) {
       string: true,
       description: 'The ssh deploy host',
       requires: { target: DeployTarget.Ssh },
-      demandThisOptionIf: { target: DeployTarget.Ssh },
+      //demandThisOptionIf: { target: DeployTarget.Ssh },
       subOptionOf: {
-        target: {
-          when: (target: DeployTarget) => target !== DeployTarget.Ssh,
-          update(oldOptionConfig) {
-            return {
-              ...oldOptionConfig,
-              hidden: true
-            };
+        target: [
+          {
+            // ▼ Unlike demandThisOptionIf, this changes the help text output!
+            when: (target: DeployTarget) => target === DeployTarget.Ssh,
+            update(oldOptionConfig) {
+              return {
+                ...oldOptionConfig,
+                demandThisOption: true
+              };
+            }
+          },
+          {
+            when: (target: DeployTarget) => target !== DeployTarget.Ssh,
+            update(oldOptionConfig) {
+              return {
+                ...oldOptionConfig,
+                hidden: true
+              };
+            }
           }
-        }
+        ]
       }
     },
     'to-path': {
       string: true,
       description: 'The ssh deploy destination path',
       requires: { target: DeployTarget.Ssh },
-      demandThisOptionIf: { target: DeployTarget.Ssh },
+      //demandThisOptionIf: { target: DeployTarget.Ssh },
       subOptionOf: {
-        target: {
-          when: (target: DeployTarget) => target !== DeployTarget.Ssh,
-          update(oldOptionConfig) {
-            return {
-              ...oldOptionConfig,
-              hidden: true
-            };
+        target: [
+          {
+            when: (target: DeployTarget) => target === DeployTarget.Ssh,
+            update(oldOptionConfig) {
+              return {
+                ...oldOptionConfig,
+                demandThisOption: true
+              };
+            }
+          },
+          {
+            when: (target: DeployTarget) => target !== DeployTarget.Ssh,
+            update(oldOptionConfig) {
+              return {
+                ...oldOptionConfig,
+                hidden: true
+              };
+            }
           }
-        }
+        ]
       }
     }
   });
@@ -1338,6 +1364,125 @@ export default function command({ state }: CustomExecutionContext) {
     })
   } satisfies ChildConfiguration<CustomCliArguments, CustomExecutionContext>;
 }
+```
+
+#### Sample Outputs
+
+```text
+$ x deploy
+Usage: xscripts deploy
+
+Deploy distributes to the appropriate remote.
+
+Required Options:
+  --target  Select deployment target and strategy                       [required] [choices: "vercel", "ssh"]
+
+Optional Options:
+  --production, --prod  Deploy to the remote production environment                                 [boolean]
+  --preview             Deploy to the remote preview environment                    [boolean] [default: true]
+  --host                The ssh deploy host                                                          [string]
+  --to-path             The ssh deploy destination path                                              [string]
+
+Common Options:
+  --help    Show help text                                                                          [boolean]
+  --hush    Set output to be somewhat less verbose                                 [boolean] [default: false]
+  --quiet   Set output to be dramatically less verbose (implies --hush)            [boolean] [default: false]
+  --silent  No output will be generated (implies --quiet)                          [boolean] [default: false]
+
+  xscripts:<error> ❌ Execution failed: missing required argument: target
+```
+
+```text
+$ x deploy --help
+Usage: xscripts deploy
+
+Deploy distributes to the appropriate remote.
+
+Required Options:
+  --target  Select deployment target and strategy                       [choices: "vercel", "ssh"]
+
+Optional Options:
+  --production, --prod  Deploy to the remote production environment     [boolean]
+  --preview             Deploy to the remote preview environment        [boolean] [default: true]
+  --host                The ssh deploy host                             [string]
+  --to-path             The ssh deploy destination path                 [string]
+
+Common Options:
+  --help    Show help text                                              [boolean]
+  --hush    Set output to be somewhat less verbose                      [boolean] [default: false]
+  --quiet   Set output to be dramatically less verbose (implies --hush) [boolean] [default: false]
+  --silent  No output will be generated (implies --quiet)               [boolean] [default: false]
+```
+
+```text
+$ x deploy --target=ssh
+Usage: xscripts deploy
+
+Deploy distributes to the appropriate remote.
+
+Required Options:
+  --target   Select deployment target and strategy                      [required] [choices: "ssh"]
+  --host     The ssh deploy host                                        [string] [required]
+  --to-path  The ssh deploy destination path                            [string] [required]
+
+Common Options:
+  --help    Show help text                                              [boolean]
+  --hush    Set output to be somewhat less verbose                      [boolean] [default: false]
+  --quiet   Set output to be dramatically less verbose (implies --hush) [boolean] [default: false]
+  --silent  No output will be generated (implies --quiet)               [boolean] [default: false]
+
+  xscripts:<error> ❌ Execution failed: missing required arguments: host, to-path
+```
+
+```text
+$ x deploy --target=vercel --to-path
+Usage: xscripts deploy
+
+Deploy distributes to the appropriate remote.
+
+Required Options:
+  --target  Select deployment target and strategy                       [required] [choices: "vercel"]
+
+Optional Options:
+  --production, --prod  Deploy to the remote production environment                          [boolean]
+  --preview             Deploy to the remote preview environment             [boolean] [default: true]
+
+Common Options:
+  --help    Show help text                                                                   [boolean]
+  --hush    Set output to be somewhat less verbose                          [boolean] [default: false]
+  --quiet   Set output to be dramatically less verbose (implies --hush)     [boolean] [default: false]
+  --silent  No output will be generated (implies --quiet)                   [boolean] [default: false]
+
+  xscripts:<error> ❌ Execution failed: the following arguments must be given alongside "to-path":
+  xscripts:<error>
+  xscripts:<error> ⮞  --target="ssh"
+```
+
+```text
+$ x deploy --target=ssh --host prime --to-path '/some/path' --preview
+Usage: xscripts deploy
+
+Deploy distributes to the appropriate remote.
+
+Required Options:
+  --target   Select deployment target and strategy                      [required] [choices: "ssh"]
+  --host     The ssh deploy host                                                [string] [required]
+  --to-path  The ssh deploy destination path                                    [string] [required]
+
+Common Options:
+  --help    Show help text                                                                [boolean]
+  --hush    Set output to be somewhat less verbose                       [boolean] [default: false]
+  --quiet   Set output to be dramatically less verbose (implies --hush)  [boolean] [default: false]
+  --silent  No output will be generated (implies --quiet)                [boolean] [default: false]
+
+  xscripts:<error> ❌ Execution failed: the following arguments must be given alongside "preview":
+  xscripts:<error>
+  xscripts:<error> ⮞  --target="vercel"
+```
+
+```text
+$ x deploy --target=vercel --preview=false --production=false
+xscripts:<error> ❌ Execution failed: must choose either --preview or --production deployment environment
 ```
 
 ## Appendix
