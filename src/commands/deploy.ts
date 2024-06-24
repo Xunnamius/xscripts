@@ -69,7 +69,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       looseImplications: true,
       subOptionOf: {
         target: {
-          when: (target: DeployTarget) => target !== DeployTarget.Vercel,
+          when: (target) => target !== DeployTarget.Vercel,
           update(oldOptionConfig) {
             return {
               ...oldOptionConfig,
@@ -94,7 +94,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       },
       subOptionOf: {
         target: {
-          when: (target: DeployTarget) => target !== DeployTarget.Vercel,
+          when: (target) => target !== DeployTarget.Vercel,
           update(oldOptionConfig) {
             return {
               ...oldOptionConfig,
@@ -108,34 +108,54 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       string: true,
       description: 'The ssh deploy host',
       requires: { target: DeployTarget.Ssh },
-      demandThisOptionIf: { target: DeployTarget.Ssh },
       subOptionOf: {
-        target: {
-          when: (target: DeployTarget) => target !== DeployTarget.Ssh,
-          update(oldOptionConfig) {
-            return {
-              ...oldOptionConfig,
-              hidden: true
-            };
+        target: [
+          {
+            when: (target) => target === DeployTarget.Ssh,
+            update(oldOptionConfig) {
+              return {
+                ...oldOptionConfig,
+                demandThisOption: true
+              };
+            }
+          },
+          {
+            when: (target) => target !== DeployTarget.Ssh,
+            update(oldOptionConfig) {
+              return {
+                ...oldOptionConfig,
+                hidden: true
+              };
+            }
           }
-        }
+        ]
       }
     },
     'to-path': {
       string: true,
       description: 'The ssh deploy destination path',
       requires: { target: DeployTarget.Ssh },
-      demandThisOptionIf: { target: DeployTarget.Ssh },
       subOptionOf: {
-        target: {
-          when: (target: DeployTarget) => target !== DeployTarget.Ssh,
-          update(oldOptionConfig) {
-            return {
-              ...oldOptionConfig,
-              hidden: true
-            };
+        target: [
+          {
+            when: (target) => target === DeployTarget.Ssh,
+            update(oldOptionConfig) {
+              return {
+                ...oldOptionConfig,
+                demandThisOption: true
+              };
+            }
+          },
+          {
+            when: (target) => target !== DeployTarget.Ssh,
+            update(oldOptionConfig) {
+              return {
+                ...oldOptionConfig,
+                hidden: true
+              };
+            }
           }
-        }
+        ]
       }
     }
   });
@@ -166,7 +186,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         case DeployTarget.Vercel: {
           assert(
             attributes.includes(DeployTarget.Vercel),
-            ErrorMessage.WrongProjectAttributes(attributes, [DeployTarget.Vercel])
+            ErrorMessage.WrongProjectAttributes([DeployTarget.Vercel], attributes)
           );
 
           if (production) {
