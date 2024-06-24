@@ -24,7 +24,9 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
     CustomCliArguments,
     GlobalExecutionContext
   >({
-    // TODO
+    // TODO (no dot imports outside lib directory)
+    // TODO (bring in lint code from projector)
+    // TODO (add depcheck package, browserslist, attw, and others into the mix)
   });
 
   return {

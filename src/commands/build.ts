@@ -23,6 +23,10 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
     GlobalExecutionContext
   >({
     // TODO (build command for next projects needs to use NODE_ENV=production)
+    //
+    // TODO (differentiate between lib and lib-dev automatically depending on
+    // TODO which lib packages are imported in /src/* files and which are not.
+    // TODO This also has implications for babel/build config too)
   });
 
   return {
