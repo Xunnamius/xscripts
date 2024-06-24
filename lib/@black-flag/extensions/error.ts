@@ -54,8 +54,8 @@ export const ErrorMessage = {
 function keyValuesToString(keyValueEntries: KeyValueEntries) {
   // eslint-disable-next-line unicorn/no-array-reduce
   return keyValueEntries.reduce((str, keyValueEntry) => {
-    return `${str}\n ${keyValueToString(keyValueEntry)}`;
-  }, '');
+    return `${str}\n⮞  ${keyValueToString(keyValueEntry)}`;
+  }, '\n');
 }
 
 function keyValueToString(keyValueEntry: KeyValueEntry) {

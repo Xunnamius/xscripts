@@ -1,6 +1,5 @@
 import { type ChildConfiguration } from '@black-flag/core';
 import { getRunContext } from '@projector-js/core/project';
-import { SHORT_TAB } from 'multiverse/rejoinder';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { findProjectRoot } from 'universe/util';
@@ -17,6 +16,8 @@ import {
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+
+const frontmatter = `\n⮞  `;
 
 export type CustomCliArguments = GlobalCliArguments;
 
@@ -64,9 +65,9 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
 
         pkgLogger(
           [LogTag.IF_NOT_QUIETED],
-          `Available NPM run commands for ${pkgName}:\n\n` +
-            SHORT_TAB +
-            Object.keys(scripts || {}).join(`\n${SHORT_TAB}`) +
+          `Available NPM run commands for ${pkgName}:\n` +
+            frontmatter +
+            Object.keys(scripts || {}).join(frontmatter) +
             '\n'
         );
       }
