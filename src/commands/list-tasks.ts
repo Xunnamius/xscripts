@@ -2,7 +2,6 @@ import { type ChildConfiguration } from '@black-flag/core';
 import { getRunContext } from '@projector-js/core/project';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { findProjectRoot } from 'universe/util';
 
 import {
   LogTag,
@@ -39,9 +38,6 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const { startTime } = state;
 
       logStartTime({ log, startTime });
-
-      const projectRootPath = await findProjectRoot();
-      debug('project root path: %O', projectRootPath);
 
       const {
         context,
