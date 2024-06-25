@@ -27,5 +27,8 @@ export const ErrorMessage = {
   },
   MustChooseDeployEnvironment() {
     return 'must choose either --preview or --production deployment environment';
+  },
+  MarkdownNoUndefinedReferences() {
+    return 'cannot continue with undefined references present in one or more Markdown files';
   }
 };

@@ -64,7 +64,7 @@ const formatConfig = {
     ['capitalize-headings', { excludeHeadingLevel: { h1: true } }],
     'remove-unused-definitions',
     'remove-url-trailing-slash',
-    'renumber-references',
+    ...(process.env.SHOULD_RENUMBER_REFERENCES === 'true' ? ['renumber-references'] : []),
     'sort-definitions'
   ]
 };
