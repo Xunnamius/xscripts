@@ -1,5 +1,6 @@
 import { ErrorMessage as UpstreamErrorMessage } from 'multiverse/@-xun/cli-utils/error';
-import { type ProjectMetaAttribute } from 'universe/util';
+
+import type { ProjectMetaAttribute } from 'universe/util';
 
 export { TaskError } from 'multiverse/@-xun/cli-utils/error';
 
@@ -9,14 +10,11 @@ export { TaskError } from 'multiverse/@-xun/cli-utils/error';
 /* istanbul ignore next */
 export const ErrorMessage = {
   ...UpstreamErrorMessage,
-  AssertionFailureMissingPackageJson() {
-    return 'assertion failed: cannot find suitable package.json file';
+  CannotReadFile(expectedPath: string) {
+    return `failed to read file at path: ${expectedPath}`;
   },
-  AssertionFailureBadPackageJson() {
-    return 'assertion failed: cannot load given package.json file';
-  },
-  AssertionFailureCannotBeCliAndNextJs() {
-    return 'assertion failed: project must either provide a CLI or be a Next.js project';
+  CannotBeCliAndNextJs() {
+    return 'project must either provide a CLI or be a Next.js project';
   },
   CleanCalledWithoutForce() {
     return 'no deletions were performed (try again with --force)';

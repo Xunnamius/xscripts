@@ -1,20 +1,39 @@
 import assert from 'node:assert';
 import { promises as fs } from 'node:fs';
-import { dirname } from 'node:path';
+
+import { CliError, FrameworkExitCode } from '@black-flag/core';
+import { getRunContext } from '@projector-js/core/project';
+import { glob } from 'glob-gitignore';
 
 import { globalLoggerNamespace, wellKnownCliDistPath } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
 
 import { createDebugLogger } from 'multiverse/rejoinder';
 
+export async function readFile(path: string) {
+  try {
+    return await fs.readFile(path, { encoding: 'utf8' });
+  } catch (error) {
+    throw new CliError(new Error(ErrorMessage.CannotReadFile(path), { cause: error }), {
+      suggestedExitCode: FrameworkExitCode.AssertionFailed
+    });
+  }
+}
+
 /**
- * Safely imports the nearest package.json file without using `require` or
- * `import`.
+ * Returns a list of all Markdown files not ignored by `.prettierignore`.
  */
-export async function findProjectRoot(): Promise<string> {
-  const pkgJsonPath = await (await import('pkg-up')).pkgUp();
-  assert(pkgJsonPath, ErrorMessage.AssertionFailureMissingPackageJson());
-  return dirname(pkgJsonPath);
+export async function findMarkdownFiles() {
+  const {
+    project: { root }
+  } = getRunContext();
+
+  const matches = await glob('**/*.md', {
+    ignore: (await readFile(`${root}/.prettierignore`)).split(`\n`).filter(Boolean),
+    dot: true
+  });
+
+  return matches;
 }
 
 /**
@@ -57,6 +76,8 @@ export type ProjectMetadata = {
  */
 export const fsConstants = fs.constants;
 
+// TODO: probably want to merge this into @projector-js/core's project metadata
+// TODO: package
 /**
  * Return metadata about the current project.
  */
@@ -90,10 +111,7 @@ export async function getProjectMetadata(): Promise<ProjectMetadata> {
     attributes.push('vercel');
   }
 
-  assert(
-    !(isNextProject && isCliProject),
-    ErrorMessage.AssertionFailureCannotBeCliAndNextJs()
-  );
+  assert(!(isNextProject && isCliProject), ErrorMessage.CannotBeCliAndNextJs());
 
   const metadata: ProjectMetadata = { attributes };
   debug('project metadata: %O', metadata);
