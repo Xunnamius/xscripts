@@ -1,5 +1,4 @@
 import assert from 'node:assert';
-import { tmpdir } from 'node:os';
 
 import { type ChildConfiguration } from '@black-flag/core';
 import askPassword from 'askpassword';
@@ -97,7 +96,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
           target !== DeployTarget.Vercel ||
           preview ||
           production ||
-          'must choose either --preview or --production deployment environment'
+          ErrorMessage.MustChooseDeployEnvironment()
         );
       },
       subOptionOf: {
@@ -247,7 +246,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         case DeployTarget.Ssh: {
           genericLogger([LogTag.IF_NOT_QUIETED], deployMessage('ssh'));
 
-          const remoteTmpdirPath = uniqueFilename(tmpdir(), 'x-deploy-');
+          const remoteTmpdirPath = uniqueFilename('/tmp', 'x-deploy');
 
           await run('rsync', [
             '-chavzP',
