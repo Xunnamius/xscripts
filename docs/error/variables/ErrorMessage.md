@@ -208,19 +208,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureBadPackageJson()
-
-#### Returns
-
-`string`
-
 ### AssertionFailureBadParameterCombination()
-
-#### Returns
-
-`string`
-
-### AssertionFailureCannotBeCliAndNextJs()
 
 #### Returns
 
@@ -276,12 +264,6 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureMissingPackageJson()
-
-#### Returns
-
-`string`
-
 ### AssertionFailureNoConfigurationLoaded()
 
 #### Parameters
@@ -304,6 +286,22 @@ A collection of possible error and warning messages.
 
 `string`
 
+### CannotBeCliAndNextJs()
+
+#### Returns
+
+`string`
+
+### CannotReadFile()
+
+#### Parameters
+
+• **expectedPath**: `string`
+
+#### Returns
+
+`string`
+
 ### CheckFailed()
 
 #### Parameters
@@ -315,6 +313,16 @@ A collection of possible error and warning messages.
 `string`
 
 ### CleanCalledWithoutForce()
+
+#### Returns
+
+`string`
+
+### CommandDidNotComplete()
+
+#### Parameters
+
+• **command**: `string`
 
 #### Returns
 
@@ -472,6 +480,12 @@ A collection of possible error and warning messages.
 
 `string`
 
+### MarkdownNoUndefinedReferences()
+
+#### Returns
+
+`string`
+
 ### MetadataInvariantViolated()
 
 #### Parameters
@@ -526,4 +540,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:10](https://github.com/Xunnamius/xscripts/blob/a81742e25e05086f0ea05fd2898f977d0cd4c168/src/error.ts#L10)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/9e4ae592d211ae39bacdc3f665b3078e69c73062/src/error.ts#L11)

@@ -19,7 +19,8 @@
 
 ### Functions
 
-- [findProjectRoot](functions/findProjectRoot.md)
+- [findProjectFiles](functions/findProjectFiles.md)
 - [getProjectMetadata](functions/getProjectMetadata.md)
 - [hasExitCode](functions/hasExitCode.md)
 - [isAccessible](functions/isAccessible.md)
+- [readFile](functions/readFile.md)
