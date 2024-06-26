@@ -30,7 +30,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
   return {
     aliases: ['dist'],
     builder,
-    description: 'Translate source and assets into production-ready distributables',
+    description: 'Transpile source and assets into production-ready distributables',
     usage: withStandardUsage(),
     handler: withStandardHandler(async function ({ $0: scriptFullName }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
@@ -41,7 +41,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const { startTime } = state;
 
       logStartTime({ log, startTime });
-      genericLogger([LogTag.IF_NOT_QUIETED], 'Building project...');
+      genericLogger([LogTag.IF_NOT_QUIETED], 'Building project distributables...');
 
       // TODO (build command for next projects needs to use NODE_ENV=production)
       //
