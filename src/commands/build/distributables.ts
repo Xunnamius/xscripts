@@ -15,21 +15,20 @@ import {
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 
-export type CustomCliArguments = GlobalCliArguments;
+export type CustomCliArguments = GlobalCliArguments & {
+  // TODO
+};
 
 export default function command({ log, debug_, state }: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
   >({
-    // TODO (build command for next projects needs to use NODE_ENV=production)
-    //
-    // TODO (differentiate between lib and lib-dev automatically depending on
-    // TODO which lib packages are imported in /src/* files and which are not.
-    // TODO This also has implications for babel/build config too)
+    // TODO
   });
 
   return {
+    aliases: ['dist'],
     builder,
     description: 'Translate source and assets into production-ready distributables',
     usage: withStandardUsage(),
@@ -43,6 +42,12 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Building project...');
+
+      // TODO (build command for next projects needs to use NODE_ENV=production)
+      //
+      // TODO (differentiate between lib and lib-dev automatically depending on
+      // TODO which lib packages are imported in /src/* files and which are not.
+      // TODO This also has implications for babel/build config too)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
