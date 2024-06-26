@@ -75,7 +75,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
             'remark',
             '--no-config',
             '--no-stdout',
-            '--quiet',
+            ...(isHushed ? ['--quiet'] : []),
             '--frail',
             '--use',
             'gfm',
@@ -135,14 +135,18 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         status.doctoc = true;
         status.remark = null;
 
-        await run('npx', ['remark', '--output', '--frail', ...mdFiles], {
-          env: {
-            NODE_ENV: 'format',
-            SHOULD_RENUMBER_REFERENCES: renumberReferences.toString()
-          },
-          stdout: isHushed ? 'ignore' : 'inherit',
-          stderr: isQuieted ? 'ignore' : 'inherit'
-        }).catch((error) => {
+        await run(
+          'npx',
+          ['remark', ...(isHushed ? ['--quiet'] : []), '--output', '--frail', ...mdFiles],
+          {
+            env: {
+              NODE_ENV: 'format',
+              SHOULD_RENUMBER_REFERENCES: renumberReferences.toString()
+            },
+            stdout: isHushed ? 'ignore' : 'inherit',
+            stderr: isQuieted ? 'ignore' : 'inherit'
+          }
+        ).catch((error) => {
           status.remark = false;
           throw error;
         });
