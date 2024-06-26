@@ -14,7 +14,7 @@ ignore.*
 # Ignore any external scripts
 external-scripts/bin
 
-# Ignore build artifacts
+# Ignore build artifacts (except under src)
 *.tsbuildinfo
 dist
 build
@@ -22,6 +22,7 @@ build
 .next
 next-env.d.ts
 coverage
+!/src/**
 
 # Ignore local configuration
 .vscode
