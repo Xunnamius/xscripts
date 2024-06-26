@@ -1,8 +1,8 @@
-import { type ChildConfiguration } from '@black-flag/core';
+import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { findMarkdownFiles } from 'universe/util';
+import { findProjectFiles } from 'universe/util';
 
 import {
   LogTag,
@@ -16,6 +16,7 @@ import {
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments & {
@@ -61,9 +62,11 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const { startTime } = state;
 
       logStartTime({ log, startTime });
+      genericLogger([LogTag.IF_NOT_QUIETED], 'Formatting project files...');
 
-      const mdFiles = await findMarkdownFiles();
+      const { mdFiles, pkgFiles } = await findProjectFiles();
       debug('mdFiles: %O', mdFiles);
+      debug('pkgFiles: %O', mdFiles);
 
       try {
         await run(
@@ -89,41 +92,124 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         throw new Error(ErrorMessage.MarkdownNoUndefinedReferences(), { cause: error });
       }
 
-      // ? This can run completely asynchronously since nothing else relies on
-      // ? it (except prettier).
+      const status: Record<
+        'sort' | 'doctoc' | 'remark' | 'prettier',
+        boolean | null | undefined
+      > & { failed: boolean } = {
+        failed: false,
+        sort: undefined,
+        doctoc: undefined,
+        remark: undefined,
+        prettier: undefined
+      };
 
-      const promisedSortedPkg = sortPackageJson
-        ? run('npx', ['sort-package-json', './package.json', './packages/*/package.json'])
-        : Promise.resolve();
+      try {
+        // ? This can run completely asynchronously since nothing else relies on
+        // ? it (except prettier).
 
-      // ? These have to run sequentially to prevent data corruption.
+        status.sort = null;
 
-      await run(
-        'npx',
-        ['doctoc', '--no-title', '--maxlevel', '3', '--update-only', ...mdFiles],
-        {
+        const sortedPkgJsonFiles = sortPackageJson
+          ? run('npx', ['sort-package-json', ...pkgFiles]).catch((error) => {
+              status.sort = false;
+              throw error;
+            })
+          : Promise.resolve();
+
+        // ? These have to run sequentially to prevent data corruption.
+
+        status.doctoc = null;
+
+        await run(
+          'npx',
+          ['doctoc', '--no-title', '--maxlevel', '3', '--update-only', ...mdFiles],
+          {
+            stdout: isHushed ? 'ignore' : 'inherit',
+            stderr: isQuieted ? 'ignore' : 'inherit'
+          }
+        ).catch((error) => {
+          status.doctoc = false;
+          throw error;
+        });
+
+        status.doctoc = true;
+        status.remark = null;
+
+        await run('npx', ['remark', '--output', '--frail', ...mdFiles], {
+          env: {
+            NODE_ENV: 'format',
+            SHOULD_RENUMBER_REFERENCES: renumberReferences.toString()
+          },
           stdout: isHushed ? 'ignore' : 'inherit',
           stderr: isQuieted ? 'ignore' : 'inherit'
-        }
+        }).catch((error) => {
+          status.remark = false;
+          throw error;
+        });
+
+        status.remark = true;
+
+        await sortedPkgJsonFiles;
+
+        status.sort = true;
+        status.prettier = null;
+
+        await run('npx', ['prettier', '--write', '.'], {
+          stdout: isHushed ? 'ignore' : 'inherit',
+          stderr: isQuieted ? 'ignore' : 'inherit'
+        }).catch((error) => {
+          status.prettier = false;
+          throw error;
+        });
+
+        status.prettier = true;
+      } catch {
+        status.failed = true;
+      }
+
+      genericLogger(
+        [LogTag.IF_NOT_SILENCED],
+        [
+          `Processed package.json files: ${pkgFiles.length}`,
+          `${SHORT_TAB}Sorted file contents: ${statusToEmoji(status.sort)}`,
+          `Processed markdown files: ${mdFiles.length}`,
+          `${SHORT_TAB}Synchronized TOCs: ${statusToEmoji(status.doctoc)}`,
+          `${SHORT_TAB}Reformatted files: ${statusToEmoji(status.remark)}`,
+          `Prettified all relevant project files: ${statusToEmoji(status.prettier)}`
+        ].join('\n')
       );
 
-      await run('npx', ['remark', '--output', '--frail', ...mdFiles], {
-        env: {
-          NODE_ENV: 'format',
-          SHOULD_RENUMBER_REFERENCES: renumberReferences.toString()
-        },
-        stdout: isHushed ? 'ignore' : 'inherit',
-        stderr: isQuieted ? 'ignore' : 'inherit'
-      });
+      genericLogger.newline([LogTag.IF_NOT_SILENCED]);
 
-      await promisedSortedPkg;
-
-      await run('npx', ['prettier', '--write', '.'], {
-        stdout: isHushed ? 'ignore' : 'inherit',
-        stderr: isQuieted ? 'ignore' : 'inherit'
-      });
+      if (status.failed) {
+        throw new CliError(ErrorMessage.CommandDidNotComplete('format'));
+      }
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
+}
+
+function statusToEmoji(status: boolean | null | undefined) {
+  switch (status) {
+    case true: {
+      return '✅';
+      break;
+    }
+
+    case false: {
+      return '❌ (failed)';
+      break;
+    }
+
+    case null: {
+      return '❓ (started)';
+      break;
+    }
+
+    case undefined: {
+      return '✖️ (skipped)';
+      break;
+    }
+  }
 }

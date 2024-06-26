@@ -3,6 +3,7 @@
  * import('unified-engine/lib/configuration').PluggableList |
  * import('unified-engine/lib/configuration').PluginIdList}} Config
  */
+const debug = (await import('debug')).default('@-xun/configs:remark');
 
 /**
  * Remark configuration loaded when `NODE_ENV === 'lint'`. The goal here is to
@@ -76,7 +77,7 @@ if (!['lint', 'format'].includes(process.env.NODE_ENV)) {
 /**
  * @type {Config}
  */
-export default {
+const config = {
   settings: {
     bullet: '-',
     emphasis: '_',
@@ -91,3 +92,9 @@ export default {
     ...(process.env.NODE_ENV === 'lint' ? lintConfig.plugins : formatConfig.plugins)
   ]
 };
+
+debug('lintConfig: %O', lintConfig);
+debug('formatConfig: %O', formatConfig);
+debug('export config: %O', config);
+
+export default config;

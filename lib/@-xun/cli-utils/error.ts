@@ -19,6 +19,9 @@ export const ErrorMessage = {
   UnsupportedCommand() {
     return 'this project does not support this command';
   },
+  CommandDidNotComplete(command: string) {
+    return `the "${command}" command did not complete`;
+  },
   IgnoredArguments(args: string[]) {
     return `the following command arguments were ignored: ${args.join(', ')}`;
   }

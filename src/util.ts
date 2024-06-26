@@ -20,20 +20,43 @@ export async function readFile(path: string) {
   }
 }
 
+const projectFileCache = {
+  cached: false,
+  cache: { mdFiles: [] as string[], pkgFiles: [] as string[] }
+};
+
 /**
- * Returns a list of all Markdown files not ignored by `.prettierignore`.
+ * Returns an array of various different file paths (strings):
+ *
+ * - **`pkgFiles`** - `package.json` files at root or belonging to workspaces
+ * - **`mdFiles`** - Markdown files not ignored by `.prettierignore`
  */
-export async function findMarkdownFiles() {
+export async function findProjectFiles(useCached = true) {
+  if (useCached && projectFileCache.cached) {
+    return projectFileCache.cache;
+  }
+
   const {
-    project: { root }
+    project: { root, packages }
   } = getRunContext();
 
-  const matches = await glob('**/*.md', {
+  const mdFiles = await glob('**/*.md', {
     ignore: (await readFile(`${root}/.prettierignore`)).split(`\n`).filter(Boolean),
     dot: true
   });
 
-  return matches;
+  const pkgFiles = [`${root}/package.json`].concat(
+    packages ? Array.from(packages.values()).map((pkg) => `${pkg.root}/package.json`) : []
+  );
+
+  const result = { mdFiles, pkgFiles };
+
+  if (useCached) {
+    projectFileCache.cached = true;
+    Object.assign(projectFileCache.cache, result);
+  }
+
+  return result;
 }
 
 /**
