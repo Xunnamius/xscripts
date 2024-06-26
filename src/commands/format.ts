@@ -171,6 +171,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         status.failed = true;
       }
 
+      // TODO: replace with listr2 tasks
       genericLogger(
         [LogTag.IF_NOT_SILENCED],
         [
