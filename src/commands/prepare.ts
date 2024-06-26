@@ -38,6 +38,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const { startTime } = state;
 
       logStartTime({ log, startTime });
+      genericLogger([LogTag.IF_NOT_QUIETED], 'Preparing project...');
 
       const isInCiEnvironment = !!process.env.CI;
       const isInDevelopmentEnvironment =

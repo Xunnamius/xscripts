@@ -193,7 +193,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
     usage: withStandardUsage(
       [
         '$1.\n\nWhen using --target=ssh, it is assumed the key pair necessary to authenticate with',
-        '--host is available in the environment. This command fail if authenticating to --host requires a password.'
+        '--host is available in the environment. This command will fail if authenticating to --host requires a password or other user input.'
       ].join(' ')
     ),
     handler: withStandardHandler(async function ({
@@ -213,6 +213,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const { startTime } = state;
 
       logStartTime({ log, startTime });
+      genericLogger([LogTag.IF_NOT_QUIETED], 'Deploying project...');
 
       const { attributes } = await getProjectMetadata();
       const deployMessage = (deployTarget: string) =>

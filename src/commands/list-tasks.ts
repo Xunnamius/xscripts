@@ -38,6 +38,8 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const { startTime } = state;
 
       logStartTime({ log, startTime });
+      genericLogger([LogTag.IF_NOT_QUIETED], 'Gathering available tasks...');
+      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
       const {
         context,
@@ -54,18 +56,22 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
 
       const packages = [rootPkgJson, ...workspacePkgsJson];
 
-      for (const { name, scripts } of packages) {
+      for (const [index, { name, scripts }] of packages.entries()) {
         const pkgName = name || '(unnamed package)';
         const pkgLogger =
           packages.length > 1 ? genericLogger.extend(`[${pkgName}]`) : genericLogger;
 
         pkgLogger(
           [LogTag.IF_NOT_QUIETED],
-          `Available NPM run commands for ${pkgName}:\n` +
+          `Available NPM run commands for ${pkgName}:` +
             frontmatter +
             Object.keys(scripts || {}).join(frontmatter) +
             '\n'
         );
+
+        if (index < packages.length - 1) {
+          genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+        }
       }
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);

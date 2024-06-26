@@ -84,6 +84,7 @@ export default function command({
       debug('excludeRegExps: %O', excludeRegExps);
 
       logStartTime({ log, startTime });
+      genericLogger([LogTag.IF_NOT_QUIETED], 'Cleaning project...');
 
       const ignoredPaths = (
         await run('git', [

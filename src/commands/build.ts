@@ -42,6 +42,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const { startTime } = state;
 
       logStartTime({ log, startTime });
+      genericLogger([LogTag.IF_NOT_QUIETED], 'Building project...');
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
