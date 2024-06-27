@@ -1,13 +1,16 @@
-
-import { ChildConfiguration } from '@black-flag/core';
+import { type ChildConfiguration } from '@black-flag/core';
 import { type GlobalExecutionContext } from 'universe/configure';
-import { default as command, type CustomCliArguments } from './distributables';
+
+import {
+  default as buildDistributables,
+  type CustomCliArguments
+} from './distributables';
 
 export type { CustomCliArguments };
 
-export default function(globalExecutionContext: GlobalExecutionContext) {
+export default function command(globalExecutionContext: GlobalExecutionContext) {
   return {
-    ...command(globalExecutionContext),
+    ...buildDistributables(globalExecutionContext),
     aliases: []
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
 }
