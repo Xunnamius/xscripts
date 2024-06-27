@@ -10,4 +10,4 @@ fixtures
 docs
 CHANGELOG.md
 bundle-stats.ignore.json
-test/integration/assets/output-1.js
+!/src/**

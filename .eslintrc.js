@@ -204,7 +204,14 @@ module.exports = {
       '.*/bin/.*'
     ]
   },
-  ignorePatterns: ['coverage', 'dist', 'bin', 'build', '/next.config.js']
+  ignorePatterns: [
+    'coverage',
+    'dist',
+    'bin',
+    'build/**/*',
+    '/next.config.js',
+    '!src/build/**/*'
+  ]
 };
 
 debug('exports: %O', module.exports);
