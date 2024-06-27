@@ -1767,7 +1767,7 @@ specification. Contributions of any kind welcome!
 [31]: https://github.com/Xunnamius/black-flag-demo/blob/main/commands/init.js
 [32]: #impossible-configurations
 [33]: https://yargs.js.org/docs#api-reference-groupkeys-groupname
-[34]: https://
+[34]: https://github.com/Xunnamius/xunnctl?tab=readme-ov-file#xunnctl
 [35]: ./docs/functions/withUsageExtensions.md
 [36]: https://github.com/Xunnamius/xscripts/blob/main/src/commands/deploy.ts
 [37]: https://yargs.js.org/docs#api-reference
