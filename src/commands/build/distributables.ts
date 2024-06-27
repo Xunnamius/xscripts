@@ -1,10 +1,14 @@
 /* eslint-disable no-await-in-loop */
+import assert from 'node:assert';
+import { chmod, rename, symlink } from 'node:fs/promises';
 import { dirname } from 'node:path';
 
 import { transformFileAsync } from '@babel/core';
 import { type ChildConfiguration } from '@black-flag/core';
+import uniqueFilename from 'unique-filename';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { wellKnownCliDistPath } from 'universe/constant';
 
 import {
   ProjectMetaAttribute,
@@ -23,24 +27,27 @@ import {
   withStandardUsage
 } from 'multiverse/@-xun/cli-utils/extensions';
 
+import { getRunContext } from '@projector-js/core/project';
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
+import { ErrorMessage } from 'universe/error';
 
 export type CustomCliArguments = GlobalCliArguments & {
-  // TODO
+  generateTypes: boolean;
+  linkCliIntoBin: boolean;
 };
 
-export default function command({
-  log,
-  debug_,
-  state,
-  hush: isHushed,
-  quiet: isQuieted
-}: GlobalExecutionContext) {
+export default function command({ log, debug_, state }: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
   >({
+    'generate-types': {
+      boolean: true,
+      description: 'Output TypeScript declaration files alongside distributables',
+      default: true
+    },
     'link-cli-into-bin': {
       boolean: true,
       description: 'Soft-link "bin" entries in package.json into node_modules/.bin',
@@ -53,7 +60,13 @@ export default function command({
     builder,
     description: 'Transpile source and assets into production-ready distributables',
     usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName }) {
+    handler: withStandardHandler(async function ({
+      $0: scriptFullName,
+      generateTypes,
+      linkCliIntoBin,
+      hush: isHushed,
+      quiet: isQuieted
+    }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
       const debugImportLister = debug.extend('import-lister');
@@ -63,13 +76,31 @@ export default function command({
       const { startTime } = state;
 
       logStartTime({ log, startTime });
+
+      debug('generateTypes: %O', generateTypes);
+      debug('linkCliIntoBin: %O', linkCliIntoBin);
+
       genericLogger([LogTag.IF_NOT_QUIETED], 'Building project distributables...');
+
+      debug('calculating metadata');
+
+      const {
+        context,
+        project: {
+          // ? This does NOT end in a slash and this must be taken into account!
+          root: rootDir,
+          json: rootPkg
+        }
+      } = getRunContext();
+
+      debug('rootDir: %O', rootDir);
+      debug('rootPkg: %O', rootPkg);
 
       const [
         { attributes },
         {
           tsFiles: { src: tsSrcFiles, lib: tsLibraryFiles },
-          pkgFiles: { root: rootPkgFile, lib: libraryPkgFiles }
+          pkgFiles: { lib: libraryPkgFiles }
         },
         { default: createImportsListerPlugin }
       ] = await Promise.all([
@@ -78,38 +109,11 @@ export default function command({
         import('babel-plugin-list-imports')
       ]);
 
-      // TODO: replace with listr2
+      // TODO: replace relevant tasks with listr2
 
-      genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Generating types');
-
-      // await run(
-      //   'npx',
-      //   ['tsc', '--project', 'tsconfig.types.json', '--incremental', 'false'],
-      //   {
-      //     env: { NODE_ENV: 'production' },
-      //     stdout: isHushed ? 'ignore' : 'inherit',
-      //     stderr: isQuieted ? 'ignore' : 'inherit'
-      //   }
-      // );
-
-      // await run('npx', ['tsconfig-replace-paths', '--project', 'tsconfig.types.json'], {
-      //   stdout: isHushed ? 'ignore' : 'inherit',
-      //   stderr: isQuieted ? 'ignore' : 'inherit'
-      // });
-
-      //attributes.includes(ProjectMetaAttribute.Cli)
-      void ProjectMetaAttribute, attributes, isHushed, isQuieted, run;
-
-      genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Organizing types');
-      genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Refactoring types');
-      genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Building distributables');
-
-      // ? This does NOT end in a slash and this must be taken into account!
-      const rootDir = dirname(rootPkgFile);
       const libraryDirPrefix = `${rootDir}/lib/`;
       const productionLibraryImports = new Set<string>();
 
-      debug('rootDir: %O', rootDir);
       debug('libDirPrefix: %O', rootDir);
 
       const libraryDirectories = Array.from(
@@ -151,20 +155,121 @@ export default function command({
         );
       }
 
-      // await run(
-      //   'npx',
-      //   ['babel', '--project', 'tsconfig.types.json', '--incremental', 'false'],
-      //   {
-      //     env: { NODE_ENV: 'production-cjs' },
-      //     stdout: isHushed ? 'ignore' : 'inherit',
-      //     stderr: isQuieted ? 'ignore' : 'inherit'
-      //   }
-      // );
+      if (generateTypes) {
+        genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Generating types');
 
-      genericLogger(
-        [LogTag.IF_NOT_QUIETED],
-        '⮞ Adding executable entry to node_modules/.bin'
+        debug('running tsc');
+        await run(
+          'npx',
+          ['tsc', '--project', 'tsconfig.types.json', '--incremental', 'false'],
+          {
+            env: { NODE_ENV: 'production' },
+            stdout: isHushed ? 'ignore' : 'inherit',
+            stderr: isQuieted ? 'ignore' : 'inherit'
+          }
+        );
+
+        debug('running tsconfig-replace-paths');
+        await run('npx', ['tsconfig-replace-paths', '--project', 'tsconfig.types.json'], {
+          stdout: isHushed ? 'ignore' : 'inherit',
+          stderr: isQuieted ? 'ignore' : 'inherit'
+        });
+
+        if (context === 'monorepo') {
+          // TODO
+          genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Organizing types`);
+          genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Refactoring types`);
+        }
+      } else {
+        debug('skipped type generation');
+      }
+
+      genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Building distributables');
+
+      debug('building root lib');
+      await run(
+        'npx',
+        [
+          'babel',
+          ...Array.from(productionLibraryImports).map((name) => `${rootDir}/lib/${name}`),
+          '--extensions',
+          '.ts',
+          '--out-dir',
+          './dist/lib',
+          '--out-file-extension',
+          '.js',
+          '--ignore',
+          'lib/**/*.test.ts',
+          '--ignore',
+          'lib/**/README.md'
+        ],
+        {
+          env: { NODE_ENV: 'production-cjs' },
+          stdout: isHushed ? 'ignore' : 'inherit',
+          stderr: isQuieted ? 'ignore' : 'inherit'
+        }
       );
+
+      debug('building root dist');
+      await run(
+        'npx',
+        [
+          'babel',
+          'src',
+          '--extensions',
+          '.ts',
+          '--out-dir',
+          './dist/src',
+          '--out-file-extension',
+          '.js'
+        ],
+        {
+          env: { NODE_ENV: 'production-cjs' },
+          stdout: isHushed ? 'ignore' : 'inherit',
+          stderr: isQuieted ? 'ignore' : 'inherit'
+        }
+      );
+
+      if (
+        attributes.includes(ProjectMetaAttribute.Cli) &&
+        linkCliIntoBin &&
+        rootPkg.bin &&
+        rootPkg.name
+      ) {
+        genericLogger(
+          [LogTag.IF_NOT_QUIETED],
+          '⮞ Adding executable entry to node_modules/.bin'
+        );
+
+        debug('symlinking and chmod-ing cli.js into node_modules based on bin config');
+
+        const binConfig =
+          typeof rootPkg.bin === 'string' ? { [rootPkg.name]: rootPkg.bin } : rootPkg.bin;
+
+        await Promise.all([
+          ...Object.entries(binConfig).map(async ([name, path]) => {
+            assert(path, ErrorMessage.GuruMeditation());
+
+            const temporaryPath = uniqueFilename(`${rootDir}/node_modules/.bin`);
+            const realPath = `${rootDir}/node_modules/.bin/${name}`;
+
+            debug('intermediate symlink path: %O', temporaryPath);
+
+            await symlink(path, temporaryPath);
+            await rename(temporaryPath, realPath);
+
+            genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}${path} ⮕ ${realPath}`);
+          }),
+          chmod(wellKnownCliDistPath, 0o775).then(() =>
+            genericLogger(
+              [LogTag.IF_NOT_QUIETED],
+              `${SHORT_TAB}chmod 0775 ${wellKnownCliDistPath}`
+            )
+          )
+        ]);
+      } else {
+        debug('skipped symlinking and chmod-ing cli.js');
+      }
 
       // TODO (build command for next projects needs to use NODE_ENV=production)
       //
