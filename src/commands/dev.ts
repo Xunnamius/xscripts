@@ -2,7 +2,7 @@ import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { getProjectMetadata, hasExitCode } from 'universe/util';
+import { ProjectMetaAttribute, getProjectMetadata, hasExitCode } from 'universe/util';
 
 import { LogTag, logStartTime } from 'multiverse/@-xun/cli-utils/logging';
 
@@ -49,11 +49,11 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       };
 
       try {
-        if (attributes.includes('next')) {
+        if (attributes.includes(ProjectMetaAttribute.Next)) {
           const port = await acquirePort();
           genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
-          await runWithInheritedIo('next', ['-p', port]);
-        } else if (attributes.includes('webpack')) {
+          await runWithInheritedIo(ProjectMetaAttribute.Next, ['-p', port]);
+        } else if (attributes.includes(ProjectMetaAttribute.Webpack)) {
           const port = await acquirePort();
 
           genericLogger(

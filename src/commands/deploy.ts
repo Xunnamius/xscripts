@@ -6,7 +6,7 @@ import uniqueFilename from 'unique-filename';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { getProjectMetadata } from 'universe/util';
+import { ProjectMetaAttribute, getProjectMetadata } from 'universe/util';
 
 import {
   LogTag,
@@ -222,8 +222,8 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       switch (target) {
         case DeployTarget.Vercel: {
           assert(
-            attributes.includes(DeployTarget.Vercel),
-            ErrorMessage.WrongProjectAttributes([DeployTarget.Vercel], attributes)
+            attributes.includes(ProjectMetaAttribute.Vercel),
+            ErrorMessage.WrongProjectAttributes([ProjectMetaAttribute.Vercel], attributes)
           );
 
           if (production) {

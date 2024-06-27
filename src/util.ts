@@ -85,7 +85,12 @@ export async function isAccessible(
 /**
  * Metadata attributes that describe the capabilities and scope of a project.
  */
-export type ProjectMetaAttribute = 'next' | 'cli' | 'webpack' | 'vercel';
+export enum ProjectMetaAttribute {
+  Next = 'next',
+  Cli = 'cli',
+  Webpack = 'webpack',
+  Vercel = 'vercel'
+}
 
 /**
  * Metadata about the current project.
@@ -115,23 +120,23 @@ export async function getProjectMetadata(): Promise<ProjectMetadata> {
 
   if (await isAccessible('next.config.js')) {
     isNextProject = true;
-    attributes.push('next');
+    attributes.push(ProjectMetaAttribute.Next);
   }
 
   if (await isAccessible(wellKnownCliDistPath, fsConstants.R_OK | fsConstants.X_OK)) {
     isCliProject = true;
-    attributes.push('cli');
+    attributes.push(ProjectMetaAttribute.Cli);
   }
 
   if (await isAccessible('webpack.config.js', fsConstants.R_OK)) {
-    attributes.push('webpack');
+    attributes.push(ProjectMetaAttribute.Webpack);
   }
 
   if (
     (await isAccessible('vercel.json', fsConstants.R_OK)) ||
     (await isAccessible('.vercel/project.json', fsConstants.R_OK))
   ) {
-    attributes.push('vercel');
+    attributes.push(ProjectMetaAttribute.Vercel);
   }
 
   assert(!(isNextProject && isCliProject), ErrorMessage.CannotBeCliAndNextJs());

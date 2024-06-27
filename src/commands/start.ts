@@ -3,7 +3,7 @@ import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { wellKnownCliDistPath } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
-import { getProjectMetadata, hasExitCode } from 'universe/util';
+import { ProjectMetaAttribute, getProjectMetadata, hasExitCode } from 'universe/util';
 
 import { LogTag, logStartTime } from 'multiverse/@-xun/cli-utils/logging';
 
@@ -46,10 +46,10 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         `--- control passed to ${runtime} runtime ---`;
 
       try {
-        if (attributes.includes('cli')) {
+        if (attributes.includes(ProjectMetaAttribute.Cli)) {
           genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('CLI'));
           await runWithInheritedIo(wellKnownCliDistPath, args);
-        } else if (attributes.includes('next')) {
+        } else if (attributes.includes(ProjectMetaAttribute.Next)) {
           genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
           await runWithInheritedIo('next', ['start', ...args]);
         } else {
