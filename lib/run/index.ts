@@ -9,6 +9,9 @@ import type {
 
 const debug = debugFactory('@-xun/run:runtime');
 
+// TODO: merge with the "run" from test/setup.ts that includes debugging by
+// TODO: default
+
 /**
  * Runs (executes) `file` with the given `args` with respect to the given
  * `options`.
