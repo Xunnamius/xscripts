@@ -64,9 +64,15 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Formatting project files...');
 
-      const { mdFiles, pkgFiles } = await findProjectFiles();
+      const {
+        mdFiles,
+        pkgFiles: { root, workspaces }
+      } = await findProjectFiles();
+
+      const allPkgFiles = [root, ...workspaces];
+
       debug('mdFiles: %O', mdFiles);
-      debug('pkgFiles: %O', mdFiles);
+      debug('allPkgFiles: %O', allPkgFiles);
 
       try {
         await run(
@@ -110,7 +116,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         status.sort = null;
 
         const sortedPkgJsonFiles = sortPackageJson
-          ? run('npx', ['sort-package-json', ...pkgFiles]).catch((error) => {
+          ? run('npx', ['sort-package-json', ...allPkgFiles]).catch((error) => {
               status.sort = false;
               throw error;
             })
@@ -175,7 +181,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       genericLogger(
         [LogTag.IF_NOT_SILENCED],
         [
-          `Processed package.json files: ${pkgFiles.length}`,
+          `Processed package.json files: ${allPkgFiles.length}`,
           `${SHORT_TAB}Sorted file contents: ${statusToEmoji(status.sort)}`,
           `Processed markdown files: ${mdFiles.length}`,
           `${SHORT_TAB}Synchronized TOCs: ${statusToEmoji(status.doctoc)}`,

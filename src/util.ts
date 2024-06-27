@@ -22,17 +22,61 @@ export async function readFile(path: string) {
 
 const projectFileCache = {
   cached: false,
-  cache: { mdFiles: [] as string[], pkgFiles: [] as string[] }
+  cache: {
+    /**
+     * The project's Markdown files.
+     */
+    mdFiles: [] as string[],
+    /**
+     * The project's relevant package.json files.
+     */
+    pkgFiles: {
+      /**
+       * The project's root package.json file.
+       */
+      root: '' as string,
+      /**
+       * Each workspace package.json file in the project.
+       */
+      workspaces: [] as string[],
+      /**
+       * Each lib sub-project's package.json file.
+       */
+      lib: [] as string[]
+    },
+    /**
+     * The project's relevant TypeScript files.
+     */
+    tsFiles: {
+      /**
+       * TypeScript files under root `lib/`.
+       */
+      lib: [] as string[],
+      /**
+       * TypeScript files under any `src/` directory or subdirectory relative to
+       * the current working directory.
+       */
+      src: [] as string[]
+    }
+  }
 };
 
 /**
  * Returns an array of various different file paths (strings):
  *
- * - **`pkgFiles`** - `package.json` files at root or belonging to workspaces
+ * - **`pkgFiles`** - `package.json` files at root or belonging to workspaces or
+ *   belonging to lib
  * - **`mdFiles`** - Markdown files not ignored by `.prettierignore`
+ * - **`tsFiles`** - TypeScript (.ts, .tsx) files under any relative `src/`
+ *   directory or under the root `lib/` directory
  */
 export async function findProjectFiles(useCached = true) {
+  const debug = createDebugLogger({
+    namespace: `${globalLoggerNamespace}:findProjectFiles`
+  });
+
   if (useCached && projectFileCache.cached) {
+    debug('reusing cached resources: %O', projectFileCache.cache);
     return projectFileCache.cache;
   }
 
@@ -40,16 +84,40 @@ export async function findProjectFiles(useCached = true) {
     project: { root, packages }
   } = getRunContext();
 
-  const mdFiles = await glob('**/*.md', {
-    ignore: (await readFile(`${root}/.prettierignore`)).split(`\n`).filter(Boolean),
-    dot: true
-  });
+  const ignore = (await readFile(`${root}/.prettierignore`)).split(`\n`).filter(Boolean);
 
-  const pkgFiles = [`${root}/package.json`].concat(
-    packages ? Array.from(packages.values()).map((pkg) => `${pkg.root}/package.json`) : []
+  // eslint-disable-next-line unicorn/prevent-abbreviations
+  const [mdFiles, tsRootLibFiles, tsSrcFiles, libPkgDirs] = await Promise.all([
+    glob('**/*.md', { ignore, dot: true }),
+    glob(`${root}/lib/**/*.ts?(x)`, { ignore: [], dot: true, absolute: true }),
+    glob('src/**/*.ts?(x)', { ignore: [], dot: true }),
+    glob([`${root}/lib/!(@*)/`, `${root}/lib/@*/*/`], { ignore: [], absolute: true })
+  ]);
+
+  const pkgFiles = {
+    root: `${root}/package.json`,
+    workspaces: packages
+      ? Array.from(packages.values()).map((pkg) => `${pkg.root}/package.json`)
+      : [],
+    lib: libPkgDirs.map((path) => `${path}package.json`)
+  };
+
+  debug('mdFiles: %O', mdFiles);
+  debug('tsRootLibFiles: %O', tsRootLibFiles);
+  debug('tsSrcFiles: %O', tsSrcFiles);
+  debug('libPkgDirs: %O', libPkgDirs);
+  debug('pkgFiles: %O', pkgFiles);
+
+  await Promise.all(
+    pkgFiles.lib.map(async (path) => {
+      if (!(await isAccessible(path))) {
+        throw new CliError(ErrorMessage.CannotReadFile(path));
+      }
+    })
   );
 
-  const result = { mdFiles, pkgFiles };
+  const tsFiles = { lib: tsRootLibFiles, src: tsSrcFiles };
+  const result = { mdFiles, pkgFiles, tsFiles };
 
   if (useCached) {
     projectFileCache.cached = true;
