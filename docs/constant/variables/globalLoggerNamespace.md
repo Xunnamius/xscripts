@@ -12,4 +12,4 @@ The CLI-wide namespace that appears in logger output.
 
 ## Defined in
 
-[src/constant.ts:4](https://github.com/Xunnamius/xscripts/blob/9e4ae592d211ae39bacdc3f665b3078e69c73062/src/constant.ts#L4)
+[src/constant.ts:4](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/constant.ts#L4)

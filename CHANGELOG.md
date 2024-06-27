@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this auto-generated
 file. The format is based on [Conventional Commits](https://conventionalcommits.org);
 this project adheres to [Semantic Versioning](https://semver.org).
 
+## [1.8.0](https://github.com/Xunnamius/xscripts/compare/v1.7.0...v1.8.0) (2024-06-27)
+
+#### ✨ Features
+
+- **src:** commit initial version of "build" command ([c7b7623](https://github.com/Xunnamius/xscripts/commit/c7b7623d68bde02438cbd8cbc80302079356914d))
+
+#### ⚙️ Build System
+
+- **eslintrc:** do not ignore src/build ([847cc63](https://github.com/Xunnamius/xscripts/commit/847cc63e9965c6c970e63d351fe8388ef666a1b6))
+- **gitignore:** do not ignore src files anymore ([fd210c5](https://github.com/Xunnamius/xscripts/commit/fd210c55c4aff0ad663381a67b8b591dffc2a49c))
+
 ## [1.7.0](https://github.com/Xunnamius/xscripts/compare/v1.6.0...v1.7.0) (2024-06-26)
 
 #### ✨ Features

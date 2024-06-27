@@ -8,9 +8,12 @@
 
 ## Index
 
+### Enumerations
+
+- [ProjectMetaAttribute](enumerations/ProjectMetaAttribute.md)
+
 ### Type Aliases
 
-- [ProjectMetaAttribute](type-aliases/ProjectMetaAttribute.md)
 - [ProjectMetadata](type-aliases/ProjectMetadata.md)
 
 ### Variables
