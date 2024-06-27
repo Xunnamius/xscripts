@@ -36,6 +36,7 @@ import { ErrorMessage } from 'universe/error';
 export type CustomCliArguments = GlobalCliArguments & {
   generateTypes: boolean;
   linkCliIntoBin: boolean;
+  moduleSystem: 'cjs' | 'esm';
 };
 
 export default function command({ log, debug_, state }: GlobalExecutionContext) {
@@ -52,6 +53,11 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       boolean: true,
       description: 'Soft-link "bin" entries in package.json into node_modules/.bin',
       default: true
+    },
+    'module-system': {
+      choices: ['cjs', 'esm'],
+      description: 'Which JavaScript module system to transpile into',
+      default: 'cjs'
     }
   });
 
@@ -64,6 +70,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       $0: scriptFullName,
       generateTypes,
       linkCliIntoBin,
+      moduleSystem,
       hush: isHushed,
       quiet: isQuieted
     }) {
@@ -111,6 +118,9 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
 
       // TODO: replace relevant tasks with listr2
 
+      // TODO: moduleSystem
+      void moduleSystem;
+
       const libraryDirPrefix = `${rootDir}/lib/`;
       const productionLibraryImports = new Set<string>();
 
@@ -141,7 +151,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
           productionLibraryImports.size
         );
 
-        // ? Thankfully TC39 had the foresight to make sets enumerable  in
+        // ? Thankfully TC39 had the foresight to make sets enumerable in
         // ? insertion order!
         await discoverProductionLibraryImports(
           Array.from(productionLibraryImports)
@@ -176,7 +186,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         });
 
         if (context === 'monorepo') {
-          // TODO
+          // TODO: monorepo stuff
           genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Organizing types`);
           genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Refactoring types`);
         }
