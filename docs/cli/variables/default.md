@@ -6,10 +6,10 @@
 
 # Variable: default
 
-> **default**: `Promise`\<`undefined` \| `NullArguments` \| `Arguments`\<`StandardExecutionContext`\>\>
+> **default**: `Promise`\<`undefined` \| `NullArguments` \| `Arguments`\<[`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>\>
 
 This is the simple CLI entry point executed directly by node.
 
 ## Defined in
 
-[src/cli.ts:15](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/cli.ts#L15)
+[src/cli.ts:15](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/cli.ts#L15)

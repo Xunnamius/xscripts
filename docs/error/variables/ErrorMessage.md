@@ -302,6 +302,12 @@ A collection of possible error and warning messages.
 
 `string`
 
+### CannotRunOutsideRoot()
+
+#### Returns
+
+`string`
+
 ### CheckFailed()
 
 #### Parameters
@@ -540,4 +546,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/error.ts#L11)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/error.ts#L11)

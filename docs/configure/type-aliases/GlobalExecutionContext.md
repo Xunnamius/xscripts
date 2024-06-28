@@ -6,8 +6,14 @@
 
 # Type Alias: GlobalExecutionContext
 
-> **GlobalExecutionContext**: `StandardExecutionContext`
+> **GlobalExecutionContext**: `StandardExecutionContext` & `object`
+
+## Type declaration
+
+### runtimeContext
+
+> **runtimeContext**: `ReturnType`\<*typeof* `getRunContext`\>
 
 ## Defined in
 
-[src/configure.ts:20](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/configure.ts#L20)
+[src/configure.ts:30](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/configure.ts#L30)

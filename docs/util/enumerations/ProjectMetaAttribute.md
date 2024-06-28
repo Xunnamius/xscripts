@@ -10,13 +10,33 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 ## Enumeration Members
 
+### Cjs
+
+> **Cjs**: `"cjs"`
+
+#### Defined in
+
+[src/util.ts:189](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L189)
+
+***
+
 ### Cli
 
 > **Cli**: `"cli"`
 
 #### Defined in
 
-[src/util.ts:158](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/util.ts#L158)
+[src/util.ts:186](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L186)
+
+***
+
+### Esm
+
+> **Esm**: `"esm"`
+
+#### Defined in
+
+[src/util.ts:190](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L190)
 
 ***
 
@@ -26,7 +46,7 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 #### Defined in
 
-[src/util.ts:157](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/util.ts#L157)
+[src/util.ts:185](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L185)
 
 ***
 
@@ -36,7 +56,7 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 #### Defined in
 
-[src/util.ts:160](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/util.ts#L160)
+[src/util.ts:188](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L188)
 
 ***
 
@@ -46,4 +66,4 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 #### Defined in
 
-[src/util.ts:159](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/util.ts#L159)
+[src/util.ts:187](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L187)

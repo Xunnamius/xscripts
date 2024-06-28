@@ -10,7 +10,7 @@
 
 ## Parameters
 
-• **\_\_namedParameters**: `StandardExecutionContext`
+• **\_\_namedParameters**: [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)
 
 ## Returns
 
@@ -18,7 +18,7 @@
 
 ### builder
 
-> **builder**: `BfeBuilderFunction`\<`StandardCommonCliArguments`, `StandardExecutionContext`\>
+> **builder**: `BfeBuilderFunction`\<`StandardCommonCliArguments`, [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>
 
 ### description
 
@@ -30,7 +30,7 @@
 
 #### Parameters
 
-• **argv**: `Arguments`\<`StandardCommonCliArguments`, `StandardExecutionContext`\>
+• **argv**: `Arguments`\<`StandardCommonCliArguments`, [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>
 
 #### Returns
 
@@ -46,4 +46,4 @@
 
 ## Defined in
 
-[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/commands/index.ts#L13)
+[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/commands/index.ts#L13)

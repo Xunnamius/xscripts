@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this auto-generated
 file. The format is based on [Conventional Commits](https://conventionalcommits.org);
 this project adheres to [Semantic Versioning](https://semver.org).
 
+## [1.9.0](https://github.com/Xunnamius/xscripts/compare/v1.8.0...v1.9.0) (2024-06-28)
+
+#### ✨ Features
+
+- **src:** add `--full` argument to "list-tasks" command ([f47742b](https://github.com/Xunnamius/xscripts/commit/f47742b0bca31b054ec83d5b01089715e9925e39))
+- **src:** prevent cli from running if not in root or sub-root ([4f280dc](https://github.com/Xunnamius/xscripts/commit/4f280dc3af5bf633259d80cc8733fae31c903e04))
+
+#### 🪄 Fixes
+
+- **src:** fix lib output and improve other aspects of the "build distributables" command ([159d771](https://github.com/Xunnamius/xscripts/commit/159d771c90a65e05194cde9b8aec2478be7b97ff))
+
+#### ⚙️ Build System
+
+- **babel:** update core-js usage to 3.37 ([506bf2d](https://github.com/Xunnamius/xscripts/commit/506bf2dc5317ec891efa5e8eb9ed91235794c9f7))
+- **tsconfig:** ensure unnecessary types are excluded from distributables ([f7e65c3](https://github.com/Xunnamius/xscripts/commit/f7e65c34cd7088fa866530b60de4db3d1f77453c))
+
 ## [1.8.0](https://github.com/Xunnamius/xscripts/compare/v1.7.0...v1.8.0) (2024-06-27)
 
 #### ✨ Features

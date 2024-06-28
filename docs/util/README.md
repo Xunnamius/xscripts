@@ -22,6 +22,7 @@
 
 ### Functions
 
+- [findMainBinFile](functions/findMainBinFile.md)
 - [findProjectFiles](functions/findProjectFiles.md)
 - [getProjectMetadata](functions/getProjectMetadata.md)
 - [hasExitCode](functions/hasExitCode.md)

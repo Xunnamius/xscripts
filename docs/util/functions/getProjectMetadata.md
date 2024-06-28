@@ -6,9 +6,13 @@
 
 # Function: getProjectMetadata()
 
-> **getProjectMetadata**(): `Promise`\<[`ProjectMetadata`](../type-aliases/ProjectMetadata.md)\>
+> **getProjectMetadata**(`runtimeContext`): `Promise`\<[`ProjectMetadata`](../type-aliases/ProjectMetadata.md)\>
 
 Return metadata about the current project.
+
+## Parameters
+
+• **runtimeContext**: `MonorepoRunContext` \| `PolyrepoRunContext`
 
 ## Returns
 
@@ -16,4 +20,4 @@ Return metadata about the current project.
 
 ## Defined in
 
-[src/util.ts:180](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/util.ts#L180)
+[src/util.ts:208](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L208)

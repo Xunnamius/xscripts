@@ -12,4 +12,3 @@
 
 - [globalDebuggerNamespace](variables/globalDebuggerNamespace.md)
 - [globalLoggerNamespace](variables/globalLoggerNamespace.md)
-- [wellKnownCliDistPath](variables/wellKnownCliDistPath.md)

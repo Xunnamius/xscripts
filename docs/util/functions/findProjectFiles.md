@@ -6,7 +6,7 @@
 
 # Function: findProjectFiles()
 
-> **findProjectFiles**(`useCached`): `Promise`\<`object`\>
+> **findProjectFiles**(`runtimeContext`, `useCached`): `Promise`\<`object`\>
 
 Returns an array of various different file paths (strings):
 
@@ -17,6 +17,8 @@ Returns an array of various different file paths (strings):
   directory or under the root `lib/` directory
 
 ## Parameters
+
+• **runtimeContext**: `MonorepoRunContext` \| `PolyrepoRunContext`
 
 • **useCached**: `boolean` = `true`
 
@@ -75,4 +77,4 @@ the current working directory.
 
 ## Defined in
 
-[src/util.ts:73](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/util.ts#L73)
+[src/util.ts:98](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L98)

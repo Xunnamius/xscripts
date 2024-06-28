@@ -19,5 +19,6 @@
 
 ### Functions
 
+- [configureArguments](functions/configureArguments.md)
 - [configureErrorHandlingEpilogue](functions/configureErrorHandlingEpilogue.md)
 - [configureExecutionContext](functions/configureExecutionContext.md)

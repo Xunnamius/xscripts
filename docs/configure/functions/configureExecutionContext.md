@@ -6,7 +6,7 @@
 
 # Function: configureExecutionContext()
 
-> **configureExecutionContext**(`context`): `Promisable`\<`StandardExecutionContext`\>
+> **configureExecutionContext**(`context`): `Promisable`\<[`GlobalExecutionContext`](../type-aliases/GlobalExecutionContext.md)\>
 
 ## Parameters
 
@@ -14,8 +14,8 @@
 
 ## Returns
 
-`Promisable`\<`StandardExecutionContext`\>
+`Promisable`\<[`GlobalExecutionContext`](../type-aliases/GlobalExecutionContext.md)\>
 
 ## Defined in
 
-[src/configure.ts:24](https://github.com/Xunnamius/xscripts/blob/fe8b5ad9410ab0311eb97e1f4a935ef57dccb99d/src/configure.ts#L24)
+[src/configure.ts:36](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/configure.ts#L36)
