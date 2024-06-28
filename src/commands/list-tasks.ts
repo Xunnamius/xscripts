@@ -17,7 +17,9 @@ import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 
 const frontmatter = `\n⮞  `;
 
-export type CustomCliArguments = GlobalCliArguments;
+export type CustomCliArguments = GlobalCliArguments & {
+  full: boolean;
+};
 
 export default function command({
   log,
@@ -28,13 +30,19 @@ export default function command({
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
-  >();
+  >({
+    full: {
+      boolean: true,
+      description: 'List all tasks along with their implementation code',
+      default: false
+    }
+  });
 
   return {
     builder,
     description: 'List all tasks (typically NPM scripts) supported by this project',
     usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName }) {
+    handler: withStandardHandler(async function ({ $0: scriptFullName, full }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
       debug('entered handler');
@@ -67,9 +75,19 @@ export default function command({
 
         pkgLogger(
           [LogTag.IF_NOT_QUIETED],
-          `Available NPM run commands for ${pkgName}:` +
+          `Available NPM run commands for ${pkgName}:${full ? '\n' : ''}` +
             frontmatter +
-            Object.keys(scripts || {}).join(frontmatter) +
+            Object.entries(scripts || {})
+              .map(([name, script], index_, array) => {
+                let str = name;
+
+                if (full) {
+                  str += `\n${script}${index_ < array.length - 1 ? '\n' : ''}`;
+                }
+
+                return str;
+              })
+              .join(frontmatter) +
             '\n'
         );
 
