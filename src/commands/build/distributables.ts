@@ -1,17 +1,18 @@
 /* eslint-disable no-await-in-loop */
 import assert from 'node:assert';
 import { chmod, rename, symlink } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { dirname, relative, resolve } from 'node:path';
 
 import { transformFileAsync } from '@babel/core';
 import { type ChildConfiguration } from '@black-flag/core';
 import uniqueFilename from 'unique-filename';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { wellKnownCliDistPath } from 'universe/constant';
+import { ErrorMessage } from 'universe/error';
 
 import {
   ProjectMetaAttribute,
+  findMainBinFile,
   findProjectFiles,
   getProjectMetadata
 } from 'universe/util';
@@ -27,11 +28,9 @@ import {
   withStandardUsage
 } from 'multiverse/@-xun/cli-utils/extensions';
 
-import { getRunContext } from '@projector-js/core/project';
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
-import { ErrorMessage } from 'universe/error';
 
 export type CustomCliArguments = GlobalCliArguments & {
   generateTypes: boolean;
@@ -39,7 +38,12 @@ export type CustomCliArguments = GlobalCliArguments & {
   moduleSystem: 'cjs' | 'esm';
 };
 
-export default function command({ log, debug_, state }: GlobalExecutionContext) {
+export default function command({
+  log,
+  debug_,
+  state,
+  runtimeContext
+}: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -98,10 +102,18 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
           root: rootDir,
           json: rootPkg
         }
-      } = getRunContext();
+      } = runtimeContext;
 
+      const inputExtension = '.ts';
+      const outputExtension = moduleSystem === 'cjs' ? '.js' : '.esm';
+      const isInMonorepo = context === 'monorepo';
+
+      debug('moduleSystem: %O', moduleSystem);
+      debug('inputExtension: %O', inputExtension);
+      debug('outputExtension: %O', outputExtension);
       debug('rootDir: %O', rootDir);
       debug('rootPkg: %O', rootPkg);
+      debug('isInMonorepo: %O', isInMonorepo);
 
       const [
         { attributes },
@@ -111,35 +123,34 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         },
         { default: createImportsListerPlugin }
       ] = await Promise.all([
-        getProjectMetadata(),
-        findProjectFiles(),
+        getProjectMetadata(runtimeContext),
+        findProjectFiles(runtimeContext),
         import('babel-plugin-list-imports')
       ]);
 
       // TODO: replace relevant tasks with listr2
 
-      // TODO: moduleSystem
-      void moduleSystem;
-
       const libraryDirPrefix = `${rootDir}/lib/`;
+      const nodeModulesBinDir = `${rootDir}/node_modules/.bin`;
       const productionLibraryImports = new Set<string>();
 
-      debug('libDirPrefix: %O', rootDir);
+      debug('libraryDirPrefix: %O', libraryDirPrefix);
+      debug('nodeModulesBinDir: %O', nodeModulesBinDir);
 
-      const libraryDirectories = Array.from(
-        new Set(
-          libraryPkgFiles.map((path) => dirname(path).slice(libraryDirPrefix.length))
-        )
+      const libraryDirectories = new Set(
+        libraryPkgFiles.map((path) => dirname(path).slice(libraryDirPrefix.length))
       );
 
-      debug('libDirs: %O', libraryDirectories);
+      const libraryDirectoriesArray = Array.from(libraryDirectories);
+
+      debug('libraryDirectories: %O', libraryDirectories);
 
       // ? Results are stored into prodLibImports
       await discoverProductionLibraryImports(tsSrcFiles);
 
       // ? Iteratively check each newly added prod lib import for potentially
       // ? more prod lib imports to be added. Keep checking until we don't add
-      // ? anymore.
+      // ? anymore
       for (
         let previousProductionLibraryImportsSize = 0, iteration = 1;
         previousProductionLibraryImportsSize !== productionLibraryImports.size;
@@ -165,8 +176,19 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         );
       }
 
+      const developmentLibraryImportsArray = libraryDirectories.difference(
+        productionLibraryImports
+      );
+
+      debug(
+        'developmentLibraryImportsArray (will not be built): %O',
+        developmentLibraryImportsArray
+      );
+
+      // TODO: with listr2, build types and source simultaneously
       if (generateTypes) {
         genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Generating types');
+        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
         debug('running tsc');
         await run(
@@ -185,60 +207,70 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
           stderr: isQuieted ? 'ignore' : 'inherit'
         });
 
-        if (context === 'monorepo') {
+        if (isInMonorepo) {
           // TODO: monorepo stuff
-          genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Organizing types`);
-          genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Refactoring types`);
+          genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Organizing types...`);
+          genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Refactoring types...`);
         }
       } else {
         debug('skipped type generation');
       }
 
+      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Building distributables');
+      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
-      debug('building root lib');
-      await run(
-        'npx',
-        [
-          'babel',
-          ...Array.from(productionLibraryImports).map((name) => `${rootDir}/lib/${name}`),
-          '--extensions',
-          '.ts',
-          '--out-dir',
-          './dist/lib',
-          '--out-file-extension',
-          '.js',
-          '--ignore',
-          'lib/**/*.test.ts',
-          '--ignore',
-          'lib/**/README.md'
-        ],
-        {
-          env: { NODE_ENV: 'production-cjs' },
-          stdout: isHushed ? 'ignore' : 'inherit',
-          stderr: isQuieted ? 'ignore' : 'inherit'
-        }
-      );
-
-      debug('building root dist');
-      await run(
-        'npx',
-        [
-          'babel',
-          'src',
-          '--extensions',
-          '.ts',
-          '--out-dir',
-          './dist/src',
-          '--out-file-extension',
-          '.js'
-        ],
-        {
-          env: { NODE_ENV: 'production-cjs' },
-          stdout: isHushed ? 'ignore' : 'inherit',
-          stderr: isQuieted ? 'ignore' : 'inherit'
-        }
-      );
+      debug('building root ./lib and relative ./dist');
+      await Promise.all([
+        run(
+          'npx',
+          [
+            'babel',
+            'lib',
+            '--extensions',
+            inputExtension,
+            '--out-dir',
+            './dist/lib',
+            '--out-file-extension',
+            outputExtension,
+            ...(isInMonorepo ? ['--root-mode', 'upward'] : []),
+            '--ignore',
+            `lib/**/*.test${inputExtension}`,
+            '--ignore',
+            `lib/**/test`,
+            '--ignore',
+            'lib/**/README.md',
+            ...Array.from(developmentLibraryImportsArray).flatMap((name) => [
+              '--ignore',
+              `lib/${name}`
+            ])
+          ],
+          {
+            env: { NODE_ENV: `production-${moduleSystem}` },
+            stdout: isHushed ? 'ignore' : 'inherit',
+            stderr: isQuieted ? 'ignore' : 'inherit'
+          }
+        ),
+        run(
+          'npx',
+          [
+            'babel',
+            'src',
+            '--extensions',
+            inputExtension,
+            '--out-dir',
+            './dist/src',
+            '--out-file-extension',
+            outputExtension,
+            ...(isInMonorepo ? ['--root-mode', 'upward'] : [])
+          ],
+          {
+            env: { NODE_ENV: `production-${moduleSystem}` },
+            stdout: isHushed ? 'ignore' : 'inherit',
+            stderr: isQuieted ? 'ignore' : 'inherit'
+          }
+        )
+      ]);
 
       if (
         attributes.includes(ProjectMetaAttribute.Cli) &&
@@ -246,34 +278,45 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
         rootPkg.bin &&
         rootPkg.name
       ) {
+        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
         genericLogger(
           [LogTag.IF_NOT_QUIETED],
           '⮞ Adding executable entry to node_modules/.bin'
         );
+        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
         debug('symlinking and chmod-ing cli.js into node_modules based on bin config');
 
         const binConfig =
           typeof rootPkg.bin === 'string' ? { [rootPkg.name]: rootPkg.bin } : rootPkg.bin;
 
+        const mainBinFile = findMainBinFile(runtimeContext);
+        assert(mainBinFile, ErrorMessage.GuruMeditation());
+
         await Promise.all([
           ...Object.entries(binConfig).map(async ([name, path]) => {
             assert(path, ErrorMessage.GuruMeditation());
 
-            const temporaryPath = uniqueFilename(`${rootDir}/node_modules/.bin`);
-            const realPath = `${rootDir}/node_modules/.bin/${name}`;
+            const symlinkTargetPath = relative(nodeModulesBinDir, resolve(rootDir, path));
+            const symlinkTemporaryPath = uniqueFilename(nodeModulesBinDir);
+            const symlinkRealPath = `${nodeModulesBinDir}/${name}`;
 
-            debug('intermediate symlink path: %O', temporaryPath);
+            debug('symlink target path: %O', symlinkTargetPath);
+            debug('symlink temporary path: %O', symlinkTemporaryPath);
+            debug('symlink real path: %O', symlinkRealPath);
 
-            await symlink(path, temporaryPath);
-            await rename(temporaryPath, realPath);
+            await symlink(symlinkTargetPath, symlinkTemporaryPath);
+            await rename(symlinkTemporaryPath, symlinkRealPath);
 
-            genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}${path} ⮕ ${realPath}`);
-          }),
-          chmod(wellKnownCliDistPath, 0o775).then(() =>
             genericLogger(
               [LogTag.IF_NOT_QUIETED],
-              `${SHORT_TAB}chmod 0775 ${wellKnownCliDistPath}`
+              `${SHORT_TAB}${symlinkRealPath} ⮕ ${symlinkTargetPath}`
+            );
+          }),
+          chmod(mainBinFile, 0o775).then(() =>
+            genericLogger(
+              [LogTag.IF_NOT_QUIETED],
+              `${SHORT_TAB}chmod 0775 ${mainBinFile}`
             )
           )
         ]);
@@ -287,6 +330,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       // TODO which lib packages are imported in /src/* files and which are not.
       // TODO This also has implications for babel/build config too)
 
+      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
 
       async function discoverProductionLibraryImports(files: string[], iteration = 0) {
@@ -340,7 +384,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
 
         for (const importPaths of libraryImports) {
           importPaths.forEach((importPath) => {
-            const libraryDir = libraryDirectories.find((dir) =>
+            const libraryDir = libraryDirectoriesArray.find((dir) =>
               importPath.startsWith(dir)
             );
 
