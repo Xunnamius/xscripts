@@ -1,9 +1,14 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { wellKnownCliDistPath } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
-import { ProjectMetaAttribute, getProjectMetadata, hasExitCode } from 'universe/util';
+
+import {
+  ProjectMetaAttribute,
+  findMainBinFile,
+  getProjectMetadata,
+  hasExitCode
+} from 'universe/util';
 
 import { LogTag, logStartTime } from 'multiverse/@-xun/cli-utils/logging';
 
@@ -17,7 +22,12 @@ import { runWithInheritedIo } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments;
 
-export default function command({ log, debug_, state }: GlobalExecutionContext) {
+export default function command({
+  log,
+  debug_,
+  state,
+  runtimeContext
+}: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -41,14 +51,15 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const args = args_.map((a) => a.toString());
       debug('additional (passthrough) args: %O', args);
 
-      const { attributes } = await getProjectMetadata();
+      const { attributes } = await getProjectMetadata(runtimeContext);
+      const mainBinFile = findMainBinFile(runtimeContext);
       const passControlMessage = (runtime: string) =>
         `--- control passed to ${runtime} runtime ---`;
 
       try {
-        if (attributes.includes(ProjectMetaAttribute.Cli)) {
+        if (attributes.includes(ProjectMetaAttribute.Cli) && mainBinFile) {
           genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('CLI'));
-          await runWithInheritedIo(wellKnownCliDistPath, args);
+          await runWithInheritedIo(mainBinFile, args);
         } else if (attributes.includes(ProjectMetaAttribute.Next)) {
           genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
           await runWithInheritedIo('next', ['start', ...args]);

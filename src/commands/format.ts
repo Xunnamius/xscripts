@@ -25,7 +25,12 @@ export type CustomCliArguments = GlobalCliArguments & {
   'renumber-references': boolean;
 };
 
-export default function command({ log, debug_, state }: GlobalExecutionContext) {
+export default function command({
+  log,
+  debug_,
+  state,
+  runtimeContext
+}: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -67,7 +72,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const {
         mdFiles,
         pkgFiles: { root, workspaces }
-      } = await findProjectFiles();
+      } = await findProjectFiles(runtimeContext);
 
       const allPkgFiles = [root, ...workspaces];
 

@@ -16,6 +16,9 @@ export const ErrorMessage = {
   CannotBeCliAndNextJs() {
     return 'project must either provide a CLI or be a Next.js project';
   },
+  CannotRunOutsideRoot() {
+    return 'the current working directory must be the project root or a workspace sub-root';
+  },
   CleanCalledWithoutForce() {
     return 'no deletions were performed (try again with --force)';
   },

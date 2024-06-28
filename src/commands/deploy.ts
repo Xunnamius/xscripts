@@ -46,7 +46,12 @@ export type CustomCliArguments = GlobalCliArguments & {
       }
   );
 
-export default function command({ log, debug_, state }: GlobalExecutionContext) {
+export default function command({
+  log,
+  debug_,
+  state,
+  runtimeContext
+}: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -215,7 +220,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Deploying project...');
 
-      const { attributes } = await getProjectMetadata();
+      const { attributes } = await getProjectMetadata(runtimeContext);
       const deployMessage = (deployTarget: string) =>
         `Deploying distributables to ${deployTarget} target...`;
 

@@ -16,7 +16,12 @@ import { run, runWithInheritedIo } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments;
 
-export default function command({ log, debug_, state }: GlobalExecutionContext) {
+export default function command({
+  log,
+  debug_,
+  state,
+  runtimeContext
+}: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -36,7 +41,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Running project dev tools...');
 
-      const { attributes } = await getProjectMetadata();
+      const { attributes } = await getProjectMetadata(runtimeContext);
       const passControlMessage = (runtime: string) =>
         `--- control passed to ${runtime} runtime ---`;
 

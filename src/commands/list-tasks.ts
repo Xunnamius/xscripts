@@ -1,5 +1,4 @@
 import { type ChildConfiguration } from '@black-flag/core';
-import { getRunContext } from '@projector-js/core/project';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 
@@ -20,7 +19,12 @@ const frontmatter = `\n⮞  `;
 
 export type CustomCliArguments = GlobalCliArguments;
 
-export default function command({ log, debug_, state }: GlobalExecutionContext) {
+export default function command({
+  log,
+  debug_,
+  state,
+  runtimeContext
+}: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -44,7 +48,7 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const {
         context,
         project: { json: rootPkgJson, packages: packages_ }
-      } = getRunContext();
+      } = runtimeContext;
 
       const workspacePkgsJson = Array.from(packages_?.values() || []).map(
         ({ json }) => json

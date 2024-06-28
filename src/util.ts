@@ -2,13 +2,14 @@ import assert from 'node:assert';
 import { promises as fs } from 'node:fs';
 
 import { CliError, FrameworkExitCode } from '@black-flag/core';
-import { getRunContext } from '@projector-js/core/project';
 import { glob } from 'glob-gitignore';
 
-import { globalLoggerNamespace, wellKnownCliDistPath } from 'universe/constant';
+import { globalLoggerNamespace } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
 
 import { createDebugLogger } from 'multiverse/rejoinder';
+
+import type { GlobalExecutionContext } from './configure';
 
 export async function readFile(path: string) {
   try {
@@ -62,6 +63,30 @@ const projectFileCache = {
 };
 
 /**
+ * Return the first defined value in `package.json`'s `bin`, if there is one.
+ */
+export function findMainBinFile(
+  runtimeContext: GlobalExecutionContext['runtimeContext']
+) {
+  const debug = createDebugLogger({
+    namespace: `${globalLoggerNamespace}:findMainBinFile`
+  });
+
+  const {
+    project: {
+      json: { bin }
+    }
+  } = runtimeContext;
+
+  const mainBinFile =
+    typeof bin === 'string' ? bin : Object.values(bin || {}).find((path) => !!path);
+
+  debug('mainBinFile: %O', mainBinFile);
+
+  return mainBinFile;
+}
+
+/**
  * Returns an array of various different file paths (strings):
  *
  * - **`pkgFiles`** - `package.json` files at root or belonging to workspaces or
@@ -70,7 +95,10 @@ const projectFileCache = {
  * - **`tsFiles`** - TypeScript (.ts, .tsx) files under any relative `src/`
  *   directory or under the root `lib/` directory
  */
-export async function findProjectFiles(useCached = true) {
+export async function findProjectFiles(
+  runtimeContext: GlobalExecutionContext['runtimeContext'],
+  useCached = true
+) {
   const debug = createDebugLogger({
     namespace: `${globalLoggerNamespace}:findProjectFiles`
   });
@@ -82,7 +110,7 @@ export async function findProjectFiles(useCached = true) {
 
   const {
     project: { root, packages }
-  } = getRunContext();
+  } = runtimeContext;
 
   const ignore = (await readFile(`${root}/.prettierignore`)).split(`\n`).filter(Boolean);
 
@@ -157,7 +185,9 @@ export enum ProjectMetaAttribute {
   Next = 'next',
   Cli = 'cli',
   Webpack = 'webpack',
-  Vercel = 'vercel'
+  Vercel = 'vercel',
+  Cjs = 'cjs',
+  Esm = 'esm'
 }
 
 /**
@@ -172,27 +202,35 @@ export type ProjectMetadata = {
  */
 export const fsConstants = fs.constants;
 
-// TODO: probably want to merge this into @projector-js/core's project metadata
-// TODO: package
 /**
  * Return metadata about the current project.
  */
-export async function getProjectMetadata(): Promise<ProjectMetadata> {
+export async function getProjectMetadata(
+  runtimeContext: GlobalExecutionContext['runtimeContext']
+): Promise<ProjectMetadata> {
   const debug = createDebugLogger({
     namespace: `${globalLoggerNamespace}:getProjectMetadata`
   });
 
+  const { type = 'commonjs', bin } = runtimeContext.project.json;
+
   const attributes: ProjectMetaAttribute[] = [];
-  let isNextProject = false;
-  let isCliProject = false;
 
   if (await isAccessible('next.config.js')) {
-    isNextProject = true;
     attributes.push(ProjectMetaAttribute.Next);
   }
 
-  if (await isAccessible(wellKnownCliDistPath, fsConstants.R_OK | fsConstants.X_OK)) {
-    isCliProject = true;
+  assert(['module', 'commonjs'].includes(type as string));
+
+  if (type === 'module') {
+    attributes.push(ProjectMetaAttribute.Esm);
+  }
+
+  if (type === 'commonjs') {
+    attributes.push(ProjectMetaAttribute.Cjs);
+  }
+
+  if (bin) {
     attributes.push(ProjectMetaAttribute.Cli);
   }
 
@@ -207,7 +245,13 @@ export async function getProjectMetadata(): Promise<ProjectMetadata> {
     attributes.push(ProjectMetaAttribute.Vercel);
   }
 
-  assert(!(isNextProject && isCliProject), ErrorMessage.CannotBeCliAndNextJs());
+  assert(
+    !(
+      attributes.includes(ProjectMetaAttribute.Cli) &&
+      attributes.includes(ProjectMetaAttribute.Next)
+    ),
+    ErrorMessage.CannotBeCliAndNextJs()
+  );
 
   const metadata: ProjectMetadata = { attributes };
   debug('project metadata: %O', metadata);
