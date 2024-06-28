@@ -104,7 +104,7 @@
     "unique-filename": "^3.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.8.0",
+    "@-xun/scripts": "^1.9.0",
     "@arethetypeswrong/cli": "^0.15.3",
     "@babel/cli": "^7.24.7",
     "@babel/eslint-parser": "^7.24.7",
@@ -218,7 +218,7 @@
     "text-extensions": "^3.0.0",
     "tsconfig-replace-paths": "^0.0.14",
     "type-fest": "^4.20.1",
-    "typedoc": "^0.26.2",
+    "typedoc": "^0.26.3",
     "typedoc-plugin-markdown": "^4.1.0",
     "typescript": "^5.5.2"
   },
