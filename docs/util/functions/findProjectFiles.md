@@ -1,12 +1,12 @@
 [**@-xun/scripts**](../../README.md) • **Docs**
 
-***
+---
 
 [@-xun/scripts](../../README.md) / [util](../README.md) / findProjectFiles
 
 # Function: findProjectFiles()
 
-> **findProjectFiles**(`runtimeContext`, `useCached`): `Promise`\<`object`\>
+> **findProjectFiles**(`runtimeContext`, `useCached`): `Promise`<`object`>
 
 Returns an array of various different file paths (strings):
 
@@ -18,63 +18,63 @@ Returns an array of various different file paths (strings):
 
 ## Parameters
 
-• **runtimeContext**: `MonorepoRunContext` \| `PolyrepoRunContext`
+• **runtimeContext**: `MonorepoRunContext` | `PolyrepoRunContext`
 
 • **useCached**: `boolean` = `true`
 
 ## Returns
 
-`Promise`\<`object`\>
+`Promise`<`object`>
 
-### mdFiles
+### Mdfiles
 
-> **mdFiles**: `string`[]
+> **mdFiles**: `string`\[]
 
 The project's Markdown files.
 
-### pkgFiles
+### Pkgfiles
 
 > **pkgFiles**: `object`
 
 The project's relevant package.json files.
 
-### pkgFiles.lib
+### Pkgfiles.lib
 
-> **lib**: `string`[]
+> **lib**: `string`\[]
 
 Each lib sub-project's package.json file.
 
-### pkgFiles.root
+### Pkgfiles.root
 
 > **root**: `string`
 
 The project's root package.json file.
 
-### pkgFiles.workspaces
+### Pkgfiles.workspaces
 
-> **workspaces**: `string`[]
+> **workspaces**: `string`\[]
 
 Each workspace package.json file in the project.
 
-### tsFiles
+### Tsfiles
 
 > **tsFiles**: `object`
 
 The project's relevant TypeScript files.
 
-### tsFiles.lib
+### Tsfiles.lib
 
-> **lib**: `string`[]
+> **lib**: `string`\[]
 
 TypeScript files under root `lib/`.
 
-### tsFiles.src
+### Tsfiles.src
 
-> **src**: `string`[]
+> **src**: `string`\[]
 
 TypeScript files under any `src/` directory or subdirectory relative to
 the current working directory.
 
-## Defined in
+## Defined In
 
 [src/util.ts:98](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L98)

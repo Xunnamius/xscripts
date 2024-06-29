@@ -1,6 +1,6 @@
 **@-xun/scripts** • **Docs**
 
-***
+---
 
 # @-xun/scripts
 

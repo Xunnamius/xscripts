@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this auto-generated
 file. The format is based on [Conventional Commits](https://conventionalcommits.org);
 this project adheres to [Semantic Versioning](https://semver.org).
 
+## [1.10.0](https://github.com/Xunnamius/xscripts/compare/v1.9.0...v1.10.0) (2024-06-29)
+
+#### ✨ Features
+
+- **@-xun/cli-utils:** add `AsStrictExecutionContext` intellisense type guard ([813b758](https://github.com/Xunnamius/xscripts/commit/813b7580971553cde14b4f278f31af7353384e85))
+- **@black-flag/extensions:** add and use `BfeStrictArguments` intellisense type guard ([42af69e](https://github.com/Xunnamius/xscripts/commit/42af69ecc8f70e6c55eceeda802bce1752f81bfb))
+- **lib:** move `AsStrictExecutionContext` into [@black-](https://github.com/black-)flag/extensions ([ae46adf](https://github.com/Xunnamius/xscripts/commit/ae46adf477f55440bb18e627ca1674d6d80be7fd))
+- **src:** add --prepend-shebang, Next.js support to "build distributables" command ([6575d49](https://github.com/Xunnamius/xscripts/commit/6575d493c2c0ff291a3bd7bf4b595198c46c0c70))
+- **src:** improve capabilities of "format" command ([7d33dfe](https://github.com/Xunnamius/xscripts/commit/7d33dfe2ea50a0fbf45641ef997ce2b7d0265aca))
+
+#### 🪄 Fixes
+
+- **src:** actually implement --skip-docs functionality in "format" command ([d535b78](https://github.com/Xunnamius/xscripts/commit/d535b785c9d45c87b29a5fbe5698c6021067570b))
+- **src:** restrict root/sub-root check to certain commands ([1b65f46](https://github.com/Xunnamius/xscripts/commit/1b65f4667e138907ac8a1b90f06937f5fa4eb1b9))
+
 ## [1.9.0](https://github.com/Xunnamius/xscripts/compare/v1.8.0...v1.9.0) (2024-06-28)
 
 #### ✨ Features

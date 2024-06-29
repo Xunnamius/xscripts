@@ -1,6 +1,6 @@
 [**@-xun/scripts**](../../README.md) • **Docs**
 
-***
+---
 
 [@-xun/scripts](../../README.md) / [error](../README.md) / ErrorMessage
 
@@ -10,9 +10,9 @@
 
 A collection of possible error and warning messages.
 
-## Type declaration
+## Type Declaration
 
-### AppValidationFailure()
+### Appvalidationfailure()
 
 > **AppValidationFailure**: () => `string`
 
@@ -20,7 +20,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AuthFailure()
+### Authfailure()
 
 > **AuthFailure**: () => `string`
 
@@ -28,7 +28,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### ClientValidationFailure()
+### Clientvalidationfailure()
 
 > **ClientValidationFailure**: () => `string`
 
@@ -36,7 +36,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### GuruMeditation()
+### Gurumeditation()
 
 > **GuruMeditation**: () => `string`
 
@@ -44,7 +44,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### HttpFailure()
+### Httpfailure()
 
 > **HttpFailure**: (`error`?) => `string`
 
@@ -56,13 +56,13 @@ A collection of possible error and warning messages.
 
 `string`
 
-### HttpSubFailure()
+### Httpsubfailure()
 
 > **HttpSubFailure**: (`error`, `statusCode`) => `string`
 
 #### Parameters
 
-• **error**: `null` \| `string`
+• **error**: `null` | `string`
 
 • **statusCode**: `number`
 
@@ -70,7 +70,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### InvalidAppConfiguration()
+### Invalidappconfiguration()
 
 > **InvalidAppConfiguration**: (`details`?) => `string`
 
@@ -82,7 +82,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### InvalidAppEnvironment()
+### Invalidappenvironment()
 
 > **InvalidAppEnvironment**: (`details`?) => `string`
 
@@ -94,7 +94,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### InvalidClientConfiguration()
+### Invalidclientconfiguration()
 
 > **InvalidClientConfiguration**: (`details`?) => `string`
 
@@ -106,7 +106,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### InvalidItem()
+### Invaliditem()
 
 > **InvalidItem**: (`item`, `itemName`) => `string`
 
@@ -120,7 +120,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### InvalidSecret()
+### Invalidsecret()
 
 > **InvalidSecret**: (`secretType`) => `string`
 
@@ -132,7 +132,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### ItemNotFound()
+### Itemnotfound()
 
 > **ItemNotFound**: (`item`, `itemName`) => `string`
 
@@ -146,7 +146,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### ItemOrItemsNotFound()
+### Itemoritemsnotfound()
 
 > **ItemOrItemsNotFound**: (`itemsName`) => `string`
 
@@ -158,7 +158,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### NotAuthenticated()
+### Notauthenticated()
 
 > **NotAuthenticated**: () => `string`
 
@@ -166,7 +166,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### NotAuthorized()
+### Notauthorized()
 
 > **NotAuthorized**: () => `string`
 
@@ -174,7 +174,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### NotFound()
+### Notfound()
 
 > **NotFound**: () => `string`
 
@@ -182,7 +182,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### NotImplemented()
+### Notimplemented()
 
 > **NotImplemented**: () => `string`
 
@@ -190,7 +190,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### ValidationFailure()
+### Validationfailure()
 
 > **ValidationFailure**: () => `string`
 
@@ -198,7 +198,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureBadConfigurationPath()
+### Assertionfailurebadconfigurationpath()
 
 #### Parameters
 
@@ -208,43 +208,43 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureBadParameterCombination()
+### Assertionfailurebadparametercombination()
 
 #### Returns
 
 `string`
 
-### AssertionFailureCannotExecuteMultipleTimes()
+### Assertionfailurecannotexecutemultipletimes()
 
 #### Returns
 
 `string`
 
-### AssertionFailureConfigureExecutionEpilogue()
+### Assertionfailureconfigureexecutionepilogue()
 
 #### Returns
 
 `string`
 
-### AssertionFailureDuplicateCommandName()
+### Assertionfailureduplicatecommandname()
 
 #### Parameters
 
-• **parentFullName**: `undefined` \| `string`
+• **parentFullName**: `undefined` | `string`
 
 • **name1**: `string`
 
-• **type1**: `"name"` \| `"alias"`
+• **type1**: `"name"` | `"alias"`
 
 • **name2**: `string`
 
-• **type2**: `"name"` \| `"alias"`
+• **type2**: `"name"` | `"alias"`
 
 #### Returns
 
 `string`
 
-### AssertionFailureInvalidCommandExport()
+### Assertionfailureinvalidcommandexport()
 
 #### Parameters
 
@@ -254,7 +254,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureInvocationNotAllowed()
+### Assertionfailureinvocationnotallowed()
 
 #### Parameters
 
@@ -264,7 +264,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureNoConfigurationLoaded()
+### Assertionfailurenoconfigurationloaded()
 
 #### Parameters
 
@@ -274,25 +274,25 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureReachedTheUnreachable()
+### Assertionfailurereachedtheunreachable()
 
 #### Returns
 
 `string`
 
-### AssertionFailureUseParseAsyncInstead()
+### Assertionfailureuseparseasyncinstead()
 
 #### Returns
 
 `string`
 
-### CannotBeCliAndNextJs()
+### Cannotbecliandnextjs()
 
 #### Returns
 
 `string`
 
-### CannotReadFile()
+### Cannotreadfile()
 
 #### Parameters
 
@@ -302,13 +302,13 @@ A collection of possible error and warning messages.
 
 `string`
 
-### CannotRunOutsideRoot()
+### Cannotrunoutsideroot()
 
 #### Returns
 
 `string`
 
-### CheckFailed()
+### Checkfailed()
 
 #### Parameters
 
@@ -318,13 +318,13 @@ A collection of possible error and warning messages.
 
 `string`
 
-### CleanCalledWithoutForce()
+### Cleancalledwithoutforce()
 
 #### Returns
 
 `string`
 
-### CommandDidNotComplete()
+### Commanddidnotcomplete()
 
 #### Parameters
 
@@ -334,13 +334,13 @@ A collection of possible error and warning messages.
 
 `string`
 
-### CommandNotImplemented()
+### Commandnotimplemented()
 
 #### Returns
 
 `string`
 
-### ConfigLoadFailure()
+### Configloadfailure()
 
 #### Parameters
 
@@ -350,63 +350,63 @@ A collection of possible error and warning messages.
 
 `string`
 
-### ConflictsViolation()
+### Conflictsviolation()
 
 #### Parameters
 
 • **conflicter**: `string`
 
-• **seenConflictingKeyValues**: `ObjectEntries`\<`object`\>
+• **seenConflictingKeyValues**: `ObjectEntries`<`object`>
 
 #### Returns
 
 `string`
 
-### DemandGenericXorViolation()
+### Demandgenericxorviolation()
 
 #### Parameters
 
-• **demanded**: `ObjectEntries`\<`object`\>
+• **demanded**: `ObjectEntries`<`object`>
 
 #### Returns
 
 `string`
 
-### DemandIfViolation()
+### Demandifviolation()
 
 #### Parameters
 
 • **demanded**: `string`
 
-• **demander**: `ObjectEntry`\<`object`\>
+• **demander**: `ObjectEntry`<`object`>
 
 #### Returns
 
 `string`
 
-### DemandOrViolation()
+### Demandorviolation()
 
 #### Parameters
 
-• **demanded**: `ObjectEntries`\<`object`\>
+• **demanded**: `ObjectEntries`<`object`>
 
 #### Returns
 
 `string`
 
-### DemandSpecificXorViolation()
+### Demandspecificxorviolation()
 
 #### Parameters
 
-• **firstArgument**: `ObjectEntry`\<`object`\>
+• **firstArgument**: `ObjectEntry`<`object`>
 
-• **secondArgument**: `ObjectEntry`\<`object`\>
+• **secondArgument**: `ObjectEntry`<`object`>
 
 #### Returns
 
 `string`
 
-### FrameworkError()
+### Frameworkerror()
 
 #### Parameters
 
@@ -422,41 +422,41 @@ A collection of possible error and warning messages.
 
 `string`
 
-### GracefulEarlyExit()
+### Gracefulearlyexit()
 
 #### Returns
 
 `string`
 
-### IgnoredArguments()
+### Ignoredarguments()
 
 #### Parameters
 
-• **args**: `string`[]
+• **args**: `string`\[]
 
 #### Returns
 
 `string`
 
-### IllegalHandlerInvocation()
+### Illegalhandlerinvocation()
 
 #### Returns
 
 `string`
 
-### ImpliesViolation()
+### Impliesviolation()
 
 #### Parameters
 
 • **implier**: `string`
 
-• **seenConflictingKeyValues**: `ObjectEntries`\<`object`\>
+• **seenConflictingKeyValues**: `ObjectEntries`<`object`>
 
 #### Returns
 
 `string`
 
-### InvalidCharacters()
+### Invalidcharacters()
 
 #### Parameters
 
@@ -468,31 +468,31 @@ A collection of possible error and warning messages.
 
 `string`
 
-### InvalidConfigureArgumentsReturnType()
+### Invalidconfigureargumentsreturntype()
 
 #### Returns
 
 `string`
 
-### InvalidConfigureExecutionContextReturnType()
+### Invalidconfigureexecutioncontextreturntype()
 
 #### Returns
 
 `string`
 
-### InvalidSubCommandInvocation()
+### Invalidsubcommandinvocation()
 
 #### Returns
 
 `string`
 
-### MarkdownNoUndefinedReferences()
+### Markdownnoundefinedreferences()
 
 #### Returns
 
 `string`
 
-### MetadataInvariantViolated()
+### Metadatainvariantviolated()
 
 #### Parameters
 
@@ -502,48 +502,48 @@ A collection of possible error and warning messages.
 
 `string`
 
-### MustChooseDeployEnvironment()
+### Mustchoosedeployenvironment()
 
 #### Returns
 
 `string`
 
-### RequiresViolation()
+### Requiresviolation()
 
 #### Parameters
 
 • **requirer**: `string`
 
-• **missingRequiredKeyValues**: `ObjectEntries`\<`object`\>
+• **missingRequiredKeyValues**: `ObjectEntries`<`object`>
 
 #### Returns
 
 `string`
 
-### UnexpectedlyFalsyDetailedArguments()
+### Unexpectedlyfalsydetailedarguments()
 
 #### Returns
 
 `string`
 
-### UnsupportedCommand()
+### Unsupportedcommand()
 
 #### Returns
 
 `string`
 
-### WrongProjectAttributes()
+### Wrongprojectattributes()
 
 #### Parameters
 
-• **expected**: [`ProjectMetaAttribute`](../../util/enumerations/ProjectMetaAttribute.md)[]
+• **expected**: [`ProjectMetaAttribute`](../../util/enumerations/ProjectMetaAttribute.md)\[]
 
-• **actual**: [`ProjectMetaAttribute`](../../util/enumerations/ProjectMetaAttribute.md)[]
+• **actual**: [`ProjectMetaAttribute`](../../util/enumerations/ProjectMetaAttribute.md)\[]
 
 #### Returns
 
 `string`
 
-## Defined in
+## Defined In
 
 [src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/error.ts#L11)

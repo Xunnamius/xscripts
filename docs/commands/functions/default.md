@@ -1,6 +1,6 @@
 [**@-xun/scripts**](../../README.md) • **Docs**
 
-***
+---
 
 [@-xun/scripts](../../README.md) / [commands](../README.md) / default
 
@@ -16,34 +16,34 @@
 
 `object`
 
-### builder
+### Builder
 
-> **builder**: `BfeBuilderFunction`\<`StandardCommonCliArguments`, [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>
+> **builder**: `BfeBuilderFunction`<`StandardCommonCliArguments`, [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)>
 
-### description
+### Description
 
 > **description**: `string` = `"A collection of commands for interacting with Xunnamius's NPM-based projects"`
 
-### handler()
+### Handler()
 
-> **handler**: (`argv`) => `Promisable`\<`void`\>
+> **handler**: (`argv`) => `Promisable`<`void`>
 
 #### Parameters
 
-• **argv**: `Arguments`\<`StandardCommonCliArguments`, [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>
+• **argv**: `Arguments`<`StandardCommonCliArguments`, [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)>
 
 #### Returns
 
-`Promisable`\<`void`\>
+`Promisable`<`void`>
 
-### name
+### Name
 
 > **name**: `string` = `'xscripts'`
 
-### usage
+### Usage
 
 > **usage**: `string`
 
-## Defined in
+## Defined In
 
 [src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/commands/index.ts#L13)

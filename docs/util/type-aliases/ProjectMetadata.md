@@ -1,6 +1,6 @@
 [**@-xun/scripts**](../../README.md) • **Docs**
 
-***
+---
 
 [@-xun/scripts](../../README.md) / [util](../README.md) / ProjectMetadata
 
@@ -10,12 +10,12 @@
 
 Metadata about the current project.
 
-## Type declaration
+## Type Declaration
 
-### attributes
+### Attributes
 
-> **attributes**: [`ProjectMetaAttribute`](../enumerations/ProjectMetaAttribute.md)[]
+> **attributes**: [`ProjectMetaAttribute`](../enumerations/ProjectMetaAttribute.md)\[]
 
-## Defined in
+## Defined In
 
 [src/util.ts:196](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L196)
