@@ -104,7 +104,7 @@
     "unique-filename": "^3.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.10.0",
+    "@-xun/scripts": "^1.10.1",
     "@arethetypeswrong/cli": "^0.15.3",
     "@babel/cli": "^7.24.7",
     "@babel/eslint-parser": "^7.24.7",
