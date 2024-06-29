@@ -15,7 +15,8 @@ import {
 import {
   CommandNotImplementedError,
   type EffectorProgram,
-  type ExecutionContext
+  type ExecutionContext,
+  type FrameworkArguments
 } from '@black-flag/core/util';
 
 import { createDebugLogger } from 'multiverse/rejoinder';
@@ -23,7 +24,13 @@ import { createDebugLogger } from 'multiverse/rejoinder';
 import { ErrorMessage, type KeyValueEntry } from './error';
 import { $exists, $genesis } from './symbols';
 
-import type { Entries, LiteralUnion, Promisable, StringKeyOf } from 'type-fest';
+import type {
+  Entries,
+  LiteralUnion,
+  OmitIndexSignature,
+  Promisable,
+  StringKeyOf
+} from 'type-fest';
 
 const globalDebuggerNamespace = '@black-flag/extensions';
 
@@ -405,6 +412,23 @@ export type BfeBuilderFunction<
 ) => BfBuilderObject<CustomCliArguments, CustomExecutionContext>;
 
 /**
+ * A stricter version of {@link Arguments} that explicitly omits the fallback
+ * indexer for unrecognized arguments. Even though it is the runtime equivalent
+ * of {@link Arguments}, using this type allows intellisense to report
+ * bad/misspelled/missing arguments from `argv` in various places where it
+ * otherwise couldn't.
+ *
+ * **This type is intended for intellisense purposes only.**
+ */
+export type BfeStrictArguments<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+> =
+  // ? Strangely, OmitIndexSignature kills our symbol-based props. Weird...
+  OmitIndexSignature<Arguments<CustomCliArguments, CustomExecutionContext>> &
+    FrameworkArguments<CustomExecutionContext>;
+
+/**
  * A version of Black Flag's `builder` function parameters that exclude yargs
  * methods that are not supported by BFE.
  *
@@ -415,7 +439,13 @@ export type BfeCustomBuilderFunctionParameters<
   CustomExecutionContext extends ExecutionContext,
   P = Parameters<BfBuilderFunction<CustomCliArguments, CustomExecutionContext>>
 > = P extends [infer R, ...infer S]
-  ? [blackFlag: R & { options: never; option: never }, ...S]
+  ? S extends [infer T, ...infer _U]
+    ? [
+        blackFlag: R & { options: never; option: never },
+        T,
+        BfeStrictArguments<CustomCliArguments, CustomExecutionContext>
+      ]
+    : [blackFlag: R & { options: never; option: never }, ...S]
   : never;
 
 /**
@@ -426,13 +456,20 @@ export type BfeCustomBuilderFunctionParameters<
  * This type cannot be instantiated by direct means. Instead, it is created and
  * returned by {@link withBuilderExtensions}.
  *
+ * Note that `customHandler` provides a stricter constraint than Black Flag's
+ * `handler` command export in that `customHandler`'s `argv` parameter type
+ * explicitly omits the fallback indexer for unrecognized arguments. This
+ * means all possible arguments must be included in {@link CustomCliArguments}.
+ *
  * @see {@link withBuilderExtensions}
  */
 export type WithHandlerExtensions<
   CustomCliArguments extends Record<string, unknown>,
   CustomExecutionContext extends ExecutionContext
 > = (
-  customHandler?: Configuration<CustomCliArguments, CustomExecutionContext>['handler']
+  customHandler?: (
+    argv: BfeStrictArguments<CustomCliArguments, CustomExecutionContext>
+  ) => Promisable<void>
 ) => Configuration<CustomCliArguments, CustomExecutionContext>['handler'];
 
 /**
@@ -555,7 +592,10 @@ export function withBuilderExtensions<
                 CustomExecutionContext
               >[0],
               helpOrVersionSet,
-              argv
+              argv as BfeCustomBuilderFunctionParameters<
+                CustomCliArguments,
+                CustomExecutionContext
+              >[2]
             )
           : customBuilder) || {}
       );
@@ -877,7 +917,12 @@ export function withBuilderExtensions<
         }
 
         debug('invoking customHandler (or defaultHandler if undefined)');
-        await (customHandler || defaultHandler)(argv);
+        await (customHandler || defaultHandler)(
+          // ? customHandler is more strict from an intellisense perspective,
+          // ? but it still meets the Black Flag handler's argv constraints even
+          // ? if TypeScript isn't yet smart enough to understand it
+          argv as Parameters<NonNullable<typeof customHandler>>[0]
+        );
 
         debug('exited withHandlerExtensions::handler wrapper function');
       };
