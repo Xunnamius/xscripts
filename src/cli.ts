@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { join } from 'node:path';
 
 import { runProgram } from '@black-flag/core';
