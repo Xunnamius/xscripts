@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 import assert from 'node:assert';
 import { promises as fs } from 'node:fs';
 
@@ -8,6 +9,7 @@ import { globalLoggerNamespace } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
 
 import { createDebugLogger } from 'multiverse/rejoinder';
+import { run } from 'multiverse/run';
 
 import type { GlobalExecutionContext } from './configure';
 
@@ -118,8 +120,29 @@ export function findMainBinFile(
  */
 export async function findProjectFiles(
   runtimeContext: GlobalExecutionContext['runtimeContext'],
-  // eslint-disable-next-line unicorn/prevent-abbreviations
-  { useCached = true, skipDocs = true } = {}
+  {
+    useCached = true,
+    skipDocs = true,
+    skipUnknown = false
+  }: {
+    /**
+     * Use the internal cached result from a previous run, if available.
+     */
+    useCached?: boolean;
+    /**
+     * Virtually prepend `docs` to `.prettierignore` if `true`.
+     *
+     * Regardless of the value of `skipDocs`, the whole string `docs`, if
+     * encountered alone on its own line, will be filtered out of
+     * .prettierignore. Use `skipDocs` to add it back in.
+     */
+    skipDocs?: boolean;
+    /**
+     * Skip files unknown to git (even if already ignored by
+     * `.gitignore`/`.prettierignore`).
+     */
+    skipUnknown?: boolean;
+  } = {}
 ) {
   const debug = createDebugLogger({
     namespace: `${globalLoggerNamespace}:findProjectFiles`
@@ -134,15 +157,10 @@ export async function findProjectFiles(
     project: { root, packages }
   } = runtimeContext;
 
-  const ignore = (await readFile(`${root}/.prettierignore`))
-    .split('\n')
-    .filter((entry) => entry !== 'docs');
+  const ignore = await deriveVirtualPrettierIgnoreLines(root, skipDocs, skipUnknown);
 
-  if (!skipDocs) {
-    ignore.unshift('docs');
-  }
+  debug('virtual .prettierignore lines: %O', ignore);
 
-  // eslint-disable-next-line unicorn/prevent-abbreviations
   const [mdFiles, tsRootLibFiles, tsSrcFiles, libPkgDirs] = await Promise.all([
     glob('**/*.md', { ignore, dot: true }),
     glob(`${root}/lib/**/*.ts?(x)`, { ignore: [], dot: true, absolute: true }),
@@ -294,4 +312,33 @@ export function hasExitCode(error: unknown): error is object & { exitCode: numbe
     'exitCode' in error &&
     typeof error.exitCode === 'number'
   );
+}
+
+/**
+ * Return an array of the lines of a `.prettierignore` file.
+ */
+export async function deriveVirtualPrettierIgnoreLines(
+  root: string,
+  skipDocs: boolean,
+  skipUnknown: boolean
+) {
+  const ignore = (await readFile(`${root}/.prettierignore`))
+    .split('\n')
+    .filter((entry) => entry && entry !== 'docs' && !entry.startsWith('#'));
+
+  // ! 'docs' must always be the very first entry in the `ignore` array if
+  // ! skipDocs is true!
+  if (skipDocs) {
+    ignore.unshift('docs');
+  }
+
+  if (skipUnknown) {
+    const unknownPaths = (
+      await run('git', ['ls-files', '--others', '--directory'])
+    ).stdout.split('\n');
+
+    ignore.push(...unknownPaths);
+  }
+
+  return ignore;
 }

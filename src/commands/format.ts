@@ -1,8 +1,14 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
+import { glob } from 'glob-gitignore';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { findProjectFiles, globalPreChecks } from 'universe/util';
+
+import {
+  deriveVirtualPrettierIgnoreLines,
+  findProjectFiles,
+  globalPreChecks
+} from 'universe/util';
 
 import {
   LogTag,
@@ -16,6 +22,7 @@ import {
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
 
@@ -23,6 +30,11 @@ export type CustomCliArguments = GlobalCliArguments & {
   sortPackageJson: boolean;
   renumberReferences: boolean;
   skipDocs: boolean;
+  skipUnknown: boolean;
+  files: string[];
+  onlyPackageJson: boolean;
+  onlyMarkdown: boolean;
+  onlyPrettier: boolean;
 };
 
 export default function command({
@@ -30,16 +42,11 @@ export default function command({
   debug_,
   state,
   runtimeContext
-}: GlobalExecutionContext) {
+}: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
   >({
-    'sort-package-json': {
-      boolean: true,
-      description: 'Sort any package.json files',
-      default: true
-    },
     'renumber-references': {
       boolean: true,
       description: 'Run the renumber-references plugin when formatting Markdown files',
@@ -50,6 +57,42 @@ export default function command({
       description:
         'Virtually prepend (true) or remove (false) the string `docs` to/from .prettierignore',
       default: true
+    },
+    'skip-unknown': {
+      boolean: true,
+      description: 'Ignore files unknown to git',
+      default: false
+    },
+    files: {
+      array: true,
+      description:
+        'Only consider files (or globs) given via --files instead of scanning the filesystem'
+    },
+    'only-package-json': {
+      boolean: true,
+      description: 'Only target package.json files for formatting',
+      default: false,
+      conflicts: [
+        'skip-docs',
+        'renumber-references',
+        { 'only-markdown': true, 'only-prettier': true }
+      ]
+    },
+    'only-markdown': {
+      boolean: true,
+      description: 'Only target Markdown files for formatting',
+      default: false,
+      conflicts: [{ 'only-package-json': true, 'only-prettier': true }]
+    },
+    'only-prettier': {
+      boolean: true,
+      description: 'Only run Prettier-based file formatting',
+      default: false,
+      conflicts: [
+        'skip-docs',
+        'renumber-references',
+        { 'only-package-json': true, 'only-markdown': true }
+      ]
     }
   });
 
@@ -61,9 +104,13 @@ export default function command({
     ),
     handler: withStandardHandler(async function ({
       $0: scriptFullName,
-      sortPackageJson,
       renumberReferences,
       skipDocs,
+      skipUnknown,
+      files,
+      onlyPackageJson,
+      onlyMarkdown,
+      onlyPrettier,
       hush: isHushed,
       quiet: isQuieted
     }) {
@@ -79,38 +126,94 @@ export default function command({
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Formatting project files...');
 
+      debug('renumberReferences: %O', renumberReferences);
+      debug('skipDocs: %O', skipDocs);
+      debug('skipUnknown: %O', skipUnknown);
+      debug('files: %O', files);
+      debug('onlyPackageJson: %O', onlyPackageJson);
+      debug('onlyMarkdown: %O', onlyMarkdown);
+      debug('onlyPrettier: %O', onlyPrettier);
+
       const {
         mdFiles,
-        pkgFiles: { root, workspaces }
-      } = await findProjectFiles(runtimeContext, { skipDocs });
+        pkgFiles: { root: rootPkgFile, workspaces: workspacePkgFiles }
+      } = await (async () => {
+        if (files) {
+          debug('using --files as targets');
 
-      const allPkgFiles = [root, ...workspaces];
+          const {
+            project: { root }
+          } = runtimeContext;
+
+          const ignore = await deriveVirtualPrettierIgnoreLines(
+            root,
+            skipDocs,
+            skipUnknown
+          );
+
+          debug('virtual .prettierignore lines: %O', ignore);
+
+          const foundFiles = await glob(files, { ignore, dot: true, absolute: true });
+
+          debug('foundFiles: %O', foundFiles);
+
+          const [mdFiles, workspaces] = await Promise.all([
+            foundFiles.filter((path) => path.endsWith('.md')),
+            foundFiles.filter((path) => path.endsWith('/package.json'))
+          ]);
+
+          return {
+            mdFiles,
+            pkgFiles: { root: '', workspaces }
+          };
+        } else {
+          debug('running generic project filesystem scan');
+          return findProjectFiles(runtimeContext, { skipDocs, skipUnknown });
+        }
+      })();
+
+      const allPkgFiles = rootPkgFile
+        ? [rootPkgFile, ...workspacePkgFiles]
+        : workspacePkgFiles;
 
       debug('mdFiles: %O', mdFiles);
       debug('allPkgFiles: %O', allPkgFiles);
 
-      try {
-        await run(
-          'npx',
-          [
-            'remark',
-            '--no-config',
-            '--no-stdout',
-            ...(isHushed ? ['--quiet'] : []),
-            '--frail',
-            '--use',
-            'gfm',
-            '--use',
-            'lint-no-undefined-references',
-            ...mdFiles
-          ],
-          {
-            stdout: isHushed ? 'ignore' : 'inherit',
-            stderr: isQuieted ? 'ignore' : 'inherit'
-          }
-        );
-      } catch (error) {
-        throw new Error(ErrorMessage.MarkdownNoUndefinedReferences(), { cause: error });
+      const shouldDoPkgJson = !onlyMarkdown && !onlyPrettier;
+      const shouldDoMarkdown = !onlyPackageJson && !onlyPrettier;
+      const shouldDoPrettier = !onlyPackageJson && !onlyMarkdown;
+
+      debug('shouldDoPkgJson: %O', shouldDoPkgJson);
+      debug('shouldDoMarkdown: %O', shouldDoMarkdown);
+      debug('shouldDoPrettier: %O', shouldDoPrettier);
+
+      if (shouldDoMarkdown) {
+        try {
+          await run(
+            'npx',
+            [
+              'remark',
+              '--no-config',
+              '--no-stdout',
+              ...(isHushed ? ['--quiet'] : []),
+              '--frail',
+              '--use',
+              'gfm',
+              '--use',
+              'lint-no-undefined-references',
+              '--silently-ignore',
+              '--ignore-pattern',
+              'docs',
+              ...mdFiles
+            ],
+            {
+              stdout: isHushed ? 'ignore' : 'inherit',
+              stderr: isQuieted ? 'ignore' : 'inherit'
+            }
+          );
+        } catch (error) {
+          throw new Error(ErrorMessage.MarkdownNoUndefinedReferences(), { cause: error });
+        }
       }
 
       const status: Record<
@@ -128,9 +231,11 @@ export default function command({
         // ? This can run completely asynchronously since nothing else relies on
         // ? it (except prettier).
 
-        status.sort = null;
+        if (shouldDoPkgJson) {
+          status.sort = null;
+        }
 
-        const sortedPkgJsonFiles = sortPackageJson
+        const sortedPkgJsonFiles = shouldDoPkgJson
           ? run('npx', ['sort-package-json', ...allPkgFiles]).catch((error) => {
               status.sort = false;
               throw error;
@@ -139,55 +244,72 @@ export default function command({
 
         // ? These have to run sequentially to prevent data corruption.
 
-        status.doctoc = null;
+        if (shouldDoMarkdown) {
+          status.doctoc = null;
 
-        await run(
-          'npx',
-          ['doctoc', '--no-title', '--maxlevel', '3', '--update-only', ...mdFiles],
-          {
-            stdout: isHushed ? 'ignore' : 'inherit',
-            stderr: isQuieted ? 'ignore' : 'inherit'
-          }
-        ).catch((error) => {
-          status.doctoc = false;
-          throw error;
-        });
+          await run(
+            'npx',
+            ['doctoc', '--no-title', '--maxlevel', '3', '--update-only', ...mdFiles],
+            {
+              stdout: isHushed ? 'ignore' : 'inherit',
+              stderr: isQuieted ? 'ignore' : 'inherit'
+            }
+          ).catch((error) => {
+            status.doctoc = false;
+            throw error;
+          });
 
-        status.doctoc = true;
-        status.remark = null;
+          status.doctoc = true;
+          status.remark = null;
 
-        await run(
-          'npx',
-          ['remark', ...(isHushed ? ['--quiet'] : []), '--output', '--frail', ...mdFiles],
-          {
-            env: {
-              NODE_ENV: 'format',
-              SHOULD_RENUMBER_REFERENCES: renumberReferences.toString()
-            },
-            stdout: isHushed ? 'ignore' : 'inherit',
-            stderr: isQuieted ? 'ignore' : 'inherit'
-          }
-        ).catch((error) => {
-          status.remark = false;
-          throw error;
-        });
+          await run(
+            'npx',
+            [
+              'remark',
+              ...(isHushed ? ['--quiet'] : []),
+              '--output',
+              '--frail',
+              ...mdFiles
+            ],
+            {
+              env: {
+                NODE_ENV: 'format',
+                SHOULD_RENUMBER_REFERENCES: renumberReferences.toString()
+              },
+              stdout: isHushed ? 'ignore' : 'inherit',
+              stderr: isQuieted ? 'ignore' : 'inherit'
+            }
+          ).catch((error) => {
+            status.remark = false;
+            throw error;
+          });
 
-        status.remark = true;
+          status.remark = true;
+        }
 
         await sortedPkgJsonFiles;
 
-        status.sort = true;
-        status.prettier = null;
+        if (shouldDoPkgJson) {
+          status.sort = true;
+        }
 
-        await run('npx', ['prettier', '--write', '.'], {
-          stdout: isHushed ? 'ignore' : 'inherit',
-          stderr: isQuieted ? 'ignore' : 'inherit'
-        }).catch((error) => {
-          status.prettier = false;
-          throw error;
-        });
+        if (shouldDoPrettier) {
+          status.prettier = null;
 
-        status.prettier = true;
+          await run(
+            'npx',
+            ['prettier', '--write', ...(skipUnknown ? ['--ignore-unknown'] : []), '.'],
+            {
+              stdout: isHushed ? 'ignore' : 'inherit',
+              stderr: isQuieted ? 'ignore' : 'inherit'
+            }
+          ).catch((error) => {
+            status.prettier = false;
+            throw error;
+          });
+
+          status.prettier = true;
+        }
       } catch {
         status.failed = true;
       }
@@ -196,9 +318,9 @@ export default function command({
       genericLogger(
         [LogTag.IF_NOT_SILENCED],
         [
-          `Processed package.json files: ${allPkgFiles.length}`,
+          `${shouldDoPkgJson ? 'Processed' : 'Encountered'} package.json files: ${allPkgFiles.length}`,
           `${SHORT_TAB}Sorted file contents: ${statusToEmoji(status.sort)}`,
-          `Processed markdown files: ${mdFiles.length}`,
+          `${shouldDoMarkdown ? 'Processed' : 'Encountered'} markdown files${skipDocs ? '' : ' (including docs)'}: ${mdFiles.length}`,
           `${SHORT_TAB}Synchronized TOCs: ${statusToEmoji(status.doctoc)}`,
           `${SHORT_TAB}Reformatted files: ${statusToEmoji(status.remark)}`,
           `Prettified all relevant project files: ${statusToEmoji(status.prettier)}`
