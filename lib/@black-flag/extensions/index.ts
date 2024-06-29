@@ -429,6 +429,19 @@ export type BfeStrictArguments<
     FrameworkArguments<CustomExecutionContext>;
 
 /**
+ * Maps an {@link ExecutionContext} into an identical type that explicitly omits
+ * its fallback indexers for unrecognized properties. Even though it is the
+ * runtime equivalent of {@link ExecutionContext}, using this type allows
+ * intellisense to report bad/misspelled/missing arguments from `context` in
+ * various places where it otherwise couldn't.
+ *
+ * **This type is intended for intellisense purposes only.**
+ */
+export type AsStrictExecutionContext<CustomExecutionContext extends ExecutionContext> =
+  OmitIndexSignature<Exclude<CustomExecutionContext, 'state'>> &
+    OmitIndexSignature<CustomExecutionContext['state']>;
+
+/**
  * A version of Black Flag's `builder` function parameters that exclude yargs
  * methods that are not supported by BFE.
  *
