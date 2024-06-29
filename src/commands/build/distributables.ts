@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import assert from 'node:assert';
-import { chmod, rename, symlink } from 'node:fs/promises';
+import { chmod, readFile, rename, stat, symlink, writeFile } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 
 import { transformFileAsync } from '@babel/core';
@@ -32,10 +32,12 @@ import {
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
+import { standardNodeShebang } from 'universe/constant';
 
 export type CustomCliArguments = GlobalCliArguments & {
   generateTypes: boolean;
   linkCliIntoBin: boolean;
+  prependShebang: boolean;
   moduleSystem: 'cjs' | 'esm';
 };
 
@@ -59,6 +61,11 @@ export default function command({
       description: 'Soft-link "bin" entries in package.json into node_modules/.bin',
       default: true
     },
+    'prepend-shebang': {
+      boolean: true,
+      description: 'Prepend a shebang to each "bin" distributable in package.json',
+      default: true
+    },
     'module-system': {
       choices: ['cjs', 'esm'],
       description: 'Which JavaScript module system to transpile into',
@@ -70,11 +77,14 @@ export default function command({
     aliases: ['dist'],
     builder,
     description: 'Transpile source and assets into production-ready distributables',
-    usage: withStandardUsage(),
+    usage: withStandardUsage(
+      '$1.\n\nNext.js projects will defer entirely to `next build`.\n\nBy default, CLI projects will have their entry points chmod-ed to be executable, shebangs added if they do not already exist, and "bin" entries soft-linked into node_modules/.bin.\n\nIn a monorepo context, only a single root/sub-root package will be built conditioned on the current working directory. Use Npm\'s workspace features, or Turbo\'s, if your goal is to build distributables from multiple sub-roots.'
+    ),
     handler: withStandardHandler(async function ({
       $0: scriptFullName,
       generateTypes,
       linkCliIntoBin,
+      prependShebang,
       moduleSystem,
       hush: isHushed,
       quiet: isQuieted
@@ -93,6 +103,7 @@ export default function command({
 
       debug('generateTypes: %O', generateTypes);
       debug('linkCliIntoBin: %O', linkCliIntoBin);
+      debug('prependShebang: %O', prependShebang);
 
       genericLogger([LogTag.IF_NOT_QUIETED], 'Building project distributables...');
 
@@ -145,193 +156,238 @@ export default function command({
       );
 
       const libraryDirectoriesArray = Array.from(libraryDirectories);
-
       debug('libraryDirectories: %O', libraryDirectories);
 
-      // ? Results are stored into prodLibImports
-      await discoverProductionLibraryImports(tsSrcFiles);
-
-      // ? Iteratively check each newly added prod lib import for potentially
-      // ? more prod lib imports to be added. Keep checking until we don't add
-      // ? anymore
-      for (
-        let previousProductionLibraryImportsSize = 0, iteration = 1;
-        previousProductionLibraryImportsSize !== productionLibraryImports.size;
-        previousProductionLibraryImportsSize = productionLibraryImports.size, iteration++
-      ) {
-        debugImportLister(
-          'prevProdLibImportsSize (%O) !== prodLibImports.size (%O), iterating again...',
-          previousProductionLibraryImportsSize,
-          productionLibraryImports.size
-        );
-
-        // ? Thankfully TC39 had the foresight to make sets enumerable in
-        // ? insertion order!
-        await discoverProductionLibraryImports(
-          Array.from(productionLibraryImports)
-            .slice(previousProductionLibraryImportsSize)
-            .flatMap((libraryImport) =>
-              tsLibraryFiles.filter((tsLibraryFile) =>
-                tsLibraryFile.startsWith(`${libraryDirPrefix}${libraryImport}`)
-              )
-            ),
-          iteration
-        );
-      }
-
-      const developmentLibraryImportsArray = libraryDirectories.difference(
-        productionLibraryImports
-      );
-
-      debug(
-        'developmentLibraryImportsArray (will not be built): %O',
-        developmentLibraryImportsArray
-      );
-
-      // TODO: with listr2, build types and source simultaneously
-      if (generateTypes) {
-        genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Generating types');
-        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
-
-        debug('running tsc');
-        await run(
-          'npx',
-          ['tsc', '--project', 'tsconfig.types.json', '--incremental', 'false'],
-          {
-            env: { NODE_ENV: 'production' },
-            stdout: isHushed ? 'ignore' : 'inherit',
-            stderr: isQuieted ? 'ignore' : 'inherit'
-          }
-        );
-
-        debug('running tsconfig-replace-paths');
-        await run('npx', ['tsconfig-replace-paths', '--project', 'tsconfig.types.json'], {
+      if (attributes.includes(ProjectMetaAttribute.Next)) {
+        debug('running next build');
+        await run('npx', ['next', 'build'], {
+          env: { NODE_ENV: 'production' },
           stdout: isHushed ? 'ignore' : 'inherit',
           stderr: isQuieted ? 'ignore' : 'inherit'
         });
-
-        if (isInMonorepo) {
-          // TODO: monorepo stuff
-          genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Organizing types...`);
-          genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Refactoring types...`);
-        }
       } else {
-        debug('skipped type generation');
-      }
+        // ? Results are stored into prodLibImports
+        await discoverProductionLibraryImports(tsSrcFiles);
 
-      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
-      genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Building distributables');
-      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+        // ? Iteratively check each newly added prod lib import for potentially
+        // ? more prod lib imports to be added. Keep checking until we don't add
+        // ? anymore
+        for (
+          let previousProductionLibraryImportsSize = 0, iteration = 1;
+          previousProductionLibraryImportsSize !== productionLibraryImports.size;
+          previousProductionLibraryImportsSize = productionLibraryImports.size,
+            iteration++
+        ) {
+          debugImportLister(
+            'prevProdLibImportsSize (%O) !== prodLibImports.size (%O), iterating again...',
+            previousProductionLibraryImportsSize,
+            productionLibraryImports.size
+          );
 
-      debug('building root ./lib and relative ./dist');
-      await Promise.all([
-        run(
-          'npx',
-          [
-            'babel',
-            'lib',
-            '--extensions',
-            inputExtension,
-            '--out-dir',
-            './dist/lib',
-            '--out-file-extension',
-            outputExtension,
-            ...(isInMonorepo ? ['--root-mode', 'upward'] : []),
-            '--ignore',
-            `lib/**/*.test${inputExtension}`,
-            '--ignore',
-            `lib/**/test`,
-            '--ignore',
-            'lib/**/README.md',
-            ...Array.from(developmentLibraryImportsArray).flatMap((name) => [
-              '--ignore',
-              `lib/${name}`
-            ])
-          ],
-          {
-            env: { NODE_ENV: `production-${moduleSystem}` },
-            stdout: isHushed ? 'ignore' : 'inherit',
-            stderr: isQuieted ? 'ignore' : 'inherit'
-          }
-        ),
-        run(
-          'npx',
-          [
-            'babel',
-            'src',
-            '--extensions',
-            inputExtension,
-            '--out-dir',
-            './dist/src',
-            '--out-file-extension',
-            outputExtension,
-            ...(isInMonorepo ? ['--root-mode', 'upward'] : [])
-          ],
-          {
-            env: { NODE_ENV: `production-${moduleSystem}` },
-            stdout: isHushed ? 'ignore' : 'inherit',
-            stderr: isQuieted ? 'ignore' : 'inherit'
-          }
-        )
-      ]);
+          // ? Thankfully TC39 had the foresight to make sets enumerable in
+          // ? insertion order!
+          await discoverProductionLibraryImports(
+            Array.from(productionLibraryImports)
+              .slice(previousProductionLibraryImportsSize)
+              .flatMap((libraryImport) =>
+                tsLibraryFiles.filter((tsLibraryFile) =>
+                  tsLibraryFile.startsWith(`${libraryDirPrefix}${libraryImport}`)
+                )
+              ),
+            iteration
+          );
+        }
 
-      if (
-        attributes.includes(ProjectMetaAttribute.Cli) &&
-        linkCliIntoBin &&
-        rootPkg.bin &&
-        rootPkg.name
-      ) {
-        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
-        genericLogger(
-          [LogTag.IF_NOT_QUIETED],
-          '⮞ Adding executable entry to node_modules/.bin'
+        const developmentLibraryImportsArray = libraryDirectories.difference(
+          productionLibraryImports
         );
+
+        debug(
+          'developmentLibraryImportsArray (will not be built): %O',
+          developmentLibraryImportsArray
+        );
+
+        // TODO: with listr2, build types and source simultaneously
+        if (generateTypes) {
+          genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Generating types');
+          genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+
+          debug('running tsc');
+          await run(
+            'npx',
+            ['tsc', '--project', 'tsconfig.types.json', '--incremental', 'false'],
+            {
+              env: { NODE_ENV: 'production' },
+              stdout: isHushed ? 'ignore' : 'inherit',
+              stderr: isQuieted ? 'ignore' : 'inherit'
+            }
+          );
+
+          debug('running tsconfig-replace-paths');
+          await run(
+            'npx',
+            ['tsconfig-replace-paths', '--project', 'tsconfig.types.json'],
+            {
+              stdout: isHushed ? 'ignore' : 'inherit',
+              stderr: isQuieted ? 'ignore' : 'inherit'
+            }
+          );
+
+          if (isInMonorepo) {
+            // TODO: monorepo stuff
+            genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Organizing types...`);
+            genericLogger([LogTag.IF_NOT_QUIETED], `${SHORT_TAB}Refactoring types...`);
+          }
+        } else {
+          debug('skipped type generation');
+        }
+
+        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+        genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Building distributables');
         genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
-        debug('symlinking and chmod-ing cli.js into node_modules based on bin config');
-
-        const binConfig =
-          typeof rootPkg.bin === 'string' ? { [rootPkg.name]: rootPkg.bin } : rootPkg.bin;
-
-        const mainBinFile = findMainBinFile(runtimeContext);
-        assert(mainBinFile, ErrorMessage.GuruMeditation());
-
+        debug('building root ./lib and relative ./dist');
         await Promise.all([
-          ...Object.entries(binConfig).map(async ([name, path]) => {
-            assert(path, ErrorMessage.GuruMeditation());
-
-            const symlinkTargetPath = relative(nodeModulesBinDir, resolve(rootDir, path));
-            const symlinkTemporaryPath = uniqueFilename(nodeModulesBinDir);
-            const symlinkRealPath = `${nodeModulesBinDir}/${name}`;
-
-            debug('symlink target path: %O', symlinkTargetPath);
-            debug('symlink temporary path: %O', symlinkTemporaryPath);
-            debug('symlink real path: %O', symlinkRealPath);
-
-            await symlink(symlinkTargetPath, symlinkTemporaryPath);
-            await rename(symlinkTemporaryPath, symlinkRealPath);
-
-            genericLogger(
-              [LogTag.IF_NOT_QUIETED],
-              `${SHORT_TAB}${symlinkRealPath} ⮕ ${symlinkTargetPath}`
-            );
-          }),
-          chmod(mainBinFile, 0o775).then(() =>
-            genericLogger(
-              [LogTag.IF_NOT_QUIETED],
-              `${SHORT_TAB}chmod 0775 ${mainBinFile}`
-            )
+          run(
+            'npx',
+            [
+              'babel',
+              'lib',
+              '--extensions',
+              inputExtension,
+              '--out-dir',
+              './dist/lib',
+              '--out-file-extension',
+              outputExtension,
+              ...(isInMonorepo ? ['--root-mode', 'upward'] : []),
+              '--ignore',
+              `lib/**/*.test${inputExtension}`,
+              '--ignore',
+              `lib/**/test`,
+              '--ignore',
+              'lib/**/README.md',
+              ...Array.from(developmentLibraryImportsArray).flatMap((name) => [
+                '--ignore',
+                `lib/${name}`
+              ])
+            ],
+            {
+              env: { NODE_ENV: `production-${moduleSystem}` },
+              stdout: isHushed ? 'ignore' : 'inherit',
+              stderr: isQuieted ? 'ignore' : 'inherit'
+            }
+          ),
+          run(
+            'npx',
+            [
+              'babel',
+              'src',
+              '--extensions',
+              inputExtension,
+              '--out-dir',
+              './dist/src',
+              '--out-file-extension',
+              outputExtension,
+              ...(isInMonorepo ? ['--root-mode', 'upward'] : [])
+            ],
+            {
+              env: { NODE_ENV: `production-${moduleSystem}` },
+              stdout: isHushed ? 'ignore' : 'inherit',
+              stderr: isQuieted ? 'ignore' : 'inherit'
+            }
           )
         ]);
-      } else {
-        debug('skipped symlinking and chmod-ing cli.js');
-      }
 
-      // TODO (build command for next projects needs to use NODE_ENV=production)
-      //
-      // TODO (differentiate between lib and lib-dev automatically depending on
-      // TODO which lib packages are imported in /src/* files and which are not.
-      // TODO This also has implications for babel/build config too)
+        if (
+          attributes.includes(ProjectMetaAttribute.Cli) &&
+          linkCliIntoBin &&
+          rootPkg.bin &&
+          rootPkg.name
+        ) {
+          genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+          genericLogger(
+            [LogTag.IF_NOT_QUIETED],
+            '⮞ Adding executable entry to node_modules/.bin'
+          );
+          genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+
+          debug('symlinking and chmod-ing cli.js into node_modules based on bin config');
+
+          const binConfig =
+            typeof rootPkg.bin === 'string'
+              ? { [rootPkg.name]: rootPkg.bin }
+              : rootPkg.bin;
+
+          const mainBinFile = findMainBinFile(runtimeContext);
+          assert(mainBinFile, ErrorMessage.GuruMeditation());
+
+          const binFiles = Object.values(binConfig);
+          const binFileInodes = await Promise.all(
+            binFiles.map(async (path) => {
+              assert(path, ErrorMessage.GuruMeditation());
+              return stat(path).then(({ ino }) => ino);
+            })
+          );
+
+          await Promise.all([
+            ...(prependShebang
+              ? Array.from(new Set(binFileInodes)).map(async (inode) => {
+                  // ? We go through all this to avoid race conditions where we
+                  // ? might end up writing to the same file
+                  const path = binFiles.at(binFileInodes.indexOf(inode));
+                  assert(path, ErrorMessage.GuruMeditation());
+                  const contents = await readFile(path, 'utf8');
+
+                  if (contents.startsWith('#!')) {
+                    debug(
+                      `skipped prepending shebang, path (${inode}) already has shebang: %O`,
+                      path
+                    );
+                  } else {
+                    debug(`prepending shebang to file at path (${inode}): %O`, path);
+
+                    await writeFile(path, `${standardNodeShebang}${contents}`);
+
+                    genericLogger(
+                      [LogTag.IF_NOT_QUIETED],
+                      `${SHORT_TAB}prepended shebang to ${path}`
+                    );
+                  }
+                })
+              : []),
+            ...Object.entries(binConfig).map(async ([name, path]) => {
+              assert(path, ErrorMessage.GuruMeditation());
+
+              const symlinkTargetPath = relative(
+                nodeModulesBinDir,
+                resolve(rootDir, path)
+              );
+              const symlinkTemporaryPath = uniqueFilename(nodeModulesBinDir);
+              const symlinkRealPath = `${nodeModulesBinDir}/${name}`;
+
+              debug('symlink target path: %O', symlinkTargetPath);
+              debug('symlink temporary path: %O', symlinkTemporaryPath);
+              debug('symlink real path: %O', symlinkRealPath);
+
+              await symlink(symlinkTargetPath, symlinkTemporaryPath);
+              await rename(symlinkTemporaryPath, symlinkRealPath);
+
+              genericLogger(
+                [LogTag.IF_NOT_QUIETED],
+                `${SHORT_TAB}${symlinkRealPath} ⮕ ${symlinkTargetPath}`
+              );
+            }),
+            chmod(mainBinFile, 0o775).then(() =>
+              genericLogger(
+                [LogTag.IF_NOT_QUIETED],
+                `${SHORT_TAB}chmod 0775 ${mainBinFile}`
+              )
+            )
+          ]);
+        } else {
+          debug('skipped symlinking and chmod-ing cli.js');
+        }
+      }
 
       genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
