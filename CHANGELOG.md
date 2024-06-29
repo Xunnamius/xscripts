@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this auto-generated
 file. The format is based on [Conventional Commits](https://conventionalcommits.org);
 this project adheres to [Semantic Versioning](https://semver.org).
 
+### [1.10.1](https://github.com/Xunnamius/xscripts/compare/v1.10.0...v1.10.1) (2024-06-29)
+
+#### 🪄 Fixes
+
+- **src:** ensure --file is respected by prettier in "format" command ([483f036](https://github.com/Xunnamius/xscripts/commit/483f03697f1cf01847759fa5c1cf61f5af578a3f))
+
 ## [1.10.0](https://github.com/Xunnamius/xscripts/compare/v1.9.0...v1.10.0) (2024-06-29)
 
 #### ✨ Features
