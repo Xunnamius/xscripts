@@ -8,6 +8,7 @@ import { type ChildConfiguration } from '@black-flag/core';
 import uniqueFilename from 'unique-filename';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { standardNodeShebang } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
 
 import {
@@ -30,9 +31,9 @@ import {
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
-import { standardNodeShebang } from 'universe/constant';
 
 export type CustomCliArguments = GlobalCliArguments & {
   generateTypes: boolean;
@@ -46,7 +47,7 @@ export default function command({
   debug_,
   state,
   runtimeContext
-}: GlobalExecutionContext) {
+}: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext

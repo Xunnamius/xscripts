@@ -3,6 +3,7 @@ import { rimraf as forceDeletePaths } from 'rimraf';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
+import { globalPreChecks } from 'universe/util';
 
 import {
   LogTag,
@@ -16,8 +17,8 @@ import {
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { run } from 'multiverse/run';
-import { globalPreChecks } from 'universe/util';
 
 const matchNothing = '(?!)';
 
@@ -45,7 +46,7 @@ export default function command({
   debug_,
   state: { startTime },
   runtimeContext
-}: GlobalExecutionContext) {
+}: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext

@@ -20,6 +20,7 @@ import {
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { run } from 'multiverse/run';
 
 export enum DeployTarget {
@@ -51,7 +52,7 @@ export default function command({
   debug_,
   state,
   runtimeContext
-}: GlobalExecutionContext) {
+}: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -201,16 +202,8 @@ export default function command({
         '--host is available in the environment. This command will fail if authenticating to --host requires a password or other user input.'
       ].join(' ')
     ),
-    handler: withStandardHandler(async function ({
-      $0: scriptFullName,
-      target,
-      production,
-      preview,
-      toPath,
-      host,
-      bumpVersion,
-      previewUrl
-    }) {
+    handler: withStandardHandler(async function (argv) {
+      const { $0: scriptFullName, target, bumpVersion } = argv;
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
@@ -234,6 +227,8 @@ export default function command({
             ErrorMessage.WrongProjectAttributes([ProjectMetaAttribute.Vercel], attributes)
           );
 
+          const { production, preview, previewUrl } = argv;
+
           if (production) {
             genericLogger([LogTag.IF_NOT_QUIETED], deployMessage('vercel (production)'));
             await run('vercel', ['deploy', '--prod']);
@@ -255,6 +250,7 @@ export default function command({
         case DeployTarget.Ssh: {
           genericLogger([LogTag.IF_NOT_QUIETED], deployMessage('ssh'));
 
+          const { host, toPath } = argv;
           const remoteTmpdirPath = uniqueFilename('/tmp', 'x-deploy');
 
           await run('rsync', [

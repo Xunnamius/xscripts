@@ -19,6 +19,7 @@ import {
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { runWithInheritedIo } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments;
@@ -28,7 +29,7 @@ export default function command({
   debug_,
   state,
   runtimeContext
-}: GlobalExecutionContext) {
+}: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext

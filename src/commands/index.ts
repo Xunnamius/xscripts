@@ -8,9 +8,13 @@ import {
   withStandardUsage
 } from 'multiverse/@-xun/cli-utils/extensions';
 
+import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
+
 export type CustomCliArguments = GlobalCliArguments;
 
-export default function command({ debug_ }: GlobalExecutionContext) {
+export default function command({
+  debug_
+}: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
