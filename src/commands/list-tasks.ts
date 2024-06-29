@@ -14,6 +14,7 @@ import {
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+import { globalPreChecks } from 'universe/util';
 
 const frontmatter = `\n⮞  `;
 
@@ -45,7 +46,10 @@ export default function command({
     handler: withStandardHandler(async function ({ $0: scriptFullName, full }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
+
       debug('entered handler');
+
+      await globalPreChecks({ debug_, runtimeContext });
 
       const { startTime } = state;
 

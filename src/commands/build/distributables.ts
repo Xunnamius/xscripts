@@ -14,7 +14,8 @@ import {
   ProjectMetaAttribute,
   findMainBinFile,
   findProjectFiles,
-  getProjectMetadata
+  getProjectMetadata,
+  globalPreChecks
 } from 'universe/util';
 
 import {
@@ -83,6 +84,8 @@ export default function command({
       const debugImportLister = debug.extend('import-lister');
 
       debug('entered handler');
+
+      await globalPreChecks({ debug_, runtimeContext });
 
       const { startTime } = state;
 

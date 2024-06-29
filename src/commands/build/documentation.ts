@@ -14,12 +14,18 @@ import {
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
+import { globalPreChecks } from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments & {
   // TODO
 };
 
-export default function command({ log, debug_, state }: GlobalExecutionContext) {
+export default function command({
+  log,
+  debug_,
+  state,
+  runtimeContext
+}: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -37,6 +43,8 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const debug = debug_.extend('handler');
 
       debug('entered handler');
+
+      await globalPreChecks({ debug_, runtimeContext });
 
       const { startTime } = state;
 

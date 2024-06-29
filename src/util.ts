@@ -11,6 +11,27 @@ import { createDebugLogger } from 'multiverse/rejoinder';
 
 import type { GlobalExecutionContext } from './configure';
 
+export async function globalPreChecks({
+  debug_,
+  runtimeContext
+}: Pick<GlobalExecutionContext, 'debug_' | 'runtimeContext'>) {
+  const debug = debug_.extend('configureArguments');
+  const cwd = process.cwd();
+
+  const {
+    project: { root },
+    package: pkg
+  } = runtimeContext;
+
+  debug('project root: %O', root);
+  debug('pkg root: %O', pkg?.root);
+  debug('cwd (must match one of the above): %O', cwd);
+
+  if (root !== cwd && (!pkg || pkg.root !== cwd)) {
+    throw new CliError(ErrorMessage.CannotRunOutsideRoot());
+  }
+}
+
 export async function readFile(path: string) {
   try {
     return await fs.readFile(path, { encoding: 'utf8' });

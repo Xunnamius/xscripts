@@ -2,7 +2,12 @@ import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { ProjectMetaAttribute, getProjectMetadata, hasExitCode } from 'universe/util';
+import {
+  ProjectMetaAttribute,
+  getProjectMetadata,
+  globalPreChecks,
+  hasExitCode
+} from 'universe/util';
 
 import { LogTag, logStartTime } from 'multiverse/@-xun/cli-utils/logging';
 
@@ -34,7 +39,10 @@ export default function command({
     handler: withStandardHandler(async function ({ $0: scriptFullName }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
+
       debug('entered handler');
+
+      await globalPreChecks({ debug_, runtimeContext });
 
       const { startTime } = state;
 

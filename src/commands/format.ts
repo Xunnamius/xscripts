@@ -2,7 +2,7 @@ import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { findProjectFiles } from 'universe/util';
+import { findProjectFiles, globalPreChecks } from 'universe/util';
 
 import {
   LogTag,
@@ -62,7 +62,10 @@ export default function command({
     }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
+
       debug('entered handler');
+
+      await globalPreChecks({ debug_, runtimeContext });
 
       const { startTime } = state;
 

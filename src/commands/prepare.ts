@@ -1,7 +1,7 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { fsConstants, isAccessible } from 'universe/util';
+import { fsConstants, globalPreChecks, isAccessible } from 'universe/util';
 
 import {
   LogTag,
@@ -19,7 +19,12 @@ import { runWithInheritedIo } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments;
 
-export default function command({ log, debug_, state }: GlobalExecutionContext) {
+export default function command({
+  log,
+  debug_,
+  state,
+  runtimeContext
+}: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -34,6 +39,8 @@ export default function command({ log, debug_, state }: GlobalExecutionContext) 
       const debug = debug_.extend('handler');
 
       debug('entered handler');
+
+      await globalPreChecks({ debug_, runtimeContext });
 
       const { startTime } = state;
 

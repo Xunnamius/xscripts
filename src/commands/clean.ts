@@ -17,6 +17,7 @@ import {
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { run } from 'multiverse/run';
+import { globalPreChecks } from 'universe/util';
 
 const matchNothing = '(?!)';
 
@@ -42,7 +43,8 @@ export type CustomCliArguments = GlobalCliArguments & {
 export default function command({
   log,
   debug_,
-  state: { startTime }
+  state: { startTime },
+  runtimeContext
 }: GlobalExecutionContext) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
@@ -74,7 +76,10 @@ export default function command({
     }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
+
       debug('entered handler');
+
+      await globalPreChecks({ debug_, runtimeContext });
 
       const excludeRegExps = excludePaths.map(
         (path) => new RegExp(path || matchNothing, 'iu')

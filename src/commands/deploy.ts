@@ -6,7 +6,7 @@ import uniqueFilename from 'unique-filename';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { ProjectMetaAttribute, getProjectMetadata } from 'universe/util';
+import { ProjectMetaAttribute, getProjectMetadata, globalPreChecks } from 'universe/util';
 
 import {
   LogTag,
@@ -213,7 +213,10 @@ export default function command({
     }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
+
       debug('entered handler');
+
+      await globalPreChecks({ debug_, runtimeContext });
 
       const { startTime } = state;
 

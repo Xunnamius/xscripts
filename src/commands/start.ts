@@ -7,6 +7,7 @@ import {
   ProjectMetaAttribute,
   findMainBinFile,
   getProjectMetadata,
+  globalPreChecks,
   hasExitCode
 } from 'universe/util';
 
@@ -42,7 +43,10 @@ export default function command({
     handler: withStandardHandler(async function ({ $0: scriptFullName, _: args_ }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
+
       debug('entered handler');
+
+      await globalPreChecks({ debug_, runtimeContext });
 
       const { startTime } = state;
 

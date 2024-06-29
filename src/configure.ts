@@ -1,8 +1,4 @@
-import {
-  CliError,
-  type ConfigureArguments,
-  type ConfigureExecutionContext
-} from '@black-flag/core';
+import { type ConfigureExecutionContext } from '@black-flag/core';
 
 import { getRunContext } from '@projector-js/core/project';
 
@@ -19,8 +15,6 @@ import {
   type StandardCommonCliArguments,
   type StandardExecutionContext
 } from 'multiverse/@-xun/cli-utils/extensions';
-
-import { ErrorMessage } from './error';
 
 const rootGenericLogger = createGenericLogger({ namespace: globalLoggerNamespace });
 const rootDebugLogger = createDebugLogger({ namespace: globalDebuggerNamespace });
@@ -46,27 +40,6 @@ export const configureExecutionContext: ConfigureExecutionContext<GlobalExecutio
       // TODO: metadata package
       runtimeContext: getRunContext()
     };
-  };
-
-export const configureArguments: ConfigureArguments<GlobalExecutionContext> =
-  async function (rawArgv, { runtimeContext }) {
-    const debug = rootDebugLogger.extend('configureArguments');
-    const cwd = process.cwd();
-
-    const {
-      project: { root },
-      package: pkg
-    } = runtimeContext;
-
-    debug('project root: %O', root);
-    debug('pkg root: %O', pkg?.root);
-    debug('cwd (must match one of the above): %O', cwd);
-
-    if (root !== cwd && (!pkg || pkg.root !== cwd)) {
-      throw new CliError(ErrorMessage.CannotRunOutsideRoot());
-    }
-
-    return rawArgv;
   };
 
 export const configureErrorHandlingEpilogue =
