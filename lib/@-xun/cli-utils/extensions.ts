@@ -19,9 +19,24 @@ import {
 
 import { LogTag } from './logging';
 
+import type { OmitIndexSignature } from 'type-fest';
+
 const globalDebuggerNamespace = '@-xun/cli-utils';
 
 export { withUsageExtensions as withStandardUsage } from 'multiverse/@black-flag/extensions/index';
+
+/**
+ * Maps an {@link ExecutionContext} into an identical type that explicitly omits
+ * its fallback indexers for unrecognized properties. Even though it is the
+ * runtime equivalent of {@link ExecutionContext}, using this type allows
+ * intellisense to report bad/misspelled/missing arguments from `context` in
+ * various places where it otherwise couldn't.
+ *
+ * **This type is intended for intellisense purposes only.**
+ */
+export type AsStrictExecutionContext<CustomExecutionContext extends ExecutionContext> =
+  OmitIndexSignature<Exclude<CustomExecutionContext, 'state'>> &
+    OmitIndexSignature<CustomExecutionContext['state']>;
 
 /**
  * This {@link ExecutionContext} subtype contains state related to
