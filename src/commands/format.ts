@@ -31,7 +31,7 @@ export type CustomCliArguments = GlobalCliArguments & {
   renumberReferences: boolean;
   skipDocs: boolean;
   skipUnknown: boolean;
-  files: string[];
+  files?: string[];
   onlyPackageJson: boolean;
   onlyMarkdown: boolean;
   onlyPrettier: boolean;
@@ -153,13 +153,13 @@ export default function command({
 
           debug('virtual .prettierignore lines: %O', ignore);
 
-          const foundFiles = await glob(files, { ignore, dot: true, absolute: true });
+          files = await glob(files, { ignore, dot: true, absolute: true });
 
-          debug('foundFiles: %O', foundFiles);
+          debug('files (post-glob): %O', files);
 
           const [mdFiles, workspaces] = await Promise.all([
-            foundFiles.filter((path) => path.endsWith('.md')),
-            foundFiles.filter((path) => path.endsWith('/package.json'))
+            files.filter((path) => path.endsWith('.md')),
+            files.filter((path) => path.endsWith('/package.json'))
           ]);
 
           return {
@@ -298,7 +298,12 @@ export default function command({
 
           await run(
             'npx',
-            ['prettier', '--write', ...(skipUnknown ? ['--ignore-unknown'] : []), '.'],
+            [
+              'prettier',
+              '--write',
+              ...(skipUnknown ? ['--ignore-unknown'] : []),
+              ...(files ?? ['.'])
+            ],
             {
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
