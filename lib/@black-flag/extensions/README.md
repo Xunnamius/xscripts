@@ -271,8 +271,8 @@ This configuration allows the following arguments: no arguments (`∅`), `‑y=.
 the existence of another argument. Unless [`looseImplications`][20] is set to
 `true`, if any of the specified arguments are explicitly given, their values
 must match the specified argument-value pairs respectively (similar to
-[`requires`][10]). For this reason, `implies` only accepts one or more
-argument-value pairs and not raw strings. For example:
+[`requires`][10]/[`conflicts`][11]). For this reason, `implies` only accepts one
+or more argument-value pairs and not raw strings. For example:
 
 ```jsonc
 {
