@@ -118,7 +118,8 @@ export function findMainBinFile(
  */
 export async function findProjectFiles(
   runtimeContext: GlobalExecutionContext['runtimeContext'],
-  useCached = true
+  // eslint-disable-next-line unicorn/prevent-abbreviations
+  { useCached = true, skipDocs = true } = {}
 ) {
   const debug = createDebugLogger({
     namespace: `${globalLoggerNamespace}:findProjectFiles`
@@ -133,7 +134,13 @@ export async function findProjectFiles(
     project: { root, packages }
   } = runtimeContext;
 
-  const ignore = (await readFile(`${root}/.prettierignore`)).split(`\n`).filter(Boolean);
+  const ignore = (await readFile(`${root}/.prettierignore`))
+    .split('\n')
+    .filter((entry) => entry !== 'docs');
+
+  if (!skipDocs) {
+    ignore.unshift('docs');
+  }
 
   // eslint-disable-next-line unicorn/prevent-abbreviations
   const [mdFiles, tsRootLibFiles, tsSrcFiles, libPkgDirs] = await Promise.all([

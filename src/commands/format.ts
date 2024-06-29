@@ -20,9 +20,9 @@ import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments & {
-  'sort-package-json': boolean;
-  'skip-docs': boolean;
-  'renumber-references': boolean;
+  sortPackageJson: boolean;
+  renumberReferences: boolean;
+  skipDocs: boolean;
 };
 
 export default function command({
@@ -44,6 +44,12 @@ export default function command({
       boolean: true,
       description: 'Run the renumber-references plugin when formatting Markdown files',
       default: false
+    },
+    'skip-docs': {
+      boolean: true,
+      description:
+        'Virtually prepend (true) or remove (false) the string `docs` to/from .prettierignore',
+      default: true
     }
   });
 
@@ -57,6 +63,7 @@ export default function command({
       $0: scriptFullName,
       sortPackageJson,
       renumberReferences,
+      skipDocs,
       hush: isHushed,
       quiet: isQuieted
     }) {
@@ -75,7 +82,7 @@ export default function command({
       const {
         mdFiles,
         pkgFiles: { root, workspaces }
-      } = await findProjectFiles(runtimeContext);
+      } = await findProjectFiles(runtimeContext, { skipDocs });
 
       const allPkgFiles = [root, ...workspaces];
 
