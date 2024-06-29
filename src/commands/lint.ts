@@ -33,6 +33,7 @@ export default function command({
     // TODO (no dot imports outside lib directory)
     // TODO (bring in lint code from projector)
     // TODO (add depcheck package, browserslist, attw, and others into the mix)
+    // TODO (test dir cannot appear under src, directly under lib, or under external-scripts)
   });
 
   return {

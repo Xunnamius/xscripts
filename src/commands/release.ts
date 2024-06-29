@@ -18,7 +18,8 @@ import { globalPreChecks } from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments;
 
-// TODO: skip reinstalling node_modules if dir exists unless --force-reinstall
+// TODO (skip reinstalling node_modules if dir exists unless --force-reinstall)
+// TODO (add --renumber-references to build command)
 
 export default function command({
   log,
