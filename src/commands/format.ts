@@ -269,6 +269,7 @@ export default function command({
               ...(isHushed ? ['--quiet'] : []),
               '--output',
               '--frail',
+              '--silently-ignore',
               ...mdFiles
             ],
             {
