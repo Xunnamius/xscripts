@@ -69,7 +69,8 @@ export default function command({
         'Only consider files (or globs) given via --files instead of scanning the filesystem',
       check(files: string[]) {
         return (
-          files.length > 1 || ErrorMessage.RequiresMinArgs('--files', 1, files.length)
+          (files.length > 0 && files.every(Boolean)) ||
+          ErrorMessage.RequiresMinArgs('--files', 1, undefined, 'non-empty')
         );
       }
     },
