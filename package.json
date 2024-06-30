@@ -8,7 +8,7 @@
   "homepage": "https://github.com/Xunnamius/xscripts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Xunnamius/xscripts"
+    "url": "https://github.com/Xunnamius/xscripts.git"
   },
   "license": "MIT",
   "author": "Xunnamius",
