@@ -1,6 +1,6 @@
 [**@-xun/scripts**](../../README.md) • **Docs**
 
----
+***
 
 [@-xun/scripts](../../README.md) / [util](../README.md) / ProjectMetaAttribute
 
@@ -14,56 +14,56 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 > **Cjs**: `"cjs"`
 
-#### Defined In
+#### Defined in
 
-[src/util.ts:189](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L189)
+[src/util.ts:240](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L240)
 
----
+***
 
-### CLI
+### Cli
 
 > **Cli**: `"cli"`
 
-#### Defined In
+#### Defined in
 
-[src/util.ts:186](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L186)
+[src/util.ts:237](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L237)
 
----
+***
 
 ### Esm
 
 > **Esm**: `"esm"`
 
-#### Defined In
+#### Defined in
 
-[src/util.ts:190](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L190)
+[src/util.ts:241](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L241)
 
----
+***
 
 ### Next
 
 > **Next**: `"next"`
 
-#### Defined In
+#### Defined in
 
-[src/util.ts:185](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L185)
+[src/util.ts:236](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L236)
 
----
+***
 
 ### Vercel
 
 > **Vercel**: `"vercel"`
 
-#### Defined In
+#### Defined in
 
-[src/util.ts:188](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L188)
+[src/util.ts:239](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L239)
 
----
+***
 
 ### Webpack
 
 > **Webpack**: `"webpack"`
 
-#### Defined In
+#### Defined in
 
-[src/util.ts:187](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L187)
+[src/util.ts:238](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L238)

@@ -1,6 +1,6 @@
 [**@-xun/scripts**](../../README.md) • **Docs**
 
----
+***
 
 [@-xun/scripts](../../README.md) / [commands](../README.md) / CustomCliArguments
 
@@ -8,6 +8,6 @@
 
 > **CustomCliArguments**: [`GlobalCliArguments`](../../configure/type-aliases/GlobalCliArguments.md)
 
-## Defined In
+## Defined in
 
-[src/commands/index.ts:11](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/commands/index.ts#L11)
+[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/commands/index.ts#L13)

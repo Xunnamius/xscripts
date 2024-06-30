@@ -1,6 +1,6 @@
 [**@-xun/scripts**](../README.md) • **Docs**
 
----
+***
 
 [@-xun/scripts](../README.md) / util
 
@@ -22,9 +22,11 @@
 
 ### Functions
 
+- [deriveVirtualPrettierIgnoreLines](functions/deriveVirtualPrettierIgnoreLines.md)
 - [findMainBinFile](functions/findMainBinFile.md)
 - [findProjectFiles](functions/findProjectFiles.md)
 - [getProjectMetadata](functions/getProjectMetadata.md)
+- [globalPreChecks](functions/globalPreChecks.md)
 - [hasExitCode](functions/hasExitCode.md)
 - [isAccessible](functions/isAccessible.md)
 - [readFile](functions/readFile.md)

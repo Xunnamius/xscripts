@@ -1,12 +1,12 @@
 [**@-xun/scripts**](../../README.md) • **Docs**
 
----
+***
 
 [@-xun/scripts](../../README.md) / [util](../README.md) / isAccessible
 
 # Function: isAccessible()
 
-> **isAccessible**(`path`, `fsConstants`): `Promise`<`boolean`>
+> **isAccessible**(`path`, `fsConstants`): `Promise`\<`boolean`\>
 
 Sugar for `await access(path, fsConstants)` that returns `true` or `false`
 rather than throwing or returning `void`.
@@ -33,8 +33,8 @@ fs.constants
 
 ## Returns
 
-`Promise`<`boolean`>
+`Promise`\<`boolean`\>
 
-## Defined In
+## Defined in
 
-[src/util.ts:162](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L162)
+[src/util.ts:213](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L213)

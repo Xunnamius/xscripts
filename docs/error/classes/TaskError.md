@@ -1,6 +1,6 @@
 [**@-xun/scripts**](../../README.md) • **Docs**
 
----
+***
 
 [@-xun/scripts](../../README.md) / [error](../README.md) / TaskError
 
@@ -14,13 +14,13 @@ An `Error` class where the first letter of the message is capitalized.
 
 ## Constructors
 
-### New Taskerror()
+### new TaskError()
 
 > **new TaskError**(...`args`): [`TaskError`](TaskError.md)
 
 #### Parameters
 
-• ...**args**: \[`string`, `ErrorOptions`]
+• ...**args**: [`string`, `ErrorOptions`]
 
 #### Returns
 
@@ -30,69 +30,69 @@ An `Error` class where the first letter of the message is capitalized.
 
 `Error.constructor`
 
-#### Defined In
+#### Defined in
 
-[lib/@-xun/cli-utils/error.ts:8](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/lib/@-xun/cli-utils/error.ts#L8)
+[lib/@-xun/cli-utils/error.ts:8](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/lib/@-xun/cli-utils/error.ts#L8)
 
 ## Properties
 
-### Cause?
+### cause?
 
 > `optional` **cause**: `unknown`
 
-#### Inherited From
+#### Inherited from
 
 `Error.cause`
 
-#### Defined In
+#### Defined in
 
 node\_modules/typescript/lib/lib.es2022.error.d.ts:24
 
----
+***
 
-### Message
+### message
 
 > **message**: `string`
 
-#### Inherited From
+#### Inherited from
 
 `Error.message`
 
-#### Defined In
+#### Defined in
 
 node\_modules/typescript/lib/lib.es5.d.ts:1077
 
----
+***
 
-### Name
+### name
 
 > **name**: `string`
 
-#### Inherited From
+#### Inherited from
 
 `Error.name`
 
-#### Defined In
+#### Defined in
 
 node\_modules/typescript/lib/lib.es5.d.ts:1076
 
----
+***
 
-### Stack?
+### stack?
 
 > `optional` **stack**: `string`
 
-#### Inherited From
+#### Inherited from
 
 `Error.stack`
 
-#### Defined In
+#### Defined in
 
 node\_modules/typescript/lib/lib.es5.d.ts:1078
 
----
+***
 
-### Preparestacktrace()?
+### prepareStackTrace()?
 
 > `static` `optional` **prepareStackTrace**: (`err`, `stackTraces`) => `any`
 
@@ -100,43 +100,43 @@ Optional override for formatting stack traces
 
 #### See
 
-<https://v8.dev/docs/stack-trace-api#customizing-stack-traces>
+https://v8.dev/docs/stack-trace-api#customizing-stack-traces
 
 #### Parameters
 
 • **err**: `Error`
 
-• **stackTraces**: `CallSite`\[]
+• **stackTraces**: `CallSite`[]
 
 #### Returns
 
 `any`
 
-#### Inherited From
+#### Inherited from
 
 `Error.prepareStackTrace`
 
-#### Defined In
+#### Defined in
 
 node\_modules/@types/node/globals.d.ts:28
 
----
+***
 
-### Stacktracelimit
+### stackTraceLimit
 
 > `static` **stackTraceLimit**: `number`
 
-#### Inherited From
+#### Inherited from
 
 `Error.stackTraceLimit`
 
-#### Defined In
+#### Defined in
 
 node\_modules/@types/node/globals.d.ts:30
 
 ## Methods
 
-### Capturestacktrace()
+### captureStackTrace()
 
 > `static` **captureStackTrace**(`targetObject`, `constructorOpt`?): `void`
 
@@ -152,10 +152,10 @@ Create .stack property on a target object
 
 `void`
 
-#### Inherited From
+#### Inherited from
 
 `Error.captureStackTrace`
 
-#### Defined In
+#### Defined in
 
 node\_modules/@types/node/globals.d.ts:21

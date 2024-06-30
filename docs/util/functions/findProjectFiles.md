@@ -1,14 +1,14 @@
 [**@-xun/scripts**](../../README.md) • **Docs**
 
----
+***
 
 [@-xun/scripts](../../README.md) / [util](../README.md) / findProjectFiles
 
 # Function: findProjectFiles()
 
-> **findProjectFiles**(`runtimeContext`, `useCached`): `Promise`<`object`>
+> **findProjectFiles**(`runtimeContext`, `__namedParameters`): `Promise`\<`object`\>
 
-Returns an array of various different file paths (strings):
+Returns an array of various different absolute file paths (strings):
 
 - **`pkgFiles`** - `package.json` files at root or belonging to workspaces or
   belonging to lib
@@ -18,63 +18,80 @@ Returns an array of various different file paths (strings):
 
 ## Parameters
 
-• **runtimeContext**: `MonorepoRunContext` | `PolyrepoRunContext`
+• **runtimeContext**: `MonorepoRunContext` \| `PolyrepoRunContext`
 
-• **useCached**: `boolean` = `true`
+• **\_\_namedParameters** = `{}`
+
+• **\_\_namedParameters.skipDocs?**: `boolean` = `true`
+
+Virtually prepend `docs` to `.prettierignore` if `true`.
+
+Regardless of the value of `skipDocs`, the whole string `docs`, if
+encountered alone on its own line, will be filtered out of
+.prettierignore. Use `skipDocs` to add it back in.
+
+• **\_\_namedParameters.skipUnknown?**: `boolean` = `false`
+
+Skip files unknown to git (even if already ignored by
+`.gitignore`/`.prettierignore`).
+
+• **\_\_namedParameters.useCached?**: `boolean` = `true`
+
+Use the internal cached result from a previous run, if available.
 
 ## Returns
 
-`Promise`<`object`>
+`Promise`\<`object`\>
 
-### Mdfiles
+### mdFiles
 
-> **mdFiles**: `string`\[]
+> **mdFiles**: `string`[]
 
 The project's Markdown files.
 
-### Pkgfiles
+### pkgFiles
 
 > **pkgFiles**: `object`
 
 The project's relevant package.json files.
 
-### Pkgfiles.lib
+### pkgFiles.lib
 
-> **lib**: `string`\[]
+> **lib**: `string`[]
 
 Each lib sub-project's package.json file.
 
-### Pkgfiles.root
+### pkgFiles.root
 
 > **root**: `string`
 
 The project's root package.json file.
 
-### Pkgfiles.workspaces
+### pkgFiles.workspaces
 
-> **workspaces**: `string`\[]
+> **workspaces**: `string`[]
 
 Each workspace package.json file in the project.
 
-### Tsfiles
+### tsFiles
 
 > **tsFiles**: `object`
 
 The project's relevant TypeScript files.
 
-### Tsfiles.lib
+### tsFiles.lib
 
-> **lib**: `string`\[]
+> **lib**: `string`[]
 
 TypeScript files under root `lib/`.
 
-### Tsfiles.src
+### tsFiles.src
 
-> **src**: `string`\[]
+> **src**: `string`[]
 
 TypeScript files under any `src/` directory or subdirectory relative to
 the current working directory.
 
-## Defined In
+## Defined in
 
-[src/util.ts:98](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/util.ts#L98)
+[src/util.ts:121](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L121)

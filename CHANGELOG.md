@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this auto-generated
 file. The format is based on [Conventional Commits](https://conventionalcommits.org);
 this project adheres to [Semantic Versioning](https://semver.org).
 
+## [1.11.0](https://github.com/Xunnamius/xscripts/compare/v1.10.1...v1.11.0) (2024-06-30)
+
+#### ✨ Features
+
+- **@-xun/cli-utils:** add `ErrorMessage.RequiresMinArgs` ([618ce1a](https://github.com/Xunnamius/xscripts/commit/618ce1a1ae9132dbb54dc52c60c96aea17897b82))
+- **src:** add all-contributors regeneration to "format" command ([d74f099](https://github.com/Xunnamius/xscripts/commit/d74f099ac798fd0c925ea4aad0b1860b8a8a741f))
+
+#### 🪄 Fixes
+
+- **src:** ensure --files never hands prettier paths it can't handle when running "format" command ([0f4dd16](https://github.com/Xunnamius/xscripts/commit/0f4dd160eb1181306899031186b4a3c7e64d936c))
+- **src:** ensure "format" command all-contributors regeneration only targets root README.md ([2cd56d1](https://github.com/Xunnamius/xscripts/commit/2cd56d132e3cd7318744839cbf119b126cc35c98))
+- **src:** ensure all glob relevant glob calls never return directories ([9764967](https://github.com/Xunnamius/xscripts/commit/9764967b4ca5aab46b32317ddb14bc4e843d8674))
+- **src:** ensure, when --file is given, at least one option given for "format" command ([fd86f3f](https://github.com/Xunnamius/xscripts/commit/fd86f3f321889f759eda02880982117b5a0aba16))
+- **src:** fix fix fd86f3f ([e295a02](https://github.com/Xunnamius/xscripts/commit/e295a0270f8ae743771d79966cccb3fdb14f19fd))
+
+#### ⚙️ Build System
+
+- **lint-staged.config:** update to use xscripts ([d290ba5](https://github.com/Xunnamius/xscripts/commit/d290ba57054479eb873d3cdc785db602432fca09))
+- Reorganize deps/devdeps and re-enable commit-spell ([4ea8aa4](https://github.com/Xunnamius/xscripts/commit/4ea8aa453186568651849102a2ade4df2f6c5cee))
+
 ### [1.10.1](https://github.com/Xunnamius/xscripts/compare/v1.10.0...v1.10.1) (2024-06-29)
 
 #### 🪄 Fixes

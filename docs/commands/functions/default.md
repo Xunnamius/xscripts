@@ -1,6 +1,6 @@
 [**@-xun/scripts**](../../README.md) • **Docs**
 
----
+***
 
 [@-xun/scripts](../../README.md) / [commands](../README.md) / default
 
@@ -10,40 +10,40 @@
 
 ## Parameters
 
-• **\_\_namedParameters**: [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)
+• **\_\_namedParameters**: `AsStrictExecutionContext`\<[`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>
 
 ## Returns
 
 `object`
 
-### Builder
+### builder
 
-> **builder**: `BfeBuilderFunction`<`StandardCommonCliArguments`, [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)>
+> **builder**: `BfeBuilderFunction`\<`StandardCommonCliArguments`, [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>
 
-### Description
+### description
 
 > **description**: `string` = `"A collection of commands for interacting with Xunnamius's NPM-based projects"`
 
-### Handler()
+### handler()
 
-> **handler**: (`argv`) => `Promisable`<`void`>
+> **handler**: (`argv`) => `Promisable`\<`void`\>
 
 #### Parameters
 
-• **argv**: `Arguments`<`StandardCommonCliArguments`, [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)>
+• **argv**: `Arguments`\<`StandardCommonCliArguments`, [`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\>
 
 #### Returns
 
-`Promisable`<`void`>
+`Promisable`\<`void`\>
 
-### Name
+### name
 
 > **name**: `string` = `'xscripts'`
 
-### Usage
+### usage
 
 > **usage**: `string`
 
-## Defined In
+## Defined in
 
-[src/commands/index.ts:13](https://github.com/Xunnamius/xscripts/blob/e9f020c2a756a49be6cdccf55d88b926dd2645e9/src/commands/index.ts#L13)
+[src/commands/index.ts:15](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/commands/index.ts#L15)

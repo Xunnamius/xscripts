@@ -1,6 +1,6 @@
 [**@-xun/scripts**](../README.md) • **Docs**
 
----
+***
 
 [@-xun/scripts](../README.md) / constant
 
@@ -12,3 +12,4 @@
 
 - [globalDebuggerNamespace](variables/globalDebuggerNamespace.md)
 - [globalLoggerNamespace](variables/globalLoggerNamespace.md)
+- [standardNodeShebang](variables/standardNodeShebang.md)
