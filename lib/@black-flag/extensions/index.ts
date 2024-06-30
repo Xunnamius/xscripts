@@ -222,11 +222,16 @@ export type BfeBuilderObjectValueExtensions<
    */
   demandThisOptionXor?: BfeBuilderObjectValueExtensionValue;
   /**
-   * `implies` will set a default value for the specified arguments conditioned
-   * on the existence of another argument. If any of the specified arguments are
-   * explicitly given, their values must match the specified argument-value
-   * pairs respectively (which is the behavior of `requires`). For this reason,
-   * `implies` only accepts one or more argument-value pairs and not raw
+   * `implies` will set default values for the specified arguments conditioned
+   * on the existence of another argument. These implied defaults will override
+   * any `default` configurations of the specified arguments.
+   *
+   * If any of the specified arguments are explicitly given on the command line,
+   * their values must match the specified argument-value pairs respectively
+   * (which is the behavior of `requires`/`conflicts`). Use `looseImplications`
+   * to modify this behavior.
+   *
+   * Hence, `implies` only accepts one or more argument-value pairs and not raw
    * strings. For example:
    *
    * ```jsonc
