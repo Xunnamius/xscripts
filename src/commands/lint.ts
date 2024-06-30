@@ -33,9 +33,12 @@ export default function command({
   >({
     // TODO (no dot imports outside lib directory)
     // TODO (bring in lint code from projector)
-    // TODO (add depcheck package, browserslist, attw, and others into the mix)
+    // TODO (add depcheck package (maybe), browserslist (update caniuse first), attw, and others into the mix)
     // TODO (test dir cannot appear under src, directly under lib, or under external-scripts)
     // TODO (latest versions of all files being used, including lint-staged et al)
+    // TODO (ensure all imported packages in dist are)
+    // TODO (lint project structure)
+    // TODO (lint engines.node with browserslist 'maintained node versions, current node' with flag for allowing lower bound drop off (i.e. allow lower versions than given to be missing))
   });
 
   return {
