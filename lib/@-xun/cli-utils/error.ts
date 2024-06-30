@@ -26,6 +26,6 @@ export const ErrorMessage = {
     return `the following command arguments were ignored: ${args.join(', ')}`;
   },
   RequiresMinArgs(name: string, min: number, given: number) {
-    return `${name} requires at least ${min} arguments, saw ${given}`;
+    return `${name} requires at least ${min} argument${min === 1 ? '' : 's'}, saw ${given}`;
   }
 };
