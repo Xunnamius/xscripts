@@ -61,7 +61,7 @@
     "build": "./node_modules/@-xun/scripts/dist/src/cli.js build",
     "build:changelog": "conventional-changelog --outfile CHANGELOG.md --config ./conventional.config.js --release-count 0 --skip-unstable && (if [ \"$CHANGELOG_SKIP_TITLE\" != 'true' ]; then { node -e 'console.log(require(\"./conventional.config.js\").changelogTitle)'; cat CHANGELOG.md; } > CHANGELOG.md.ignore && mv CHANGELOG.md.ignore CHANGELOG.md; fi) && NODE_ENV=format remark --output --frail CHANGELOG.md && prettier --write CHANGELOG.md",
     "build:dist": "./node_modules/@-xun/scripts/dist/src/cli.js build distributables",
-    "build:docs": "if [ -r ./next.config.js ]; then typedoc --plugin typedoc-plugin-markdown --skipErrorChecking --cleanOutputDir --tsconfig tsconfig.docs.json --out docs --readme none lib src test types external-scripts --exclude '**/*.test.*' --exclude external-scripts/bin; else ENTRY=`node -e 'const entry = require(\"./package.json\").config?.[\"plugin-build\"]?.docs?.entry; if(!entry) throw new Error(\"\\\"config['\"'\"'plugin-build'\"'\"'].docs.entry\\\" field is not defined in package.json\"); console.log(entry)'` && echo 'Entry file:' $ENTRY && typedoc --plugin typedoc-plugin-markdown --skipErrorChecking --cleanOutputDir --tsconfig tsconfig.docs.json --out docs --readme none $ENTRY; fi",
+    "build:docs": "if [ -r ./next.config.js ]; then typedoc --plugin typedoc-plugin-markdown --skipErrorChecking --cleanOutputDir --tsconfig tsconfig.docs.json --out docs --readme none lib src test types external-scripts --exclude '**/*.test.*' --exclude external-scripts/bin; else ENTRY=`node -e 'const entry = './src/*'; console.log(entry)'` && echo 'Entry file:' $ENTRY && typedoc --plugin typedoc-plugin-markdown --skipErrorChecking --cleanOutputDir --tsconfig tsconfig.docs.json --out docs --readme none $ENTRY; fi",
     "build:externals": "NODE_ENV=production-external babel external-scripts --extensions .ts --out-dir external-scripts/bin",
     "clean": "./node_modules/@-xun/scripts/dist/src/cli.js clean",
     "format": "./node_modules/@-xun/scripts/dist/src/cli.js format --hush",
@@ -81,13 +81,6 @@
     "test:repeat:all": "npm run __test:repeat:all --silent",
     "test:repeat:unit": "npm run __test:repeat:unit --silent",
     "test:unit": "NODE_ENV=test DEBUG_COLORS=false jest '/unit-.*\\.test\\.tsx?'"
-  },
-  "config": {
-    "plugin-build": {
-      "docs": {
-        "entry": "./src/*"
-      }
-    }
   },
   "dependencies": {
     "@black-flag/core": "^1.2.6",

@@ -54,7 +54,7 @@ npx @-xun/scripts ...
 
 ## Usage
 
-<!-- TODO: this -->
+<!-- TODO -->
 
 TODO
 

@@ -35,6 +35,7 @@ export default function command({
     // TODO (bring in lint code from projector)
     // TODO (add depcheck package, browserslist, attw, and others into the mix)
     // TODO (test dir cannot appear under src, directly under lib, or under external-scripts)
+    // TODO (latest versions of all files being used, including lint-staged et al)
   });
 
   return {
