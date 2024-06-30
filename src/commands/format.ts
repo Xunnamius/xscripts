@@ -66,7 +66,12 @@ export default function command({
     files: {
       array: true,
       description:
-        'Only consider files (or globs) given via --files instead of scanning the filesystem'
+        'Only consider files (or globs) given via --files instead of scanning the filesystem',
+      check(files) {
+        return (
+          files.length > 1 || ErrorMessage.RequiresMinArgs('--files', 1, files.length)
+        );
+      }
     },
     'only-package-json': {
       boolean: true,
@@ -179,8 +184,8 @@ export default function command({
       debug('mdFiles: %O', mdFiles);
       debug('allPkgFiles: %O', allPkgFiles);
 
-      const shouldDoPkgJson = !onlyMarkdown && !onlyPrettier;
-      const shouldDoMarkdown = !onlyPackageJson && !onlyPrettier;
+      const shouldDoPkgJson = !onlyMarkdown && !onlyPrettier && allPkgFiles.length > 0;
+      const shouldDoMarkdown = !onlyPackageJson && !onlyPrettier && mdFiles.length > 0;
       const shouldDoPrettier = !onlyPackageJson && !onlyMarkdown;
 
       debug('shouldDoPkgJson: %O', shouldDoPkgJson);
@@ -270,8 +275,11 @@ export default function command({
 
             await run(
               'npx',
-              ['all-contributors', 'generate', '--files', rootReadmeFile],
+              // ? --files arg for all-contributors is broken because yargs...
+              ['all-contributors', 'generate'],
               {
+                // ? ... so we ensure that this command only ever runs at root
+                cwd: rootDir,
                 stdout: isHushed ? 'ignore' : 'inherit',
                 stderr: isQuieted ? 'ignore' : 'inherit'
               }
