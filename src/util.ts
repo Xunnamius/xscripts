@@ -162,9 +162,14 @@ export async function findProjectFiles(
   debug('virtual .prettierignore lines: %O', ignore);
 
   const [mdFiles, tsRootLibFiles, tsSrcFiles, libPkgDirs] = await Promise.all([
-    glob('**/*.md', { ignore, dot: true, absolute: true }),
-    glob(`${root}/lib/**/*.ts?(x)`, { ignore: [], dot: true, absolute: true }),
-    glob('src/**/*.ts?(x)', { ignore: [], dot: true, absolute: true }),
+    glob('**/*.md', { ignore, dot: true, absolute: true, nodir: true }),
+    glob(`${root}/lib/**/*.ts?(x)`, {
+      ignore: [],
+      dot: true,
+      absolute: true,
+      nodir: true
+    }),
+    glob('src/**/*.ts?(x)', { ignore: [], dot: true, absolute: true, nodir: true }),
     glob([`${root}/lib/!(@*)/`, `${root}/lib/@*/*/`], { ignore: [], absolute: true })
   ]);
 

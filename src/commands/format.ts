@@ -158,7 +158,7 @@ export default function command({
 
           debug('virtual .prettierignore lines: %O', ignore);
 
-          files = await glob(files, { ignore, dot: true, absolute: true });
+          files = await glob(files, { ignore, dot: true, absolute: true, nodir: true });
 
           debug('files (post-glob): %O', files);
 
