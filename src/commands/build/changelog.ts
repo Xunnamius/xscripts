@@ -18,7 +18,7 @@ import {
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 
 export type CustomCliArguments = GlobalCliArguments & {
-  // TODO
+  skipTitle: boolean;
 };
 
 export default function command({
@@ -31,7 +31,18 @@ export default function command({
     CustomCliArguments,
     GlobalExecutionContext
   >({
-    // TODO
+    'skip-topmatter': {
+      boolean: true,
+      description: 'Do not prepend topmatter when compiling output',
+      default: false,
+      implies: { 'format-changelog': false },
+      looseImplications: true
+    },
+    'format-changelog': {
+      boolean: true,
+      description: 'Run the "format" command on compiled output',
+      default: true
+    }
   });
 
   return {
