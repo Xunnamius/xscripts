@@ -1,5 +1,8 @@
+import { basename } from 'node:path';
+
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { glob } from 'glob-gitignore';
+import { getSupportInfo } from 'prettier';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
@@ -331,26 +334,35 @@ export default function command({
         }
 
         if (shouldDoPrettier) {
-          status.prettier = null;
+          const prettierTargetFiles = (await filterOutPathsUnsupportedByPrettier(
+            files
+          )) ?? ['.'];
 
-          await run(
-            'npx',
-            [
-              'prettier',
-              '--write',
-              ...(skipUnknown ? ['--ignore-unknown'] : []),
-              ...(files ?? ['.'])
-            ],
-            {
-              stdout: isHushed ? 'ignore' : 'inherit',
-              stderr: isQuieted ? 'ignore' : 'inherit'
-            }
-          ).catch((error) => {
-            status.prettier = false;
-            throw error;
-          });
+          debug('prettierTargetFiles: %O', prettierTargetFiles);
 
-          status.prettier = true;
+          if (prettierTargetFiles.length) {
+            status.prettier = null;
+            await run(
+              'npx',
+              [
+                'prettier',
+                '--write',
+                ...(skipUnknown ? ['--ignore-unknown'] : []),
+                ...prettierTargetFiles
+              ],
+              {
+                stdout: isHushed ? 'ignore' : 'inherit',
+                stderr: isQuieted ? 'ignore' : 'inherit'
+              }
+            ).catch((error) => {
+              status.prettier = false;
+              throw error;
+            });
+
+            status.prettier = true;
+          } else {
+            debug('prettierTargetFiles was empty, so prettier run was skipped');
+          }
         }
       } catch {
         status.failed = true;
@@ -403,4 +415,24 @@ function statusToEmoji(status: boolean | null | undefined) {
       break;
     }
   }
+}
+
+async function filterOutPathsUnsupportedByPrettier(files: string[] | undefined) {
+  if (files === undefined) {
+    return files;
+  }
+
+  const supportedExtensions = new Set(
+    (await getSupportInfo()).languages.flatMap((language) => language.extensions || [])
+  );
+
+  const supportedFiles = files.filter((path) => {
+    const fileBasename = basename(path);
+    return (
+      fileBasename.includes('.') &&
+      supportedExtensions.has(`.${fileBasename.split('.').at(-1)}`)
+    );
+  });
+
+  return supportedFiles;
 }
