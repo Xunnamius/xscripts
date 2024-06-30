@@ -1,16 +1,18 @@
+// @ts-check
 /* eslint-disable unicorn/prefer-top-level-await */
 /* eslint-disable no-console */
 const spellcheck = require('spellchecker');
-const pkg = require('./package.json');
 const read = require('node:fs/promises').readFile;
 const execa = require('execa');
 
-const debug = require('debug')(`${require('./package.json').name}:spellcheck-commit`);
+const debug = require('debug')('commit-spell');
 
-const tryToRead = async (path) => {
+const tryToRead = async (
+  /** @type {import("fs").PathLike | import("fs/promises").FileHandle} */ path
+) => {
   try {
     debug(`attempting to read ${path}`);
-    const data = await read(path);
+    const data = await read(path, 'utf8');
     debug(`successfully read ${path}`);
     return data;
   } catch {
@@ -19,9 +21,9 @@ const tryToRead = async (path) => {
   }
 };
 
-const asJson = (str) => {
+const asJson = (/** @type {string} */ str) => {
   try {
-    const json = JSON.parse(str.toString('utf8'));
+    const json = JSON.parse(str);
     debug('json parse successful!');
     return [
       ...(json?.['cSpell.words'] || []),
@@ -34,18 +36,23 @@ const asJson = (str) => {
   }
 };
 
-const asText = (str) => str.toString('utf8').split('\n');
-const isPascalCase = (w) => /^([A-Z]{2,}.+|[A-Z][a-z]+[A-Z].*)$/.test(w);
-const isCamelCase = (w) => /^[a-z]+[A-Z]+.*$/.test(w);
-const isAllCaps = (w) => /^[^a-z]+$/.test(w);
+const asText = (/** @type {string} */ str) => str.split('\n');
+const isCamelCase = (/** @type {string} */ w) => /^[a-z]+[A-Z]+.*$/.test(w);
+const isAllCaps = (/** @type {string} */ w) => /^[^a-z]+$/.test(w);
 
-const splitOutWords = (phrase) =>
+const isPascalCase = (/** @type {string} */ w) =>
+  /^([A-Z]{2,}.+|[A-Z][a-z]+[A-Z].*)$/.test(w);
+
+const splitOutWords = (/** @type {string} */ phrase) =>
   [...phrase.split(/[^A-Za-z]+/g), phrase].filter(Boolean);
 
-const keys = (obj) => Object.keys(obj).map((k) => splitOutWords(k));
+const keys = (/** @type {{}} */ obj = {}) =>
+  Object.keys(obj).map((k) => splitOutWords(k));
 
 void (async () => {
-  const lastCommitMessage = (await read('./.git/COMMIT_EDITMSG')).toString('utf8');
+  const pkgFile = await tryToRead('./package.json');
+  const pkg = pkgFile ? JSON.parse(pkgFile) : {};
+  const lastCommitMessage = (await read('./.git/COMMIT_EDITMSG'), 'utf8');
   const homeDir = require('node:os').homedir();
 
   debug(`lastCommitMsg: ${lastCommitMessage}`);
