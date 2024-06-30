@@ -135,18 +135,18 @@ export default function command({
       debug('onlyPrettier: %O', onlyPrettier);
 
       const {
+        project: { root: rootDir }
+      } = runtimeContext;
+
+      const {
         mdFiles,
         pkgFiles: { root: rootPkgFile, workspaces: workspacePkgFiles }
       } = await (async () => {
         if (files) {
           debug('using --files as targets');
 
-          const {
-            project: { root }
-          } = runtimeContext;
-
           const ignore = await deriveVirtualPrettierIgnoreLines(
-            root,
+            rootDir,
             skipDocs,
             skipUnknown
           );
@@ -261,17 +261,32 @@ export default function command({
           });
 
           status.doctoc = true;
-          status.allContrib = null;
 
-          await run('npx', ['all-contributors', 'generate'], {
-            stdout: isHushed ? 'ignore' : 'inherit',
-            stderr: isQuieted ? 'ignore' : 'inherit'
-          }).catch((error) => {
-            status.allContrib = false;
-            throw error;
-          });
+          const rootReadmeFile = `${rootDir}/README.md`;
+          debug('rootReadmeFile: %O', rootReadmeFile);
 
-          status.allContrib = true;
+          if (mdFiles.includes(rootReadmeFile)) {
+            status.allContrib = null;
+
+            await run(
+              'npx',
+              ['all-contributors', 'generate', '--files', rootReadmeFile],
+              {
+                stdout: isHushed ? 'ignore' : 'inherit',
+                stderr: isQuieted ? 'ignore' : 'inherit'
+              }
+            ).catch((error) => {
+              status.allContrib = false;
+              throw error;
+            });
+
+            status.allContrib = true;
+          } else {
+            debug(
+              'skipped regenerating all-contributors table: rootReadmeFile path not in mdFiles'
+            );
+          }
+
           status.remark = null;
 
           await run(
