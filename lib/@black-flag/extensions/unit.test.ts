@@ -8,13 +8,13 @@ import {
 } from '@black-flag/core/util';
 
 import { $executionContext, isCliError, type Arguments } from '@black-flag/core';
+import isEqual from 'lodash.isequal';
 import deepMerge from 'lodash.merge';
 
 import { ErrorMessage } from './error';
 import { withBuilderExtensions, withUsageExtensions } from './index';
 import { $exists } from './symbols';
 
-import isEqual from 'lodash.isequal';
 import type { PartialDeep } from 'type-fest';
 
 describe('::withBuilderExtensions', () => {
@@ -265,7 +265,7 @@ describe('::withBuilderExtensions', () => {
       expect.hasAssertions();
 
       const runner = makeMockBuilderRunner({
-        customHandler(argv) {
+        customHandler(argv: Arguments) {
           finalArgvX = argv.x;
           finalArgvY = argv.y;
         },
@@ -320,7 +320,7 @@ describe('::withBuilderExtensions', () => {
       expect.hasAssertions();
 
       const runner = makeMockBuilderRunner({
-        customHandler(argv) {
+        customHandler(argv: Arguments) {
           finalArgvX = argv.x;
           finalArgvY = argv.y;
         },
@@ -344,7 +344,7 @@ describe('::withBuilderExtensions', () => {
 
       {
         const runner = makeMockBuilderRunner({
-          customHandler(argv) {
+          customHandler(argv: Arguments) {
             finalArgvX = argv.x;
             finalArgvY = argv.y;
           },
@@ -363,7 +363,7 @@ describe('::withBuilderExtensions', () => {
 
       {
         const runner = makeMockBuilderRunner({
-          customHandler(argv) {
+          customHandler(argv: Arguments) {
             finalArgvX = argv.x;
             finalArgvY = argv.y;
           },
@@ -385,7 +385,7 @@ describe('::withBuilderExtensions', () => {
       expect.hasAssertions();
 
       const runner = makeMockBuilderRunner({
-        customHandler(argv) {
+        customHandler(argv: Arguments) {
           finalArgvX = argv.x;
           finalArgvY = argv.y;
         },
@@ -434,7 +434,7 @@ describe('::withBuilderExtensions', () => {
 
       {
         const runner = makeMockBuilderRunner({
-          customHandler(argv) {
+          customHandler(argv: Arguments) {
             finalArgvX = argv.x;
             finalArgvY = argv.y;
             finalArgvZ = argv.z;
@@ -456,7 +456,7 @@ describe('::withBuilderExtensions', () => {
 
       {
         const runner = makeMockBuilderRunner({
-          customHandler(argv) {
+          customHandler(argv: Arguments) {
             finalArgvX = argv.x;
             finalArgvY = argv.y;
             finalArgvZ = argv.z;
