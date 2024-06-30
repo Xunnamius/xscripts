@@ -217,12 +217,13 @@ export default function command({
       }
 
       const status: Record<
-        'sort' | 'doctoc' | 'remark' | 'prettier',
+        'sort' | 'doctoc' | 'allContrib' | 'remark' | 'prettier',
         boolean | null | undefined
       > & { failed: boolean } = {
         failed: false,
         sort: undefined,
         doctoc: undefined,
+        allContrib: undefined,
         remark: undefined,
         prettier: undefined
       };
@@ -242,9 +243,9 @@ export default function command({
             })
           : Promise.resolve();
 
-        // ? These have to run sequentially to prevent data corruption.
-
         if (shouldDoMarkdown) {
+          // ? These have to run sequentially to prevent data corruption.
+
           status.doctoc = null;
 
           await run(
@@ -260,6 +261,17 @@ export default function command({
           });
 
           status.doctoc = true;
+          status.allContrib = null;
+
+          await run('npx', ['all-contributors', 'generate'], {
+            stdout: isHushed ? 'ignore' : 'inherit',
+            stderr: isQuieted ? 'ignore' : 'inherit'
+          }).catch((error) => {
+            status.allContrib = false;
+            throw error;
+          });
+
+          status.allContrib = true;
           status.remark = null;
 
           await run(
@@ -328,6 +340,7 @@ export default function command({
           `${SHORT_TAB}Sorted file contents: ${statusToEmoji(status.sort)}`,
           `${shouldDoMarkdown ? 'Processed' : 'Encountered'} markdown files${skipDocs ? '' : ' (including docs)'}: ${mdFiles.length}`,
           `${SHORT_TAB}Synchronized TOCs: ${statusToEmoji(status.doctoc)}`,
+          `${SHORT_TAB}Regenerated contributor table: ${statusToEmoji(status.allContrib)}`,
           `${SHORT_TAB}Reformatted files: ${statusToEmoji(status.remark)}`,
           `Prettified all relevant project files: ${statusToEmoji(status.prettier)}`
         ].join('\n')
