@@ -21,6 +21,7 @@ export type CustomCliArguments = GlobalCliArguments;
 
 // TODO (skip reinstalling node_modules if dir exists unless --force-reinstall)
 // TODO (add --renumber-references to build command)
+// TODO (run "early lint" first, then "late lint" (that checks all prod deps resolvable, no extraneous deps or dev deps, no missing deps) after build completes)
 
 export default function command({
   log,

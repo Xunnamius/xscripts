@@ -39,6 +39,7 @@ export default function command({
     // TODO (ensure all imported packages in dist are)
     // TODO (lint project structure)
     // TODO (lint engines.node with browserslist 'maintained node versions, current node' with flag for allowing lower bound drop off (i.e. allow lower versions than given to be missing))
+    // TODO (two linting stages: "early lint" (the usual) and "late lint" (that checks all prod deps resolvable, no extraneous deps or dev deps, no missing deps))
   });
 
   return {
