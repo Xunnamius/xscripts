@@ -8,7 +8,7 @@ if beginswith 'rebase' "$GIT_REFLOG_ACTION"; then
   exit 0
 fi
 
-npx commitlint -e
+NODE_OPTIONS='--disable-warning=ExperimentalWarning' npx commitlint -e
 if [ -z $GAC_VERIFY_SIMPLE ]; then npm run test; fi
 echo
-node spellcheck-commit.js
+node --disable-warning=ExperimentalWarning spellcheck-commit.js
