@@ -8,6 +8,5 @@ coverage
 package-lock.json
 fixtures
 docs
-CHANGELOG.md
 bundle-stats.ignore.json
 !/src/**
