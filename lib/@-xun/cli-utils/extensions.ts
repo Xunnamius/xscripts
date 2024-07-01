@@ -1,6 +1,8 @@
 import { $executionContext } from '@black-flag/core';
 import { CommandNotImplementedError, type ExecutionContext } from '@black-flag/core/util';
 
+import { globalLoggerNamespace } from 'universe/constant';
+
 import {
   withBuilderExtensions,
   type BfeBuilderObject,
@@ -12,11 +14,14 @@ import {
 import {
   createDebugLogger,
   disableLoggingByTag,
+  enableLoggingByTag,
+  getDisabledTags,
   type ExtendedDebugger,
   type ExtendedLogger,
   type ListrManager
 } from 'multiverse/rejoinder';
 
+import { $artificiallyInvoked } from 'multiverse/@black-flag/extensions/symbols';
 import { LogTag } from './logging';
 
 const globalDebuggerNamespace = '@-xun/cli-utils';
@@ -244,7 +249,7 @@ export function withStandardBuilder<
       customHandler: Parameters<typeof withHandlerExtensions>[0]
     ) {
       return async function handler(rawArgv) {
-        const tags = new Set<LogTag>();
+        const tagsSet = new Set<LogTag>();
         const debug = createDebugLogger({
           namespace: `${globalLoggerNamespace}:withStandardHandler`
         });
@@ -257,33 +262,71 @@ export function withStandardBuilder<
             hush,
             quiet,
             silent,
+            [$artificiallyInvoked]: wasArtificiallyInvoked,
             [$executionContext]: { state }
           } = argv;
+
+          const originallyDisabledTags = getDisabledTags();
 
           debug('hush: %O', hush);
           debug('quiet: %O', quiet);
           debug('silent: %O', silent);
+          debug('disabledTags: %O', originallyDisabledTags);
+          debug('wasArtificiallyInvoked: %O', wasArtificiallyInvoked);
+
+          const originalState = { ...state };
 
           if (silent) {
-            tags.add(LogTag.IF_NOT_SILENCED);
+            tagsSet.add(LogTag.IF_NOT_SILENCED);
             state.isSilenced = true;
             state.showHelpOnFail = false;
           }
 
           if (quiet) {
-            tags.add(LogTag.IF_NOT_QUIETED);
+            tagsSet.add(LogTag.IF_NOT_QUIETED);
             state.isQuieted = true;
           }
 
           if (hush) {
-            tags.add(LogTag.IF_NOT_HUSHED);
+            tagsSet.add(LogTag.IF_NOT_HUSHED);
             state.isHushed = true;
           }
 
-          disableLoggingByTag({ tags: Array.from(tags) });
+          disableLoggingByTag({ tags: Array.from(tagsSet) });
 
-          debug('invoking customHandler (or defaultHandler if undefined)');
-          await (customHandler || defaultHandler)(argv);
+          try {
+            debug('invoking customHandler (or defaultHandler if undefined)');
+            await (customHandler || defaultHandler)(argv);
+          } finally {
+            if (wasArtificiallyInvoked) {
+              debug('undoing state changes due to artificial invocation');
+
+              if (silent) {
+                if (!originallyDisabledTags.has(LogTag.IF_NOT_SILENCED)) {
+                  enableLoggingByTag({ tags: [LogTag.IF_NOT_SILENCED] });
+                }
+
+                state.isSilenced = originalState.isSilenced;
+                state.showHelpOnFail = originalState.showHelpOnFail;
+              }
+
+              if (quiet) {
+                if (!originallyDisabledTags.has(LogTag.IF_NOT_QUIETED)) {
+                  enableLoggingByTag({ tags: [LogTag.IF_NOT_QUIETED] });
+                }
+
+                state.isQuieted = originalState.isQuieted;
+              }
+
+              if (hush) {
+                if (!originallyDisabledTags.has(LogTag.IF_NOT_HUSHED)) {
+                  enableLoggingByTag({ tags: [LogTag.IF_NOT_HUSHED] });
+                }
+
+                state.isHushed = originalState.isHushed;
+              }
+            }
+          }
         })(rawArgv);
 
         debug('exited withStandardHandler wrapper');
