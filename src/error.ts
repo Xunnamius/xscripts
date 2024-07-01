@@ -10,6 +10,9 @@ export { TaskError } from 'multiverse/@-xun/cli-utils/error';
 /* istanbul ignore next */
 export const ErrorMessage = {
   ...UpstreamErrorMessage,
+  BadChangelogPatcher(path: string) {
+    return `unable to import "${path}" as a JavaScript module. Please ensure it is syntactically sound and contains the expected exports (see documentation).`;
+  },
   CannotReadFile(expectedPath: string) {
     return `failed to read file at path: ${expectedPath}`;
   },
