@@ -12,4 +12,4 @@ The CLI-wide shebang prepended to entry file(s) when building other CLIs.
 
 ## Defined in
 
-[src/constant.ts:14](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/constant.ts#L14)
+[src/constant.ts:14](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/constant.ts#L14)

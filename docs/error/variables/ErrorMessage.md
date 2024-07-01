@@ -220,6 +220,12 @@ A collection of possible error and warning messages.
 
 `string`
 
+### AssertionFailureCommandHandlerNotAFunction()
+
+#### Returns
+
+`string`
+
 ### AssertionFailureConfigureExecutionEpilogue()
 
 #### Returns
@@ -239,6 +245,12 @@ A collection of possible error and warning messages.
 • **name2**: `string`
 
 • **type2**: `"name"` \| `"alias"`
+
+#### Returns
+
+`string`
+
+### AssertionFailureFalsyCommand()
 
 #### Returns
 
@@ -281,6 +293,16 @@ A collection of possible error and warning messages.
 `string`
 
 ### AssertionFailureUseParseAsyncInstead()
+
+#### Returns
+
+`string`
+
+### BadChangelogPatcher()
+
+#### Parameters
+
+• **path**: `string`
 
 #### Returns
 
@@ -562,4 +584,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/error.ts#L11)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/error.ts#L11)

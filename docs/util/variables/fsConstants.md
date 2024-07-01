@@ -12,4 +12,4 @@ Sugar for `(await import('node:fs)).promises.constants`.
 
 ## Defined in
 
-[src/util.ts:254](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L254)
+[src/util.ts:253](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/util.ts#L253)

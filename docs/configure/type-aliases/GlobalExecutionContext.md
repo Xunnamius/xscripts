@@ -16,4 +16,4 @@
 
 ## Defined in
 
-[src/configure.ts:24](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/configure.ts#L24)
+[src/configure.ts:24](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/configure.ts#L24)

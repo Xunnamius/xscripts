@@ -16,7 +16,7 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 #### Defined in
 
-[src/util.ts:240](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L240)
+[src/util.ts:239](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/util.ts#L239)
 
 ***
 
@@ -26,7 +26,7 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 #### Defined in
 
-[src/util.ts:237](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L237)
+[src/util.ts:236](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/util.ts#L236)
 
 ***
 
@@ -36,7 +36,7 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 #### Defined in
 
-[src/util.ts:241](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L241)
+[src/util.ts:240](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/util.ts#L240)
 
 ***
 
@@ -46,7 +46,7 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 #### Defined in
 
-[src/util.ts:236](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L236)
+[src/util.ts:235](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/util.ts#L235)
 
 ***
 
@@ -56,7 +56,7 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 #### Defined in
 
-[src/util.ts:239](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L239)
+[src/util.ts:238](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/util.ts#L238)
 
 ***
 
@@ -66,4 +66,4 @@ Metadata attributes that describe the capabilities and scope of a project.
 
 #### Defined in
 
-[src/util.ts:238](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L238)
+[src/util.ts:237](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/util.ts#L237)

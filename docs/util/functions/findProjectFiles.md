@@ -22,13 +22,10 @@ Returns an array of various different absolute file paths (strings):
 
 • **\_\_namedParameters** = `{}`
 
-• **\_\_namedParameters.skipDocs?**: `boolean` = `true`
+• **\_\_namedParameters.skipIgnored?**: `boolean` = `true`
 
-Virtually prepend `docs` to `.prettierignore` if `true`.
-
-Regardless of the value of `skipDocs`, the whole string `docs`, if
-encountered alone on its own line, will be filtered out of
-.prettierignore. Use `skipDocs` to add it back in.
+If `true`, do not consider `.prettierignore` when sifting through and
+returning project files.
 
 • **\_\_namedParameters.skipUnknown?**: `boolean` = `false`
 
@@ -94,4 +91,4 @@ the current working directory.
 
 ## Defined in
 
-[src/util.ts:121](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L121)
+[src/util.ts:121](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/util.ts#L121)

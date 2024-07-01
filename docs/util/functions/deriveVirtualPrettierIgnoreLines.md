@@ -6,15 +6,13 @@
 
 # Function: deriveVirtualPrettierIgnoreLines()
 
-> **deriveVirtualPrettierIgnoreLines**(`root`, `skipDocs`, `skipUnknown`): `Promise`\<`string`[]\>
+> **deriveVirtualPrettierIgnoreLines**(`root`, `skipUnknown`): `Promise`\<`string`[]\>
 
 Return an array of the lines of a `.prettierignore` file.
 
 ## Parameters
 
 • **root**: `string`
-
-• **skipDocs**: `boolean`
 
 • **skipUnknown**: `boolean`
 
@@ -24,4 +22,4 @@ Return an array of the lines of a `.prettierignore` file.
 
 ## Defined in
 
-[src/util.ts:325](https://github.com/Xunnamius/xscripts/blob/99269ccded0ec7cc89215957b5aca27dbdc38070/src/util.ts#L325)
+[src/util.ts:324](https://github.com/Xunnamius/xscripts/blob/7364616ea349761591231a3547bd697ec67ed34b/src/util.ts#L324)
