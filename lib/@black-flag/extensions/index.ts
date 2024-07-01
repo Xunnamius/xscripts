@@ -3,13 +3,15 @@ import { isNativeError } from 'node:util/types';
 import clone from 'lodash.clone';
 import cloneDeepWith from 'lodash.clonedeepwith';
 import isEqual from 'lodash.isequal';
+import makeVanillaYargs from 'yargs/yargs';
 
 import {
   CliError,
   FrameworkExitCode,
   isCliError,
   type Arguments,
-  type Configuration
+  type Configuration,
+  type ImportedConfigurationModule
 } from '@black-flag/core';
 
 import {
@@ -985,6 +987,103 @@ export function withUsageExtensions(altDescription = '$1.') {
   }
 
   return `Usage: $000\n\n${altDescription}`.trim();
+}
+
+/**
+ *
+ */
+export async function getInvocableExtendedHandler<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+>(
+  maybeCommand: Promisable<
+    | ImportedConfigurationModule<CustomCliArguments, CustomExecutionContext>
+    | ImportedConfigurationModule<
+        CustomCliArguments,
+        AsStrictExecutionContext<CustomExecutionContext>
+      >
+  >,
+  context: CustomExecutionContext
+) {
+  const debug = createDebugLogger({
+    namespace: `${globalDebuggerNamespace}:getInvocableExtendedHandler`
+  });
+
+  debug('resolving maybePromisedCommand');
+
+  let command = (await maybeCommand) as ImportedConfigurationModule<
+    CustomCliArguments,
+    CustomExecutionContext
+  >;
+
+  hardAssert(command, ErrorMessage.AssertionFailureFalsyCommand());
+
+  // ? ESM <=> CJS interop. If there's a default property, we'll use it.
+  if (command.default !== undefined) {
+    command = command.default;
+  }
+
+  // ? ESM <=> CJS interop, again. See: @black-flag/core/src/discover.ts
+  if (command?.default !== undefined) {
+    command = command.default;
+  }
+
+  let config: Partial<Configuration<CustomCliArguments, CustomExecutionContext>>;
+
+  if (typeof command === 'function') {
+    config = await command(context);
+  } else {
+    hardAssert(
+      command && typeof command === 'object',
+      ErrorMessage.AssertionFailureFalsyCommand()
+    );
+
+    config = command;
+  }
+
+  const { builder, handler } = config;
+  hardAssert(handler, ErrorMessage.AssertionFailureCommandHandlerNotAFunction());
+
+  debug('returned immediately invocable handler function');
+
+  return async function (
+    argv_: BfeStrictArguments<CustomCliArguments, CustomExecutionContext>
+  ) {
+    const argv = argv_ as Arguments<CustomCliArguments, CustomExecutionContext>;
+
+    if (typeof builder === 'function') {
+      const dummyYargs = makeVanillaYargs();
+      const fakeBlackFlag = dummyYargs as unknown as Parameters<typeof builder>[0];
+
+      dummyYargs.parsed = {
+        argv,
+        defaulted: {},
+        aliases: {},
+        configuration: new Proxy(
+          {} as Exclude<typeof dummyYargs.parsed, boolean>['configuration'],
+          {
+            get() {
+              return true;
+            }
+          }
+        ),
+        error: null,
+        // eslint-disable-next-line unicorn/no-keyword-prefix
+        newAliases: {}
+      } as typeof dummyYargs.parsed;
+
+      debug('invoking builder (for the first time)');
+      builder(fakeBlackFlag, false, undefined);
+
+      debug('invoking builder (for the second time)');
+      builder(fakeBlackFlag, false, argv);
+    } else {
+      debug('warning: no callable builder function was returned!');
+    }
+
+    debug('invoking handler');
+    return handler(argv);
+  };
 }
 
 /**

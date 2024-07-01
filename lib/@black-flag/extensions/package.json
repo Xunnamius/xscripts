@@ -3,5 +3,9 @@
   "dependencies": {
     "lodash.isequal": "^4.5.0",
     "lodash.merge": "^4.5.0"
+  },
+  "peerDependencies": {
+    "@black-flag/core": ">=1.2.7",
+    "yargs": ">=17.7.2"
   }
 }

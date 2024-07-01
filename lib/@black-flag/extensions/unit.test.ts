@@ -12,8 +12,14 @@ import isEqual from 'lodash.isequal';
 import deepMerge from 'lodash.merge';
 
 import { ErrorMessage } from './error';
-import { withBuilderExtensions, withUsageExtensions } from './index';
 import { $exists } from './symbols';
+
+import {
+  getInvocableExtendedHandler,
+  withBuilderExtensions,
+  withUsageExtensions,
+  type AsStrictExecutionContext
+} from './index';
 
 import type { PartialDeep } from 'type-fest';
 
@@ -2640,6 +2646,264 @@ describe('::withUsageExtensions', () => {
   });
 });
 
+describe('::getInvocableExtendedHandler', () => {
+  it('works with normal and strictly typed custom execution contexts', async () => {
+    expect.hasAssertions();
+
+    let result = 0;
+
+    const normalCommand = (_: ExecutionContext) => {
+      const [builder, withHandlerExtensions] = withBuilderExtensions<
+        { x: number },
+        ExecutionContext
+      >();
+
+      return {
+        builder,
+        handler: withHandlerExtensions((argv) => void (result = argv.x))
+      };
+    };
+
+    const strictCommand = (_: AsStrictExecutionContext<ExecutionContext>) => {
+      const [builder, withHandlerExtensions] = withBuilderExtensions<
+        { x: number },
+        ExecutionContext
+      >();
+
+      return {
+        builder,
+        handler: withHandlerExtensions((argv) => void (result = argv.x))
+      };
+    };
+
+    const normalHandler = await getInvocableExtendedHandler(
+      normalCommand,
+      generateFakeExecutionContext()
+    );
+
+    const strictHandler = await getInvocableExtendedHandler(
+      strictCommand,
+      generateFakeExecutionContext()
+    );
+
+    expect(result).toBe(0);
+
+    await normalHandler({ x: 1 } as Parameters<typeof normalHandler>[0]);
+
+    expect(result).toBe(1);
+
+    await strictHandler({ x: 2 } as Parameters<typeof normalHandler>[0]);
+
+    expect(result).toBe(2);
+  });
+
+  it('works with all promisable ImportConfigurationModule types including CJS-ESM interop', async () => {
+    expect.hasAssertions();
+
+    const mockCustomHandler = jest.fn();
+    const mockArgv = {} as Arguments;
+
+    const literalFunction = (_: ExecutionContext) => {
+      const [builder, withHandlerExtensions] = withBuilderExtensions();
+
+      return {
+        builder,
+        handler: withHandlerExtensions(mockCustomHandler)
+      };
+    };
+
+    const literalObject = literalFunction({} as ExecutionContext);
+    const promisedLiteralFunction = Promise.resolve().then(() => literalFunction);
+
+    const promisedLiteralObject = Promise.resolve().then(() =>
+      literalFunction({} as ExecutionContext)
+    );
+
+    const interopLiteralFunction = Promise.resolve().then(() => ({
+      default: literalFunction
+    }));
+
+    const interopLiteralObject = Promise.resolve().then(() => ({
+      default: literalFunction({} as ExecutionContext)
+    }));
+
+    const interop2LiteralFunction = Promise.resolve().then(() => ({
+      default: { default: literalFunction }
+    }));
+
+    const interop2LiteralObject = Promise.resolve().then(() => ({
+      default: { default: literalFunction({} as ExecutionContext) }
+    }));
+
+    {
+      const handler = await getInvocableExtendedHandler(
+        literalFunction,
+        generateFakeExecutionContext()
+      );
+
+      await handler(mockArgv);
+    }
+
+    {
+      const handler = await getInvocableExtendedHandler(
+        literalObject,
+        generateFakeExecutionContext()
+      );
+
+      await handler(mockArgv);
+    }
+
+    {
+      const handler = await getInvocableExtendedHandler(
+        promisedLiteralFunction,
+        generateFakeExecutionContext()
+      );
+
+      await handler(mockArgv);
+    }
+
+    {
+      const handler = await getInvocableExtendedHandler(
+        promisedLiteralObject,
+        generateFakeExecutionContext()
+      );
+
+      await handler(mockArgv);
+    }
+
+    {
+      const handler = await getInvocableExtendedHandler(
+        interopLiteralFunction,
+        generateFakeExecutionContext()
+      );
+
+      await handler(mockArgv);
+    }
+
+    {
+      const handler = await getInvocableExtendedHandler(
+        interopLiteralObject,
+        generateFakeExecutionContext()
+      );
+
+      await handler(mockArgv);
+    }
+
+    {
+      const handler = await getInvocableExtendedHandler(
+        interop2LiteralFunction,
+        generateFakeExecutionContext()
+      );
+
+      await handler(mockArgv);
+    }
+
+    {
+      const handler = await getInvocableExtendedHandler(
+        interop2LiteralObject,
+        generateFakeExecutionContext()
+      );
+
+      await handler(mockArgv);
+    }
+
+    expect(mockCustomHandler.mock.calls).toStrictEqual([
+      [mockArgv],
+      [mockArgv],
+      [mockArgv],
+      [mockArgv],
+      [mockArgv],
+      [mockArgv],
+      [mockArgv],
+      [mockArgv]
+    ]);
+  });
+
+  it('works when resolved command builder is not a function', async () => {
+    expect.hasAssertions();
+
+    const mockCustomHandler = jest.fn();
+    const mockArgv = {} as Arguments;
+
+    const handler = await getInvocableExtendedHandler(
+      { handler: mockCustomHandler },
+      generateFakeExecutionContext()
+    );
+
+    await handler(mockArgv);
+
+    expect(mockCustomHandler.mock.calls).toStrictEqual([[mockArgv]]);
+  });
+
+  it('throws if resolved command is falsy', async () => {
+    expect.hasAssertions();
+
+    await expect(
+      // @ts-expect-error: bad parameter
+      getInvocableExtendedHandler(undefined, generateFakeExecutionContext())
+    ).rejects.toMatchObject({
+      message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
+    });
+
+    await expect(
+      // @ts-expect-error: bad parameter
+      getInvocableExtendedHandler(Promise.resolve(), generateFakeExecutionContext())
+    ).rejects.toMatchObject({
+      message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
+    });
+
+    await expect(
+      getInvocableExtendedHandler(
+        // @ts-expect-error: bad parameter
+        Promise.resolve().then(() => ({ default: false })),
+        generateFakeExecutionContext()
+      )
+    ).rejects.toMatchObject({
+      message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
+    });
+
+    await expect(
+      getInvocableExtendedHandler(
+        // @ts-expect-error: bad parameter
+        Promise.resolve().then(() => ({ default: { default: false } })),
+        generateFakeExecutionContext()
+      )
+    ).rejects.toMatchObject({
+      message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
+    });
+  });
+
+  it('throws if resolved command handler is falsy', async () => {
+    expect.hasAssertions();
+
+    await expect(
+      getInvocableExtendedHandler({}, generateFakeExecutionContext())
+    ).rejects.toMatchObject({
+      message: expect.stringContaining(
+        ErrorMessage.AssertionFailureCommandHandlerNotAFunction()
+      )
+    });
+
+    await expect(
+      // @ts-expect-error: bad parameter
+      getInvocableExtendedHandler({ command: false }, generateFakeExecutionContext())
+    ).rejects.toMatchObject({
+      message: expect.stringContaining(
+        ErrorMessage.AssertionFailureCommandHandlerNotAFunction()
+      )
+    });
+
+    await expect(
+      // @ts-expect-error: bad parameter
+      getInvocableExtendedHandler({ command: {} }, generateFakeExecutionContext())
+    ).rejects.toMatchObject({
+      message: expect.stringContaining(
+        ErrorMessage.AssertionFailureCommandHandlerNotAFunction()
+      )
+    });
+  });
+});
+
 test('example #1 functions as expected', async () => {
   expect.hasAssertions();
 
@@ -3335,14 +3599,7 @@ function makeMockBuilderRunner({
       },
       dummyArgv,
       {
-        [$executionContext]: deepMerge(
-          {
-            commands: new Map(),
-            debug: jest.fn(),
-            state: {}
-          } as unknown as ExecutionContext,
-          context
-        )
+        [$executionContext]: deepMerge(generateFakeExecutionContext(), context)
       }
     );
 
@@ -3363,6 +3620,14 @@ function makeMockBuilderRunner({
 
     return { firstPassResult, secondPassResult, handlerResult };
   };
+}
+
+function generateFakeExecutionContext() {
+  return {
+    commands: new Map(),
+    debug: jest.fn(),
+    state: {}
+  } as unknown as ExecutionContext;
 }
 
 async function trycatch<T extends () => any>(fn: T): Promise<ReturnType<T> | Error> {

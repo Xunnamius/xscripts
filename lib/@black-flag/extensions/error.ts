@@ -13,6 +13,12 @@ export type KeyValueEntry = KeyValueEntries[number];
 /* istanbul ignore next */
 export const ErrorMessage = {
   ...UpstreamErrorMessage,
+  AssertionFailureFalsyCommand() {
+    return 'supposed command argument unexpectedly resolved to a falsy value';
+  },
+  AssertionFailureCommandHandlerNotAFunction() {
+    return 'resolved command object unexpectedly returned a non-function handler';
+  },
   IllegalHandlerInvocation() {
     return 'withHandlerExtensions::handler was invoked too soon: options analysis unavailable';
   },
