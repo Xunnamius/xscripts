@@ -2902,6 +2902,19 @@ describe('::getInvocableExtendedHandler', () => {
       )
     });
   });
+
+  it('throws if command import rejects', async () => {
+    expect.hasAssertions();
+
+    await expect(
+      getInvocableExtendedHandler(
+        Promise.reject({ handler: jest.fn() }),
+        generateFakeExecutionContext()
+      )
+    ).rejects.toMatchObject({
+      message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
+    });
+  });
 });
 
 test('example #1 functions as expected', async () => {
