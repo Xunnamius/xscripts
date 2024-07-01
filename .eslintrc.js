@@ -120,10 +120,12 @@ const rules = {
   'unicorn/explicit-length-check': 'off',
   // ? I don't think so
   'unicorn/no-negated-condition': 'off',
-  // ? No
+  // ? No.
   'unicorn/import-style': 'off',
-  // ? Broken in latest unicorn versions
-  'unicorn/throw-new-error': 'off'
+  // ? This rule is broken as of 05/30/2024
+  'unicorn/throw-new-error': 'off',
+  // ? I know what I'm doing, but thanks though
+  'unicorn/no-negation-in-equality-check': 'off'
 };
 
 module.exports = {
