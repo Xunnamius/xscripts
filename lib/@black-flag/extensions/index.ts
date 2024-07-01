@@ -21,10 +21,12 @@ import {
   type FrameworkArguments
 } from '@black-flag/core/util';
 
+import { globalLoggerNamespace } from 'universe/constant';
+
 import { createDebugLogger } from 'multiverse/rejoinder';
 
 import { ErrorMessage, type KeyValueEntry } from './error';
-import { $exists, $genesis } from './symbols';
+import { $artificiallyInvoked, $exists, $genesis } from './symbols';
 
 import type {
   Entries,
@@ -433,7 +435,7 @@ export type BfeStrictArguments<
 > =
   // ? Strangely, OmitIndexSignature kills our symbol-based props. Weird...
   OmitIndexSignature<Arguments<CustomCliArguments, CustomExecutionContext>> &
-    FrameworkArguments<CustomExecutionContext>;
+    FrameworkArguments<CustomExecutionContext> & { [$artificiallyInvoked]?: boolean };
 
 /**
  * Maps an {@link ExecutionContext} into an identical type that explicitly omits
@@ -1050,6 +1052,7 @@ export async function getInvocableExtendedHandler<
     argv_: BfeStrictArguments<CustomCliArguments, CustomExecutionContext>
   ) {
     const argv = argv_ as Arguments<CustomCliArguments, CustomExecutionContext>;
+    argv_[$artificiallyInvoked] = true;
 
     if (typeof builder === 'function') {
       const dummyYargs = makeVanillaYargs();

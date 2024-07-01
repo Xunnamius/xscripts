@@ -12,7 +12,7 @@ import isEqual from 'lodash.isequal';
 import deepMerge from 'lodash.merge';
 
 import { ErrorMessage } from './error';
-import { $exists } from './symbols';
+import { $artificiallyInvoked, $exists } from './symbols';
 
 import {
   getInvocableExtendedHandler,
@@ -2833,6 +2833,31 @@ describe('::getInvocableExtendedHandler', () => {
     await handler(mockArgv);
 
     expect(mockCustomHandler.mock.calls).toStrictEqual([[mockArgv]]);
+  });
+
+  it('adds $artificiallyInvoked to argv', async () => {
+    expect.hasAssertions();
+
+    const mockCustomHandler = jest.fn();
+    const mockContext = generateFakeExecutionContext();
+
+    const mockArgv = {
+      $0: 'fake',
+      _: [],
+      x: 1,
+      [$executionContext]: mockContext
+    } as Arguments;
+
+    const handler = await getInvocableExtendedHandler(
+      { handler: mockCustomHandler },
+      mockContext
+    );
+
+    await handler(mockArgv);
+
+    expect(mockCustomHandler.mock.calls).toStrictEqual([
+      [{ ...mockArgv, [$artificiallyInvoked]: true }]
+    ]);
   });
 
   it('throws if resolved command is falsy', async () => {

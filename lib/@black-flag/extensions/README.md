@@ -1001,8 +1001,7 @@ Common Options:
 
 ### `getInvocableExtendedHandler`
 
-> ⪢ API reference:
-> [`getInvocableExtendedHandler`](./docs/functions/getInvocableExtendedHandler.md)
+> ⪢ API reference: [`getInvocableExtendedHandler`][50]
 
 Unlike Black Flag, BFE puts strict constraints on the order in which command
 exports must be invoked and evaluated. Specifically: an extended command's
@@ -1124,6 +1123,15 @@ likely and harder to spot.
 Hence the purpose of `getInvocableExtendedHandler`. This function returns a
 version of the extended command's `handler` function that is ready to invoke
 immediately. It can be used with both BFE and normal Black Flag command exports.
+
+> Note that command `builder` and `handler` exports invoked via
+> `getInvocableExtendedHandler` will receive an `argv` containing the
+> `$artificiallyInvoked` symbol. This allows handlers to avoid potentially
+> dangerous actions (such as altering global context state) when the command
+> isn't actually being invoked by Black Flag.
+>
+> However, to get intellisense/TypeScript support for the existence of
+> `$artificiallyInvoked` in `argv`, you must use `BfeStrictArguments`.
 
 For example, in JavaScript:
 
@@ -1975,3 +1983,4 @@ specification. Contributions of any kind welcome!
 [47]: https://github.com/yargs/yargs/issues/1680
 [48]: https://github.com/yargs/yargs/issues/1599
 [49]: https://github.com/yargs/yargs/issues/1611
+[50]: ./docs/functions/getInvocableExtendedHandler.md
