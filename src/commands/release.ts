@@ -23,6 +23,7 @@ export type CustomCliArguments = GlobalCliArguments;
 // TODO (add --renumber-references to build command)
 // TODO (run "early lint" first, then "late lint" (that checks all prod deps resolvable, no extraneous deps or dev deps, no missing deps) after build completes)
 // TODO (need flag for updating changelog or not updating changelog that also is compat with UPDATE_CHANGELOG)
+// TODO (use changelog.patch.?(cm)js if available)
 
 export default function command({
   log,
