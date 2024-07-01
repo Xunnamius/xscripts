@@ -2932,10 +2932,7 @@ describe('::getInvocableExtendedHandler', () => {
     expect.hasAssertions();
 
     await expect(
-      getInvocableExtendedHandler(
-        Promise.reject({ handler: jest.fn() }),
-        generateFakeExecutionContext()
-      )
+      getInvocableExtendedHandler(Promise.reject(), generateFakeExecutionContext())
     ).rejects.toMatchObject({
       message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
     });

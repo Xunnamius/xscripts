@@ -1013,10 +1013,18 @@ export async function getInvocableExtendedHandler<
 
   debug('resolving maybePromisedCommand');
 
-  let command = (await maybeCommand) as ImportedConfigurationModule<
-    CustomCliArguments,
-    CustomExecutionContext
-  >;
+  let command;
+
+  try {
+    command = (await maybeCommand) as ImportedConfigurationModule<
+      CustomCliArguments,
+      CustomExecutionContext
+    >;
+  } catch (error) {
+    throw new CliError(
+      new Error(ErrorMessage.AssertionFailureFalsyCommand(), { cause: error })
+    );
+  }
 
   hardAssert(command, ErrorMessage.AssertionFailureFalsyCommand());
 
