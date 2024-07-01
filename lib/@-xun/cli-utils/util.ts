@@ -21,10 +21,14 @@ export function toSpacedSentenceCase(str: string) {
 }
 
 /**
- * Lower-cases the first letter of `str`.
+ * Lower-cases the first letter of `str` if the first and second letter is also
+ * lowercase.
  */
 export function toFirstLowerCase(str: string) {
-  return str[0].toLocaleLowerCase() + str.slice(1);
+  const secondCharacter = str.at(1);
+  return secondCharacter && secondCharacter === secondCharacter.toLocaleLowerCase()
+    ? str[0].toLocaleLowerCase() + str.slice(1)
+    : str;
 }
 
 /**
