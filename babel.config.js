@@ -84,10 +84,16 @@ module.exports = {
             appendExtension: '.js',
             // TODO: fix this whole thing (do this index rewrite automatically)
             replaceExtensions: {
+              // TODO: this should likely be implemented as a function that
+              // TODO: resolves package.json properly regardless of depth
+              // TODO: and then if they don't exist, throw
               '^../package.json$': '../../package.json',
-              '../debug-extended.js': '../debug-extended/index.js',
-              '../rejoinder.js': '../rejoinder/index.js',
-              '../@black-flag/extensions': '../@black-flag/extensions/index.js',
+              // TODO: implement these as functions as well that check each path
+              // TODO: for existence and if they don't exist try to switch them
+              // TODO: such as below and if they still don't exist then throw
+              '^(.+)/debug-extended.js$': '$1/debug-extended/index.js',
+              '^(.+)/rejoinder.js$': '$1/rejoinder/index.js',
+              '^(.+)/@black-flag/extensions.js$': '$1/@black-flag/extensions/index.js',
               '^(([^/]*/)*lib/[^/]+)$': '$1/index'
             }
           }
