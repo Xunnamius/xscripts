@@ -433,6 +433,13 @@ export function enableLoggingByTag({
 }
 
 /**
+ * Returns an array of the tags disabled via {@link disableLoggingByTag}.
+ */
+export function getDisabledTags() {
+  return new Set(metadata.blacklist);
+}
+
+/**
  * A function that resets the internal logger cache. Essentially, calling this
  * function causes rejoinder to forget any disabled tags or loggers created
  * prior.
