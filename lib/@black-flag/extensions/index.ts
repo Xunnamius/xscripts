@@ -741,7 +741,7 @@ export function withBuilderExtensions<
     function withHandlerExtensions(customHandler) {
       return async function handler(argv) {
         const debug = createDebugLogger({
-          namespace: '${globalLoggerNamespace}:withHandlerExtensions'
+          namespace: `${globalLoggerNamespace}:withHandlerExtensions`
         });
 
         debug('entered withHandlerExtensions::handler wrapper function');

@@ -246,7 +246,7 @@ export function withStandardBuilder<
       return async function handler(rawArgv) {
         const tags = new Set<LogTag>();
         const debug = createDebugLogger({
-          namespace: '${globalLoggerNamespace}:withStandardHandler'
+          namespace: `${globalLoggerNamespace}:withStandardHandler`
         });
 
         debug('entered withStandardHandler wrapper');
