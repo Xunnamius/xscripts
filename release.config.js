@@ -55,20 +55,16 @@ module.exports = {
           [
             '@semantic-release/exec',
             {
-              prepareCmd: 'CHANGELOG_SKIP_TITLE=true npm run build:changelog'
+              prepareCmd:
+                'NODE_NO_WARNINGS=1 npx xscripts build changelog --skip-topmatter --no-format-changelog'
             }
           ],
           ['@semantic-release/changelog', { changelogTitle }],
           [
             '@semantic-release/exec',
             {
-              prepareCmd: 'NODE_ENV=format npx remark --output --frail CHANGELOG.md'
-            }
-          ],
-          [
-            '@semantic-release/exec',
-            {
-              prepareCmd: 'npx prettier --write CHANGELOG.md'
+              prepareCmd:
+                'NODE_NO_WARNINGS=1 npx xscripts format --hush --files CHANGELOG.md'
             }
           ]
         ]
