@@ -64,7 +64,7 @@ module.exports = {
             '@semantic-release/exec',
             {
               prepareCmd:
-                'NODE_NO_WARNINGS=1 npx xscripts format --hush --files CHANGELOG.md'
+                'NODE_NO_WARNINGS=1 npx xscripts format --hush --no-skip-ignored --files CHANGELOG.md'
             }
           ]
         ]

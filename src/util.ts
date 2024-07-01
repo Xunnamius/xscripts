@@ -122,7 +122,7 @@ export async function findProjectFiles(
   runtimeContext: GlobalExecutionContext['runtimeContext'],
   {
     useCached = true,
-    skipDocs = true,
+    skipIgnored = true,
     skipUnknown = false
   }: {
     /**
@@ -130,13 +130,10 @@ export async function findProjectFiles(
      */
     useCached?: boolean;
     /**
-     * Virtually prepend `docs` to `.prettierignore` if `true`.
-     *
-     * Regardless of the value of `skipDocs`, the whole string `docs`, if
-     * encountered alone on its own line, will be filtered out of
-     * .prettierignore. Use `skipDocs` to add it back in.
+     * If `true`, do not consider `.prettierignore` when sifting through and
+     * returning project files.
      */
-    skipDocs?: boolean;
+    skipIgnored?: boolean;
     /**
      * Skip files unknown to git (even if already ignored by
      * `.gitignore`/`.prettierignore`).
@@ -157,7 +154,9 @@ export async function findProjectFiles(
     project: { root, packages }
   } = runtimeContext;
 
-  const ignore = await deriveVirtualPrettierIgnoreLines(root, skipDocs, skipUnknown);
+  const ignore = skipIgnored
+    ? await deriveVirtualPrettierIgnoreLines(root, skipUnknown)
+    : [];
 
   debug('virtual .prettierignore lines: %O', ignore);
 
@@ -324,18 +323,11 @@ export function hasExitCode(error: unknown): error is object & { exitCode: numbe
  */
 export async function deriveVirtualPrettierIgnoreLines(
   root: string,
-  skipDocs: boolean,
   skipUnknown: boolean
 ) {
   const ignore = (await readFile(`${root}/.prettierignore`))
     .split('\n')
-    .filter((entry) => entry && entry !== 'docs' && !entry.startsWith('#'));
-
-  // ! 'docs' must always be the very first entry in the `ignore` array if
-  // ! skipDocs is true!
-  if (skipDocs) {
-    ignore.unshift('docs');
-  }
+    .filter((entry) => entry && !entry.startsWith('#'));
 
   if (skipUnknown) {
     const unknownPaths = (

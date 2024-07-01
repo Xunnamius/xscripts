@@ -31,7 +31,7 @@ import { run } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments & {
   renumberReferences: boolean;
-  skipDocs: boolean;
+  skipIgnored: boolean;
   skipUnknown: boolean;
   files?: string[];
   onlyPackageJson: boolean;
@@ -54,10 +54,9 @@ export default function command({
       description: 'Run the renumber-references plugin when formatting Markdown files',
       default: false
     },
-    'skip-docs': {
+    'skip-ignored': {
       boolean: true,
-      description:
-        'Virtually prepend (true) or remove (false) the string `docs` to/from .prettierignore',
+      description: 'Ignore files listed in .prettierignore',
       default: true
     },
     'skip-unknown': {
@@ -108,12 +107,12 @@ export default function command({
     builder,
     description: 'Run formatters (e.g. prettier, remark) across all relevant files',
     usage: withStandardUsage(
-      '$1.\n\nNote that .prettierignore is used as the basis for which Markdown files are considered when formatters are run'
+      '$1.\n\nNote that .prettierignore is used as the basis for which Markdown files are considered when formatters are run. To work around this, use --no-skip-ignored.'
     ),
     handler: withStandardHandler(async function ({
       $0: scriptFullName,
       renumberReferences,
-      skipDocs,
+      skipIgnored,
       skipUnknown,
       files,
       onlyPackageJson,
@@ -135,7 +134,7 @@ export default function command({
       genericLogger([LogTag.IF_NOT_QUIETED], 'Formatting project files...');
 
       debug('renumberReferences: %O', renumberReferences);
-      debug('skipDocs: %O', skipDocs);
+      debug('skipIgnored: %O', skipIgnored);
       debug('skipUnknown: %O', skipUnknown);
       debug('files: %O', files);
       debug('onlyPackageJson: %O', onlyPackageJson);
@@ -153,11 +152,9 @@ export default function command({
         if (files) {
           debug('using --files as targets');
 
-          const ignore = await deriveVirtualPrettierIgnoreLines(
-            rootDir,
-            skipDocs,
-            skipUnknown
-          );
+          const ignore = skipIgnored
+            ? await deriveVirtualPrettierIgnoreLines(rootDir, skipUnknown)
+            : [];
 
           debug('virtual .prettierignore lines: %O', ignore);
 
@@ -176,7 +173,7 @@ export default function command({
           };
         } else {
           debug('running generic project filesystem scan');
-          return findProjectFiles(runtimeContext, { skipDocs, skipUnknown });
+          return findProjectFiles(runtimeContext, { skipIgnored, skipUnknown });
         }
       })();
 
@@ -373,7 +370,7 @@ export default function command({
         [
           `${shouldDoPkgJson ? 'Processed' : 'Encountered'} package.json files: ${allPkgFiles.length}`,
           `${SHORT_TAB}Sorted file contents: ${statusToEmoji(status.sort)}`,
-          `${shouldDoMarkdown ? 'Processed' : 'Encountered'} markdown files${skipDocs ? '' : ' (including docs)'}: ${mdFiles.length}`,
+          `${shouldDoMarkdown ? 'Processed' : 'Encountered'} markdown files${skipIgnored ? '' : ' (no files ignored)'}: ${mdFiles.length}`,
           `${SHORT_TAB}Synchronized TOCs: ${statusToEmoji(status.doctoc)}`,
           `${SHORT_TAB}Regenerated contributor table: ${statusToEmoji(status.allContrib)}`,
           `${SHORT_TAB}Reformatted files: ${statusToEmoji(status.remark)}`,

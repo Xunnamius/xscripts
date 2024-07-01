@@ -141,7 +141,7 @@ export default function command(
           quiet: true,
           hush: true,
           renumberReferences: false,
-          skipDocs: true,
+          skipIgnored: false,
           skipUnknown: false,
           onlyPackageJson: false,
           onlyMarkdown: false,
