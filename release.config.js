@@ -6,10 +6,7 @@ const debug = require('debug')(
 
 // TODO: replace this with @xunnamius/semantic-release-projector-config
 
-const updateChangelog =
-  process.env.UPDATE_CHANGELOG === 'true' ||
-  // ? Legacy
-  process.env.SHOULD_UPDATE_CHANGELOG === 'true';
+const updateChangelog = process.env.UPDATE_CHANGELOG !== 'false';
 
 debug(`will update changelog: ${updateChangelog ? 'yes' : 'no'}`);
 
