@@ -9,4 +9,4 @@ if beginswith 'rebase' "$GIT_REFLOG_ACTION"; then
 fi
 
 if [ -z $GAC_VERIFY_SIMPLE ]; then npm run lint:all; fi
-NODE_OPTIONS='--disable-warning=ExperimentalWarning' NODE_ENV=format npx lint-staged --concurrent false
+NODE_NO_WARNINGS=1 NODE_ENV=format npx lint-staged --concurrent false
