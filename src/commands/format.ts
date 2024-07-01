@@ -30,7 +30,6 @@ import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
 
 export type CustomCliArguments = GlobalCliArguments & {
-  sortPackageJson: boolean;
   renumberReferences: boolean;
   skipDocs: boolean;
   skipUnknown: boolean;
