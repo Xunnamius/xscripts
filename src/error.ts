@@ -13,8 +13,14 @@ export const ErrorMessage = {
   BadChangelogPatcher(path: string) {
     return `unable to import "${path}" as a JavaScript module. Please ensure it is syntactically sound and contains the expected exports (see documentation).`;
   },
-  CannotReadFile(expectedPath: string) {
-    return `failed to read file at path: ${expectedPath}`;
+  CannotAccessDirectory(path: string) {
+    return `failed to access directory at path: ${path}`;
+  },
+  CannotReadFile(path: string) {
+    return `failed to read from file at path: ${path}`;
+  },
+  CannotWriteFile(path: string) {
+    return `failed to write to file at path: ${path}`;
   },
   CannotBeCliAndNextJs() {
     return 'project must either provide a CLI or be a Next.js project';
