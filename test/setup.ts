@@ -1,11 +1,11 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/no-keyword-prefix */
 import assert from 'node:assert';
-import { promises as fs } from 'node:fs';
+import fs from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, join as joinPath, resolve as resolvePath } from 'node:path';
-import { name as pkgName, version as pkgVersion } from 'package';
 
+// TODO: replace debug with rejoinder
 import debugFactory from 'debug';
 import execa from 'execa';
 import glob from 'glob';
@@ -14,6 +14,8 @@ import uniqueFilename from 'unique-filename';
 // ? https://github.com/jest-community/jest-extended#typescript
 import 'jest-extended';
 import 'jest-extended/all';
+
+import { name as pkgName, version as pkgVersion } from 'package';
 
 import type { Debugger } from 'debug';
 import type { ExecaReturnValue } from 'execa';

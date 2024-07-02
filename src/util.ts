@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 import assert from 'node:assert';
-import { promises as fs } from 'node:fs';
+import fs from 'node:fs/promises';
 
 import { CliError, FrameworkExitCode } from '@black-flag/core';
 import { glob } from 'glob-gitignore';
@@ -225,9 +225,8 @@ export async function isAccessible(
    */
   path: string,
   /**
-   * The type of access check to perform.
+   * The type of access check to perform. Defaults to `fs.constants.R_OK`.
    *
-   * @default fs.constants.R_OK
    * @see {@link fs.constants}
    */
   fsConstants = fs.constants.R_OK
@@ -258,7 +257,7 @@ export type ProjectMetadata = {
 };
 
 /**
- * Sugar for `(await import('node:fs)).promises.constants`.
+ * Sugar for `(await import('node:fs/promises')).constants`.
  */
 export const fsConstants = fs.constants;
 
