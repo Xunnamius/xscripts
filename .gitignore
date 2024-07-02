@@ -14,21 +14,22 @@ ignore.*
 # Ignore any external scripts
 external-scripts/bin
 
-# Ignore build artifacts (except under src)
+# Ignore relevant build artifacts (except under src)
 *.tsbuildinfo
+build/**
+!src/build
+!docs/build
 dist
-build
+coverage
 .vercel
 .next
 next-env.d.ts
-coverage
-!/src/**
 
 # Ignore local configuration
 .vscode
 !.vscode/launch.example.json
 
-# Ignore node_modules
+# Ignore relevant NPM artifacts
 node_modules
 
 # Ignore random nothingness
