@@ -1,6 +1,6 @@
 {
   "name": "@-xun/scripts",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "The scripts powering Xunnamius's NPM-based projects",
   "keywords": [
     "Xunnamius"
@@ -56,13 +56,11 @@
     "/README.md"
   ],
   "scripts": {
-    "__test:repeat:all": "echo 'Repeating test suite [initializing]...'; (i=0; while [ \"$((( i += 1 ) <= 100 ))\" -ne 0 ]; do sleep 0.1 && echo \"\\r\\033[1A\\033[0KRepeating test suite [run $i/100]...\" && JEST_SILENT_REPORTER_SHOW_WARNINGS=true NODE_ENV=test DEBUG_COLORS=false npx jest --reporters=jest-silent-reporter || exit; done) && echo \"All tests passed! Congrats!\"",
-    "__test:repeat:unit": "echo 'Repeating test suite [initializing]...'; (i=0; while [ \"$((( i += 1 ) <= 100 ))\" -ne 0 ]; do sleep 0.1 && echo \"\\r\\033[1A\\033[0KRepeating test suite [run $i/100]...\" && JEST_SILENT_REPORTER_SHOW_WARNINGS=true NODE_ENV=test DEBUG_COLORS=false npx jest --reporters=jest-silent-reporter --testPathIgnorePatterns '/(integration|e2e).*?\\.test\\.tsx?' '/dist/' || exit; done) && echo \"All tests passed! Congrats!\"",
     "build": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build",
     "build:changelog": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build changelog",
     "build:dist": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build distributables",
-    "build:docs": "if [ -r ./next.config.js ]; then typedoc --plugin typedoc-plugin-markdown --skipErrorChecking --cleanOutputDir --tsconfig tsconfig.docs.json --out docs --readme none lib src test types external-scripts --exclude '**/*.test.*' --exclude external-scripts/bin; else ENTRY='./src/*' && echo 'Entry file:' $ENTRY && typedoc --plugin typedoc-plugin-markdown --skipErrorChecking --cleanOutputDir --tsconfig tsconfig.docs.json --out docs --readme none $ENTRY; fi",
-    "build:externals": "NODE_ENV=production-external babel external-scripts --extensions .ts --out-dir external-scripts/bin",
+    "build:docs": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build docs",
+    "build:externals": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build externals",
     "clean": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js clean",
     "format": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js format --hush",
     "lint": "stdbuf -i0 -o0 -e0 tsc --project tsconfig.lint.json; X=$?; stdbuf -i0 -o0 -e0 eslint --parser-options=project:tsconfig.lint.json --no-error-on-unmatched-pattern packages src; Y=$?; MD_FILES=$(node -e 'console.log(require(`glob-gitignore`).sync(`**/*.md`, { ignore: require(`fs`).readFileSync(`.prettierignore`, `utf8`).split(`\n`).filter(Boolean), dot: true }).join(`\n`))') && echo $MD_FILES | NODE_ENV=lint xargs remark --quiet --frail --no-stdout; Z=$?; [ $X -eq 0 ] && [ $Y -eq 0 ] && [ $Z -eq 0 ]",

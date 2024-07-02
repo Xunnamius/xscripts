@@ -91,4 +91,4 @@ are considered standard common CLI arguments by this package.
 
 ## Defined in
 
-[lib/@-xun/cli-utils/extensions.ts:112](https://github.com/Xunnamius/xscripts/blob/e4a1e0b3d6a20ae598f5a6feb2cf2b7ba077b6a7/lib/@-xun/cli-utils/extensions.ts#L112)
+[lib/@-xun/cli-utils/extensions.ts:112](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/lib/@-xun/cli-utils/extensions.ts#L112)

@@ -22,4 +22,4 @@ Return an array of the lines of a `.prettierignore` file.
 
 ## Defined in
 
-[src/util.ts:333](https://github.com/Xunnamius/xscripts/blob/e4a1e0b3d6a20ae598f5a6feb2cf2b7ba077b6a7/src/util.ts#L333)
+[src/util.ts:333](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/src/util.ts#L333)
