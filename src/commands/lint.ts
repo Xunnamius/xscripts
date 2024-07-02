@@ -17,9 +17,9 @@ import {
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 
-export type CustomCliArguments = GlobalCliArguments;
-
-// TODO: npx update-browserslist-db@latest (non-match doesn't cause error only warning)
+export type CustomCliArguments = GlobalCliArguments & {
+  // TODO
+};
 
 export default function command({
   log,
@@ -40,6 +40,7 @@ export default function command({
     // TODO (lint project structure)
     // TODO (lint engines.node with browserslist 'maintained node versions, current node' with flag for allowing lower bound drop off (i.e. allow lower versions than given to be missing))
     // TODO (two linting stages: "early lint" (the usual) and "late lint" (that checks all prod deps resolvable, no extraneous deps or dev deps, no missing deps))
+    // TODO (npx update-browserslist-db@latest (non-match doesn't cause error only warning))
   });
 
   return {

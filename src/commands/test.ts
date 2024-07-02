@@ -17,7 +17,9 @@ import {
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 
-export type CustomCliArguments = GlobalCliArguments;
+export type CustomCliArguments = GlobalCliArguments & {
+  // TODO
+};
 
 export default function command({
   log,
