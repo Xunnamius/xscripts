@@ -97,7 +97,7 @@ export default function command({
       description: 'Deploy to the remote preview environment',
       requires: { target: DeployTarget.Vercel },
       default: true,
-      check: function (preview, { target, production }) {
+      check(preview, { target, production }) {
         return (
           target !== DeployTarget.Vercel ||
           preview ||
