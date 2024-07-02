@@ -100,6 +100,8 @@ module.exports = {
         ]
       ]
     },
+    // TODO: add production-esm too
+    // TODO: add production-externals too (renamed from production-external)
     // * Used by `npm run build` for fixing declaration file imports in ./dist
     'production-types': {
       comments: true,
@@ -108,7 +110,8 @@ module.exports = {
         [
           'transform-rewrite-imports',
           {
-            // TODO: this came from monorepo, is this needed here?
+            // TODO: fix these to be generalized... and if they're general
+            // TODO: enough, maybe even merge these into production-cjs
             replaceExtensions: {
               // ? Ensure deep package.json imports resolve properly
               '^../../../package.json$': '../../package.json',
