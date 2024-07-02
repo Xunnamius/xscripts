@@ -22,4 +22,4 @@
 
 ## Defined in
 
-[types/unique-filename.d.ts:2](https://github.com/Xunnamius/xscripts/blob/326b67f320920677552b3ade3981268ca8a3447c/types/unique-filename.d.ts#L2)
+[types/unique-filename.d.ts:2](https://github.com/Xunnamius/xscripts/blob/e4a1e0b3d6a20ae598f5a6feb2cf2b7ba077b6a7/types/unique-filename.d.ts#L2)

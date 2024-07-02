@@ -34,4 +34,4 @@ the parsed command line arguments (argv).
 
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:551](https://github.com/Xunnamius/xscripts/blob/326b67f320920677552b3ade3981268ca8a3447c/lib/@black-flag/extensions/index.ts#L551)
+[lib/@black-flag/extensions/index.ts:551](https://github.com/Xunnamius/xscripts/blob/e4a1e0b3d6a20ae598f5a6feb2cf2b7ba077b6a7/lib/@black-flag/extensions/index.ts#L551)
