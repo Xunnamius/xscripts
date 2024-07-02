@@ -22,7 +22,11 @@ import {
 } from 'multiverse/rejoinder';
 
 import { $artificiallyInvoked } from 'multiverse/@black-flag/extensions/symbols';
+
 import { LogTag } from './logging';
+// ? Used in a comment for taskManager
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { type makeStandardConfigureExecutionContext } from './configure';
 
 const globalDebuggerNamespace = '@-xun/cli-utils';
 
