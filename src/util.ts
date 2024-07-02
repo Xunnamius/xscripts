@@ -348,3 +348,7 @@ export async function deriveVirtualPrettierIgnoreLines(
 
   return ignore;
 }
+
+export function isNonEmptyString(o: unknown): o is string {
+  return typeof o === 'string' && o.length > 0;
+}

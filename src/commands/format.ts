@@ -10,7 +10,8 @@ import { ErrorMessage } from 'universe/error';
 import {
   deriveVirtualPrettierIgnoreLines,
   findProjectFiles,
-  globalPreChecks
+  globalPreChecks,
+  isNonEmptyString
 } from 'universe/util';
 
 import {
@@ -70,7 +71,7 @@ export default function command({
         'Only consider files (or globs) given via --files instead of scanning the filesystem',
       check(files: string[]) {
         return (
-          (files.length > 0 && files.every(Boolean)) ||
+          (files.length > 0 && files.every((file) => isNonEmptyString(file))) ||
           ErrorMessage.RequiresMinArgs('--files', 1, undefined, 'non-empty')
         );
       }
