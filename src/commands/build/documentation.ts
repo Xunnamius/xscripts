@@ -1,11 +1,11 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { globalPreChecks } from 'universe/util';
+import { globalPreChecks, isNonEmptyString } from 'universe/util';
 
 import {
-  LogTag,
   logStartTime,
+  LogTag,
   standardSuccessMessage
 } from 'multiverse/@-xun/cli-utils/logging';
 
@@ -16,9 +16,11 @@ import {
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
+import { run } from 'multiverse/run';
+import { ErrorMessage } from 'universe/error';
 
 export type CustomCliArguments = GlobalCliArguments & {
-  // TODO
+  entries: string[];
 };
 
 export default function command({
@@ -31,7 +33,25 @@ export default function command({
     CustomCliArguments,
     GlobalExecutionContext
   >({
-    // TODO
+    entries: {
+      alias: ['entry'],
+      array: true,
+      description: 'The entry point(s) of your documentation',
+      default: [
+        'lib/**/*.ts',
+        'src/**/*.ts',
+        'test/**/*.ts',
+        'types/**/*.ts',
+        'external-scripts/*.ts',
+        'external-scripts/*/index.ts'
+      ],
+      check(entries: string[]) {
+        return (
+          (entries.length > 0 && entries.every((entry) => isNonEmptyString(entry))) ||
+          ErrorMessage.RequiresMinArgs('--entries', 1, undefined, 'non-empty')
+        );
+      }
+    }
   });
 
   return {
@@ -39,7 +59,12 @@ export default function command({
     builder,
     description: 'Generate documentation from source and assets',
     usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName }) {
+    handler: withStandardHandler(async function ({
+      $0: scriptFullName,
+      entries,
+      hush: isHushed,
+      quiet: isQuieted
+    }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
@@ -52,6 +77,39 @@ export default function command({
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Generating documentation...');
 
+      debug('entries: %O', entries);
+      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+
+      await run(
+        'npx',
+        [
+          'typedoc',
+
+          '--plugin',
+          'typedoc-plugin-markdown',
+          '--skipErrorChecking',
+          '--excludeInternal',
+          '--cleanOutputDir',
+          '--tsconfig',
+          'tsconfig.docs.json',
+          '--out',
+          'docs',
+          '--readme',
+          'none',
+          '--exclude',
+          '**/*.test.*',
+          '--exclude',
+          '**/bin',
+
+          ...entries
+        ],
+        {
+          stdout: isHushed ? 'ignore' : 'inherit',
+          stderr: isQuieted ? 'ignore' : 'inherit'
+        }
+      );
+
+      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
