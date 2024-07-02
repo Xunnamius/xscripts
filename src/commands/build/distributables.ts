@@ -353,7 +353,7 @@ export default function command({
 
                     genericLogger(
                       [LogTag.IF_NOT_QUIETED],
-                      `${SHORT_TAB}prepended shebang to ${path}`
+                      `${SHORT_TAB}Prepended shebang to ${path}`
                     );
                   }
                 })
