@@ -1,5 +1,4 @@
 import assert from 'node:assert';
-import { readFile, writeFile } from 'node:fs/promises';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
@@ -15,7 +14,7 @@ import {
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { globalPreChecks } from 'universe/util';
+import { globalPreChecks, readFile, writeFile } from 'universe/util';
 
 import {
   logStartTime,
@@ -118,7 +117,7 @@ export default function command(
         debug('changelogTopmatter: %O', changelogTopmatter);
         assert(typeof changelogTopmatter === 'string', ErrorMessage.GuruMeditation());
 
-        const contents = await readFile('CHANGELOG.md', 'utf8');
+        const contents = await readFile('CHANGELOG.md');
         debug(`prepending changelog topmatter to file at path: %O`, 'CHANGELOG.md');
 
         await writeFile('CHANGELOG.md', `${changelogTopmatter}\n\n${contents}`);
@@ -192,7 +191,7 @@ export default function command(
         }
 
         if (changelogPatcher) {
-          const contents = await readFile('CHANGELOG.md', 'utf8');
+          const contents = await readFile('CHANGELOG.md');
           const patcher = (changelog: string, patches: ChangelogPatches) => {
             // eslint-disable-next-line unicorn/no-array-reduce
             return patches.reduce(

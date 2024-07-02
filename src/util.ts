@@ -44,6 +44,16 @@ export async function readFile(path: string) {
   }
 }
 
+export async function writeFile(path: string, contents: string) {
+  try {
+    return await fs.writeFile(path, contents);
+  } catch (error) {
+    throw new CliError(new Error(ErrorMessage.CannotWriteFile(path), { cause: error }), {
+      suggestedExitCode: FrameworkExitCode.AssertionFailed
+    });
+  }
+}
+
 const projectFileCache = {
   cached: false,
   cache: {

@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import assert from 'node:assert';
-import { chmod, readFile, rename, stat, symlink, writeFile } from 'node:fs/promises';
+import { chmod, rename, stat, symlink } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 
 import { transformFileAsync } from '@babel/core';
@@ -16,7 +16,9 @@ import {
   findMainBinFile,
   findProjectFiles,
   getProjectMetadata,
-  globalPreChecks
+  globalPreChecks,
+  readFile,
+  writeFile
 } from 'universe/util';
 
 import {
@@ -337,7 +339,7 @@ export default function command({
                   // ? might end up writing to the same file
                   const path = binFiles.at(binFileInodes.indexOf(inode));
                   assert(path, ErrorMessage.GuruMeditation());
-                  const contents = await readFile(path, 'utf8');
+                  const contents = await readFile(path);
 
                   if (contents.startsWith('#!')) {
                     debug(
