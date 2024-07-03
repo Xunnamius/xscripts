@@ -26,7 +26,7 @@
 
 ### description
 
-> **description**: `string` = `'Transpile source and assets into production-ready distributables'`
+> **description**: `string` = `'Transpile source and assets'`
 
 ### handler()
 
@@ -46,4 +46,4 @@
 
 ## Defined in
 
-[src/commands/build/index.ts:13](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/src/commands/build/index.ts#L13)
+[src/commands/build/index.ts:14](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/src/commands/build/index.ts#L14)

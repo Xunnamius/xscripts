@@ -26,7 +26,7 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/debug-extended/index.ts:81](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/lib/debug-extended/index.ts#L81)
+[lib/debug-extended/index.ts:81](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L81)
 
 ## Properties
 
@@ -67,7 +67,7 @@ A sub-instance for outputting warning messages.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:108](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/lib/debug-extended/index.ts#L108)
+[lib/debug-extended/index.ts:108](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L108)
 
 ***
 
@@ -143,7 +143,7 @@ A sub-instance for outputting error messages.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:131](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/lib/debug-extended/index.ts#L131)
+[lib/debug-extended/index.ts:131](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L131)
 
 ***
 
@@ -164,7 +164,7 @@ namespace.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:86](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/lib/debug-extended/index.ts#L86)
+[lib/debug-extended/index.ts:86](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L86)
 
 ***
 
@@ -186,7 +186,7 @@ namespace.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:51](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/lib/debug-extended/index.ts#L51)
+[lib/debug-extended/index.ts:51](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L51)
 
 ***
 
@@ -202,7 +202,7 @@ A sub-instance for outputting messages to the attention of the reader.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:127](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/lib/debug-extended/index.ts#L127)
+[lib/debug-extended/index.ts:127](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L127)
 
 ***
 
@@ -232,7 +232,7 @@ Send a blank newline to output.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:90](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/lib/debug-extended/index.ts#L90)
+[lib/debug-extended/index.ts:90](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L90)
 
 ***
 
@@ -248,4 +248,4 @@ A sub-instance for outputting warning messages.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:135](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/lib/debug-extended/index.ts#L135)
+[lib/debug-extended/index.ts:135](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L135)

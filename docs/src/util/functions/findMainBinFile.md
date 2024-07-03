@@ -20,4 +20,4 @@ Return the first defined value in `package.json`'s `bin`, if there is one.
 
 ## Defined in
 
-[src/util.ts:101](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/src/util.ts#L101)
+[src/util.ts:101](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/src/util.ts#L101)

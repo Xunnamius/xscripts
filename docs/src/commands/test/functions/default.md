@@ -42,4 +42,4 @@
 
 ## Defined in
 
-[src/commands/test.ts:22](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/src/commands/test.ts#L22)
+[src/commands/test.ts:24](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/src/commands/test.ts#L24)

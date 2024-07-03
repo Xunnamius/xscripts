@@ -10,4 +10,4 @@
 
 ## Defined in
 
-[lib/@black-flag/extensions/error.ts:7](https://github.com/Xunnamius/xscripts/blob/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7/lib/@black-flag/extensions/error.ts#L7)
+[lib/@black-flag/extensions/error.ts:7](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/@black-flag/extensions/error.ts#L7)
