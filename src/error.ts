@@ -25,6 +25,9 @@ export const ErrorMessage = {
   CannotBeCliAndNextJs() {
     return 'project must either provide a CLI or be a Next.js project';
   },
+  CannotBuildIntermediatesForNextJs() {
+    return 'intermediates cannot be generated for a Next.js project';
+  },
   CannotRunOutsideRoot() {
     return 'the current working directory must be the project root or a workspace sub-root';
   },
@@ -33,9 +36,10 @@ export const ErrorMessage = {
   },
   WrongProjectAttributes(
     expected: ProjectMetaAttribute[],
-    actual: ProjectMetaAttribute[]
+    actual: ProjectMetaAttribute[],
+    withOrWithout: 'with' | 'without' = 'with'
   ) {
-    return `expected a project with the following attributes: ${expected.join(', ')}; saw ${actual.join(', ')} instead`;
+    return `expected a project ${withOrWithout} the following attributes: ${expected.join(', ')}; saw ${actual.join(', ')} instead`;
   },
   MustChooseDeployEnvironment() {
     return 'must choose either --preview or --production deployment environment';
