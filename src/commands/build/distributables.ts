@@ -80,7 +80,7 @@ export default async function command({
     },
     'clean-output-dir': {
       boolean: true,
-      description: 'Force-delete the output directory before transpiling distributables',
+      description: 'Force-delete the output directory before transpilation',
       default: !attributes.includes(ProjectMetaAttribute.Next)
     }
   });
