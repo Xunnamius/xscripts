@@ -11,11 +11,11 @@ import {
 
 export type { CustomCliArguments };
 
-export default function command(
+export default async function command(
   globalExecutionContext: AsStrictExecutionContext<GlobalExecutionContext>
 ) {
   return {
-    ...buildDistributables(globalExecutionContext),
+    ...(await buildDistributables(globalExecutionContext)),
     aliases: [],
     description: 'Transpile source and assets',
     usage: withStandardUsage(

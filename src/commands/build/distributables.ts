@@ -5,6 +5,7 @@ import { dirname, relative, resolve } from 'node:path';
 
 import { transformFileAsync } from '@babel/core';
 import { type ChildConfiguration } from '@black-flag/core';
+import { rimraf as forceDeletePaths } from 'rimraf';
 import uniqueFilename from 'unique-filename';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
@@ -42,14 +43,17 @@ export type CustomCliArguments = GlobalCliArguments & {
   linkCliIntoBin: boolean;
   prependShebang: boolean;
   moduleSystem: 'cjs' | 'esm';
+  cleanOutputDir: boolean;
 };
 
-export default function command({
+export default async function command({
   log,
   debug_,
   state,
   runtimeContext
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
+  const { attributes } = await getProjectMetadata(runtimeContext);
+
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
     GlobalExecutionContext
@@ -73,6 +77,11 @@ export default function command({
       choices: ['cjs', 'esm'],
       description: 'Which JavaScript module system to transpile into',
       default: 'cjs'
+    },
+    'clean-output-dir': {
+      boolean: true,
+      description: 'Force-delete the output directory before transpiling distributables',
+      default: !attributes.includes(ProjectMetaAttribute.Next)
     }
   });
 
@@ -89,6 +98,7 @@ export default function command({
       linkCliIntoBin,
       prependShebang,
       moduleSystem,
+      cleanOutputDir,
       hush: isHushed,
       quiet: isQuieted
     }) {
@@ -107,6 +117,7 @@ export default function command({
       debug('generateTypes: %O', generateTypes);
       debug('linkCliIntoBin: %O', linkCliIntoBin);
       debug('prependShebang: %O', prependShebang);
+      debug('cleanOutputDir: %O', cleanOutputDir);
 
       genericLogger([LogTag.IF_NOT_QUIETED], 'Building project distributables...');
 
@@ -133,14 +144,12 @@ export default function command({
       debug('isInMonorepo: %O', isInMonorepo);
 
       const [
-        { attributes },
         {
           tsFiles: { src: tsSrcFiles, lib: tsLibraryFiles },
           pkgFiles: { lib: libraryPkgFiles }
         },
         { default: createImportsListerPlugin }
       ] = await Promise.all([
-        getProjectMetadata(runtimeContext),
         findProjectFiles(runtimeContext),
         import('babel-plugin-list-imports')
       ]);
@@ -162,6 +171,11 @@ export default function command({
       debug('libraryDirectories: %O', libraryDirectories);
 
       if (attributes.includes(ProjectMetaAttribute.Next)) {
+        if (cleanOutputDir) {
+          debug('forcefully deleting build output directory: ./build');
+          await forceDeletePaths('./build');
+        }
+
         debug('running next build');
         await run('npx', ['next', 'build'], {
           env: { NODE_ENV: 'production' },
@@ -169,6 +183,11 @@ export default function command({
           stderr: isQuieted ? 'ignore' : 'inherit'
         });
       } else {
+        if (cleanOutputDir) {
+          debug('forcefully deleting build output directory: ./dist');
+          await forceDeletePaths('./dist');
+        }
+
         // ? Results are stored into prodLibImports
         await discoverProductionLibraryImports(tsSrcFiles);
 
