@@ -31,6 +31,7 @@ export default function command({
     CustomCliArguments,
     GlobalExecutionContext
   >({
+    // TODO (run all linting simultaneously)
     // TODO (no dot imports outside lib directory)
     // TODO (bring in lint code from projector)
     // TODO (add depcheck package (maybe), browserslist (update caniuse first), attw, and others into the mix)

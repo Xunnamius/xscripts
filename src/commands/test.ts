@@ -31,7 +31,7 @@ export default function command({
     CustomCliArguments,
     GlobalExecutionContext
   >({
-    // TODO
+    // TODO (include JEST_TRANSPILED when relevant (probably use a flag for testing intermediate results from transpiled))
   });
 
   return {
