@@ -4,7 +4,7 @@ import { chmod, rename, stat, symlink } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 
 import { transformFileAsync } from '@babel/core';
-import { type ChildConfiguration } from '@black-flag/core';
+import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { rimraf as forceDeletePaths } from 'rimraf';
 import uniqueFilename from 'unique-filename';
 
@@ -38,12 +38,30 @@ import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions
 import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
 
+/**
+ * Possible intermediate transpilation targets (non-production
+ * non-distributables). See this command's options configuration for details.
+ */
+export enum IntermediateTranspilationEnvironment {
+  Development = 'development',
+  Test = 'test'
+}
+
+/**
+ * @see {@link IntermediateTranspilationEnvironment}
+ */
+export const intermediateTranspilationEnvironment = Object.values(
+  IntermediateTranspilationEnvironment
+);
+
 export type CustomCliArguments = GlobalCliArguments & {
   generateTypes: boolean;
   linkCliIntoBin: boolean;
   prependShebang: boolean;
   moduleSystem: 'cjs' | 'esm';
   cleanOutputDir: boolean;
+  generateIntermediatesFor?: IntermediateTranspilationEnvironment;
+  outputExtension?: string;
 };
 
 export default async function command({
@@ -82,6 +100,25 @@ export default async function command({
       boolean: true,
       description: 'Force-delete the output directory before transpilation',
       default: !attributes.includes(ProjectMetaAttribute.Next)
+    },
+    'generate-intermediates-for': {
+      choices: intermediateTranspilationEnvironment,
+      description: 'Transpile into intermediate non-production-ready non-distributables',
+      conflicts: ['generate-types', 'link-cli-into-bin', 'prepend-shebang'],
+      implies: {
+        'generate-types': false,
+        'link-cli-into-bin': false,
+        'prepend-shebang': false
+      }
+    },
+    'output-extension': {
+      string: true,
+      description:
+        'Override automatic extension selection for transpiled JavaScript output',
+      coerce(argument: string) {
+        argument = String(argument);
+        return argument.startsWith('.') ? argument : `.${argument}`;
+      }
     }
   });
 
@@ -90,7 +127,7 @@ export default async function command({
     builder,
     description: 'Transpile source and assets into production-ready distributables',
     usage: withStandardUsage(
-      '$1.\n\nNext.js projects will defer entirely to `next build`.\n\nBy default, CLI projects will have their entry points chmod-ed to be executable, shebangs added if they do not already exist, and "bin" entries soft-linked into node_modules/.bin.\n\nIn a monorepo context, only a single root/sub-root package will be built conditioned on the current working directory. Use Npm\'s workspace features, or Turbo\'s, if your goal is to build distributables from multiple sub-roots.'
+      '$1.\n\nNext.js projects will defer entirely to `next build`.\n\nBy default, CLI projects will have their entry points chmod-ed to be executable, shebangs added if they do not already exist, and "bin" entries soft-linked into node_modules/.bin.\n\nIn a monorepo context, only a single root/sub-root package will be built conditioned on the current working directory. Use Npm\'s workspace features, or Turbo\'s, if your goal is to build distributables from multiple sub-roots.\n\nWhen you need to access the intermediate babel transpilation result for non-production build outputs, which can be extremely useful when debugging strange problems in development and testing environments, see the --generate-intermediates-for option.'
     ),
     handler: withStandardHandler(async function ({
       $0: scriptFullName,
@@ -99,6 +136,8 @@ export default async function command({
       prependShebang,
       moduleSystem,
       cleanOutputDir,
+      generateIntermediatesFor,
+      outputExtension,
       hush: isHushed,
       quiet: isQuieted
     }) {
@@ -118,8 +157,16 @@ export default async function command({
       debug('linkCliIntoBin: %O', linkCliIntoBin);
       debug('prependShebang: %O', prependShebang);
       debug('cleanOutputDir: %O', cleanOutputDir);
+      debug('outputExtension (original): %O', outputExtension);
 
-      genericLogger([LogTag.IF_NOT_QUIETED], 'Building project distributables...');
+      if (generateIntermediatesFor) {
+        genericLogger.warn(
+          [LogTag.IF_NOT_QUIETED],
+          'Building intermediate non-production non-distributables...'
+        );
+      } else {
+        genericLogger([LogTag.IF_NOT_QUIETED], 'Building production distributables...');
+      }
 
       debug('calculating metadata');
 
@@ -132,15 +179,22 @@ export default async function command({
         }
       } = runtimeContext;
 
-      const inputExtension = '.ts';
-      const outputExtension = moduleSystem === 'cjs' ? '.js' : '.esm';
-      const isInMonorepo = context === 'monorepo';
-
-      debug('moduleSystem: %O', moduleSystem);
-      debug('inputExtension: %O', inputExtension);
-      debug('outputExtension: %O', outputExtension);
       debug('rootDir: %O', rootDir);
       debug('rootPkg: %O', rootPkg);
+
+      outputExtension ??=
+        moduleSystem === 'cjs' ||
+        generateIntermediatesFor === IntermediateTranspilationEnvironment.Test
+          ? '.js'
+          : '.mjs';
+
+      debug('moduleSystem: %O', moduleSystem);
+      debug('outputExtension: %O', outputExtension);
+
+      const inputExtension = '.ts';
+      const isInMonorepo = context === 'monorepo';
+
+      debug('inputExtension: %O', inputExtension);
       debug('isInMonorepo: %O', isInMonorepo);
 
       const [
@@ -171,6 +225,10 @@ export default async function command({
       debug('libraryDirectories: %O', libraryDirectories);
 
       if (attributes.includes(ProjectMetaAttribute.Next)) {
+        if (generateIntermediatesFor) {
+          throw new CliError(ErrorMessage.CannotBuildIntermediatesForNextJs());
+        }
+
         if (cleanOutputDir) {
           debug('forcefully deleting build output directory: ./build');
           await forceDeletePaths('./build');
@@ -183,9 +241,15 @@ export default async function command({
           stderr: isQuieted ? 'ignore' : 'inherit'
         });
       } else {
+        const outputDirName = generateIntermediatesFor ? '.transpiled' : 'dist';
+        const outputDirPath = `./${outputDirName}`;
+
+        debug('outputDirName: %O', outputDirName);
+        debug('outputDirPath: %O', outputDirPath);
+
         if (cleanOutputDir) {
-          debug('forcefully deleting build output directory: ./dist');
-          await forceDeletePaths('./dist');
+          debug(`forcefully deleting build output directory: ${outputDirPath}`);
+          await forceDeletePaths(outputDirPath);
         }
 
         // ? Results are stored into prodLibImports
@@ -266,9 +330,23 @@ export default async function command({
 
         genericLogger.newline([LogTag.IF_NOT_QUIETED]);
         genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Building distributables');
+
+        const absoluteOutputDirPath = `${process.cwd()}/${outputDirPath}`;
+
+        const babelNodeEnvironment: Record<string, string> = {
+          NODE_ENV: generateIntermediatesFor ?? `production-${moduleSystem}`
+        };
+
+        if (generateIntermediatesFor) {
+          babelNodeEnvironment.JEST_TRANSPILED = 'true';
+        }
+
+        debug('absoluteOutputDirPath: %O', absoluteOutputDirPath);
+        debug('babelNodeEnvironment: %O', babelNodeEnvironment);
+        debug(`building ${libraryDirPrefix.slice(0, -1)} and ${absoluteOutputDirPath}`);
+
         genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
-        debug('building root ./lib and relative ./dist');
         await Promise.all([
           run(
             'npx',
@@ -278,10 +356,9 @@ export default async function command({
               '--extensions',
               `${inputExtension},.tsx`,
               '--out-dir',
-              './dist/lib',
+              `${absoluteOutputDirPath}/lib`,
               '--out-file-extension',
               outputExtension,
-              ...(isInMonorepo ? ['--root-mode', 'upward'] : []),
               '--ignore',
               `lib/**/*.test${inputExtension}`,
               '--ignore',
@@ -294,7 +371,8 @@ export default async function command({
               ])
             ],
             {
-              env: { NODE_ENV: `production-${moduleSystem}` },
+              env: babelNodeEnvironment,
+              cwd: rootDir,
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
             }
@@ -307,13 +385,13 @@ export default async function command({
               '--extensions',
               `${inputExtension},.tsx`,
               '--out-dir',
-              './dist/src',
+              `${outputDirPath}/src`,
               '--out-file-extension',
               outputExtension,
               ...(isInMonorepo ? ['--root-mode', 'upward'] : [])
             ],
             {
-              env: { NODE_ENV: `production-${moduleSystem}` },
+              env: babelNodeEnvironment,
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
             }
@@ -413,6 +491,13 @@ export default async function command({
 
       genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+
+      if (generateIntermediatesFor) {
+        genericLogger.warn(
+          [LogTag.IF_NOT_QUIETED],
+          '(build output consists of intermediate files NOT SUITABLE FOR DISTRIBUTION OR PRODUCTION!)'
+        );
+      }
 
       async function discoverProductionLibraryImports(files: string[], iteration = 0) {
         const debugImportLister_ = debugImportLister.extend(`iter-${iteration}`);
