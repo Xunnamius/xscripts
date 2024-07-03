@@ -94,7 +94,7 @@ export default function command({
             'babel',
             'external-scripts',
             '--extensions',
-            '.ts',
+            '.ts,.tsx',
             '--out-dir',
             'external-scripts/bin'
           ],
