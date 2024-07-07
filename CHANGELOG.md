@@ -8,7 +8,6 @@ this project adheres to [Semantic Versioning][2].
 
 #### ✨ Features
 
-- **src:** commit initial version of "test" command ([8554e1a][4])
 - **src:** implement "test" script/command ([b665723][5])
 
 #### ⚙️ Build System
