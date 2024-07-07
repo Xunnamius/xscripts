@@ -8,6 +8,11 @@
 
 ## Index
 
+### Enumerations
+
+- [TestScope](enumerations/TestScope.md)
+- [TestType](enumerations/TestType.md)
+
 ### Type Aliases
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)

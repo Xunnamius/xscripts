@@ -25,4 +25,4 @@ empty`, calling this function is effectively a noop.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:408](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/rejoinder/index.ts#L408)
+[lib/rejoinder/index.ts:408](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/rejoinder/index.ts#L408)

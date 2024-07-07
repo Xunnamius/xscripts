@@ -27,7 +27,7 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:79](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/rejoinder/index.ts#L79)
+[lib/rejoinder/index.ts:79](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/rejoinder/index.ts#L79)
 
 > **UnextendableInternalLogger**(...`args`): `void`
 
@@ -43,7 +43,7 @@ Send a tagged optionally-formatted message to output.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:83](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/rejoinder/index.ts#L83)
+[lib/rejoinder/index.ts:83](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/rejoinder/index.ts#L83)
 
 > **UnextendableInternalLogger**(...`args`): `void`
 
@@ -59,7 +59,7 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:75](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/rejoinder/index.ts#L75)
+[lib/rejoinder/index.ts:75](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/rejoinder/index.ts#L75)
 
 ## Properties
 
@@ -141,7 +141,7 @@ node\_modules/@types/debug/index.d.ts:44
 
 #### Defined in
 
-[lib/debug-extended/index.ts:58](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/debug-extended/index.ts#L58)
+[lib/debug-extended/index.ts:58](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/debug-extended/index.ts#L58)
 
 ***
 
@@ -163,7 +163,7 @@ node\_modules/@types/debug/index.d.ts:44
 
 #### Defined in
 
-[lib/debug-extended/index.ts:51](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/debug-extended/index.ts#L51)
+[lib/debug-extended/index.ts:51](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/debug-extended/index.ts#L51)
 
 ***
 

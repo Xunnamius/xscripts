@@ -20,4 +20,4 @@
 
 ## Defined in
 
-[src/util.ts:47](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/src/util.ts#L47)
+[src/util.ts:47](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/src/util.ts#L47)
