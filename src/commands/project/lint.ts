@@ -51,6 +51,9 @@ export default function command({
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Verifying structural compliance...');
 
+      // TODO: ensure all test files have the proper naming convention and are
+      // TODO: located in the correct place.
+
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
