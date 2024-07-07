@@ -31,6 +31,8 @@ export default function command({
     CustomCliArguments,
     GlobalExecutionContext
   >({
+    // TODO: split these TODOs between this command and the "project lint" command
+    //
     // TODO (run all linting simultaneously)
     // TODO (no dot imports outside lib directory)
     // TODO (bring in lint code from projector)
