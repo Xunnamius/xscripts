@@ -80,11 +80,7 @@ export default function command({
       boolean: true,
       description: 'Only target package.json files for formatting',
       default: false,
-      conflicts: [
-        'skip-docs',
-        'renumber-references',
-        { 'only-markdown': true, 'only-prettier': true }
-      ]
+      conflicts: ['renumber-references', { 'only-markdown': true, 'only-prettier': true }]
     },
     'only-markdown': {
       boolean: true,
@@ -97,7 +93,6 @@ export default function command({
       description: 'Only run Prettier-based file formatting',
       default: false,
       conflicts: [
-        'skip-docs',
         'renumber-references',
         { 'only-package-json': true, 'only-markdown': true }
       ]
