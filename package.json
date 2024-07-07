@@ -73,13 +73,13 @@
     "start": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js start --",
     "test": "npm run test:unit --",
     "test:all": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --coverage",
-    "test:all:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --repeat 100",
+    "test:all:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --repeat 99",
     "test:e2e": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type end-to-end",
-    "test:e2e:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type end-to-end --repeat 100",
+    "test:e2e:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type end-to-end --repeat 99",
     "test:integration": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type integration",
-    "test:integration:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type integration --repeat 100",
+    "test:integration:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type integration --repeat 99",
     "test:unit": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type unit",
-    "test:unit:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type unit --repeat 100"
+    "test:unit:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type unit --repeat 99"
   },
   "dependencies": {
     "@arethetypeswrong/cli": "^0.16.0",
