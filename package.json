@@ -107,6 +107,8 @@
     "glob-gitignore": "^1.0.14",
     "husky": "^9.0.11",
     "jest": "^29.7.0",
+    "jest-circus": "^29.7.0",
+    "jest-silent-reporter": "^0.6.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.clone": "^4.5.0",
     "lodash.clonedeepwith": "^4.5.0",
@@ -122,6 +124,7 @@
     "tsconfig-replace-paths": "^0.0.14",
     "type-fest": "^4.21.0",
     "typedoc": "^0.26.3",
+    "typedoc-plugin-markdown": "^4.1.2",
     "typescript": "^5.5.3",
     "unique-filename": "^3.0.0"
   },
@@ -159,7 +162,6 @@
     "eslint-plugin-jest": "^28.6.0",
     "eslint-plugin-module-resolver": "^1.5.0",
     "eslint-plugin-unicorn": "^54.0.0",
-    "jest-circus": "^29.7.0",
     "jest-extended": "^4.0.2",
     "lint-staged": "^15.2.7",
     "lodash.merge": "^4.6.2",
@@ -210,8 +212,7 @@
     "remark-tight-comments": "^2.0.0",
     "remark-validate-links": "^13.0.1",
     "spellchecker": "^3.7.1",
-    "text-extensions": "^3.0.0",
-    "typedoc-plugin-markdown": "^4.1.2"
+    "text-extensions": "^3.0.0"
   },
   "engines": {
     "node": "^20.10.0 || >=22.3.0"
