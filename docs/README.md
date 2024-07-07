@@ -25,7 +25,6 @@
 - [src/commands/build/distributables](src/commands/build/distributables/README.md)
 - [src/commands/build/documentation](src/commands/build/documentation/README.md)
 - [src/commands/build/externals](src/commands/build/externals/README.md)
-- [src/commands/build/transpiled](src/commands/build/transpiled/README.md)
 - [src/commands/clean](src/commands/clean/README.md)
 - [src/commands/deploy](src/commands/deploy/README.md)
 - [src/commands/dev](src/commands/dev/README.md)

@@ -27,7 +27,7 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/debug-extended/index.ts:69](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L69)
+[lib/debug-extended/index.ts:69](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/debug-extended/index.ts#L69)
 
 > **ExtendedDebug**(...`args`): `InternalDebugger`
 
@@ -43,7 +43,7 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/debug-extended/index.ts:65](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L65)
+[lib/debug-extended/index.ts:65](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/debug-extended/index.ts#L65)
 
 > **ExtendedDebug**(`namespace`): `Debugger`
 
@@ -60,7 +60,7 @@ An InternalDebug factory interface that returns
 
 ## Defined in
 
-[lib/debug-extended/index.ts:65](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L65)
+[lib/debug-extended/index.ts:65](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/debug-extended/index.ts#L65)
 
 ## Properties
 
@@ -104,7 +104,7 @@ node\_modules/@types/debug/index.d.ts:9
 
 #### Defined in
 
-[lib/debug-extended/index.ts:71](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/debug-extended/index.ts#L71)
+[lib/debug-extended/index.ts:71](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/debug-extended/index.ts#L71)
 
 ***
 

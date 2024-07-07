@@ -220,12 +220,6 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureCommandHandlerNotAFunction()
-
-#### Returns
-
-`string`
-
 ### AssertionFailureConfigureExecutionEpilogue()
 
 #### Returns
@@ -245,12 +239,6 @@ A collection of possible error and warning messages.
 • **name2**: `string`
 
 • **type2**: `"name"` \| `"alias"`
-
-#### Returns
-
-`string`
-
-### AssertionFailureFalsyCommand()
 
 #### Returns
 
@@ -303,6 +291,12 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **currentArgument**: `string`
+
+#### Returns
+
+`string`
+
+### CommandHandlerNotAFunction()
 
 #### Returns
 
@@ -380,6 +374,22 @@ A collection of possible error and warning messages.
 
 `string`
 
+### DuplicateOptionName()
+
+#### Parameters
+
+• **name**: `string`
+
+#### Returns
+
+`string`
+
+### FalsyCommandExport()
+
+#### Returns
+
+`string`
+
 ### FrameworkError()
 
 #### Parameters
@@ -397,6 +407,12 @@ A collection of possible error and warning messages.
 `string`
 
 ### GracefulEarlyExit()
+
+#### Returns
+
+`string`
+
+### IllegalExplicitlyUndefinedDefault()
 
 #### Returns
 
@@ -460,6 +476,18 @@ A collection of possible error and warning messages.
 
 `string`
 
+### ReferencedNonExistentOption()
+
+#### Parameters
+
+• **referrerName**: `string`
+
+• **doesNotExistName**: `string`
+
+#### Returns
+
+`string`
+
 ### RequiresViolation()
 
 #### Parameters
@@ -467,6 +495,12 @@ A collection of possible error and warning messages.
 • **requirer**: `string`
 
 • **missingRequiredKeyValues**: `ObjectEntries`\<`object`\>
+
+#### Returns
+
+`string`
+
+### UnexpectedValueFromInternalYargsMethod()
 
 #### Returns
 
@@ -480,4 +514,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[lib/@black-flag/extensions/error.ts:14](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/@black-flag/extensions/error.ts#L14)
+[lib/@black-flag/extensions/error.ts:14](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/@black-flag/extensions/error.ts#L14)

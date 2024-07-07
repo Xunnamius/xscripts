@@ -11,5 +11,6 @@
 ### Variables
 
 - [$artificiallyInvoked](variables/$artificiallyInvoked.md)
+- [$canonical](variables/$canonical.md)
 - [$exists](variables/$exists.md)
 - [$genesis](variables/$genesis.md)

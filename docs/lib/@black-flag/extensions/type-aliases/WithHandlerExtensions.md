@@ -20,10 +20,6 @@ Note that `customHandler` provides a stricter constraint than Black Flag's
 explicitly omits the fallback indexer for unrecognized arguments. This
 means all possible arguments must be included in [CustomCliArguments](WithHandlerExtensions.md).
 
-## See
-
-[withBuilderExtensions](../functions/withBuilderExtensions.md)
-
 ## Type Parameters
 
 • **CustomCliArguments** *extends* `Record`\<`string`, `unknown`\>
@@ -38,6 +34,10 @@ means all possible arguments must be included in [CustomCliArguments](WithHandle
 
 `Configuration`\<`CustomCliArguments`, `CustomExecutionContext`\>\[`"handler"`\]
 
+## See
+
+[withBuilderExtensions](../functions/withBuilderExtensions.md)
+
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:488](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/@black-flag/extensions/index.ts#L488)
+[lib/@black-flag/extensions/index.ts:544](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/@black-flag/extensions/index.ts#L544)

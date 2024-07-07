@@ -8,9 +8,17 @@
 
 ## Index
 
+### Enumerations
+
+- [IntermediateTranspilationEnvironment](enumerations/IntermediateTranspilationEnvironment.md)
+
 ### Type Aliases
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
+
+### Variables
+
+- [intermediateTranspilationEnvironment](variables/intermediateTranspilationEnvironment.md)
 
 ### Functions
 

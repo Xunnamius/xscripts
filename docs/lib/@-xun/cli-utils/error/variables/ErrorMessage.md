@@ -220,12 +220,6 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertionFailureCommandHandlerNotAFunction()
-
-#### Returns
-
-`string`
-
 ### AssertionFailureConfigureExecutionEpilogue()
 
 #### Returns
@@ -245,12 +239,6 @@ A collection of possible error and warning messages.
 • **name2**: `string`
 
 • **type2**: `"name"` \| `"alias"`
-
-#### Returns
-
-`string`
-
-### AssertionFailureFalsyCommand()
 
 #### Returns
 
@@ -313,6 +301,12 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **command**: `string`
+
+#### Returns
+
+`string`
+
+### CommandHandlerNotAFunction()
 
 #### Returns
 
@@ -390,6 +384,22 @@ A collection of possible error and warning messages.
 
 `string`
 
+### DuplicateOptionName()
+
+#### Parameters
+
+• **name**: `string`
+
+#### Returns
+
+`string`
+
+### FalsyCommandExport()
+
+#### Returns
+
+`string`
+
 ### FrameworkError()
 
 #### Parameters
@@ -417,6 +427,12 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **args**: `string`[]
+
+#### Returns
+
+`string`
+
+### IllegalExplicitlyUndefinedDefault()
 
 #### Returns
 
@@ -480,6 +496,18 @@ A collection of possible error and warning messages.
 
 `string`
 
+### ReferencedNonExistentOption()
+
+#### Parameters
+
+• **referrerName**: `string`
+
+• **doesNotExistName**: `string`
+
+#### Returns
+
+`string`
+
 ### RequiresMinArgs()
 
 #### Parameters
@@ -508,6 +536,12 @@ A collection of possible error and warning messages.
 
 `string`
 
+### UnexpectedValueFromInternalYargsMethod()
+
+#### Returns
+
+`string`
+
 ### UnexpectedlyFalsyDetailedArguments()
 
 #### Returns
@@ -522,4 +556,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[lib/@-xun/cli-utils/error.ts:17](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/@-xun/cli-utils/error.ts#L17)
+[lib/@-xun/cli-utils/error.ts:17](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/@-xun/cli-utils/error.ts#L17)

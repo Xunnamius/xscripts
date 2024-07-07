@@ -11,10 +11,6 @@
 A version of Black Flag's `builder` function parameters that exclude yargs
 methods that are not supported by BFE.
 
-## See
-
-[withBuilderExtensions](../functions/withBuilderExtensions.md)
-
 ## Type Parameters
 
 • **CustomCliArguments** *extends* `Record`\<`string`, `unknown`\>
@@ -23,6 +19,10 @@ methods that are not supported by BFE.
 
 • **P** = `Parameters`\<[`BfBuilderFunction`](BfBuilderFunction.md)\<`CustomCliArguments`, `CustomExecutionContext`\>\>
 
+## See
+
+[withBuilderExtensions](../functions/withBuilderExtensions.md)
+
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:459](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/@black-flag/extensions/index.ts#L459)
+[lib/@black-flag/extensions/index.ts:515](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/@black-flag/extensions/index.ts#L515)

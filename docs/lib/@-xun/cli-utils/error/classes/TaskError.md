@@ -32,7 +32,7 @@ An `Error` class where the first letter of the message is capitalized.
 
 #### Defined in
 
-[lib/@-xun/cli-utils/error.ts:8](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/@-xun/cli-utils/error.ts#L8)
+[lib/@-xun/cli-utils/error.ts:8](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/@-xun/cli-utils/error.ts#L8)
 
 ## Properties
 
@@ -98,10 +98,6 @@ node\_modules/typescript/lib/lib.es5.d.ts:1078
 
 Optional override for formatting stack traces
 
-#### See
-
-https://v8.dev/docs/stack-trace-api#customizing-stack-traces
-
 #### Parameters
 
 • **err**: `Error`
@@ -111,6 +107,10 @@ https://v8.dev/docs/stack-trace-api#customizing-stack-traces
 #### Returns
 
 `any`
+
+#### See
+
+https://v8.dev/docs/stack-trace-api#customizing-stack-traces
 
 #### Inherited from
 

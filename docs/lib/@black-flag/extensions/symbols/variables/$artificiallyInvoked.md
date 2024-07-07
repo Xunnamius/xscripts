@@ -13,4 +13,4 @@ Will appear in the `argv` of commands that were invoked via
 
 ## Defined in
 
-[lib/@black-flag/extensions/symbols.ts:19](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/@black-flag/extensions/symbols.ts#L19)
+[lib/@black-flag/extensions/symbols.ts:26](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/@black-flag/extensions/symbols.ts#L26)

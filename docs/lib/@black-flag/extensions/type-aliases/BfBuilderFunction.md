@@ -18,4 +18,4 @@ The function type of the `builder` export accepted by Black Flag.
 
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:75](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/@black-flag/extensions/index.ts#L75)
+[lib/@black-flag/extensions/index.ts:131](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/@black-flag/extensions/index.ts#L131)

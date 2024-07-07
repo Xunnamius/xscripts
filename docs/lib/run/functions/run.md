@@ -28,4 +28,4 @@ Set `reject: false` to override this, or use [runNoRejectOnBadExit](runNoRejectO
 
 ## Defined in
 
-[lib/run/index.ts:22](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/run/index.ts#L22)
+[lib/run/index.ts:22](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/run/index.ts#L22)

@@ -15,10 +15,6 @@ functionality. This function is meant to take the place of a command's
 This type cannot be instantiated by direct means. Instead, it is created and
 returned by [withBuilderExtensions](../functions/withBuilderExtensions.md).
 
-## See
-
-[withBuilderExtensions](../functions/withBuilderExtensions.md)
-
 ## Type Parameters
 
 • **CustomCliArguments** *extends* `Record`\<`string`, `unknown`\>
@@ -33,6 +29,10 @@ returned by [withBuilderExtensions](../functions/withBuilderExtensions.md).
 
 [`BfBuilderObject`](BfBuilderObject.md)\<`CustomCliArguments`, `CustomExecutionContext`\>
 
+## See
+
+[withBuilderExtensions](../functions/withBuilderExtensions.md)
+
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:416](https://github.com/Xunnamius/xscripts/blob/61a6185ffd6f73d4fe8e86fde7ca0e419bd4f892/lib/@black-flag/extensions/index.ts#L416)
+[lib/@black-flag/extensions/index.ts:472](https://github.com/Xunnamius/xscripts/blob/4c305ac01bcb5579e4796a0cd2b08508dc5de5e1/lib/@black-flag/extensions/index.ts#L472)
