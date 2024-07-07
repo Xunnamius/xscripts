@@ -19,13 +19,6 @@ import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions
 
 export type CustomCliArguments = GlobalCliArguments;
 
-// TODO (skip reinstalling node_modules if dir exists unless --force-reinstall)
-// TODO (add --renumber-references to build command)
-// TODO (run "early lint" first, then "late lint" (that checks all prod deps resolvable, no extraneous deps or dev deps, no missing deps) after build completes)
-// TODO (need flag for updating changelog or not updating changelog that also is compat with UPDATE_CHANGELOG)
-// TODO (use changelog.patch.?(cm)js if available)
-// TODO (do codecov upload last)
-
 export default function command({
   log,
   debug_,
@@ -55,6 +48,12 @@ export default function command({
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Releasing project...');
+
+      // TODO (skip reinstalling node_modules if dir exists unless --force-reinstall)
+      // TODO (run "early lint" first, then "late lint" (that checks all prod deps resolvable, no extraneous deps or dev deps, no missing deps) after build completes)
+      // TODO (need flag for updating changelog or not updating changelog that also is compat with UPDATE_CHANGELOG)
+      // TODO (use changelog.patch.?(cm)js if available)
+      // TODO (do codecov upload last)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
