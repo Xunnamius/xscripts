@@ -44,6 +44,9 @@ export const ErrorMessage = {
   MustChooseDeployEnvironment() {
     return 'must choose either --preview or --production deployment environment';
   },
+  ArgumentMustBeNonNegative(name: string) {
+    return `argument "${name}" must have a non-negative value`;
+  },
   MarkdownNoUndefinedReferences() {
     return 'cannot continue with undefined references present in one or more Markdown files';
   },
