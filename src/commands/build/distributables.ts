@@ -359,10 +359,14 @@ export default async function command({
               `${absoluteOutputDirPath}/lib`,
               '--out-file-extension',
               outputExtension,
-              '--ignore',
-              `lib/**/*.test${inputExtension}`,
-              '--ignore',
-              `lib/**/test`,
+              ...(generateIntermediatesFor === IntermediateTranspilationEnvironment.Test
+                ? []
+                : [
+                    '--ignore',
+                    `lib/**/*.test${inputExtension}`,
+                    '--ignore',
+                    `lib/**/test`
+                  ]),
               '--ignore',
               'lib/**/README.md',
               ...Array.from(developmentLibraryImportsArray).flatMap((name) => [
@@ -395,7 +399,30 @@ export default async function command({
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
             }
-          )
+          ),
+          ...(generateIntermediatesFor === IntermediateTranspilationEnvironment.Test
+            ? [
+                run(
+                  'npx',
+                  [
+                    'babel',
+                    'test',
+                    '--extensions',
+                    `${inputExtension},.tsx`,
+                    '--out-dir',
+                    `${outputDirPath}/test`,
+                    '--out-file-extension',
+                    outputExtension,
+                    ...(isInMonorepo ? ['--root-mode', 'upward'] : [])
+                  ],
+                  {
+                    env: babelNodeEnvironment,
+                    stdout: isHushed ? 'ignore' : 'inherit',
+                    stderr: isQuieted ? 'ignore' : 'inherit'
+                  }
+                )
+              ]
+            : [])
         ]);
 
         if (
