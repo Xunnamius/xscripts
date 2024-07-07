@@ -205,7 +205,7 @@ export default function command({
       if (isRepeating) {
         genericLogger.message(
           [LogTag.IF_NOT_QUIETED],
-          `Entire test suite will repeat ${repeat} times`
+          `Entire test suite will run once then repeat ${repeat} additional times`
         );
       }
 
