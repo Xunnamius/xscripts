@@ -21,7 +21,7 @@ import { run } from 'multiverse/run';
 /**
  * Which type of test to run.
  */
-enum TestType {
+export enum TestType {
   /**
    * Include unit tests from the chosen scope
    */
@@ -45,7 +45,7 @@ enum TestType {
 /**
  * The context in which to search for tests to run.
  */
-enum TestScope {
+export enum TestScope {
   /**
    * Run tests under the ./tests directory except `External`
    */
