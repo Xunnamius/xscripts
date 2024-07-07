@@ -72,16 +72,14 @@
     "prepare": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js prepare",
     "start": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js start --",
     "test": "npm run test:unit --",
-    "test:all": "attw --pack . && NODE_ENV=test DEBUG_COLORS=false jest --coverage",
-    "test:e2e": "NODE_ENV=test DEBUG_COLORS=false jest 'e2e.*?\\.test\\.tsx?'",
-    "test:integration": "NODE_ENV=test DEBUG_COLORS=false jest '/integration.*?\\.test\\.tsx?'",
-    "test:integration:client": "NODE_ENV=test DEBUG_COLORS=false jest '/integration-client.*?\\.test\\.tsx?'",
-    "test:integration:compile": "NODE_ENV=test DEBUG_COLORS=false jest '/integration-compile.*?\\.test\\.tsx?'",
-    "test:integration:externals": "NODE_ENV=test DEBUG_COLORS=false jest '/integration-external.*?\\.test\\.tsx?'",
-    "test:integration:node": "NODE_ENV=test DEBUG_COLORS=false jest '/integration-node.*?\\.test\\.tsx?'",
-    "test:repeat:all": "npm run __test:repeat:all --silent",
-    "test:repeat:unit": "npm run __test:repeat:unit --silent",
-    "test:unit": "NODE_ENV=test DEBUG_COLORS=false jest '/unit-.*\\.test\\.tsx?'"
+    "test:all": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --coverage",
+    "test:all:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --repeat 100",
+    "test:e2e": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type end-to-end",
+    "test:e2e:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type end-to-end --repeat 100",
+    "test:integration": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type integration",
+    "test:integration:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type integration --repeat 100",
+    "test:unit": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type unit",
+    "test:unit:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type unit --repeat 100"
   },
   "dependencies": {
     "@arethetypeswrong/cli": "^0.16.0",
@@ -129,7 +127,7 @@
     "unique-filename": "^3.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.14.0",
+    "@-xun/scripts": "^1.15.0",
     "@babel/eslint-parser": "^7.24.7",
     "@babel/plugin-proposal-export-default-from": "^7.24.7",
     "@babel/preset-env": "^7.24.7",
