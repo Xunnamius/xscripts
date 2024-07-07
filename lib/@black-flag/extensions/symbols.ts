@@ -17,7 +17,7 @@ export const $genesis = Symbol('genesis');
  * Represents the canonical form of an implication (i.e. excluding expansions,
  * aliases, etc).
  */
-export const $canonical = Symbol('genesis');
+export const $canonical = Symbol('canonical');
 
 /**
  * Will appear in the `argv` of commands that were invoked via
