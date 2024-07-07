@@ -1,8 +1,10 @@
 import { isNativeError } from 'node:util/types';
 
+import toCamelCase from 'lodash.camelcase';
 import clone from 'lodash.clone';
 import cloneDeepWith from 'lodash.clonedeepwith';
 import isEqual from 'lodash.isequal';
+import { type ParserConfigurationOptions } from 'yargs';
 import makeVanillaYargs from 'yargs/yargs';
 
 import {
@@ -26,7 +28,7 @@ import { globalLoggerNamespace } from 'universe/constant';
 import { createDebugLogger } from 'multiverse/rejoinder';
 
 import { ErrorMessage, type KeyValueEntry } from './error';
-import { $artificiallyInvoked, $exists, $genesis } from './symbols';
+import { $artificiallyInvoked, $canonical, $exists, $genesis } from './symbols';
 
 import type {
   Entries,
@@ -42,22 +44,76 @@ const globalDebuggerNamespace = '@black-flag/extensions';
  * Internal metadata derived from analysis of a {@link BfeBuilderObject}.
  */
 type OptionsMetadata = {
+  /**
+   * An array of groups of canonical option names and their expected values that
+   * must always appear in argv at the same time.
+   */
   required: FlattenedExtensionValue[];
+  /**
+   * An array of groups of canonical option names and their expected values that
+   * cannot appear in argv at the same time.
+   */
   conflicted: FlattenedExtensionValue[];
-  implied: FlattenedExtensionValue[];
+  /**
+   * An array of groups of both canonical (under `$canonical`) and expanded
+   * option names, and their expected values, that are implied by the existence
+   * of some other option.
+   */
+  implied: (FlattenedExtensionValue & { [$canonical]: Record<string, unknown> })[];
+  /**
+   * An array of canonical option names whose implications are considered loose.
+   */
   implyLoosely: string[];
+  /**
+   * An array of groups of canonical option names and their expected values that
+   * are demanded condition on the existence of some other option.
+   */
   demandedIf: FlattenedExtensionValue[];
+  /**
+   * An array of canonical option names and their expected values that are
+   * considered non-optional but that do not fall into any of the other
+   * demandedX groups.
+   */
   demanded: string[];
+  /**
+   * An array of groups of demanded disjunctive canonical option names and their
+   * expected values.
+   */
   demandedAtLeastOne: FlattenedExtensionValue[];
+  /**
+   * An array of groups of demanded mutually exclusive canonical option names
+   * and their expected values.
+   */
   demandedMutuallyExclusive: FlattenedExtensionValue[];
+  /**
+   * An array of canonical option names that are considered optional.
+   */
   optional: string[];
+  /**
+   * A mapping of canonical option names to their default values.
+   */
   defaults: Record<string, unknown>;
+  /**
+   * A mapping of canonical option names to check functions.
+   */
   checks: Record<
     string,
     NonNullable<
       BfeBuilderObjectValueExtensions<Record<string, unknown>, ExecutionContext>['check']
     >
   >;
+  /**
+   * Since yargs-parser configuration might result in an option's canonical name
+   * being stripped out of argv, we need to track a key-value mapping between an
+   * option's canonical name (value) and one of its corresponding keys in argv
+   * (key).
+   */
+  optionNamesAsSeenInArgv: { [keySeenInArgv: string]: string };
+  /**
+   * This is used to ensure option names, aliases, and their expansions are not
+   * colliding with one another.
+   */
+  optionNames: Set<string>;
 };
 
 /**
@@ -571,6 +627,7 @@ export function withBuilderExtensions<
 
   debug_('entered withBuilderExtensions function');
 
+  // * Defined by second-pass builder; used by handler
   let optionsMetadata: OptionsMetadata | undefined = undefined;
 
   // * Dealing with defaulted keys is a little tricky since we need to pass them
@@ -580,8 +637,17 @@ export function withBuilderExtensions<
   // * pass, and then do the same thing again at the start of the handler
   // * extension's execution, and then manually inserting the defaults into argv
   // * before doing implications/checks. We need to keep the BF instances around
-  // * to accomplish all of that.
+  // * to accomplish all of that, along with the previous builder object and
+  // * parser configuration. Yeah, the complexity is a little annoying.
   let latestBfInstance: EffectorProgram | undefined = undefined;
+  // * These latter two must also be stored because the second pass might
+  // * modify the builder object or even the parser configuration! This is
+  // * important because we need to figure out all aliases and name expansions.
+  let previousBfBuilderObject:
+    | BfeBuilderObject<CustomCliArguments, CustomExecutionContext>
+    | undefined = undefined;
+  let previousBfParserConfiguration: Partial<ParserConfigurationOptions> | undefined =
+    undefined;
 
   debug_('exited withBuilderExtensions function');
 
@@ -597,11 +663,21 @@ export function withBuilderExtensions<
       debug('isSecondPass: %O', isSecondPass);
       debug('current argv: %O', argv);
 
-      latestBfInstance = blackFlag as unknown as EffectorProgram;
+      let defaultedOptions: Record<string, true> | undefined = undefined;
 
-      // ? We delete defaulted arguments from argv so that the end developer's
-      // ? custom builder doesn't see them either
-      deleteDefaultedArguments({ argv });
+      if (isSecondPass) {
+        defaultedOptions = (
+          latestBfInstance as unknown as { parsed?: { defaulted?: Record<string, true> } }
+        ).parsed?.defaulted;
+
+        hardAssert(defaultedOptions, ErrorMessage.UnexpectedlyFalsyDetailedArguments());
+
+        // ? We delete defaulted arguments from argv so that the end developer's
+        // ? custom builder doesn't see them either (includes expansions/aliases)
+        deleteDefaultedArguments({ argv, defaultedOptions });
+      }
+
+      latestBfInstance = blackFlag as unknown as EffectorProgram;
 
       debug('calling customBuilder (if a function) and returning builder object');
       // ? We make a deep clone of whatever options object we're passed
@@ -670,7 +746,13 @@ export function withBuilderExtensions<
         });
       }
 
-      const optionLocalMetadata = analyzeBuilderObject({ builderObject, commonOptions });
+      const parserConfiguration = getParserConfigurationFromBlackFlagInstance(blackFlag);
+      const optionLocalMetadata = analyzeBuilderObject({
+        builderObject,
+        commonOptions,
+        parserConfiguration
+      });
+
       debug('option local metadata: %O', optionsMetadata);
 
       // * Automatic grouping happens on both first pass and second pass
@@ -732,6 +814,11 @@ export function withBuilderExtensions<
         debug('stored option local metadata => option metadata');
       }
 
+      previousBfBuilderObject = builderObject;
+      previousBfParserConfiguration = parserConfiguration;
+
+      debug('stored previousBfBuilderObject and previousBfParserConfiguration');
+
       debug('transmuting BFE builder to BF builder');
       const finalBuilderObject = transmuteBFEBuilderToBFBuilder({ builderObject });
 
@@ -741,7 +828,7 @@ export function withBuilderExtensions<
       return finalBuilderObject;
     },
     function withHandlerExtensions(customHandler) {
-      return async function handler(argv) {
+      return async function handler(realArgv) {
         const debug = createDebugLogger({
           namespace: `${globalLoggerNamespace}:withHandlerExtensions`
         });
@@ -751,15 +838,26 @@ export function withBuilderExtensions<
 
         hardAssert(optionsMetadata, ErrorMessage.IllegalHandlerInvocation());
 
-        debug('current argv: %O', argv);
-        deleteDefaultedArguments({ argv });
-        debug('current argv (defaults deleted): %O', argv);
+        debug('real argv: %O', realArgv);
 
-        const argvKeys = new Set(
-          Object.keys(argv).filter((k) => {
-            return !['_', '$0', '--'].includes(k);
-          })
+        const defaultedOptions = (
+          latestBfInstance as unknown as { parsed?: { defaulted?: Record<string, true> } }
+        ).parsed?.defaulted;
+
+        debug('defaultedOptions: %O', defaultedOptions);
+        hardAssert(defaultedOptions, ErrorMessage.UnexpectedlyFalsyDetailedArguments());
+
+        deleteDefaultedArguments({ argv: realArgv, defaultedOptions });
+        debug('real argv with defaults deleted: %O', realArgv);
+
+        const fakeArgv = new Map<string, unknown>();
+
+        Object.entries(optionsMetadata.optionNamesAsSeenInArgv).forEach(
+          ([name, realName]) =>
+            realArgv[realName] !== undefined && fakeArgv.set(name, realArgv[realName])
         );
+
+        debug('argv used for checks: %O', fakeArgv);
 
         // * Run requires checks
         optionsMetadata.required.forEach(({ [$genesis]: requirer, ...requireds }) => {
@@ -768,15 +866,15 @@ export function withBuilderExtensions<
             ErrorMessage.MetadataInvariantViolated('requires')
           );
 
-          if (argvKeys.has(requirer)) {
+          if (fakeArgv.has(requirer)) {
             const missingRequiredKeyValues: Entries<typeof requireds> = [];
 
             Object.entries(requireds).forEach((required) => {
               const [key, value] = required;
 
               if (
-                !argvKeys.has(key) ||
-                (value !== $exists && !isEqual(argv[key], value))
+                !fakeArgv.has(key) ||
+                (value !== $exists && !isEqual(fakeArgv.get(key), value))
               ) {
                 missingRequiredKeyValues.push(required);
               }
@@ -797,15 +895,15 @@ export function withBuilderExtensions<
               ErrorMessage.MetadataInvariantViolated('conflicts')
             );
 
-            if (argvKeys.has(conflicter)) {
+            if (fakeArgv.has(conflicter)) {
               const seenConflictingKeyValues: Entries<typeof conflicteds> = [];
 
               Object.entries(conflicteds).forEach((keyValue) => {
                 const [key, value] = keyValue;
 
                 if (
-                  argvKeys.has(key) &&
-                  (value === $exists || isEqual(argv[key], value))
+                  fakeArgv.has(key) &&
+                  (value === $exists || isEqual(fakeArgv.get(key), value))
                 ) {
                   seenConflictingKeyValues.push(keyValue);
                 }
@@ -826,12 +924,13 @@ export function withBuilderExtensions<
             ErrorMessage.MetadataInvariantViolated('demandThisOptionIf')
           );
 
-          const sawDemanded = argvKeys.has(demanded);
+          const sawDemanded = fakeArgv.has(demanded);
 
           Object.entries(demanders).forEach((demander) => {
             const [key, value] = demander;
             const sawADemander =
-              argvKeys.has(key) && (value === $exists || isEqual(argv[key], value));
+              fakeArgv.has(key) &&
+              (value === $exists || isEqual(fakeArgv.get(key), value));
 
             softAssert(
               !sawADemander || sawDemanded,
@@ -845,7 +944,10 @@ export function withBuilderExtensions<
           const groupEntries = Object.entries(group);
           const sawAtLeastOne = groupEntries.some((keyValue) => {
             const [key, value] = keyValue;
-            return argvKeys.has(key) && (value === $exists || isEqual(argv[key], value));
+            return (
+              fakeArgv.has(key) &&
+              (value === $exists || isEqual(fakeArgv.get(key), value))
+            );
           });
 
           softAssert(sawAtLeastOne, ErrorMessage.DemandOrViolation(groupEntries));
@@ -859,7 +961,10 @@ export function withBuilderExtensions<
           groupEntries.forEach((keyValue) => {
             const [key, value] = keyValue;
 
-            if (argvKeys.has(key) && (value === $exists || isEqual(argv[key], value))) {
+            if (
+              fakeArgv.has(key) &&
+              (value === $exists || isEqual(fakeArgv.get(key), value))
+            ) {
               if (sawAtLeastOne !== undefined) {
                 softAssert(
                   false,
@@ -882,50 +987,57 @@ export function withBuilderExtensions<
         const impliedKeyValues: Record<string, unknown> = {};
 
         // * Run implies checks
-        optionsMetadata.implied.forEach(({ [$genesis]: implier, ...implications }) => {
-          hardAssert(
-            implier !== undefined,
-            ErrorMessage.MetadataInvariantViolated('implies')
-          );
+        optionsMetadata.implied.forEach(
+          ({
+            [$genesis]: implier,
+            [$canonical]: canonicalImplications,
+            ...expandedImplications
+          }) => {
+            hardAssert(
+              implier !== undefined,
+              ErrorMessage.MetadataInvariantViolated('implies')
+            );
 
-          if (argvKeys.has(implier)) {
-            Object.assign(impliedKeyValues, implications);
+            if (fakeArgv.has(implier)) {
+              Object.assign(impliedKeyValues, expandedImplications);
 
-            if (!optionsMetadata!.implyLoosely.includes(implier)) {
-              const seenConflictingKeyValues: Entries<typeof implications> = [];
+              if (!optionsMetadata!.implyLoosely.includes(implier)) {
+                const seenConflictingKeyValues: Entries<typeof canonicalImplications> =
+                  [];
 
-              Object.entries(implications).forEach((keyValue) => {
-                const [key, value] = keyValue;
+                Object.entries(canonicalImplications).forEach((keyValue) => {
+                  const [key, value] = keyValue;
 
-                if (argvKeys.has(key) && !isEqual(argv[key], value)) {
-                  seenConflictingKeyValues.push([key, argv[key]]);
-                }
-              });
+                  if (fakeArgv.has(key) && !isEqual(fakeArgv.get(key), value)) {
+                    seenConflictingKeyValues.push([key, fakeArgv.get(key)]);
+                  }
+                });
 
-              softAssert(
-                !seenConflictingKeyValues.length,
-                ErrorMessage.ImpliesViolation(implier, seenConflictingKeyValues)
-              );
+                softAssert(
+                  !seenConflictingKeyValues.length,
+                  ErrorMessage.ImpliesViolation(implier, seenConflictingKeyValues)
+                );
+              }
             }
           }
-        });
-
-        Object.assign(
-          argv,
-          // ? given overrides implied > overrides defaults > merged into argv
-          Object.assign({}, optionsMetadata.defaults, impliedKeyValues, argv)
         );
 
-        debug('final argv (defaults and implies merged): %O', argv);
+        Object.assign(
+          realArgv,
+          // ? given overrides implied > overrides defaults > merged into argv
+          Object.assign({}, optionsMetadata.defaults, impliedKeyValues, realArgv)
+        );
+
+        debug('final argv (defaults and implies merged): %O', realArgv);
 
         // ? We want to run the check functions sequentially and in definition
         // ? order since that's what the documentation promises
         // * Run custom checks on final argv
         for (const [currentArgument, checkFn] of Object.entries(optionsMetadata.checks)) {
-          if (currentArgument in argv) {
+          if (currentArgument in realArgv) {
             // ! checkFn might return a promise (or be async), watch out!
             // eslint-disable-next-line no-await-in-loop
-            const result = await checkFn(argv[currentArgument], argv);
+            const result = await checkFn(realArgv[currentArgument], realArgv);
 
             if (!result || typeof result === 'string' || isNativeError(result)) {
               throw isCliError(result)
@@ -943,7 +1055,7 @@ export function withBuilderExtensions<
           // ? customHandler is more strict from an intellisense perspective,
           // ? but it still meets the Black Flag handler's argv constraints even
           // ? if TypeScript isn't yet smart enough to understand it
-          argv as Parameters<NonNullable<typeof customHandler>>[0]
+          realArgv as Parameters<NonNullable<typeof customHandler>>[0]
         );
 
         debug('exited withHandlerExtensions::handler wrapper function');
@@ -952,31 +1064,26 @@ export function withBuilderExtensions<
   ];
 
   function deleteDefaultedArguments({
-    argv
+    argv,
+    defaultedOptions
   }: {
-    argv: Arguments<CustomCliArguments, CustomExecutionContext> | undefined;
+    argv: Arguments<CustomCliArguments, CustomExecutionContext>;
+    defaultedOptions: Record<string, true>;
   }): void {
-    if (!latestBfInstance || !argv || !optionsMetadata) {
-      debug_('deleteDefaultedArguments sentinel failed, execution skipped');
-      return;
-    }
-
-    const defaultedOptions = (
-      latestBfInstance as unknown as { parsed?: { defaulted?: Record<string, true> } }
-    ).parsed?.defaulted;
-
-    hardAssert(defaultedOptions, ErrorMessage.UnexpectedlyFalsyDetailedArguments());
+    hardAssert(previousBfBuilderObject, ErrorMessage.GuruMeditation());
+    hardAssert(previousBfParserConfiguration, ErrorMessage.GuruMeditation());
 
     Object.keys(defaultedOptions).forEach((defaultedOption) => {
-      const expectedDefaultValue = optionsMetadata?.defaults?.[defaultedOption];
-
-      if (
-        defaultedOption in argv &&
-        isEqual(argv[defaultedOption], expectedDefaultValue)
-      ) {
-        delete argv[defaultedOption];
-      }
+      expandOptionNameAndAliasesWithRespectToParserConfiguration({
+        option: defaultedOption,
+        // ? We know these are defined due to the hard assert above
+        aliases: previousBfBuilderObject![defaultedOption].alias,
+        parserConfiguration: previousBfParserConfiguration!
+      }).forEach((expandedName) => delete argv[expandedName]);
     });
+
+    previousBfBuilderObject = undefined;
+    previousBfParserConfiguration = undefined;
   }
 }
 
@@ -1021,12 +1128,16 @@ export async function getInvocableExtendedHandler<
       CustomExecutionContext
     >;
   } catch (error) {
+    // ? We do this instead of a hard assert because we want to track the cause
     throw new CliError(
-      new Error(ErrorMessage.AssertionFailureFalsyCommand(), { cause: error })
+      new Error(ErrorMessage.FrameworkError(ErrorMessage.FalsyCommandExport()), {
+        cause: error
+      }),
+      { suggestedExitCode: FrameworkExitCode.AssertionFailed }
     );
   }
 
-  hardAssert(command, ErrorMessage.AssertionFailureFalsyCommand());
+  hardAssert(command, ErrorMessage.FalsyCommandExport());
 
   // ? ESM <=> CJS interop. If there's a default property, we'll use it.
   if (command.default !== undefined) {
@@ -1043,22 +1154,22 @@ export async function getInvocableExtendedHandler<
   if (typeof command === 'function') {
     config = await command(context);
   } else {
-    hardAssert(
-      command && typeof command === 'object',
-      ErrorMessage.AssertionFailureFalsyCommand()
-    );
+    hardAssert(command && typeof command === 'object', ErrorMessage.FalsyCommandExport());
 
     config = command;
   }
 
   const { builder, handler } = config;
-  hardAssert(handler, ErrorMessage.AssertionFailureCommandHandlerNotAFunction());
+  hardAssert(handler, ErrorMessage.CommandHandlerNotAFunction());
 
   debug('returned immediately invocable handler function');
 
   return async function (
     argv_: BfeStrictArguments<CustomCliArguments, CustomExecutionContext>
   ) {
+    const fakeYargsWarning =
+      '<this is a pseudo-yargs instance passed around by getInvocableExtendedHandler>';
+
     const argv = argv_ as Arguments<CustomCliArguments, CustomExecutionContext>;
     argv_[$artificiallyInvoked] = true;
 
@@ -1067,6 +1178,7 @@ export async function getInvocableExtendedHandler<
       const fakeBlackFlag = dummyYargs as unknown as Parameters<typeof builder>[0];
 
       dummyYargs.parsed = {
+        '//': fakeYargsWarning,
         argv,
         defaulted: {},
         aliases: {},
@@ -1087,7 +1199,7 @@ export async function getInvocableExtendedHandler<
       builder(fakeBlackFlag, false, undefined);
 
       debug('invoking builder (for the second time)');
-      builder(fakeBlackFlag, false, argv);
+      builder(fakeBlackFlag, false, { '//': fakeYargsWarning, ...argv });
     } else {
       debug('warning: no callable builder function was returned!');
     }
@@ -1106,10 +1218,7 @@ export async function getInvocableExtendedHandler<
  */
 function softAssert(value: unknown, message: string): asserts value {
   if (!value) {
-    throw new CliError(message, {
-      showHelp: true,
-      suggestedExitCode: FrameworkExitCode.DefaultError
-    });
+    throw new CliError(message, { suggestedExitCode: FrameworkExitCode.DefaultError });
   }
 }
 
@@ -1124,7 +1233,6 @@ function softAssert(value: unknown, message: string): asserts value {
 function hardAssert(value: unknown, message: string): asserts value {
   if (!value) {
     throw new CliError(ErrorMessage.FrameworkError(message), {
-      showHelp: true,
       suggestedExitCode: FrameworkExitCode.AssertionFailed
     });
   }
@@ -1171,12 +1279,14 @@ function analyzeBuilderObject<
   CustomExecutionContext extends ExecutionContext
 >({
   builderObject,
-  commonOptions
+  commonOptions,
+  parserConfiguration
 }: {
   builderObject: BfeBuilderObject<CustomCliArguments, CustomExecutionContext>;
   commonOptions: NonNullable<
     WithBuilderExtensionsConfig<CustomCliArguments>['commonOptions']
   >;
+  parserConfiguration: Partial<ParserConfigurationOptions>;
 }) {
   const metadata: OptionsMetadata = {
     required: [],
@@ -1189,7 +1299,9 @@ function analyzeBuilderObject<
     demandedMutuallyExclusive: [],
     optional: [],
     defaults: {},
-    checks: {}
+    checks: {},
+    optionNames: new Set<string>(),
+    optionNamesAsSeenInArgv: {}
   };
 
   // ? This first loop resolves all groupings except "optional options"
@@ -1207,16 +1319,54 @@ function analyzeBuilderObject<
         demandThisOption,
         demandThisOptionOr,
         demandThisOptionXor
-      }
+      },
+      { alias: optionAliases }
     ] = separateExtensionsFromBuilderObjectValue({ builderObjectValue });
 
+    const allPossibleOptionNamesAndAliasesSet =
+      expandOptionNameAndAliasesWithRespectToParserConfiguration({
+        option,
+        aliases: optionAliases,
+        parserConfiguration
+      });
+
+    const conflictingNamesSet = metadata.optionNames.intersection(
+      allPossibleOptionNamesAndAliasesSet
+    );
+
+    hardAssert(
+      conflictingNamesSet.size === 0,
+      ErrorMessage.DuplicateOptionName(getFirstValueFromSet(conflictingNamesSet))
+    );
+
+    metadata.optionNames = metadata.optionNames.union(
+      allPossibleOptionNamesAndAliasesSet
+    );
+
+    // ? Keep track of the key we can reference to get this option's value
+    // ? from argv. We have to do this because argv might strip out an
+    // ? option's canonical name depending on yargs-parser configuration
+    metadata.optionNamesAsSeenInArgv[option] = getFirstValueFromSet(
+      allPossibleOptionNamesAndAliasesSet
+    );
+
     if (requires !== undefined) {
-      const normalizedOption = flattenExtensionValue(requires);
+      const normalizedOption = validateAndFlattenExtensionValue(
+        requires,
+        builderObject,
+        option
+      );
+
       addToSet(metadata.required, { ...normalizedOption, [$genesis]: option });
     }
 
     if (conflicts !== undefined) {
-      const normalizedOption = flattenExtensionValue(conflicts);
+      const normalizedOption = validateAndFlattenExtensionValue(
+        conflicts,
+        builderObject,
+        option
+      );
+
       addToSet(metadata.conflicted, { ...normalizedOption, [$genesis]: option });
     }
 
@@ -1226,12 +1376,39 @@ function analyzeBuilderObject<
     }
 
     if (default_ !== undefined) {
-      metadata.defaults[option] = default_;
+      allPossibleOptionNamesAndAliasesSet.forEach((expandedName) => {
+        metadata.defaults[expandedName] = default_;
+      });
     }
 
     if (implies !== undefined) {
-      const normalizedOption = flattenExtensionValue(implies);
-      addToSet(metadata.implied, { ...normalizedOption, [$genesis]: option });
+      const canonicalNormalizedImplications = validateAndFlattenExtensionValue(
+        implies,
+        builderObject,
+        option
+      );
+
+      const expandedNormalizedImplications: Record<string, unknown> = {};
+
+      Object.entries(canonicalNormalizedImplications).forEach(
+        ([impliedOption, impliedValue]) => {
+          const { alias: impliedOptionAliases } = builderObject[impliedOption];
+
+          expandOptionNameAndAliasesWithRespectToParserConfiguration({
+            option: impliedOption,
+            aliases: impliedOptionAliases,
+            parserConfiguration
+          }).forEach((expandedName) => {
+            expandedNormalizedImplications[expandedName] = impliedValue;
+          });
+        }
+      );
+
+      addToSet(metadata.implied, {
+        ...expandedNormalizedImplications,
+        [$canonical]: canonicalNormalizedImplications,
+        [$genesis]: option
+      });
     }
 
     if (looseImplications) {
@@ -1243,17 +1420,32 @@ function analyzeBuilderObject<
     }
 
     if (demandThisOptionIf !== undefined) {
-      const normalizedOption = flattenExtensionValue(demandThisOptionIf);
+      const normalizedOption = validateAndFlattenExtensionValue(
+        demandThisOptionIf,
+        builderObject,
+        option
+      );
+
       addToSet(metadata.demandedIf, { ...normalizedOption, [$genesis]: option });
     }
 
     if (demandThisOptionOr !== undefined) {
-      const normalizedOption = flattenExtensionValue(demandThisOptionOr);
+      const normalizedOption = validateAndFlattenExtensionValue(
+        demandThisOptionOr,
+        builderObject,
+        option
+      );
+
       addToSet(metadata.demandedAtLeastOne, { ...normalizedOption, [option]: $exists });
     }
 
     if (demandThisOptionXor !== undefined) {
-      const normalizedOption = flattenExtensionValue(demandThisOptionXor);
+      const normalizedOption = validateAndFlattenExtensionValue(
+        demandThisOptionXor,
+        builderObject,
+        option
+      );
+
       addToSet(metadata.demandedMutuallyExclusive, {
         ...normalizedOption,
         [option]: $exists
@@ -1277,6 +1469,86 @@ function analyzeBuilderObject<
   }
 
   return metadata;
+}
+
+/**
+ * Take a canonical option name (i.e. the option key in the returned builder
+ * object) and, depending on the value of yargs-parser configuration, expand it
+ * into itself, its aliases, and all potential camel-case alternatives.
+ */
+
+function expandOptionNameAndAliasesWithRespectToParserConfiguration({
+  option,
+  aliases,
+  parserConfiguration
+}: {
+  option: string;
+  aliases: string | readonly string[] | undefined;
+  parserConfiguration: Partial<ParserConfigurationOptions>;
+}): Set<string> {
+  const {
+    'camel-case-expansion': camelCaseExpansion,
+    'strip-aliased': stripAliased,
+    'strip-dashed': stripDashed
+  } = {
+    // * These defaults were taken from yargs on July 03 2024
+    'camel-case-expansion': true,
+    'strip-aliased': false,
+    'strip-dashed': false,
+    ...parserConfiguration
+  };
+
+  const targetNames = [option, stripAliased ? [] : aliases || []].flat();
+  const expandedNamesSet = new Set<string>();
+
+  targetNames.forEach((name) => {
+    if (camelCaseExpansion) {
+      const camelCasedName = toCamelCase(name);
+
+      // ? Prioritize adding the real canonical name first if possible
+      if (camelCasedName !== name && (!stripDashed || !name.includes('-'))) {
+        add(name);
+      }
+
+      add(camelCasedName);
+    } else {
+      add(name);
+    }
+  });
+
+  return expandedNamesSet;
+
+  function add(name: string) {
+    hardAssert(!expandedNamesSet.has(name), ErrorMessage.DuplicateOptionName(name));
+    expandedNamesSet.add(name);
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getParserConfigurationFromBlackFlagInstance(blackFlag: any) {
+  hardAssert(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    typeof (blackFlag as any).getInternalMethods === 'function',
+    ErrorMessage.UnexpectedValueFromInternalYargsMethod()
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const yargsInternalMethods = (blackFlag as any).getInternalMethods();
+
+  hardAssert(
+    typeof yargsInternalMethods.getParserConfiguration === 'function',
+    ErrorMessage.UnexpectedValueFromInternalYargsMethod()
+  );
+
+  const parserConfiguration: Partial<ParserConfigurationOptions> =
+    yargsInternalMethods.getParserConfiguration();
+
+  hardAssert(
+    parserConfiguration && typeof parserConfiguration === 'object',
+    ErrorMessage.UnexpectedValueFromInternalYargsMethod()
+  );
+
+  return parserConfiguration;
 }
 
 /**
@@ -1335,11 +1607,18 @@ function separateExtensionsFromBuilderObjectValue<
     subOptionOf
   };
 
+  hardAssert(
+    !('default' in builderObjectValue) || default_ !== undefined,
+    ErrorMessage.IllegalExplicitlyUndefinedDefault()
+  );
+
   return [{ ...bfeConfig, default: default_ }, vanillaYargsConfig];
 }
 
-function flattenExtensionValue(
-  extendedOption: BfeBuilderObjectValueExtensionValue
+function validateAndFlattenExtensionValue(
+  extendedOption: BfeBuilderObjectValueExtensionValue,
+  builderObject: Record<string, unknown>,
+  optionName: string
 ): FlattenedExtensionValue {
   const mergedConfig: FlattenedExtensionValue = {};
 
@@ -1348,6 +1627,13 @@ function flattenExtensionValue(
   } else {
     mergeInto(extendedOption);
   }
+
+  Object.keys(mergedConfig).forEach((referredOptionName) =>
+    hardAssert(
+      referredOptionName in builderObject,
+      ErrorMessage.ReferencedNonExistentOption(optionName, referredOptionName)
+    )
+  );
 
   return mergedConfig;
 
@@ -1362,6 +1648,7 @@ function flattenExtensionValue(
   }
 }
 
+// ? We use this instead of ES6 Sets since we need a more complex equality check
 function addToSet(arrayAsSet: unknown[], element: unknown) {
   const hasElement = arrayAsSet.find((item) => isEqual(item, element));
 
@@ -1388,4 +1675,8 @@ function superiorClone<T>(o: T): T {
 
     return undefined;
   });
+}
+
+function getFirstValueFromSet(set: Set<unknown>) {
+  return set.values().next().value;
 }

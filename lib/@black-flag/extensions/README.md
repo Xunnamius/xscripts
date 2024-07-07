@@ -10,7 +10,7 @@
 
 <!-- badges-end -->
 
-# @black-flag/extensions
+# Black Flag Extensions
 
 Black Flag Extensions (BFE) is a collection of high-order functions that wrap
 Black Flag commands' exports to provide a bevy of new declarative features, some
@@ -73,11 +73,6 @@ This function enables several additional options-related units of functionality
 via analysis of the returned options configuration object and the parsed command
 line arguments (i.e. `argv`).
 
-Note in the below example how the option names passed to configuration keys,
-e.g. `{ demandThisOptionXor: ['my-argument'] }`, are represented by their exact
-names as defined (e.g. `'my‑argument'`) and not their aliases (`'arg1'`) or
-camelCase forms (`'myArgument'`):
-
 ```javascript
 import { withBuilderExtensions } from '@black-flag/extensions';
 
@@ -114,21 +109,34 @@ export default function command({ state }) {
 }
 ```
 
+Note how, in the previous example, the option names passed to configuration
+keys, e.g. `{ demandThisOptionXor: ['my-argument'] }`, are represented by their
+exact _canonical_ names as defined (e.g. `'my‑argument'`) and not their aliases
+(`'arg1'`) or camel-case expanded forms (`'myArgument'`). All BFE configuration
+keys expect canonical option names in this way; passing an alias or a camel-case
+expansion will result in erroneous behavior.
+
+In the same vein, `withBuilderExtensions` will throw if you attempt to add a
+command option with a name, alias, or camel-case expansion that conflicts with
+another of that command's options. This sanity check takes into account the
+following [yargs-parser settings][51] configuration settings:
+`camel-case-expansion`, `strip-aliased`, `strip-dashed`.
+
 Also note how `withBuilderExtensions` returns a two-element array of the form:
 `[builder, withHandlerExtensions]`. `builder` should be exported as your
 command's [`builder`][5] function **without being invoked**. If you want to
 implement additional imperative logic, pass a `customBuilder` _function_ to
-`withBuilderExtensions` as demonstrated above; otherwise, you should pass a
-options configuration _object_.
+`withBuilderExtensions` as demonstrated in the previous example; otherwise, you
+should pass an options configuration _object_.
 
 On the other hand, `withHandlerExtensions` **should be invoked immediately**,
-and its return value should be exported as your command's `handler` function, as
-demonstrated above. You should pass a `customHandler` to `withHandlerExtensions`
-upon invocation, though this is not required. If you call
-`withHandlerExtensions()` without providing a `customHandler`, a placeholder
-function that throws `CommandNotImplementedError` will be used instead,
-indicating that the command has not yet been implemented. This mirrors [Black
-Flag's default behavior for unimplemented command handlers][6].
+and its return value should be exported as your command's `handler` function as
+demonstrated in the previous example. You should pass a `customHandler` to
+`withHandlerExtensions` upon invocation, though this is not required. If you
+call `withHandlerExtensions()` without providing a `customHandler`, a
+placeholder function that throws `CommandNotImplementedError` will be used
+instead, indicating that the command has not yet been implemented. This mirrors
+[Black Flag's default behavior for unimplemented command handlers][6].
 
 #### New Option Configuration Keys
 
@@ -146,6 +154,11 @@ Note that the checks enabled by these configuration keys:
   check][9]). This means you can use keys like [`requires`][10] and
   [`conflicts`][11] alongside [`default`][8] without causing unresolvable CLI
   errors. This avoids a rather unintuitive [yargs footgun][12].
+
+- Will take into account the following [yargs-parser settings][51] configuration
+  settings: `camel-case-expansion`, `strip-aliased`, `strip-dashed`. Note that
+  `dot-notation` is _not_ currently recognized or considered by BFE, but may in
+  the future.
 
 **Logical Keys**
 
@@ -260,9 +273,9 @@ This configuration allows the following arguments: no arguments (`∅`), `‑y=.
 ##### `implies`
 
 > BFE's `implies`, since it sets arguments in `argv` if they are not already
-> set, is a weaker form of [`requires`][10]. Choose `requires` over BFE's
-> `implies` when you want one argument to imply the value of another _while_
-> requiring the other argument to be explicitly given in `argv`.
+> set, is a weaker form of [`requires`][10]/[`conflicts`][11]. Choose `requires`
+> over BFE's `implies` when you want one argument to imply the value of another
+> _while_ requiring the other argument to be explicitly given in `argv`.
 
 > BFE's `implies` replaces vanilla yargs's `implies` in a breaking way. The two
 > implementations are nothing alike. If you're looking for vanilla yargs's
@@ -270,10 +283,10 @@ This configuration allows the following arguments: no arguments (`∅`), `‑y=.
 
 `implies` will set a default value for the specified arguments conditioned on
 the existence of another argument. Unless [`looseImplications`][20] is set to
-`true`, if any of the specified arguments are explicitly given, their values
-must match the specified argument-value pairs respectively (similar to
-[`requires`][10]/[`conflicts`][11]). For this reason, `implies` only accepts one
-or more argument-value pairs and not raw strings. For example:
+`true`, if any of the specified arguments are explicitly given on the command
+line, their values must match the specified argument-value pairs respectively
+(similar to [`requires`][10]/[`conflicts`][11]). For this reason, `implies` only
+accepts one or more argument-value pairs and not raw strings. For example:
 
 ```jsonc
 {
@@ -287,6 +300,9 @@ same `argv`. Further, unlike `requires`, `implies` _makes no demands on argument
 existence_ and so allows the following arguments: no arguments (`∅`), `‑x`,
 `‑y=true`, `‑y=false`, `‑x ‑y=true`; and disallows: `‑x ‑y=false`.
 
+Note that attempting to imply a value for a non-existent option will throw a
+framework error.
+
 Additionally, if any of the specified arguments have their own [`default`][8]s
 configured, said defaults will be overridden by the values of `implies`. For
 example:
@@ -298,11 +314,16 @@ example:
 }
 ```
 
-Note that `implies` configurations **do not cascade transitively**. This means
-if argument `P` `implies` argument `Q`, and argument `Q` `implies` argument `R`,
-and `P` is given, the only check that will be performed is on `P` and `Q`. If
-`P` must imply some value for both `Q` _and `R`_, specify this explicitly in
-`P`'s configuration. For example:
+For describing much more intricate implications between various arguments and
+their values, see [`subOptionOf`][19].
+
+###### Handling Transitive Implications
+
+`implies` configurations **do not cascade transitively**. This means if argument
+`P` `implies` argument `Q`, and argument `Q` `implies` argument `R`, and `P` is
+given, the only check that will be performed is on `P` and `Q`. If `P` must
+imply some value for both `Q` _and `R`_, specify this explicitly in `P`'s
+configuration. For example:
 
 ```diff
 {
@@ -327,8 +348,13 @@ pairs. Therefore, use [`check`][9] to guarantee any complex invariants, if
 necessary; ideally, you shouldn't be setting bad defaults via `implies`, but BFE
 won't stop you from doing so.
 
-For describing much more intricate implications between various arguments and
-their values, see [`subOptionOf`][19].
+###### Handling Parser Configuration
+
+Like other BFE checks, `implies` _does_ take into account the [yargs-parser
+settings][51] `camel-case-expansion`, `strip-aliased`, and `strip-dashed`; but
+_does not_ currently pay attention to `dot-notation` or
+`duplicate-arguments-array`. `implies` may still work when using the latter
+parser configurations, but it is recommended you turn them off instead.
 
 ###### `looseImplications`
 
@@ -336,7 +362,8 @@ If [`looseImplications`][20] is set to `true`, any of the specified arguments,
 when explicitly given on the command line, will _override_ any configured
 implications instead of causing an error. When [`looseImplications`][20] is set
 to `false`, which is the default, values given on the command line must match
-the specified argument-value pairs respectively (similar to [`requires`][10]).
+the specified argument-value pairs respectively (similar to
+[`requires`][10]/[`conflicts`][11]).
 
 ---
 
@@ -531,9 +558,7 @@ all updates to `argv` have been applied (including from [`subOptionOf`][19] and
 
 When a check fails, execution of its command's [`handler`][23] function will
 cease and [`configureErrorHandlingEpilogue`][27] will be invoked (unless you
-threw/returned a [`GracefulEarlyExitError`][28]).
-
-For example:
+threw/returned a [`GracefulEarlyExitError`][28]). For example:
 
 ```javascript
 export const [builder, withHandlerExtensions] = withBuilderExtensions({
@@ -860,10 +885,11 @@ errors.
 This workaround avoids a (in my opinion) rather unintuitive [yargs footgun][12],
 though there are decent arguments in support of vanilla yargs's behavior.
 
-#### Impossible Configurations
+#### Strange and Impossible Configurations
 
-Note that **there are no sanity checks performed to prevent demands that are
-unresolvable**, so care must be taken not to ask for something insane.
+Note that **there are no sanity checks performed to prevent options
+configurations that are unresolvable**, so care must be taken not to ask for
+something insane.
 
 For example, the following configurations are impossible to resolve:
 
@@ -878,6 +904,21 @@ For example, the following configurations are impossible to resolve:
 {
   "x": { "requires": "y", "demandThisOptionXor": "y" },
   "y": {}
+}
+```
+
+Similarly, silly configurations like the following, while typically resolvable,
+are strange and may not work as expected:
+
+```jsonc
+{
+  "x": { "requires": "x", "demandThisOptionXor": "x" }
+}
+```
+
+```jsonc
+{
+  "x": { "implies": { "x": 5 } }
 }
 ```
 
@@ -1984,3 +2025,4 @@ specification. Contributions of any kind welcome!
 [48]: https://github.com/yargs/yargs/issues/1599
 [49]: https://github.com/yargs/yargs/issues/1611
 [50]: ./docs/functions/getInvocableExtendedHandler.md
+[51]: https://github.com/yargs/yargs-parser?tab=readme-ov-file#configuration

@@ -8,9 +8,16 @@ import type { getInvocableExtendedHandler } from './index';
 export const $exists = Symbol('exists');
 
 /**
- * Represents an argument that is the genesis of some logical implication.
+ * Represents the name of the argument that is the originator of a configuration
+ * check.
  */
 export const $genesis = Symbol('genesis');
+
+/**
+ * Represents the canonical form of an implication (i.e. excluding expansions,
+ * aliases, etc).
+ */
+export const $canonical = Symbol('genesis');
 
 /**
  * Will appear in the `argv` of commands that were invoked via

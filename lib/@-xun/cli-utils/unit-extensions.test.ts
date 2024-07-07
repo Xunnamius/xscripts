@@ -99,7 +99,11 @@ describe('::withStandardBuilder', () => {
     expect.hasAssertions();
 
     {
-      const [blackFlag, argv] = makeMocks({ dummyArgv: { hush: true } });
+      const [blackFlag, argv] = makeMocks({
+        dummyArgv: { hush: true, quiet: false, silent: false },
+        defaultedDummyArgs: ['quiet', 'silent']
+      });
+
       const [builder, withHandlerExtensions] = withStandardBuilder();
 
       builder(blackFlag, false, undefined);
@@ -117,7 +121,11 @@ describe('::withStandardBuilder', () => {
     }
 
     {
-      const [blackFlag, argv] = makeMocks({ dummyArgv: { quiet: true } });
+      const [blackFlag, argv] = makeMocks({
+        dummyArgv: { quiet: true, hush: false, silent: false },
+        defaultedDummyArgs: ['hush', 'silent']
+      });
+
       const [builder, withHandlerExtensions] = withStandardBuilder();
 
       builder(blackFlag, false, undefined);
@@ -135,7 +143,11 @@ describe('::withStandardBuilder', () => {
     }
 
     {
-      const [blackFlag, argv] = makeMocks({ dummyArgv: { silent: true } });
+      const [blackFlag, argv] = makeMocks({
+        dummyArgv: { silent: true, hush: false, quiet: false },
+        defaultedDummyArgs: ['hush', 'quiet']
+      });
+
       const [builder, withHandlerExtensions] = withStandardBuilder();
 
       builder(blackFlag, false, undefined);
@@ -158,13 +170,13 @@ function makeMocks(
   options: {
     group?: typeof jest.fn;
     dummyArgv?: Partial<StandardCommonCliArguments> & Record<string, unknown>;
-    defaultedDummyArgs?: Record<string, unknown>;
+    defaultedDummyArgs?: string[];
   } = {}
 ) {
   const {
-    dummyArgv = {} as NonNullable<typeof options.dummyArgv>,
+    dummyArgv,
     group = jest.fn(),
-    defaultedDummyArgs = {}
+    defaultedDummyArgs = dummyArgv === undefined ? ['hush', 'quiet', 'silent'] : []
   } = options;
 
   return [
@@ -172,8 +184,15 @@ function makeMocks(
       group,
       updateStrings: jest.fn(),
       parserConfiguration: jest.fn(),
+      getInternalMethods() {
+        return {
+          getParserConfiguration() {
+            return {};
+          }
+        };
+      },
       parsed: {
-        defaulted: { hush: false, quiet: false, silent: false, ...defaultedDummyArgs }
+        defaulted: Object.fromEntries(defaultedDummyArgs.map((name) => [name, true]))
       }
     } as unknown as Parameters<ReturnType<typeof withStandardBuilder>[0]>[0],
     Object.assign(
@@ -181,7 +200,7 @@ function makeMocks(
         _: [],
         $0: 'fake'
       },
-      dummyArgv as Required<typeof dummyArgv>,
+      dummyArgv ?? { hush: false, quiet: false, silent: false },
       {
         [$executionContext]: {
           commands: new Map(),
@@ -189,6 +208,6 @@ function makeMocks(
           state: {}
         } as unknown as StandardExecutionContext
       }
-    ) as Arguments<Required<typeof dummyArgv>, StandardExecutionContext>
+    ) as Arguments<Required<NonNullable<typeof dummyArgv>>, StandardExecutionContext>
   ] as const;
 }

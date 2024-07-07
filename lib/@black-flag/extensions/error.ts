@@ -13,14 +13,23 @@ export type KeyValueEntry = KeyValueEntries[number];
 /* istanbul ignore next */
 export const ErrorMessage = {
   ...UpstreamErrorMessage,
-  AssertionFailureFalsyCommand() {
+  FalsyCommandExport() {
     return 'supposed command argument unexpectedly resolved to a falsy value';
   },
-  AssertionFailureCommandHandlerNotAFunction() {
+  CommandHandlerNotAFunction() {
     return 'resolved command object unexpectedly returned a non-function handler';
+  },
+  ReferencedNonExistentOption(referrerName: string, doesNotExistName: string) {
+    return `option "${referrerName}" illegally references the non-existent option "${doesNotExistName}" in its configuration`;
+  },
+  DuplicateOptionName(name: string) {
+    return `one or more options of the currently executing command are attempting to register a duplicate name, expanded name, alias, or expanded alias: "${name}". Option names, their aliases, and all potential expansions must be unique.`;
   },
   IllegalHandlerInvocation() {
     return 'withHandlerExtensions::handler was invoked too soon: options analysis unavailable';
+  },
+  IllegalExplicitlyUndefinedDefault() {
+    return 'an option cannot have an explicitly undefined default';
   },
   MetadataInvariantViolated(afflictedKey: string) {
     return `an impossible state was detected while analyzing configuration for key: ${afflictedKey}`;
@@ -28,8 +37,11 @@ export const ErrorMessage = {
   UnexpectedlyFalsyDetailedArguments() {
     return 'a Black Flag instance is somehow missing its detailed parse result. This is likely the result of an incompatibility between Black Flag and whatever version of Yargs is installed. Please report this!';
   },
+  UnexpectedValueFromInternalYargsMethod() {
+    return 'a Black Flag instance is returning something unexpected from its "getParserConfiguration" internal method. This is likely the result of an incompatibility between Black Flag and whatever version of Yargs is installed. Please report this!';
+  },
   RequiresViolation(requirer: string, missingRequiredKeyValues: KeyValueEntries) {
-    return `the following arguments must be given alongside "${requirer}":${keyValuesToString(missingRequiredKeyValues)}`;
+    return `the following missing arguments must be given alongside "${requirer}":${keyValuesToString(missingRequiredKeyValues)}`;
   },
   ConflictsViolation(conflicter: string, seenConflictingKeyValues: KeyValueEntries) {
     return `the following arguments cannot be given alongside "${conflicter}":${keyValuesToString(seenConflictingKeyValues)}`;
@@ -60,8 +72,8 @@ export const ErrorMessage = {
 function keyValuesToString(keyValueEntries: KeyValueEntries) {
   // eslint-disable-next-line unicorn/no-array-reduce
   return keyValueEntries.reduce((str, keyValueEntry) => {
-    return `${str}\n⮞  ${keyValueToString(keyValueEntry)}`;
-  }, '\n');
+    return `${str}\n  ➜ ${keyValueToString(keyValueEntry)}`;
+  }, '');
 }
 
 function keyValueToString(keyValueEntry: KeyValueEntry) {
@@ -74,8 +86,5 @@ function keyValueToString(keyValueEntry: KeyValueEntry) {
     }
   })();
 
-  return (
-    (typeof key !== 'string' || key.length === 1 ? '-' : '--') +
-    (value === $exists ? key : `${key}=${stringifiedValue}`)
-  );
+  return value === $exists ? key : `${key} == ${stringifiedValue}`;
 }

@@ -22,6 +22,7 @@ import {
 } from './index';
 
 import type { PartialDeep } from 'type-fest';
+import type { ParserConfigurationOptions } from 'yargs';
 
 describe('::withBuilderExtensions', () => {
   describe('"requires" configuration', () => {
@@ -147,6 +148,211 @@ describe('::withBuilderExtensions', () => {
         });
       }
     });
+
+    it('takes into account yargs-parser configuration', async () => {
+      expect.hasAssertions();
+
+      let _argv: Record<string, unknown> | undefined = undefined;
+
+      const customBuilder = {
+        'x-y': { alias: 'x-y-alias', requires: 'a-b-c' },
+        'a-b-c': { alias: ['a', 'b-c'] }
+      };
+
+      function getArgv() {
+        const argv = _argv;
+        _argv = undefined;
+        return argv;
+      }
+
+      function customHandler({
+        $0: __,
+        _,
+        [$executionContext]: ___,
+        ...argv
+      }: Arguments) {
+        _argv = argv;
+      }
+
+      {
+        const runnerNoCamelCaseExpansion = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'camel-case-expansion': false }
+        });
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1,
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            'x-y-alias': 1,
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.RequiresViolation('x-y', [['a-b-c', $exists]])
+          });
+        }
+      }
+
+      {
+        const runnerStripAliases = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1,
+            'a-b-c': 2,
+            aBC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            xY: 1,
+            'a-b-c': 2,
+            aBC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.RequiresViolation('x-y', [['a-b-c', $exists]])
+          });
+        }
+      }
+
+      {
+        const runnerStripDashes = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1,
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1,
+            xYAlias: 1,
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.RequiresViolation('x-y', [['a-b-c', $exists]])
+          });
+        }
+      }
+
+      {
+        const runnerStripBoth = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true, 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1,
+            aBC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1,
+            aBC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.RequiresViolation('x-y', [['a-b-c', $exists]])
+          });
+        }
+      }
+
+      {
+        const runnerAll = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: {
+            'camel-case-expansion': false,
+            'strip-dashed': true,
+            'strip-aliased': true
+          }
+        });
+
+        {
+          // ? strip-dashed should have no effect if camel-case-expansion is false
+          const { handlerResult } = await runnerAll({
+            'x-y': 1,
+            'a-b-c': 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            'a-b-c': 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerAll({
+            'x-y': 1
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.RequiresViolation('x-y', [['a-b-c', $exists]])
+          });
+        }
+      }
+    });
   });
 
   describe('"conflicts" configuration', () => {
@@ -250,31 +456,221 @@ describe('::withBuilderExtensions', () => {
         });
       }
     });
+
+    it('takes into account yargs-parser configuration', async () => {
+      expect.hasAssertions();
+
+      let _argv: Record<string, unknown> | undefined = undefined;
+
+      const customBuilder = {
+        'x-y': { alias: 'x-y-alias', conflicts: 'a-b-c' },
+        'a-b-c': { alias: ['a', 'b-c'] }
+      };
+
+      function getArgv() {
+        const argv = _argv;
+        _argv = undefined;
+        return argv;
+      }
+
+      function customHandler({
+        $0: __,
+        _,
+        [$executionContext]: ___,
+        ...argv
+      }: Arguments) {
+        _argv = argv;
+      }
+
+      {
+        const runnerNoCamelCaseExpansion = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'camel-case-expansion': false }
+        });
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1,
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ConflictsViolation('x-y', [['a-b-c', $exists]])
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            'x-y-alias': 1
+          });
+        }
+      }
+
+      {
+        const runnerStripAliases = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1,
+            'a-b-c': 2,
+            aBC: 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ConflictsViolation('x-y', [['a-b-c', $exists]])
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            xY: 1
+          });
+        }
+      }
+
+      {
+        const runnerStripDashes = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1,
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ConflictsViolation('x-y', [['a-b-c', $exists]])
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1,
+            xYAlias: 1
+          });
+        }
+      }
+
+      {
+        const runnerStripBoth = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true, 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1,
+            aBC: 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ConflictsViolation('x-y', [['a-b-c', $exists]])
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1
+          });
+        }
+      }
+
+      {
+        const runnerAll = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: {
+            'camel-case-expansion': false,
+            'strip-dashed': true,
+            'strip-aliased': true
+          }
+        });
+
+        {
+          // ? strip-dashed should have no effect if camel-case-expansion is false
+          const { handlerResult } = await runnerAll({
+            'x-y': 1,
+            'a-b-c': 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ConflictsViolation('x-y', [['a-b-c', $exists]])
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerAll({
+            'x-y': 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1
+          });
+        }
+      }
+    });
   });
 
   describe('"implies" configuration', () => {
-    let finalArgvX: unknown = null;
-    let finalArgvY: unknown = null;
-    let finalArgvZ: unknown = null;
+    let _argv: Record<string, unknown> | undefined = undefined;
 
-    const getFinalArgv = () => {
-      const argv = { x: finalArgvX, y: finalArgvY, z: finalArgvZ };
-
-      finalArgvX = null;
-      finalArgvY = null;
-      finalArgvZ = null;
-
+    function getArgv() {
+      const argv = _argv;
+      _argv = undefined;
       return argv;
-    };
+    }
+
+    function customHandler({ $0: __, _, [$executionContext]: ___, ...argv }: Arguments) {
+      _argv = argv;
+    }
 
     it('[readme #1] updates argv conditioned on existence of some arg (other args not given)', async () => {
       expect.hasAssertions();
 
       const runner = makeMockBuilderRunner({
-        customHandler(argv: Arguments) {
-          finalArgvX = argv.x;
-          finalArgvY = argv.y;
-        },
+        customHandler,
         customBuilder: {
           x: { implies: { y: true } },
           y: {}
@@ -283,42 +679,27 @@ describe('::withBuilderExtensions', () => {
 
       {
         await runner({});
-
-        const { x, y } = getFinalArgv();
-        expect(x).toBeUndefined();
-        expect(y).toBeUndefined();
+        expect(getArgv()).toStrictEqual({});
       }
 
       {
         await runner({ y: true });
-
-        const { x, y } = getFinalArgv();
-        expect(x).toBeUndefined();
-        expect(y).toBeTrue();
+        expect(getArgv()).toStrictEqual({ y: true });
       }
 
       {
         await runner({ y: false });
-
-        const { x, y } = getFinalArgv();
-        expect(x).toBeUndefined();
-        expect(y).toBeFalse();
+        expect(getArgv()).toStrictEqual({ y: false });
       }
 
       {
         await runner({ x: true });
-
-        const { x, y } = getFinalArgv();
-        expect(x).toBeTrue();
-        expect(y).toBeTrue();
+        expect(getArgv()).toStrictEqual({ x: true, y: true });
       }
 
       {
         await runner({ x: true, y: true });
-
-        const { x, y } = getFinalArgv();
-        expect(x).toBeTrue();
-        expect(y).toBeTrue();
+        expect(getArgv()).toStrictEqual({ x: true, y: true });
       }
     });
 
@@ -326,10 +707,7 @@ describe('::withBuilderExtensions', () => {
       expect.hasAssertions();
 
       const runner = makeMockBuilderRunner({
-        customHandler(argv: Arguments) {
-          finalArgvX = argv.x;
-          finalArgvY = argv.y;
-        },
+        customHandler,
         customBuilder: {
           x: { implies: { y: true } },
           y: {}
@@ -345,15 +723,200 @@ describe('::withBuilderExtensions', () => {
       }
     });
 
+    it('updates argv with respect to aliases and yargs-parser configuration', async () => {
+      expect.hasAssertions();
+
+      const customBuilder = {
+        'x-y': { alias: 'x-y-alias', implies: { 'a-b-c': 5 } },
+        'a-b-c': { alias: ['a', 'b-c'] }
+      };
+
+      {
+        const runnerNoCamelCaseExpansion = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'camel-case-expansion': false }
+        });
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            'x-y-alias': 1,
+            'a-b-c': 5,
+            a: 5,
+            'b-c': 5
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1,
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ImpliesViolation('x-y', [['a-b-c', 2]])
+          });
+        }
+      }
+
+      {
+        const runnerStripAliases = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            xY: 1,
+            'a-b-c': 5,
+            aBC: 5
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1,
+            'a-b-c': 2,
+            aBC: 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ImpliesViolation('x-y', [['a-b-c', 2]])
+          });
+        }
+      }
+
+      {
+        const runnerStripDashes = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1,
+            xYAlias: 1,
+            aBC: 5,
+            a: 5,
+            bC: 5
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1,
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ImpliesViolation('x-y', [['a-b-c', 2]])
+          });
+        }
+      }
+
+      {
+        const runnerStripBoth = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true, 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1,
+            aBC: 5
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1,
+            aBC: 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ImpliesViolation('x-y', [['a-b-c', 2]])
+          });
+        }
+      }
+
+      {
+        const runnerAll = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: {
+            'camel-case-expansion': false,
+            'strip-dashed': true,
+            'strip-aliased': true
+          }
+        });
+
+        {
+          // ? strip-dashed should have no effect if camel-case-expansion is false
+          const { handlerResult } = await runnerAll({
+            'x-y': 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            'a-b-c': 5
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerAll({
+            'x-y': 1,
+            'a-b-c': 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ImpliesViolation('x-y', [['a-b-c', 2]])
+          });
+        }
+      }
+    });
+
     it(`does not throw when an arg's value conflicts with an implication but "looseImplications" is enabled`, async () => {
       expect.hasAssertions();
 
       {
         const runner = makeMockBuilderRunner({
-          customHandler(argv: Arguments) {
-            finalArgvX = argv.x;
-            finalArgvY = argv.y;
-          },
+          customHandler,
           customBuilder: {
             x: { implies: { y: true } },
             y: {}
@@ -369,10 +932,7 @@ describe('::withBuilderExtensions', () => {
 
       {
         const runner = makeMockBuilderRunner({
-          customHandler(argv: Arguments) {
-            finalArgvX = argv.x;
-            finalArgvY = argv.y;
-          },
+          customHandler,
           customBuilder: {
             x: { implies: { y: true }, looseImplications: true },
             y: {}
@@ -380,10 +940,7 @@ describe('::withBuilderExtensions', () => {
         });
 
         await runner({ x: true, y: false });
-
-        const { x, y } = getFinalArgv();
-        expect(x).toBeTrue();
-        expect(y).toBeFalse();
+        expect(getArgv()).toStrictEqual({ x: true, y: false });
       }
     });
 
@@ -391,10 +948,7 @@ describe('::withBuilderExtensions', () => {
       expect.hasAssertions();
 
       const runner = makeMockBuilderRunner({
-        customHandler(argv: Arguments) {
-          finalArgvX = argv.x;
-          finalArgvY = argv.y;
-        },
+        customHandler,
         customBuilder: {
           x: { implies: { y: true } },
           y: { default: false }
@@ -402,7 +956,7 @@ describe('::withBuilderExtensions', () => {
       });
 
       {
-        const { firstPassResult, secondPassResult } = await runner({}, { y: false });
+        const { firstPassResult, secondPassResult } = await runner({ y: false }, ['y']);
 
         expect(firstPassResult).toStrictEqual({
           x: {},
@@ -410,17 +964,11 @@ describe('::withBuilderExtensions', () => {
         });
 
         expect(firstPassResult).toStrictEqual(secondPassResult);
-
-        const { x, y } = getFinalArgv();
-        expect(x).toBeUndefined();
-        expect(y).toBeFalse();
+        expect(getArgv()).toStrictEqual({ y: false });
       }
 
       {
-        const { firstPassResult, secondPassResult } = await runner(
-          { x: true },
-          { y: false }
-        );
+        const { firstPassResult, secondPassResult } = await runner({ x: true }, ['y']);
 
         expect(firstPassResult).toStrictEqual({
           x: {},
@@ -428,10 +976,7 @@ describe('::withBuilderExtensions', () => {
         });
 
         expect(firstPassResult).toStrictEqual(secondPassResult);
-
-        const { x, y } = getFinalArgv();
-        expect(x).toBeTrue();
-        expect(y).toBeTrue();
+        expect(getArgv()).toStrictEqual({ x: true, y: true });
       }
     });
 
@@ -440,11 +985,7 @@ describe('::withBuilderExtensions', () => {
 
       {
         const runner = makeMockBuilderRunner({
-          customHandler(argv: Arguments) {
-            finalArgvX = argv.x;
-            finalArgvY = argv.y;
-            finalArgvZ = argv.z;
-          },
+          customHandler,
           customBuilder: {
             x: { implies: { y: true } },
             y: { implies: { z: true } },
@@ -453,20 +994,12 @@ describe('::withBuilderExtensions', () => {
         });
 
         await runner({ x: true });
-
-        const { x, y, z } = getFinalArgv();
-        expect(x).toBeTrue();
-        expect(y).toBeTrue();
-        expect(z).toBeUndefined();
+        expect(getArgv()).toStrictEqual({ x: true, y: true });
       }
 
       {
         const runner = makeMockBuilderRunner({
-          customHandler(argv: Arguments) {
-            finalArgvX = argv.x;
-            finalArgvY = argv.y;
-            finalArgvZ = argv.z;
-          },
+          customHandler,
           customBuilder: {
             x: { implies: { y: true, z: true } },
             y: { implies: { z: true } },
@@ -475,12 +1008,27 @@ describe('::withBuilderExtensions', () => {
         });
 
         await runner({ x: true });
-
-        const { x, y, z } = getFinalArgv();
-        expect(x).toBeTrue();
-        expect(y).toBeTrue();
-        expect(z).toBeTrue();
+        expect(getArgv()).toStrictEqual({ x: true, y: true, z: true });
       }
+    });
+
+    it('throws when attempting to imply a value for a non-existent option', async () => {
+      expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customHandler,
+        customBuilder: {
+          x: { implies: { 'y-y': true } },
+          yY: {}
+        }
+      });
+
+      const { firstPassResult } = await runner({ x: true });
+      expect(firstPassResult).toMatchObject({
+        message: expect.stringContaining(
+          ': ' + ErrorMessage.ReferencedNonExistentOption('x', 'y-y')
+        )
+      });
     });
   });
 
@@ -615,6 +1163,211 @@ describe('::withBuilderExtensions', () => {
         expect(handlerResult).toMatchObject({
           message: ErrorMessage.DemandIfViolation('x', ['y', 'one'])
         });
+      }
+    });
+
+    it('takes into account yargs-parser configuration', async () => {
+      expect.hasAssertions();
+
+      let _argv: Record<string, unknown> | undefined = undefined;
+
+      const customBuilder = {
+        'x-y': { alias: 'x-y-alias' },
+        'a-b-c': { alias: ['a', 'b-c'], demandThisOptionIf: 'x-y' }
+      };
+
+      function getArgv() {
+        const argv = _argv;
+        _argv = undefined;
+        return argv;
+      }
+
+      function customHandler({
+        $0: __,
+        _,
+        [$executionContext]: ___,
+        ...argv
+      }: Arguments) {
+        _argv = argv;
+      }
+
+      {
+        const runnerNoCamelCaseExpansion = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'camel-case-expansion': false }
+        });
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1,
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            'x-y-alias': 1,
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandIfViolation('a-b-c', ['x-y', $exists])
+          });
+        }
+      }
+
+      {
+        const runnerStripAliases = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1,
+            'a-b-c': 2,
+            aBC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            xY: 1,
+            'a-b-c': 2,
+            aBC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandIfViolation('a-b-c', ['x-y', $exists])
+          });
+        }
+      }
+
+      {
+        const runnerStripDashes = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1,
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1,
+            xYAlias: 1,
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandIfViolation('a-b-c', ['x-y', $exists])
+          });
+        }
+      }
+
+      {
+        const runnerStripBoth = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true, 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1,
+            aBC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1,
+            aBC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandIfViolation('a-b-c', ['x-y', $exists])
+          });
+        }
+      }
+
+      {
+        const runnerAll = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: {
+            'camel-case-expansion': false,
+            'strip-dashed': true,
+            'strip-aliased': true
+          }
+        });
+
+        {
+          // ? strip-dashed should have no effect if camel-case-expansion is false
+          const { handlerResult } = await runnerAll({
+            'x-y': 1,
+            'a-b-c': 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            'a-b-c': 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerAll({
+            'x-y': 1
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandIfViolation('a-b-c', ['x-y', $exists])
+          });
+        }
       }
     });
   });
@@ -787,6 +1540,213 @@ describe('::withBuilderExtensions', () => {
             ['x', $exists]
           ])
         });
+      }
+    });
+
+    it('takes into account yargs-parser configuration', async () => {
+      expect.hasAssertions();
+
+      let _argv: Record<string, unknown> | undefined = undefined;
+
+      const customBuilder = {
+        'x-y': { alias: 'x-y-alias', demandThisOptionOr: 'a-b-c' },
+        'a-b-c': { alias: ['a', 'b-c'] }
+      };
+
+      function getArgv() {
+        const argv = _argv;
+        _argv = undefined;
+        return argv;
+      }
+
+      function customHandler({
+        $0: __,
+        _,
+        [$executionContext]: ___,
+        ...argv
+      }: Arguments) {
+        _argv = argv;
+      }
+
+      {
+        const runnerNoCamelCaseExpansion = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'camel-case-expansion': false }
+        });
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1,
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            'x-y-alias': 1,
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({});
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandOrViolation([
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            ])
+          });
+        }
+      }
+
+      {
+        const runnerStripAliases = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1,
+            'a-b-c': 2,
+            aBC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            xY: 1,
+            'a-b-c': 2,
+            aBC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripAliases({});
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandOrViolation([
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            ])
+          });
+        }
+      }
+
+      {
+        const runnerStripDashes = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1,
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1,
+            xYAlias: 1,
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripDashes({});
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandOrViolation([
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            ])
+          });
+        }
+      }
+
+      {
+        const runnerStripBoth = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true, 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1,
+            aBC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1,
+            aBC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripBoth({});
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandOrViolation([
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            ])
+          });
+        }
+      }
+
+      {
+        const runnerAll = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: {
+            'camel-case-expansion': false,
+            'strip-dashed': true,
+            'strip-aliased': true
+          }
+        });
+
+        {
+          // ? strip-dashed should have no effect if camel-case-expansion is false
+          const { handlerResult } = await runnerAll({
+            'x-y': 1,
+            'a-b-c': 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            'a-b-c': 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerAll({});
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandOrViolation([
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            ])
+          });
+        }
       }
     });
   });
@@ -1031,6 +1991,336 @@ describe('::withBuilderExtensions', () => {
         });
       }
     });
+
+    it('takes into account yargs-parser configuration', async () => {
+      expect.hasAssertions();
+
+      let _argv: Record<string, unknown> | undefined = undefined;
+
+      const customBuilder = {
+        'x-y': { alias: 'x-y-alias', demandThisOptionXor: 'a-b-c' },
+        'a-b-c': { alias: ['a', 'b-c'] }
+      };
+
+      function getArgv() {
+        const argv = _argv;
+        _argv = undefined;
+        return argv;
+      }
+
+      function customHandler({
+        $0: __,
+        _,
+        [$executionContext]: ___,
+        ...argv
+      }: Arguments) {
+        _argv = argv;
+      }
+
+      {
+        const runnerNoCamelCaseExpansion = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'camel-case-expansion': false }
+        });
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1,
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandSpecificXorViolation(
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            )
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'x-y': 1,
+            'x-y-alias': 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            'x-y-alias': 1
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'a-b-c': 2,
+            a: 2,
+            'b-c': 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerNoCamelCaseExpansion({});
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandGenericXorViolation([
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            ])
+          });
+        }
+      }
+
+      {
+        const runnerStripAliases = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1,
+            'a-b-c': 2,
+            aBC: 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandSpecificXorViolation(
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            )
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'x-y': 1,
+            xY: 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1,
+            xY: 1
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripAliases({
+            'a-b-c': 2,
+            aBC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'a-b-c': 2,
+            aBC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripAliases({});
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandGenericXorViolation([
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            ])
+          });
+        }
+      }
+
+      {
+        const runnerStripDashes = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1,
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandSpecificXorViolation(
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            )
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            xY: 1,
+            xYAlias: 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1,
+            xYAlias: 1
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripDashes({
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            aBC: 2,
+            a: 2,
+            bC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripDashes({});
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandGenericXorViolation([
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            ])
+          });
+        }
+      }
+
+      {
+        const runnerStripBoth = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true, 'strip-aliased': true }
+        });
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1,
+            aBC: 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandSpecificXorViolation(
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            )
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            xY: 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            xY: 1
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripBoth({
+            aBC: 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            aBC: 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerStripBoth({});
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandGenericXorViolation([
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            ])
+          });
+        }
+      }
+
+      {
+        const runnerAll = makeMockBuilderRunner({
+          customHandler,
+          customBuilder,
+          parserConfiguration: {
+            'camel-case-expansion': false,
+            'strip-dashed': true,
+            'strip-aliased': true
+          }
+        });
+
+        {
+          // ? strip-dashed should have no effect if camel-case-expansion is false
+          const { handlerResult } = await runnerAll({
+            'x-y': 1,
+            'a-b-c': 2
+          });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandSpecificXorViolation(
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            )
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerAll({
+            'x-y': 1
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'x-y': 1
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerAll({
+            'a-b-c': 2
+          });
+
+          expect(handlerResult).toBeUndefined();
+          expect(getArgv()).toStrictEqual({
+            'a-b-c': 2
+          });
+        }
+
+        {
+          const { handlerResult } = await runnerAll({});
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.DemandGenericXorViolation([
+              ['a-b-c', $exists],
+              ['x-y', $exists]
+            ])
+          });
+        }
+      }
+    });
   });
 
   describe('"check" configuration', () => {
@@ -1225,34 +2515,190 @@ describe('::withBuilderExtensions', () => {
       }
     });
 
-    it('sees defaults', async () => {
+    it('sees defaults and their aliases/expansions depending on yargs-parser configuration', async () => {
       expect.hasAssertions();
 
-      const runner = makeMockBuilderRunner({
-        customBuilder: {
-          x: {
-            default: 1
-          },
-          y: {
-            check: (_, argv) => argv.x === 1
+      let _argv: Record<string, unknown> | undefined = undefined;
+
+      function getArgv() {
+        const argv = _argv;
+        _argv = undefined;
+        return argv;
+      }
+
+      const customBuilder = {
+        'x-y': { default: 1, alias: ['x', 'x-y-alias'] },
+        z: {
+          alias: 'z-z',
+          check: (
+            _2: any,
+            { $0: _3, _, [$executionContext]: _4, ...argv_ }: Arguments
+          ) => {
+            _argv = argv_;
+            return true;
           }
         }
-      });
+      };
 
-      const { firstPassResult, secondPassResult, handlerResult } = await runner(
-        {
-          y: true
-        },
-        { x: 1 }
-      );
+      {
+        const runner = makeMockBuilderRunner({ customBuilder });
 
-      expect(firstPassResult).toStrictEqual({
-        x: { default: 1 },
-        y: {}
-      });
+        const { firstPassResult, secondPassResult, handlerResult } = await runner(
+          {
+            'x-y': 1,
+            xY: 1,
+            x: 1,
+            'x-y-alias': 1,
+            xYAlias: 1,
+            z: true,
+            'z-z': true,
+            zZ: true
+          },
+          ['x-y']
+        );
 
-      expect(firstPassResult).toStrictEqual(secondPassResult);
-      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(firstPassResult).toStrictEqual({
+          'x-y': { default: 1, alias: ['x', 'x-y-alias'] },
+          z: { alias: 'z-z' }
+        });
+
+        expect(firstPassResult).toStrictEqual(secondPassResult);
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+
+        expect(getArgv()).toStrictEqual({
+          'x-y': 1,
+          xY: 1,
+          x: 1,
+          'x-y-alias': 1,
+          xYAlias: 1,
+          z: true,
+          'z-z': true,
+          zZ: true
+        });
+      }
+
+      {
+        const runnerNoCamelCaseExpansion = makeMockBuilderRunner({
+          customBuilder,
+          parserConfiguration: { 'camel-case-expansion': false }
+        });
+
+        const { handlerResult } = await runnerNoCamelCaseExpansion(
+          {
+            'x-y': 1,
+            x: 1,
+            'x-y-alias': 1,
+            z: true,
+            'z-z': true
+          },
+          ['x-y']
+        );
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(getArgv()).toStrictEqual({
+          'x-y': 1,
+          x: 1,
+          'x-y-alias': 1,
+          z: true,
+          'z-z': true
+        });
+      }
+
+      {
+        const runnerStripAliases = makeMockBuilderRunner({
+          customBuilder,
+          parserConfiguration: { 'strip-aliased': true }
+        });
+
+        const { handlerResult } = await runnerStripAliases(
+          {
+            'x-y': 1,
+            xY: 1,
+            z: true
+          },
+          ['x-y']
+        );
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(getArgv()).toStrictEqual({
+          'x-y': 1,
+          xY: 1,
+          z: true
+        });
+      }
+
+      {
+        const runnerStripDashes = makeMockBuilderRunner({
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true }
+        });
+
+        const { handlerResult } = await runnerStripDashes(
+          {
+            xY: 1,
+            x: 1,
+            xYAlias: 1,
+            z: true,
+            zZ: true
+          },
+          ['x-y']
+        );
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(getArgv()).toStrictEqual({
+          xY: 1,
+          x: 1,
+          xYAlias: 1,
+          z: true,
+          zZ: true
+        });
+      }
+
+      {
+        const runnerStripBoth = makeMockBuilderRunner({
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true, 'strip-aliased': true }
+        });
+
+        const { handlerResult } = await runnerStripBoth(
+          {
+            xY: 1,
+            z: true
+          },
+          ['x-y']
+        );
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(getArgv()).toStrictEqual({
+          xY: 1,
+          z: true
+        });
+      }
+
+      {
+        const runnerAll = makeMockBuilderRunner({
+          customBuilder,
+          parserConfiguration: {
+            'camel-case-expansion': false,
+            'strip-dashed': true,
+            'strip-aliased': true
+          }
+        });
+
+        const { handlerResult } = await runnerAll(
+          {
+            'x-y': 1,
+            z: true
+          },
+          ['x-y']
+        );
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(getArgv()).toStrictEqual({
+          'x-y': 1,
+          z: true
+        });
+      }
     });
 
     it('supports async checks', async () => {
@@ -1260,9 +2706,7 @@ describe('::withBuilderExtensions', () => {
 
       const runner = makeMockBuilderRunner({
         customBuilder: {
-          x: {
-            default: 1
-          },
+          x: { default: 1 },
           y: {
             check: async (_, argv) => argv.x !== 1
           }
@@ -1270,10 +2714,8 @@ describe('::withBuilderExtensions', () => {
       });
 
       const { firstPassResult, secondPassResult, handlerResult } = await runner(
-        {
-          y: true
-        },
-        { x: 1 }
+        { y: true },
+        ['x']
       );
 
       expect(firstPassResult).toStrictEqual({
@@ -1286,35 +2728,225 @@ describe('::withBuilderExtensions', () => {
       expect(handlerResult).not.toSatisfy(isCommandNotImplementedError);
     });
 
-    it('sees implications (final arv)', async () => {
+    it('sees implications (final arv) and their aliases/expansions depending on yargs-parser configuration', async () => {
       expect.hasAssertions();
 
-      const runner = makeMockBuilderRunner({
-        customBuilder: {
-          x: {
-            default: 1
-          },
-          y: {
-            implies: { x: 'one' },
-            check: (_, argv) => argv.x === 'one'
+      let _argv: Record<string, unknown> | undefined = undefined;
+
+      function getArgv() {
+        const argv = _argv;
+        _argv = undefined;
+        return argv;
+      }
+
+      const customBuilder = {
+        'x-y': { default: 1, alias: ['x', 'x-y-alias'] },
+        z: {
+          alias: 'z-z',
+          implies: { 'x-y': 5 },
+          check: (
+            _2: any,
+            { $0: _3, _, [$executionContext]: _4, ...argv_ }: Arguments
+          ) => {
+            _argv = argv_;
+            return true;
           }
         }
-      });
+      };
 
-      const { firstPassResult, secondPassResult, handlerResult } = await runner(
-        {
-          y: true
-        },
-        { x: 1 }
-      );
+      {
+        const runner = makeMockBuilderRunner({
+          customBuilder: {
+            'x-y': { alias: customBuilder['x-y'].alias },
+            z: customBuilder.z
+          }
+        });
 
-      expect(firstPassResult).toStrictEqual({
-        x: { default: 1 },
-        y: {}
-      });
+        const { firstPassResult, secondPassResult, handlerResult } = await runner({
+          z: true,
+          'z-z': true,
+          zZ: true
+        });
 
-      expect(firstPassResult).toStrictEqual(secondPassResult);
-      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(firstPassResult).toStrictEqual({
+          'x-y': { alias: ['x', 'x-y-alias'] },
+          z: { alias: 'z-z' }
+        });
+
+        expect(firstPassResult).toStrictEqual(secondPassResult);
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+
+        expect(getArgv()).toStrictEqual({
+          'x-y': 5,
+          xY: 5,
+          x: 5,
+          'x-y-alias': 5,
+          xYAlias: 5,
+          z: true,
+          'z-z': true,
+          zZ: true
+        });
+      }
+
+      {
+        const runner = makeMockBuilderRunner({ customBuilder });
+
+        const { firstPassResult, secondPassResult, handlerResult } = await runner(
+          {
+            'x-y': 1,
+            xY: 1,
+            x: 1,
+            'x-y-alias': 1,
+            xYAlias: 1,
+            z: true,
+            'z-z': true,
+            zZ: true
+          },
+          ['x-y']
+        );
+
+        expect(firstPassResult).toStrictEqual({
+          'x-y': { default: 1, alias: ['x', 'x-y-alias'] },
+          z: { alias: 'z-z' }
+        });
+
+        expect(firstPassResult).toStrictEqual(secondPassResult);
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+
+        expect(getArgv()).toStrictEqual({
+          'x-y': 5,
+          xY: 5,
+          x: 5,
+          'x-y-alias': 5,
+          xYAlias: 5,
+          z: true,
+          'z-z': true,
+          zZ: true
+        });
+      }
+
+      {
+        const runnerNoCamelCaseExpansion = makeMockBuilderRunner({
+          customBuilder,
+          parserConfiguration: { 'camel-case-expansion': false }
+        });
+
+        const { handlerResult } = await runnerNoCamelCaseExpansion(
+          {
+            'x-y': 1,
+            x: 1,
+            'x-y-alias': 1,
+            z: true,
+            'z-z': true
+          },
+          ['x-y']
+        );
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(getArgv()).toStrictEqual({
+          'x-y': 5,
+          x: 5,
+          'x-y-alias': 5,
+          z: true,
+          'z-z': true
+        });
+      }
+
+      {
+        const runnerStripAliases = makeMockBuilderRunner({
+          customBuilder,
+          parserConfiguration: { 'strip-aliased': true }
+        });
+
+        const { handlerResult } = await runnerStripAliases(
+          {
+            'x-y': 1,
+            xY: 1,
+            z: true
+          },
+          ['x-y']
+        );
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(getArgv()).toStrictEqual({
+          'x-y': 5,
+          xY: 5,
+          z: true
+        });
+      }
+
+      {
+        const runnerStripDashes = makeMockBuilderRunner({
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true }
+        });
+
+        const { handlerResult } = await runnerStripDashes(
+          {
+            xY: 1,
+            x: 1,
+            xYAlias: 1,
+            z: true,
+            zZ: true
+          },
+          ['x-y']
+        );
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(getArgv()).toStrictEqual({
+          xY: 5,
+          x: 5,
+          xYAlias: 5,
+          z: true,
+          zZ: true
+        });
+      }
+
+      {
+        const runnerStripBoth = makeMockBuilderRunner({
+          customBuilder,
+          parserConfiguration: { 'strip-dashed': true, 'strip-aliased': true }
+        });
+
+        const { handlerResult } = await runnerStripBoth(
+          {
+            xY: 1,
+            z: true
+          },
+          ['x-y']
+        );
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(getArgv()).toStrictEqual({
+          xY: 5,
+          z: true
+        });
+      }
+
+      {
+        const runnerAll = makeMockBuilderRunner({
+          customBuilder,
+          parserConfiguration: {
+            'camel-case-expansion': false,
+            'strip-dashed': true,
+            'strip-aliased': true
+          }
+        });
+
+        const { handlerResult } = await runnerAll(
+          {
+            'x-y': 1,
+            z: true
+          },
+          ['x-y']
+        );
+
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+        expect(getArgv()).toStrictEqual({
+          'x-y': 5,
+          z: true
+        });
+      }
     });
 
     it('[readme #1] example implementation functions as intended', async () => {
@@ -1356,7 +2988,7 @@ describe('::withBuilderExtensions', () => {
           {
             x: 1
           },
-          { y: false }
+          ['y']
         );
 
         expect(firstPassResult).toStrictEqual({
@@ -1398,7 +3030,7 @@ describe('::withBuilderExtensions', () => {
       }
 
       {
-        const { handlerResult } = await runner({ x: -1 }, { y: false });
+        const { handlerResult } = await runner({ x: -1 }, ['y']);
         expect(handlerResult).toMatchObject({
           message: `"x" must be between 0 and 10 (inclusive), saw: -1`
         });
@@ -2020,8 +3652,8 @@ describe('::withBuilderExtensions', () => {
 
       {
         const { firstPassResult, secondPassResult } = await runner(
-          {},
-          { version: 'latest' }
+          { version: 'latest' },
+          ['version']
         );
 
         expect(firstPassResult).toStrictEqual(expectedFirstPass);
@@ -2030,8 +3662,8 @@ describe('::withBuilderExtensions', () => {
 
       {
         const { firstPassResult, secondPassResult } = await runner(
-          { lang: 'node' },
-          { version: '21.1' }
+          { lang: 'node', version: '21.1' },
+          ['version']
         );
 
         expect(firstPassResult).toStrictEqual(expectedFirstPass);
@@ -2049,8 +3681,8 @@ describe('::withBuilderExtensions', () => {
 
       {
         const { firstPassResult, secondPassResult } = await runner(
-          { lang: 'python' },
-          { version: '3.12' }
+          { lang: 'python', version: '3.12' },
+          ['version']
         );
 
         expect(firstPassResult).toStrictEqual(expectedFirstPass);
@@ -2070,7 +3702,7 @@ describe('::withBuilderExtensions', () => {
 
   // ? yargs needs to see the default key to generate proper help text, but
   // ? we need to make sure defaults play nice with requires/implies/conflicts
-  test('yargs/BF sees "default" key but custom builder functions do not see defaulted args', async () => {
+  test('yargs/BF sees "default" key but custom builder functions do not see defaulted args or their aliases', async () => {
     expect.assertions(5);
 
     const runner = makeMockBuilderRunner({
@@ -2083,20 +3715,21 @@ describe('::withBuilderExtensions', () => {
           );
         });
 
-        return {
-          x: { default: 1 }
-        };
+        return { x: { default: 1, alias: ['x-x', 'x-y-alias'] } };
       }
     });
 
     {
       const { firstPassResult, secondPassResult, handlerResult } = await runner(
-        {},
-        { x: 1 }
+        { x: 1, 'x-x': 1, xX: 1, 'x-y-alias': 1, xYAlias: 1 },
+        ['x']
       );
 
-      expect(firstPassResult).toStrictEqual({ x: { default: 1 } });
-      expect(secondPassResult).toStrictEqual({ x: { default: 1 } });
+      expect(firstPassResult).toStrictEqual({
+        x: { default: 1, alias: ['x-x', 'x-y-alias'] }
+      });
+
+      expect(secondPassResult).toStrictEqual(firstPassResult);
       expect(handlerResult).toSatisfy(isCommandNotImplementedError);
     }
   });
@@ -2126,8 +3759,8 @@ describe('::withBuilderExtensions', () => {
       });
 
       const { firstPassResult, secondPassResult, handlerResult } = await runner(
-        {},
-        { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9 }
+        { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9 },
+        ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
       );
 
       expect(firstPassResult).toStrictEqual({
@@ -2173,8 +3806,8 @@ describe('::withBuilderExtensions', () => {
       });
 
       const { firstPassResult, secondPassResult, handlerResult } = await runner(
-        { f: -6 },
-        { a: 1, b: 2, c: 3, d: 4, e: 5, g: 7, h: 8, i: 9 }
+        { a: 1, b: 2, c: 3, d: 4, e: 5, f: -6, g: 7, h: 8, i: 9 },
+        ['a', 'b', 'c', 'd', 'e', 'g', 'h', 'i']
       );
 
       expect(firstPassResult).toStrictEqual(secondPassResult);
@@ -2224,8 +3857,8 @@ describe('::withBuilderExtensions', () => {
       });
 
       const { firstPassResult, secondPassResult, handlerResult } = await runner(
-        { f: -6, g: -7 },
-        { a: 1, b: 2, c: 3, d: 4, e: 5, h: 8, i: 9 }
+        { a: 1, b: 2, c: 3, d: 4, e: 5, f: -6, g: -7, h: 8, i: 9 },
+        ['a', 'b', 'c', 'd', 'e', 'h', 'i']
       );
 
       expect(firstPassResult).toStrictEqual(secondPassResult);
@@ -2271,8 +3904,8 @@ describe('::withBuilderExtensions', () => {
       });
 
       const { firstPassResult, secondPassResult, handlerResult } = await runner(
-        { f: -6, h: -8 },
-        { a: 1, b: 2, c: 3, d: 4, e: 5, g: 7, i: 9 }
+        { a: 1, b: 2, c: 3, d: 4, e: 5, f: -6, g: 7, h: -8, i: 9 },
+        ['a', 'b', 'c', 'd', 'e', 'g', 'i']
       );
 
       expect(firstPassResult).toStrictEqual(secondPassResult);
@@ -2280,16 +3913,22 @@ describe('::withBuilderExtensions', () => {
     }
   });
 
-  test('defaults do not override implications/argv', async () => {
+  test('defaults do not override implications/argv (including for aliases)', async () => {
     expect.assertions(2);
 
     const runner = makeMockBuilderRunner({
       customHandler(argv) {
         expect(argv).toStrictEqual({
           x: true,
-          y: 1,
           z: 4,
+          a: 4,
+          'z-z': 4,
+          zZ: 4,
+          y: 1,
           w: 10,
+          'w-w': 10,
+          wW: 10,
+          b: 100,
           _: expect.anything(),
           $0: expect.anything(),
           [$executionContext]: expect.anything()
@@ -2298,44 +3937,241 @@ describe('::withBuilderExtensions', () => {
       customBuilder: {
         x: { implies: { y: 1, z: 4, w: 10 } },
         y: { default: 2 },
-        z: { default: 3 },
-        w: { default: 5 }
+        z: { default: 3, alias: ['z-z', 'a'] },
+        w: { default: 5, alias: 'w-w' },
+        b: { default: 6 }
       }
     });
 
     {
-      const { handlerResult } = await runner({ x: true, w: 10 }, { y: 2, z: 3 });
+      const { handlerResult } = await runner(
+        { x: true, w: 10, 'w-w': 10, wW: 10, y: 2, z: 3, 'z-z': 3, zZ: 3, a: 3, b: 100 },
+        ['y', 'z']
+      );
+
       expect(handlerResult).toBeUndefined();
     }
   });
 
-  test('custom command handlers see final argv (including defaults)', async () => {
+  it('defaults respect aliases and yargs-parser configuration', async () => {
+    expect.hasAssertions();
+
+    let _argv: Record<string, unknown> | undefined = undefined;
+
+    function getArgv() {
+      const argv = _argv;
+      _argv = undefined;
+      return argv;
+    }
+
+    const customBuilder = {
+      'x-y': { default: 1, alias: ['x', 'x-y-alias'] },
+      z: { alias: 'z-z' }
+    };
+
+    const customHandler = ({
+      $0: _3,
+      _,
+      [$executionContext]: _4,
+      ...argv_
+    }: Arguments) => {
+      _argv = argv_;
+    };
+
+    {
+      const runner = makeMockBuilderRunner({ customHandler, customBuilder });
+
+      await runner(
+        {
+          'x-y': 1,
+          xY: 1,
+          x: 1,
+          'x-y-alias': 1,
+          xYAlias: 1,
+          z: true,
+          'z-z': true,
+          zZ: true
+        },
+        ['x-y']
+      );
+
+      expect(getArgv()).toStrictEqual({
+        'x-y': 1,
+        xY: 1,
+        x: 1,
+        'x-y-alias': 1,
+        xYAlias: 1,
+        z: true,
+        'z-z': true,
+        zZ: true
+      });
+    }
+
+    {
+      const runnerNoCamelCaseExpansion = makeMockBuilderRunner({
+        customHandler,
+        customBuilder,
+        parserConfiguration: { 'camel-case-expansion': false }
+      });
+
+      await runnerNoCamelCaseExpansion(
+        {
+          'x-y': 1,
+          x: 1,
+          'x-y-alias': 1,
+          z: true,
+          'z-z': true
+        },
+        ['x-y']
+      );
+
+      expect(getArgv()).toStrictEqual({
+        'x-y': 1,
+        x: 1,
+        'x-y-alias': 1,
+        z: true,
+        'z-z': true
+      });
+    }
+
+    {
+      const runnerStripAliases = makeMockBuilderRunner({
+        customHandler,
+        customBuilder,
+        parserConfiguration: { 'strip-aliased': true }
+      });
+
+      await runnerStripAliases(
+        {
+          'x-y': 1,
+          xY: 1,
+          z: true
+        },
+        ['x-y']
+      );
+
+      expect(getArgv()).toStrictEqual({
+        'x-y': 1,
+        xY: 1,
+        z: true
+      });
+    }
+
+    {
+      const runnerStripDashes = makeMockBuilderRunner({
+        customHandler,
+        customBuilder,
+        parserConfiguration: { 'strip-dashed': true }
+      });
+
+      await runnerStripDashes(
+        {
+          xY: 1,
+          x: 1,
+          xYAlias: 1,
+          z: true,
+          zZ: true
+        },
+        ['x-y']
+      );
+
+      expect(getArgv()).toStrictEqual({
+        xY: 1,
+        x: 1,
+        xYAlias: 1,
+        z: true,
+        zZ: true
+      });
+    }
+
+    {
+      const runnerStripBoth = makeMockBuilderRunner({
+        customHandler,
+        customBuilder,
+        parserConfiguration: { 'strip-dashed': true, 'strip-aliased': true }
+      });
+
+      await runnerStripBoth(
+        {
+          xY: 1,
+          z: true
+        },
+        ['x-y']
+      );
+
+      expect(getArgv()).toStrictEqual({
+        xY: 1,
+        z: true
+      });
+    }
+
+    {
+      const runnerAll = makeMockBuilderRunner({
+        customHandler,
+        customBuilder,
+        parserConfiguration: {
+          'camel-case-expansion': false,
+          'strip-dashed': true,
+          'strip-aliased': true
+        }
+      });
+
+      await runnerAll(
+        {
+          'x-y': 1,
+          z: true
+        },
+        ['x-y']
+      );
+
+      expect(getArgv()).toStrictEqual({
+        'x-y': 1,
+        z: true
+      });
+    }
+  });
+
+  test('custom command handlers see final argv (including defaults and their aliases)', async () => {
     expect.assertions(2);
 
     const runner = makeMockBuilderRunner({
       customHandler(argv) {
         expect(argv).toStrictEqual({
           x: true,
+          'x-x': true,
+          xX: true,
           y: 1,
           z: 1,
+          'Z-Z': 1,
+          zZ: 1,
           a: 1,
+          'a-a': 1,
+          aA: 1,
+          c: 1,
           _: expect.anything(),
           $0: expect.anything(),
           [$executionContext]: expect.anything()
         });
       },
       customBuilder: {
-        x: { subOptionOf: { x: { when: () => true, update: { implies: { a: 1 } } } } },
+        x: {
+          alias: 'x-x',
+          subOptionOf: { x: { when: () => true, update: { implies: { a: 1 } } } }
+        },
         y: { subOptionOf: { x: { when: () => true, update: { default: 1 } } } },
-        z: { default: 1 },
+        z: { default: 1, alias: 'Z-Z' },
         w: { implies: { b: 1 } },
-        a: {},
+        a: { alias: ['a-a', 'c'] },
         b: {}
       }
     });
 
     {
-      const { handlerResult } = await runner({ x: true }, { y: 1, z: 1 });
+      const { handlerResult } = await runner(
+        { x: true, 'x-x': true, xX: true, y: 1, z: 1, 'Z-Z': 1, zZ: 1 },
+        ['y', 'z']
+      );
+
       expect(handlerResult).toBeUndefined();
     }
   });
@@ -2350,7 +4186,8 @@ describe('::withBuilderExtensions', () => {
         c: { implies: [{ d: 1 }, { d: 2 }, { d: 3 }] },
         d: { demandThisOptionIf: [{ e: 1 }, { e: 2 }, { e: 3 }] },
         e: { demandThisOptionOr: [{ f: 1 }, { f: 2 }, { f: 3 }] },
-        f: { demandThisOptionXor: [{ g: 1 }, { g: 2 }, { g: 3 }] }
+        f: { demandThisOptionXor: [{ g: 1 }, { g: 2 }, { g: 3 }] },
+        g: {}
       }
     });
 
@@ -2434,7 +4271,12 @@ describe('::withBuilderExtensions', () => {
     const runner = makeMockBuilderRunner({
       customBuilder: {
         a: { requires: { b: 1, c: 2, d: 3 } },
-        b: { conflicts: { e: 1, f: 2, g: 3 } }
+        b: { conflicts: { e: 1, f: 2, g: 3 } },
+        c: {},
+        d: {},
+        e: {},
+        f: {},
+        g: {}
       }
     });
 
@@ -2476,26 +4318,286 @@ describe('::withBuilderExtensions', () => {
     expect(handlerResult).toSatisfy(isCommandNotImplementedError);
   });
 
+  it('throws a framework error when providing an explicitly undefined default', async () => {
+    expect.hasAssertions();
+
+    const runner = makeMockBuilderRunner({
+      customBuilder: { a: { default: undefined } }
+    });
+
+    const { firstPassResult } = await runner({});
+
+    expect(firstPassResult).toMatchObject({
+      message: expect.stringContaining(
+        ': ' + ErrorMessage.IllegalExplicitlyUndefinedDefault()
+      )
+    });
+  });
+
   it('throws framework error if withHandlerExtensions is invoked before metadata is available', async () => {
     expect.hasAssertions();
 
     const [, withHandlerExtensions] = withBuilderExtensions();
 
     await expect(withHandlerExtensions()({} as any)).rejects.toMatchObject({
-      message: expect.stringContaining(ErrorMessage.IllegalHandlerInvocation())
+      message: expect.stringContaining(': ' + ErrorMessage.IllegalHandlerInvocation())
     });
+  });
+
+  it('throws framework error if BF instance is missing ::getInternalMethods().getParserConfiguration() internal methods', async () => {
+    expect.hasAssertions();
+
+    const [builder] = withBuilderExtensions();
+
+    expect(() =>
+      builder({ group: jest.fn() /* getInternalMethods */ } as any, false, undefined)
+    ).toThrow(ErrorMessage.UnexpectedValueFromInternalYargsMethod());
   });
 
   it('throws framework error if BF instance is missing parsed.defaulted sub-property', async () => {
     expect.hasAssertions();
 
-    const [builder, withHandlerExtensions] = withBuilderExtensions();
-    builder({ group: jest.fn() } as any, false, undefined);
-    builder({ group: jest.fn() } as any, false, {} as any);
+    const [builder] = withBuilderExtensions();
 
-    await expect(withHandlerExtensions()({} as any)).rejects.toMatchObject({
-      message: expect.stringContaining(ErrorMessage.UnexpectedlyFalsyDetailedArguments())
-    });
+    builder(
+      {
+        group: jest.fn(),
+        getInternalMethods() {
+          return {
+            getParserConfiguration() {
+              return {};
+            }
+          };
+        }
+      } as any,
+      false,
+      undefined
+    );
+
+    expect(() =>
+      builder(
+        {
+          group: jest.fn(),
+          getInternalMethods() {
+            return {
+              getParserConfiguration() {
+                return {};
+              }
+            };
+          }
+        } as any,
+        false,
+        {} as any
+      )
+    ).toThrow(': ' + ErrorMessage.UnexpectedlyFalsyDetailedArguments());
+  });
+
+  it('throws framework error if any option names, aliases, or expansions conflict', async () => {
+    expect.hasAssertions();
+
+    const fakeBlackFlag = {
+      group: jest.fn(),
+      getInternalMethods() {
+        return {
+          getParserConfiguration() {
+            return {};
+          }
+        };
+      }
+    } as any;
+
+    {
+      const [builder] = withBuilderExtensions({ a: { alias: 'a' } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.DuplicateOptionName('a')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({ a: {}, b: { alias: 'a' } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.DuplicateOptionName('a')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({ c: { alias: 'a' }, b: { alias: 'a' } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.DuplicateOptionName('a')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({
+        cA: { alias: 'a' },
+        b: { alias: 'c-a' }
+      });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.DuplicateOptionName('cA')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({
+        'c-b': { alias: 'a' },
+        b: { alias: ['x', 'c-b'] }
+      });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.DuplicateOptionName('c-b')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({
+        'c-b-a': { alias: 'a' },
+        b: { alias: 'cBA' }
+      });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.DuplicateOptionName('cBA')
+      );
+    }
+  });
+
+  it('throws framework error if a non-existent option name is referenced by a BFE configuration key', async () => {
+    expect.hasAssertions();
+
+    const fakeBlackFlag = {
+      group: jest.fn(),
+      getInternalMethods() {
+        return {
+          getParserConfiguration() {
+            return {};
+          }
+        };
+      }
+    } as any;
+
+    {
+      const [builder] = withBuilderExtensions({ a: { requires: 'b' } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'b')
+      );
+    }
+
+    // * Check various syntaxes
+
+    {
+      const [builder] = withBuilderExtensions({ a: { requires: ['b'] } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'b')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({ a: { requires: { b: 1 } } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'b')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({ a: { requires: [{ b: 1 }] } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'b')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({
+        a: { requires: [{ b: 1 }, 'c'] },
+        b: {}
+      });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'c')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({
+        a: { requires: { b: 1, c: 2 } },
+        b: {}
+      });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'c')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({
+        a: { requires: [{ b: 1, c: 2 }] },
+        c: {}
+      });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'b')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({
+        a: { requires: ['b', 'c'] },
+        b: {},
+        d: {}
+      });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'c')
+      );
+    }
+
+    // * Nominally check other keys
+
+    {
+      const [builder] = withBuilderExtensions({ a: { conflicts: 'b' } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'b')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({ a: { implies: { b: true } } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'b')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({ a: { demandThisOptionIf: 'b' } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'b')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({ a: { demandThisOptionOr: 'b' } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'b')
+      );
+    }
+
+    {
+      const [builder] = withBuilderExtensions({ a: { demandThisOptionXor: 'b' } });
+
+      expect(() => builder(fakeBlackFlag, false, undefined)).toThrow(
+        ErrorMessage.ReferencedNonExistentOption('a', 'b')
+      );
+    }
   });
 
   describe('automatic grouping of related options', () => {
@@ -2860,21 +4962,21 @@ describe('::getInvocableExtendedHandler', () => {
     ]);
   });
 
-  it('throws if resolved command is falsy', async () => {
+  it('throws a framework error if resolved command is falsy', async () => {
     expect.hasAssertions();
 
     await expect(
       // @ts-expect-error: bad parameter
       getInvocableExtendedHandler(undefined, generateFakeExecutionContext())
     ).rejects.toMatchObject({
-      message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
+      message: expect.stringContaining(': ' + ErrorMessage.FalsyCommandExport())
     });
 
     await expect(
       // @ts-expect-error: bad parameter
       getInvocableExtendedHandler(Promise.resolve(), generateFakeExecutionContext())
     ).rejects.toMatchObject({
-      message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
+      message: expect.stringContaining(': ' + ErrorMessage.FalsyCommandExport())
     });
 
     await expect(
@@ -2884,7 +4986,7 @@ describe('::getInvocableExtendedHandler', () => {
         generateFakeExecutionContext()
       )
     ).rejects.toMatchObject({
-      message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
+      message: expect.stringContaining(': ' + ErrorMessage.FalsyCommandExport())
     });
 
     await expect(
@@ -2894,53 +4996,71 @@ describe('::getInvocableExtendedHandler', () => {
         generateFakeExecutionContext()
       )
     ).rejects.toMatchObject({
-      message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
+      message: expect.stringContaining(': ' + ErrorMessage.FalsyCommandExport())
     });
   });
 
-  it('throws if resolved command handler is falsy', async () => {
+  it('throws a framework error if resolved command handler is falsy', async () => {
     expect.hasAssertions();
 
     await expect(
       getInvocableExtendedHandler({}, generateFakeExecutionContext())
     ).rejects.toMatchObject({
-      message: expect.stringContaining(
-        ErrorMessage.AssertionFailureCommandHandlerNotAFunction()
-      )
+      message: expect.stringContaining(': ' + ErrorMessage.CommandHandlerNotAFunction())
     });
 
     await expect(
       // @ts-expect-error: bad parameter
       getInvocableExtendedHandler({ command: false }, generateFakeExecutionContext())
     ).rejects.toMatchObject({
-      message: expect.stringContaining(
-        ErrorMessage.AssertionFailureCommandHandlerNotAFunction()
-      )
+      message: expect.stringContaining(': ' + ErrorMessage.CommandHandlerNotAFunction())
     });
 
     await expect(
       // @ts-expect-error: bad parameter
       getInvocableExtendedHandler({ command: {} }, generateFakeExecutionContext())
     ).rejects.toMatchObject({
-      message: expect.stringContaining(
-        ErrorMessage.AssertionFailureCommandHandlerNotAFunction()
-      )
+      message: expect.stringContaining(': ' + ErrorMessage.CommandHandlerNotAFunction())
     });
   });
 
-  it('throws if command import rejects', async () => {
+  it('throws a framework error if command import rejects', async () => {
     expect.hasAssertions();
 
     await expect(
       getInvocableExtendedHandler(Promise.reject(), generateFakeExecutionContext())
     ).rejects.toMatchObject({
-      message: expect.stringContaining(ErrorMessage.AssertionFailureFalsyCommand())
+      message: expect.stringContaining(': ' + ErrorMessage.FalsyCommandExport())
     });
   });
 });
 
 test('example #1 functions as expected', async () => {
   expect.hasAssertions();
+
+  function prod(val: boolean) {
+    return {
+      'only-production': val,
+      onlyProduction: val,
+      production: val,
+      prod: val
+    };
+  }
+
+  function prev(val: boolean) {
+    return {
+      'only-preview': val,
+      onlyPreview: val,
+      preview: val
+    };
+  }
+
+  function toPath(val: string) {
+    return {
+      'to-path': val,
+      toPath: val
+    };
+  }
 
   let finalArgv: unknown = undefined;
 
@@ -2963,6 +5083,7 @@ test('example #1 functions as expected', async () => {
           boolean: true,
           implies: { 'only-preview': false },
           requires: { target: DeployTarget.Vercel },
+          // ! vvv
           default: false,
           description: 'Only deploy to the remote production environment'
         },
@@ -2971,6 +5092,7 @@ test('example #1 functions as expected', async () => {
           boolean: true,
           implies: { 'only-production': false },
           requires: { target: DeployTarget.Vercel },
+          // ! vvv
           default: true,
           description: 'Only deploy to the remote preview environment'
         },
@@ -2991,101 +5113,129 @@ test('example #1 functions as expected', async () => {
   });
 
   {
-    const { handlerResult } = await runner({ target: DeployTarget.Vercel });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Defaulted
+      },
+      ['only-preview', 'only-production']
+    );
 
     expect(handlerResult).toBeUndefined();
     expect(finalArgv).toStrictEqual({
       target: DeployTarget.Vercel,
-      'only-preview': true,
-      'only-production': false
+      ...prev(true), // ? Defaulted
+      ...prod(false) // ? Defaulted
+    });
+  }
+
+  {
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        ...prev(true),
+        ...prod(false) // ? Defaulted
+      },
+      ['only-production']
+    );
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      ...prev(true),
+      ...prod(false) // ? Defaulted then overwritten by implication
+    });
+  }
+
+  {
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        ...prev(true), // ? Defaulted
+        ...prod(true)
+      },
+      ['only-preview']
+    );
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      ...prev(false), // ? Defaulted then overwritten by implication
+      ...prod(true)
+    });
+  }
+
+  {
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        ...prev(false),
+        ...prod(false) // ? Defaulted
+      },
+      ['only-production']
+    );
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      ...prev(false),
+      ...prod(false) // ? Defaulted then overwritten by implication
+    });
+  }
+
+  {
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        ...prev(true), // ? Defaulted
+        ...prod(false)
+      },
+      ['only-preview']
+    );
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      ...prev(false), // ? Defaulted then overwritten by implication
+      ...prod(false)
     });
   }
 
   {
     const { handlerResult } = await runner({
       target: DeployTarget.Vercel,
-      'only-preview': true
+      ...prev(false),
+      ...prod(false)
     });
 
     expect(handlerResult).toBeUndefined();
     expect(finalArgv).toStrictEqual({
       target: DeployTarget.Vercel,
-      'only-preview': true,
-      'only-production': false
+      ...prev(false),
+      ...prod(false)
     });
   }
 
   {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Vercel,
-      'only-production': true
-    });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Ssh,
+        host: 'prime',
+        ...toPath('/path/'),
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Defaulted
+      },
+      ['only-preview', 'only-production']
+    );
 
     expect(handlerResult).toBeUndefined();
     expect(finalArgv).toStrictEqual({
-      target: DeployTarget.Vercel,
-      'only-preview': false,
-      'only-production': true
-    });
-  }
-
-  {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Vercel,
-      'only-preview': false
-    });
-
-    expect(handlerResult).toBeUndefined();
-    expect(finalArgv).toStrictEqual({
-      target: DeployTarget.Vercel,
-      'only-preview': false,
-      'only-production': false
-    });
-  }
-
-  {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Vercel,
-      'only-production': false
-    });
-
-    expect(handlerResult).toBeUndefined();
-    expect(finalArgv).toStrictEqual({
-      target: DeployTarget.Vercel,
-      'only-preview': false,
-      'only-production': false
-    });
-  }
-
-  {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Vercel,
-      'only-preview': false,
-      'only-production': false
-    });
-
-    expect(handlerResult).toBeUndefined();
-    expect(finalArgv).toStrictEqual({
-      target: DeployTarget.Vercel,
-      'only-preview': false,
-      'only-production': false
-    });
-  }
-
-  {
-    const { handlerResult } = await runner({
       target: DeployTarget.Ssh,
       host: 'prime',
-      'to-path': '/path/'
-    });
-
-    expect(handlerResult).toBeUndefined();
-    expect(finalArgv).toStrictEqual({
-      target: DeployTarget.Ssh,
-      host: 'prime',
-      'to-path': '/path/',
-      'only-preview': true,
-      'only-production': false
+      ...toPath('/path/'),
+      ...prev(true), // ? Defaulted
+      ...prod(false) // ? Defaulted
     });
   }
 
@@ -3094,8 +5244,8 @@ test('example #1 functions as expected', async () => {
   {
     const { handlerResult } = await runner({
       target: DeployTarget.Vercel,
-      'only-preview': true,
-      'only-production': true
+      ...prev(true),
+      ...prod(true)
     });
 
     expect(handlerResult).toMatchObject({
@@ -3104,7 +5254,14 @@ test('example #1 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({ target: DeployTarget.Ssh });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Ssh,
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Defaulted
+      },
+      ['only-preview', 'only-production']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.DemandIfViolation('host', ['target', DeployTarget.Ssh])
@@ -3112,7 +5269,15 @@ test('example #1 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({ target: DeployTarget.Ssh, host: 'prime' });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Ssh,
+        host: 'prime',
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Defaulted
+      },
+      ['only-preview', 'only-production']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.DemandIfViolation('to-path', ['target', DeployTarget.Ssh])
@@ -3120,10 +5285,15 @@ test('example #1 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Ssh,
-      'to-path': '/path/'
-    });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Ssh,
+        ...toPath('/path/'),
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Defaulted
+      },
+      ['only-preview', 'only-production']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.DemandIfViolation('host', ['target', DeployTarget.Ssh])
@@ -3131,14 +5301,27 @@ test('example #1 functions as expected', async () => {
   }
 
   {
-    const { firstPassResult, secondPassResult } = await runner({});
+    const { firstPassResult, secondPassResult } = await runner(
+      {
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Defaulted
+      },
+      ['only-preview', 'only-production']
+    );
 
     expect((firstPassResult as any).target).toContainEntry(['demandOption', true]);
     expect(firstPassResult).toStrictEqual(secondPassResult);
   }
 
   {
-    const { handlerResult } = await runner({ host: 'prime' });
+    const { handlerResult } = await runner(
+      {
+        host: 'prime',
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Defaulted
+      },
+      ['only-preview', 'only-production']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
@@ -3146,7 +5329,14 @@ test('example #1 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({ 'to-path': '/path/' });
+    const { handlerResult } = await runner(
+      {
+        ...toPath('/path/'),
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Defaulted
+      },
+      ['only-preview', 'only-production']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.RequiresViolation('to-path', [['target', DeployTarget.Ssh]])
@@ -3154,7 +5344,15 @@ test('example #1 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({ host: 'prime', 'to-path': '/path/' });
+    const { handlerResult } = await runner(
+      {
+        host: 'prime',
+        ...toPath('/path/'),
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Defaulted
+      },
+      ['only-preview', 'only-production']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
@@ -3162,11 +5360,16 @@ test('example #1 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Vercel,
-      host: 'prime',
-      'to-path': '/path/'
-    });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        host: 'prime',
+        ...toPath('/path/'),
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Defaulted
+      },
+      ['only-preview', 'only-production']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
@@ -3174,10 +5377,31 @@ test('example #1 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Ssh,
-      'only-preview': true
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Ssh,
+        ...prev(true),
+        ...prod(false) // ? Defaulted
+      },
+      ['only-production']
+    );
+
+    expect(handlerResult).toMatchObject({
+      message: ErrorMessage.RequiresViolation('only-preview', [
+        ['target', DeployTarget.Vercel]
+      ])
     });
+  }
+
+  {
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Ssh,
+        ...prev(false),
+        ...prod(false) // ? Defaulted
+      },
+      ['only-production']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.RequiresViolation('only-preview', [
@@ -3189,21 +5413,8 @@ test('example #1 functions as expected', async () => {
   {
     const { handlerResult } = await runner({
       target: DeployTarget.Ssh,
-      'only-preview': false
-    });
-
-    expect(handlerResult).toMatchObject({
-      message: ErrorMessage.RequiresViolation('only-preview', [
-        ['target', DeployTarget.Vercel]
-      ])
-    });
-  }
-
-  {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Ssh,
-      'only-preview': true,
-      'only-production': true
+      ...prev(true),
+      ...prod(true)
     });
 
     expect(handlerResult).toMatchObject({
@@ -3214,10 +5425,14 @@ test('example #1 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({
-      'only-preview': true,
-      host: 'prime'
-    });
+    const { handlerResult } = await runner(
+      {
+        host: 'prime',
+        ...prev(true),
+        ...prod(false) // ? Defaulted
+      },
+      ['only-production']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.RequiresViolation('only-preview', [
@@ -3229,6 +5444,26 @@ test('example #1 functions as expected', async () => {
 
 test('example #2 functions as expected', async () => {
   expect.hasAssertions();
+
+  function prod(val: boolean) {
+    return {
+      production: val,
+      prod: val
+    };
+  }
+
+  function prev(val: boolean) {
+    return {
+      preview: val
+    };
+  }
+
+  function toPath(val: string) {
+    return {
+      'to-path': val,
+      toPath: val
+    };
+  }
 
   let finalArgv: unknown = undefined;
 
@@ -3340,9 +5575,13 @@ test('example #2 functions as expected', async () => {
   });
 
   {
-    const { secondPassResult, handlerResult } = await runner({
-      target: DeployTarget.Vercel
-    });
+    const { secondPassResult, handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        ...prev(true) // ? Defaulted
+      },
+      ['preview']
+    );
 
     expect(secondPassResult).toStrictEqual({
       target: {
@@ -3376,65 +5615,73 @@ test('example #2 functions as expected', async () => {
 
     expect(finalArgv).toStrictEqual({
       target: DeployTarget.Vercel,
-      preview: true
+      ...prev(true) // ? Defaulted
     });
   }
 
   {
     const { handlerResult } = await runner({
       target: DeployTarget.Vercel,
-      preview: true
+      ...prev(true)
     });
 
     expect(handlerResult).toBeUndefined();
     expect(finalArgv).toStrictEqual({
       target: DeployTarget.Vercel,
-      preview: true
+      ...prev(true)
+    });
+  }
+
+  {
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        ...prev(true), // ? Defaulted
+        ...prod(true)
+      },
+      ['preview']
+    );
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      ...prev(false), // ? Defaulted
+      ...prod(true)
     });
   }
 
   {
     const { handlerResult } = await runner({
       target: DeployTarget.Vercel,
-      production: true
+      ...prev(true),
+      ...prod(true)
     });
 
     expect(handlerResult).toBeUndefined();
     expect(finalArgv).toStrictEqual({
       target: DeployTarget.Vercel,
-      preview: false,
-      production: true
+      ...prev(true),
+      ...prod(true)
     });
   }
 
   {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Vercel,
-      preview: true,
-      production: true
-    });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Ssh,
+        host: 'prime',
+        ...toPath('/path/'),
+        ...prev(true) // ? Defaulted
+      },
+      ['preview']
+    );
 
     expect(handlerResult).toBeUndefined();
     expect(finalArgv).toStrictEqual({
-      target: DeployTarget.Vercel,
-      preview: true,
-      production: true
-    });
-  }
-
-  {
-    const { handlerResult } = await runner({
       target: DeployTarget.Ssh,
       host: 'prime',
-      'to-path': '/path/'
-    });
-
-    expect(handlerResult).toBeUndefined();
-    expect(finalArgv).toStrictEqual({
-      target: DeployTarget.Ssh,
-      host: 'prime',
-      'to-path': '/path/',
-      preview: true
+      ...toPath('/path/'),
+      ...prev(true) // ? Defaulted
     });
   }
 
@@ -3443,8 +5690,27 @@ test('example #2 functions as expected', async () => {
   {
     const { handlerResult } = await runner({
       target: DeployTarget.Vercel,
-      preview: false
+      ...prev(false)
     });
+
+    expect(handlerResult).toMatchObject({
+      message: 'must choose either --preview or --production deployment environment'
+    });
+  }
+
+  {
+    // * This is an interesting edge case. --prod=* implies --preview=false, but
+    // * if --prod=* takes the form of --prod=false, then both --prod and
+    // * --preview will be false, which should (and does) fail the no-both-false
+    // * check.
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        ...prev(true), // ? Defaulted
+        ...prod(false) // ? Implies ...prev(false)
+      },
+      ['preview']
+    );
 
     expect(handlerResult).toMatchObject({
       message: 'must choose either --preview or --production deployment environment'
@@ -3454,7 +5720,8 @@ test('example #2 functions as expected', async () => {
   {
     const { handlerResult } = await runner({
       target: DeployTarget.Vercel,
-      production: false
+      ...prev(false),
+      ...prod(false)
     });
 
     expect(handlerResult).toMatchObject({
@@ -3463,19 +5730,13 @@ test('example #2 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Vercel,
-      preview: false,
-      production: false
-    });
-
-    expect(handlerResult).toMatchObject({
-      message: 'must choose either --preview or --production deployment environment'
-    });
-  }
-
-  {
-    const { handlerResult } = await runner({ target: DeployTarget.Ssh });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Ssh,
+        ...prev(true) // ? Defaulted
+      },
+      ['preview']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.DemandIfViolation('host', ['target', DeployTarget.Ssh])
@@ -3483,7 +5744,14 @@ test('example #2 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({ target: DeployTarget.Ssh, host: 'prime' });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Ssh,
+        host: 'prime',
+        ...prev(true) // ? Defaulted
+      },
+      ['preview']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.DemandIfViolation('to-path', ['target', DeployTarget.Ssh])
@@ -3491,10 +5759,14 @@ test('example #2 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Ssh,
-      'to-path': '/path/'
-    });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Ssh,
+        ...toPath('/path/'),
+        ...prev(true) // ? Defaulted
+      },
+      ['preview']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.DemandIfViolation('host', ['target', DeployTarget.Ssh])
@@ -3502,14 +5774,25 @@ test('example #2 functions as expected', async () => {
   }
 
   {
-    const { firstPassResult, secondPassResult } = await runner({});
+    const { firstPassResult, secondPassResult } = await runner(
+      {
+        ...prev(true) // ? Defaulted
+      },
+      ['preview']
+    );
 
     expect((firstPassResult as any).target).toContainEntry(['demandOption', true]);
     expect(firstPassResult).toStrictEqual(secondPassResult);
   }
 
   {
-    const { handlerResult } = await runner({ host: 'prime' });
+    const { handlerResult } = await runner(
+      {
+        host: 'prime',
+        ...prev(true) // ? Defaulted
+      },
+      ['preview']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
@@ -3517,7 +5800,13 @@ test('example #2 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({ 'to-path': '/path/' });
+    const { handlerResult } = await runner(
+      {
+        ...toPath('/path/'),
+        ...prev(true) // ? Defaulted
+      },
+      ['preview']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.RequiresViolation('to-path', [['target', DeployTarget.Ssh]])
@@ -3525,7 +5814,14 @@ test('example #2 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({ host: 'prime', 'to-path': '/path/' });
+    const { handlerResult } = await runner(
+      {
+        host: 'prime',
+        ...toPath('/path/'),
+        ...prev(true) // ? Defaulted
+      },
+      ['preview']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
@@ -3533,11 +5829,15 @@ test('example #2 functions as expected', async () => {
   }
 
   {
-    const { handlerResult } = await runner({
-      target: DeployTarget.Vercel,
-      host: 'prime',
-      'to-path': '/path/'
-    });
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        host: 'prime',
+        ...toPath('/path/'),
+        ...prev(true) // ? Defaulted
+      },
+      ['preview']
+    );
 
     expect(handlerResult).toMatchObject({
       message: ErrorMessage.RequiresViolation('host', [['target', DeployTarget.Ssh]])
@@ -3547,7 +5847,7 @@ test('example #2 functions as expected', async () => {
   {
     const { handlerResult } = await runner({
       target: DeployTarget.Ssh,
-      preview: true
+      ...prev(true)
     });
 
     expect(handlerResult).toMatchObject({
@@ -3560,7 +5860,7 @@ test('example #2 functions as expected', async () => {
   {
     const { handlerResult } = await runner({
       target: DeployTarget.Ssh,
-      preview: false
+      ...prev(false)
     });
 
     expect(handlerResult).toMatchObject({
@@ -3573,8 +5873,8 @@ test('example #2 functions as expected', async () => {
   {
     const { handlerResult } = await runner({
       target: DeployTarget.Ssh,
-      preview: true,
-      production: true
+      ...prev(true),
+      ...prod(true)
     });
 
     expect(handlerResult).toMatchObject({
@@ -3586,8 +5886,8 @@ test('example #2 functions as expected', async () => {
 
   {
     const { handlerResult } = await runner({
-      preview: true,
-      host: 'prime'
+      host: 'prime',
+      ...prev(true)
     });
 
     expect(handlerResult).toMatchObject({
@@ -3610,23 +5910,38 @@ function makeMockBuilderRunner({
   customBuilder,
   customHandler,
   context = {},
-  group = jest.fn()
+  group = jest.fn(),
+  parserConfiguration = {}
 }: {
   customBuilder?: Parameters<typeof withBuilderExtensions>[0];
   builderExtensionsConfig?: Parameters<typeof withBuilderExtensions>[1];
   customHandler?: Parameters<ReturnType<typeof withBuilderExtensions>[1]>[0];
   context?: PartialDeep<ExecutionContext>;
   group?: typeof jest.fn;
+  parserConfiguration?: Partial<ParserConfigurationOptions>;
 } = {}) {
-  const blackFlag_ = { group } as unknown as Parameters<
-    ReturnType<typeof withBuilderExtensions>[0]
-  >[0];
+  const blackFlag_ = {
+    group,
+    getInternalMethods() {
+      return {
+        getParserConfiguration() {
+          return parserConfiguration;
+        }
+      };
+    }
+  } as unknown as Parameters<ReturnType<typeof withBuilderExtensions>[0]>[0];
 
   return async function mockRunner(
     dummyArgv: Record<string, unknown>,
-    defaultedDummyArgs: Record<string, unknown> = {}
+    defaultedDummyArgs: string[] = []
   ) {
-    const blackFlag = { ...blackFlag_, parsed: { defaulted: defaultedDummyArgs } };
+    const blackFlag = {
+      ...blackFlag_,
+      parsed: {
+        defaulted: Object.fromEntries(defaultedDummyArgs.map((name) => [name, true]))
+      }
+    };
+
     const argv: Arguments<typeof dummyArgv, ExecutionContext> = Object.assign(
       {
         _: [],
