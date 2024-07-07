@@ -61,6 +61,9 @@
     "build:dist": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build distributables",
     "build:docs": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build docs",
     "build:externals": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build externals",
+    "build:transpiled": "npm run build:transpiled:test",
+    "build:transpiled:dev": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build distributables --generate-intermediates-for development",
+    "build:transpiled:test": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build distributables --generate-intermediates-for test",
     "clean": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js clean",
     "format": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js format --hush",
     "lint": "stdbuf -i0 -o0 -e0 tsc --project tsconfig.lint.json; X=$?; stdbuf -i0 -o0 -e0 eslint --parser-options=project:tsconfig.lint.json --no-error-on-unmatched-pattern packages src; Y=$?; MD_FILES=$(node -e 'console.log(require(`glob-gitignore`).sync(`**/*.md`, { ignore: require(`fs`).readFileSync(`.prettierignore`, `utf8`).split(`\n`).filter(Boolean), dot: true }).join(`\n`))') && echo $MD_FILES | NODE_ENV=lint xargs remark --quiet --frail --no-stdout; Z=$?; [ $X -eq 0 ] && [ $Y -eq 0 ] && [ $Z -eq 0 ]",
@@ -123,7 +126,7 @@
     "unique-filename": "^3.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.13.0",
+    "@-xun/scripts": "^1.14.0",
     "@babel/eslint-parser": "^7.24.7",
     "@babel/plugin-proposal-export-default-from": "^7.24.7",
     "@babel/preset-env": "^7.24.7",
