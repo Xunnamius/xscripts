@@ -13,7 +13,7 @@
 # xscripts
 
 This is a highly-opinionated personal tool for building, linting, and deploying
-my NPM-based projects. Similar in intent to [kcd-scripts][1].
+my NPM-based projects. Similar in intent to kcd-scripts, react-scripts, etc.
 
 ---
 
@@ -209,4 +209,3 @@ specification. Contributions of any kind welcome!
 [x-repo-pr-compare]: https://github.com/xunnamius/xscripts/compare
 [x-repo-sponsor]: https://github.com/sponsors/Xunnamius
 [x-repo-support]: /.github/SUPPORT.md
-[1]: https://github.com/kentcdodds/kcd-scripts
