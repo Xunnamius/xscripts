@@ -8,5 +8,5 @@ if beginswith 'rebase' "$GIT_REFLOG_ACTION"; then
   exit 0
 fi
 
-if [ -z $GAC_VERIFY_SIMPLE ]; then npm run lint:all; fi
-NODE_NO_WARNINGS=1 NODE_ENV=format npx lint-staged --concurrent false
+if [ -z $GAC_VERIFY_SIMPLE ]; then npm run lint:source:all; fi
+NODE_NO_WARNINGS=1 npx lint-staged --concurrent false
