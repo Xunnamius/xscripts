@@ -92,7 +92,7 @@ npm ci
 # npm run clean -- --force
 
 # 3. Lint all files.
-npm run lint:all
+npm run lint:source:all
 
 # 4. Build distributables.
 npm run build:dist
