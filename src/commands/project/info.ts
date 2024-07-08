@@ -51,6 +51,8 @@ export default function command({
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Analyzing project...');
 
+      // TODO: what is the next version gonna be, if any?
+
       genericLogger([LogTag.IF_NOT_QUIETED], 'Preparing report...');
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
