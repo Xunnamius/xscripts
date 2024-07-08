@@ -1,5 +1,6 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { setTimeout as delay } from 'node:timers/promises';
 import { isNativeError } from 'node:util/types';
 
 import {
@@ -2726,6 +2727,49 @@ describe('::withBuilderExtensions', () => {
       expect(firstPassResult).toStrictEqual(secondPassResult);
       expect(handlerResult).toSatisfy(isCliError);
       expect(handlerResult).not.toSatisfy(isCommandNotImplementedError);
+    });
+
+    it('accepts an array of (potentially async) checks', async () => {
+      expect.hasAssertions();
+
+      const runOrder: number[] = [];
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: { default: 1 },
+          y: {
+            check: [
+              function (y, argv) {
+                runOrder.push(1);
+                return y === true && argv.y === true && argv.x === 1;
+              },
+              async (y, argv) => {
+                await delay(100);
+                runOrder.push(2);
+                return y === true && argv.y === true && argv.x === 1;
+              },
+              function (y, argv) {
+                runOrder.push(3);
+                return y === true && argv.y === true && argv.x === 1;
+              }
+            ]
+          }
+        }
+      });
+
+      const { firstPassResult, secondPassResult, handlerResult } = await runner(
+        { y: true },
+        ['x']
+      );
+
+      expect(firstPassResult).toStrictEqual({
+        x: { default: 1 },
+        y: {}
+      });
+
+      expect(firstPassResult).toStrictEqual(secondPassResult);
+      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      expect(runOrder).toStrictEqual([1, 3, 2]);
     });
 
     it('sees implications (final arv) and their aliases/expansions depending on yargs-parser configuration', async () => {

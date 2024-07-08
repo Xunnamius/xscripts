@@ -591,6 +591,46 @@ export const [builder, withHandlerExtensions] = withBuilderExtensions({
 });
 ```
 
+You may also pass an array of check functions, each being executed after the
+other. This makes it easy to reuse checks between options. For example:
+
+> Note that providing an array with one or more _async_ check functions will
+> result in them all being awaited concurrently.
+
+```javascript
+export const [builder, withHandlerExtensions] = withBuilderExtensions({
+  x: {
+    number: true,
+    check: [checkArgBetween0And10('x'), checkArgGreaterThan5('x')]
+  },
+  y: {
+    number: true,
+    check: checkArgBetween0And10('y')
+  },
+  z: {
+    number: true,
+    check: checkArgGreaterThan5('z')
+  }
+});
+
+function checkArgBetween0And10(argName) {
+  return function (argValue, fullArgv) {
+    return (
+      (argValue >= 0 && argValue <= 10) ||
+      `"${argName}" must be between 0 and 10 (inclusive), saw: ${argValue}`
+    );
+  };
+}
+
+function checkArgGreaterThan5(argName) {
+  return function (argValue, fullArgv) {
+    return (
+      argValue > 5 || `"${argName}" must be greater than 5, saw: ${argValue}`
+    );
+  };
+}
+```
+
 See the yargs documentation on [`yargs::check()`][26] for more information.
 
 ---

@@ -325,15 +325,17 @@ export type BfeBuilderObjectValueExtensions<
    * a string, or any non-truthy value (including `undefined` or not returning
    * anything), Black Flag will throw a `CliError` on your behalf.
    *
+   * You may also pass an array of check functions, each being executed after
+   * the other. Note that providing an array of one or more async check
+   * functions will result in them being awaited concurrently.
+   *
    * See [the
    * documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#check)
    * for details.
    */
-  check?: (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    currentArgumentValue: any,
-    argv: Arguments<CustomCliArguments, CustomExecutionContext>
-  ) => Promisable<unknown>;
+  check?:
+    | BfeCheckFunction<CustomCliArguments, CustomExecutionContext>
+    | BfeCheckFunction<CustomCliArguments, CustomExecutionContext>[];
   /**
    * `subOptionOf` is declarative sugar around Black Flag's support for double
    * argument parsing, allowing you to describe the relationship between options
@@ -458,6 +460,20 @@ export type BfeSubOptionOfExtensionValue<
         CustomExecutionContext
       >;
 };
+
+/**
+ * This function is used to validate an argument passed to Black Flag.
+ *
+ * @see {@link BfeBuilderObjectValueExtensions.check}
+ */
+export type BfeCheckFunction<
+  CustomCliArguments extends Record<string, unknown>,
+  CustomExecutionContext extends ExecutionContext
+> = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  currentArgumentValue: any,
+  argv: Arguments<CustomCliArguments, CustomExecutionContext>
+) => Promisable<unknown>;
 
 /**
  * This function implements several additional optionals-related units of
@@ -1033,20 +1049,28 @@ export function withBuilderExtensions<
         // ? We want to run the check functions sequentially and in definition
         // ? order since that's what the documentation promises
         // * Run custom checks on final argv
-        for (const [currentArgument, checkFn] of Object.entries(optionsMetadata.checks)) {
+        for (const [currentArgument, checkFunctions_] of Object.entries(
+          optionsMetadata.checks
+        )) {
           if (currentArgument in realArgv) {
-            // ! checkFn might return a promise (or be async), watch out!
-            // eslint-disable-next-line no-await-in-loop
-            const result = await checkFn(realArgv[currentArgument], realArgv);
+            const checkFunctions = [checkFunctions_].flat();
 
-            if (!result || typeof result === 'string' || isNativeError(result)) {
-              throw isCliError(result)
-                ? result
-                : new CliError(
-                    (result as string | Error | false) ||
-                      ErrorMessage.CheckFailed(currentArgument)
-                  );
-            }
+            // eslint-disable-next-line no-await-in-loop
+            await Promise.all(
+              checkFunctions.map(async (checkFn) => {
+                // ! check functions might return a promise, so WATCH OUT!
+                const result = await checkFn(realArgv[currentArgument], realArgv);
+
+                if (!result || typeof result === 'string' || isNativeError(result)) {
+                  throw isCliError(result)
+                    ? result
+                    : new CliError(
+                        (result as string | Error | false) ||
+                          ErrorMessage.CheckFailed(currentArgument)
+                      );
+                }
+              })
+            );
           }
         }
 
