@@ -97,6 +97,7 @@ export default function command({
 
     return {
       type: {
+        alias: 'types',
         array: true,
         choices: testTypes,
         description: 'Which test type(s) to run',
@@ -104,6 +105,7 @@ export default function command({
         check: checkAllChoiceIfGivenIsByItself(TestType.All, 'test type')
       },
       scope: {
+        alias: 'scopes',
         array: true,
         choices: testScopes,
         description: 'The context(s) in which test types are discovered and run',
