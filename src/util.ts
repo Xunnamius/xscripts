@@ -18,7 +18,7 @@ export async function globalPreChecks({
   debug_,
   runtimeContext
 }: Pick<GlobalExecutionContext, 'debug_' | 'runtimeContext'>) {
-  const debug = debug_.extend('configureArguments');
+  const debug = debug_.extend('globalPreChecks');
   const cwd = process.cwd();
 
   const {
