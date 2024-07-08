@@ -56,7 +56,7 @@
     "/README.md"
   ],
   "scripts": {
-    "build": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build",
+    "build": "npm run build:dist --",
     "build:changelog": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build changelog",
     "build:dist": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build distributables",
     "build:docs": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js build docs",
