@@ -1,7 +1,5 @@
 import { isNativeError } from 'node:util/types';
 
-import { ListrErrorTypes } from 'listr2';
-
 import {
   createListrManager,
   TAB,
@@ -141,6 +139,8 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
       ) {
         context.log.newline([IF_NOT_HUSHED], 'alternate');
         context.log.error([IF_NOT_HUSHED], '❌ Fatal task errors:');
+
+        const { ListrErrorTypes } = await import('listr2');
 
         for (const taskError of context.taskManager.errors) {
           if (taskError.type !== ListrErrorTypes.HAS_FAILED_WITHOUT_ERROR) {

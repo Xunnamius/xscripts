@@ -2,5 +2,13 @@
   "name": "@-xun/cli-utils",
   "dependencies": {
     "@black-flag/extensions": "^1.0.0"
+  },
+  "peerDependencies": {
+    "listr2": "^8.2.3"
+  },
+  "peerDependenciesMeta": {
+    "listr2": {
+      "optional": true
+    }
   }
 }
