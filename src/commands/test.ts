@@ -4,8 +4,11 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
-import { globalPreChecks } from 'universe/util';
+import {
+  checkAllChoiceIfGivenIsByItself,
+  checkIsNonNegative,
+  globalPreChecks
+} from 'universe/util';
 
 import {
   LogTag,
@@ -98,22 +101,20 @@ export default function command({
         choices: testTypes,
         description: 'Which test type(s) to run',
         default: [TestType.All],
-        check: checkAllIsGivenByItself
+        check: checkAllChoiceIfGivenIsByItself(TestType.All, 'test type')
       },
       scope: {
         array: true,
         choices: testScopes,
         description: 'The context(s) in which test types are discovered and run',
         default: [TestType.All],
-        check: checkAllIsGivenByItself
+        check: checkAllChoiceIfGivenIsByItself(TestScope.All, 'test scope')
       },
       repeat: {
         number: true,
         description: 'Repeat entire test suite --repeat times after initial run',
         default: 0,
-        check(repeat) {
-          return repeat >= 0 || ErrorMessage.ArgumentMustBeNonNegative('repeat');
-        }
+        check: checkIsNonNegative('repeat')
       },
       'collect-coverage': {
         alias: 'coverage',
@@ -327,10 +328,4 @@ export default function command({
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
-}
-
-function checkAllIsGivenByItself(choices: (TestType | TestScope)[]) {
-  const includesAll = choices.includes(TestType.All) || choices.includes(TestScope.All);
-
-  return !includesAll || choices.length === 1 || ErrorMessage.AllScopeMustBeAlone();
 }

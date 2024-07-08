@@ -1,7 +1,7 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { globalPreChecks, isNonEmptyString } from 'universe/util';
+import { checkChoicesNotEmpty, globalPreChecks } from 'universe/util';
 
 import {
   logStartTime,
@@ -45,12 +45,7 @@ export default function command({
         'external-scripts/*.ts',
         'external-scripts/*/index.ts'
       ],
-      check(entries: string[]) {
-        return (
-          (entries.length > 0 && entries.every((entry) => isNonEmptyString(entry))) ||
-          ErrorMessage.RequiresMinArgs('--entries', 1, undefined, 'non-empty')
-        );
-      }
+      check: checkChoicesNotEmpty('--entries')
     }
   });
 

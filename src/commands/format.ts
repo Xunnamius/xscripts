@@ -8,6 +8,7 @@ import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/c
 import { ErrorMessage } from 'universe/error';
 
 import {
+  checkChoicesNotEmpty,
   deriveVirtualPrettierIgnoreLines,
   findProjectFiles,
   globalPreChecks,
@@ -69,13 +70,9 @@ export default function command({
       array: true,
       description:
         'Only consider files (or globs) given via --files instead of scanning the filesystem',
-      check(files: string[]) {
-        return (
-          (files.length > 0 && files.every((file) => isNonEmptyString(file))) ||
-          ErrorMessage.RequiresMinArgs('--files', 1, undefined, 'non-empty')
-        );
-      }
+      check: checkChoicesNotEmpty('--files')
     },
+    // TODO: perhaps use the enum based target selection instead of "only" logic
     'only-package-json': {
       boolean: true,
       description: 'Only target package.json files for formatting',

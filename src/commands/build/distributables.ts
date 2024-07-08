@@ -3,7 +3,6 @@ import assert from 'node:assert';
 import { chmod, rename, stat, symlink } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 
-import { transformFileAsync } from '@babel/core';
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { rimraf as forceDeletePaths } from 'rimraf';
 import uniqueFilename from 'unique-filename';
@@ -16,6 +15,7 @@ import {
   ProjectMetaAttribute,
   findMainBinFile,
   findProjectFiles,
+  getImportSpecifierEntriesFromFiles,
   getProjectMetadata,
   globalPreChecks,
   readFile,
@@ -143,7 +143,6 @@ export default async function command({
     }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
-      const debugImportLister = debug.extend('import-lister');
 
       debug('entered handler');
 
@@ -197,16 +196,10 @@ export default async function command({
       debug('inputExtension: %O', inputExtension);
       debug('isInMonorepo: %O', isInMonorepo);
 
-      const [
-        {
-          tsFiles: { src: tsSrcFiles, lib: tsLibraryFiles },
-          pkgFiles: { lib: libraryPkgFiles }
-        },
-        { default: createImportsListerPlugin }
-      ] = await Promise.all([
-        findProjectFiles(runtimeContext),
-        import('babel-plugin-list-imports')
-      ]);
+      const {
+        tsFiles: { src: tsSrcFiles, lib: tsLibraryFiles },
+        pkgFiles: { lib: libraryPkgFiles }
+      } = await findProjectFiles(runtimeContext);
 
       // TODO: replace relevant tasks with listr2
 
@@ -264,7 +257,7 @@ export default async function command({
           previousProductionLibraryImportsSize = productionLibraryImports.size,
             iteration++
         ) {
-          debugImportLister(
+          debug(
             'prevProdLibImportsSize (%O) !== prodLibImports.size (%O), iterating again...',
             previousProductionLibraryImportsSize,
             productionLibraryImports.size
@@ -526,68 +519,37 @@ export default async function command({
         );
       }
 
+      // TODO: stuff like this should be co-located in @-xun/project-utils
+      // TODO: alongside the @projector-js/core redux
       async function discoverProductionLibraryImports(files: string[], iteration = 0) {
-        const debugImportLister_ = debugImportLister.extend(`iter-${iteration}`);
-
-        debugImportLister_('evaluating files: %O', files);
-
-        const libraryImports = await Promise.all(
-          files.map(async (path, index) => {
-            const debugImportLister__ = debugImportLister_.extend(`file-${index}`);
-            const importLister = createImportsListerPlugin();
-
-            debugImportLister__('evaluating file: %O', path);
-
-            await transformFileAsync(path, {
-              configFile: false,
-              plugins: [importLister.plugin],
-              presets: [
-                [
-                  '@babel/preset-typescript',
-                  {
-                    allowDeclareFields: true,
-                    // ? This needs to be here or unused imports are elided
-                    onlyRemoveTypeImports: true
-                  }
-                ]
-              ]
-            });
-
-            debugImportLister__(
-              'imports seen (%O): %O',
-              importLister.state.size,
-              importLister.state
-            );
-
-            const result = Array.from(importLister.state)
-              .filter((path) => path.startsWith('multiverse'))
-              .map((path) => path.slice('multiverse/'.length));
-
-            debugImportLister__(
-              'sliced lib imports seen (%O): %O',
-              result.length,
-              result
-            );
-
-            return result;
-          })
+        const debugImportLister = debug.extend(
+          `discoverProdLibImports:iter-${iteration}`
         );
+        const libraryImportEntries = await getImportSpecifierEntriesFromFiles(files);
 
-        debug('libImports: %O', libraryImports);
-
-        for (const importPaths of libraryImports) {
+        for (const [, importPaths] of libraryImportEntries) {
           importPaths.forEach((importPath) => {
-            const libraryDir = libraryDirectoriesArray.find((dir) =>
-              importPath.startsWith(dir)
-            );
+            if (importPath.startsWith('multiverse/')) {
+              const strippedImportPath = importPath.slice('multiverse/'.length);
+              debugImportLister('selected specifier (stripped): %O', strippedImportPath);
 
-            if (libraryDir) {
-              productionLibraryImports.add(libraryDir);
+              const libraryDir = libraryDirectoriesArray.find((dir) =>
+                strippedImportPath.startsWith(dir)
+              );
+
+              if (libraryDir) {
+                productionLibraryImports.add(libraryDir);
+              } else {
+                debugImportLister('skipped non-multiverse specifier: %O', importPath);
+              }
             }
           });
         }
 
-        debug(`end-of-iteration prodLibImports: %O`, productionLibraryImports);
+        debugImportLister(
+          `end-of-iteration prodLibImports: %O`,
+          productionLibraryImports
+        );
       }
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;

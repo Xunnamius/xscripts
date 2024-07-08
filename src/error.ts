@@ -50,7 +50,7 @@ export const ErrorMessage = {
   MarkdownNoUndefinedReferences() {
     return 'cannot continue with undefined references present in one or more Markdown files';
   },
-  AllScopeMustBeAlone() {
-    return 'the "all" scope/target must not be given alongside any others';
+  AllOptionValueMustBeAlone(noun: string) {
+    return `the "all" ${noun} must not be given alongside any others`;
   }
 };

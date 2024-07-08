@@ -2,6 +2,7 @@
 import assert from 'node:assert';
 import fs from 'node:fs/promises';
 
+import { transformFileAsync } from '@babel/core';
 import { CliError, FrameworkExitCode } from '@black-flag/core';
 import { glob } from 'glob-gitignore';
 
@@ -351,4 +352,73 @@ export async function deriveVirtualPrettierIgnoreLines(
 
 export function isNonEmptyString(o: unknown): o is string {
   return typeof o === 'string' && o.length > 0;
+}
+
+// TODO: stuff like this should be co-located in @-xun/project-utils alongside
+// TODO: the @projector-js/core redux
+export async function getImportSpecifierEntriesFromFiles(
+  files: string[]
+): Promise<[file: string, specifiers: string[]][]> {
+  const debugImportLister = createDebugLogger({
+    namespace: `${globalLoggerNamespace}:import-lister`
+  });
+
+  debugImportLister('evaluating files: %O', files);
+
+  const { default: createImportsListerPlugin } = await import(
+    'babel-plugin-list-imports'
+  );
+
+  const importSpecifierEntries = await Promise.all(
+    files.map(async (path, index) => {
+      const debugImportLister_ = debugImportLister.extend(`file-${index}`);
+      const importLister = createImportsListerPlugin();
+
+      debugImportLister_('evaluating file: %O', path);
+
+      await transformFileAsync(path, {
+        configFile: false,
+        plugins: ['@babel/syntax-typescript', importLister.plugin]
+      });
+
+      debugImportLister_(
+        'imports seen (%O): %O',
+        importLister.state.size,
+        importLister.state
+      );
+
+      const result = Array.from(importLister.state);
+      return [path, result] as [string, string[]];
+    })
+  );
+
+  debugImportLister('import specifiers: %O', importSpecifierEntries);
+  return importSpecifierEntries;
+}
+
+export function checkChoicesNotEmpty(argName: string, adjective = 'non-empty') {
+  return function (currentArg: unknown[]) {
+    return (
+      (currentArg.length > 0 && currentArg.every((file) => isNonEmptyString(file))) ||
+      ErrorMessage.RequiresMinArgs(argName, 1, undefined, adjective)
+    );
+  };
+}
+
+export function checkAllChoiceIfGivenIsByItself(allChoice: string, noun: string) {
+  return function (currentArg: unknown[]) {
+    const includesAll = currentArg.includes(allChoice);
+
+    return (
+      !includesAll ||
+      currentArg.length === 1 ||
+      ErrorMessage.AllOptionValueMustBeAlone(noun)
+    );
+  };
+}
+
+export function checkIsNonNegative(argName: string) {
+  return function (currentArg: number) {
+    return currentArg >= 0 || ErrorMessage.ArgumentMustBeNonNegative(argName);
+  };
 }
