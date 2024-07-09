@@ -11,8 +11,7 @@ import {
   checkChoicesNotEmpty,
   deriveVirtualPrettierIgnoreLines,
   findProjectFiles,
-  globalPreChecks,
-  isNonEmptyString
+  globalPreChecks
 } from 'universe/util';
 
 import {

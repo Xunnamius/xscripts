@@ -17,7 +17,6 @@ import {
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { run } from 'multiverse/run';
-import { ErrorMessage } from 'universe/error';
 
 export type CustomCliArguments = GlobalCliArguments & {
   entries: string[];
