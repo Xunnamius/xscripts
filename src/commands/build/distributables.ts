@@ -179,7 +179,7 @@ export default async function command({
       } = runtimeContext;
 
       debug('rootDir: %O', rootDir);
-      debug('rootPkg: %O', rootPkg);
+      debug('rootPkg.name: %O', rootPkg.name);
 
       outputExtension ??=
         moduleSystem === 'cjs' ||
@@ -257,12 +257,6 @@ export default async function command({
           previousProductionLibraryImportsSize = productionLibraryImports.size,
             iteration++
         ) {
-          debug(
-            'prevProdLibImportsSize (%O) !== prodLibImports.size (%O), iterating again...',
-            previousProductionLibraryImportsSize,
-            productionLibraryImports.size
-          );
-
           // ? Thankfully TC39 had the foresight to make sets enumerable in
           // ? insertion order!
           await discoverProductionLibraryImports(
@@ -525,13 +519,13 @@ export default async function command({
         const debugImportLister = debug.extend(
           `discoverProdLibImports:iter-${iteration}`
         );
+
         const libraryImportEntries = await getImportSpecifierEntriesFromFiles(files);
 
         for (const [, importPaths] of libraryImportEntries) {
           importPaths.forEach((importPath) => {
             if (importPath.startsWith('multiverse/')) {
               const strippedImportPath = importPath.slice('multiverse/'.length);
-              debugImportLister('selected specifier (stripped): %O', strippedImportPath);
 
               const libraryDir = libraryDirectoriesArray.find((dir) =>
                 strippedImportPath.startsWith(dir)
@@ -539,8 +533,6 @@ export default async function command({
 
               if (libraryDir) {
                 productionLibraryImports.add(libraryDir);
-              } else {
-                debugImportLister('skipped non-multiverse specifier: %O', importPath);
               }
             }
           });
