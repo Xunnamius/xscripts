@@ -21,6 +21,8 @@ module.exports = {
   },
   plugins: [
     '@babel/plugin-proposal-export-default-from',
+    // ? This is required until tc39 makes up its mind
+    '@babel/plugin-syntax-import-attributes',
     [
       'module-resolver',
       {
@@ -55,9 +57,7 @@ module.exports = {
       plugins: [
         // ? Only active when testing, the plugin solves the following problem:
         // ? https://stackoverflow.com/q/40771520/1367414
-        'explicit-exports-references',
-        // TODO: this is required here for whatever reason. Why?
-        '@babel/plugin-syntax-import-attributes'
+        'explicit-exports-references'
       ]
     },
     // * Used by `npm run build` for compiling CJS to code output in ./dist
@@ -72,7 +72,7 @@ module.exports = {
             useBuiltIns: 'usage',
             corejs: '3.37',
             shippedProposals: true,
-            exclude: ['proposal-dynamic-import']
+            exclude: ['transform-dynamic-import']
           }
         ],
         ['@babel/preset-typescript', { allowDeclareFields: true }]
