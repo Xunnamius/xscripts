@@ -52,5 +52,8 @@ export const ErrorMessage = {
   },
   AllOptionValueMustBeAlone(noun: string) {
     return `the "all" ${noun} must not be given alongside any others`;
+  },
+  LintingFailed() {
+    return 'one or more linters returned a bad exit code';
   }
 };
