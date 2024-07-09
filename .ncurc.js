@@ -2,11 +2,7 @@
 
 module.exports = {
   reject: [
-    // ? Pin the CJS version of execa
-    'execa',
-    // ? Pin the CJS version of execa
-    'alpha-sort',
-    // ? Pin the CJS version of execa
+    // ? Pin the CJS version
     'supports-color'
   ]
 };
