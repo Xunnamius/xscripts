@@ -1,11 +1,9 @@
-import execa from 'execa';
 import { debugFactory } from 'multiverse/debug-extended';
 
 import type {
-  ExecaReturnValue,
   Options as RunOptions,
-  ExecaReturnValue as RunReturnType
-} from 'execa';
+  Result as RunReturnType
+} from 'execa' with { 'resolution-mode': 'import' };
 
 const debug = debugFactory('@-xun/run:runtime');
 
@@ -22,10 +20,15 @@ const debug = debugFactory('@-xun/run:runtime');
 export async function run(file: string, args?: string[], options?: RunOptions) {
   debug(`executing command: ${file}${args ? ` ${args.join(' ')}` : ''}`);
 
-  const result = (await execa(file, args, options)) as RunReturnType;
+  const result = await (await import('execa')).execa(file, args, options);
 
   debug('execution result: %O', result);
-  return result;
+
+  return {
+    ...result,
+    stdout: result.stdout?.toString() || '',
+    stderr: result.stderr?.toString() || ''
+  };
 }
 
 /**
@@ -39,7 +42,7 @@ export async function runWithInheritedIo(
   ...[file, args, options]: Parameters<typeof run>
 ) {
   return run(file, args, { ...options, stdout: 'inherit', stderr: 'inherit' }) as Promise<
-    ExecaReturnValue<string> & { stdout: never; stderr: never; all: never }
+    RunReturnType & { stdout: never; stderr: never; all: never }
   >;
 }
 
