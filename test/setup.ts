@@ -7,7 +7,6 @@ import { basename, join as joinPath, resolve as resolvePath } from 'node:path';
 
 // TODO: replace debug with rejoinder
 import debugFactory from 'debug';
-import execa from 'execa';
 import glob from 'glob';
 import uniqueFilename from 'unique-filename';
 //import gitFactory from 'simple-git';
@@ -18,7 +17,7 @@ import 'jest-extended/all';
 import { name as pkgName, version as pkgVersion } from 'package';
 
 import type { Debugger } from 'debug';
-import type { ExecaReturnValue } from 'execa';
+import type { Options as ExecaOptions } from 'execa' with { 'resolution-mode': 'import' };
 import type { Promisable } from 'type-fest';
 //import type { SimpleGit } from 'simple-git';
 
@@ -489,7 +488,7 @@ export async function withMockedOutput(
 }
 
 // TODO: XXX: make this into a separate (run) package (along w/ below)
-export interface RunOptions extends execa.Options {
+export interface RunOptions extends ExecaOptions {
   /**
    * Setting this to `true` rejects the promise instead of resolving it with the error.
    * @default false
@@ -500,13 +499,11 @@ export interface RunOptions extends execa.Options {
 // TODO: XXX: make this into a separate (run) package (actually, throw this out)
 // ! By default, does NOT reject on bad exit code (set reject: true to override)
 async function run(file: string, args?: string[], options?: RunOptions) {
-  let result: ExecaReturnValue & { code: ExecaReturnValue['exitCode'] };
-  // eslint-disable-next-line prefer-const
-  result = (await execa(file, args, { reject: false, ...options })) as typeof result;
+  const result = await (
+    await import('execa')
+  ).execa(file, args, { reject: false, ...options });
 
-  result.code = result.exitCode;
   globalDebug.extend('run')('executed command result: %O', result);
-
   return result;
 }
 
@@ -827,15 +824,15 @@ export function webpackTestFixture(): MockFixture {
 
       await run('npx', ['webpack'], { cwd: context.root, reject: true });
 
-      const { code, stdout, stderr } = await run('node', [
+      const { exitCode, stdout, stderr } = await run('node', [
         '--no-warnings',
         `${context.root}/dist/index.js`
       ]);
 
       context.testResult = {
-        code,
-        stdout,
-        stderr
+        code: exitCode ?? -1,
+        stdout: stdout?.toString() || '',
+        stderr: stderr?.toString() || ''
       };
     }
   };
@@ -845,7 +842,9 @@ async function getTreeOutput(context: FixtureContext) {
   if (process.platform === 'win32') {
     return '(this platform does not support the `tree` command)';
   } else {
-    const { stdout } = await execa('tree', ['-a', '-L', '2'], {
+    const { stdout } = await (
+      await import('execa')
+    ).execa('tree', ['-a', '-L', '2'], {
       cwd: context.root,
       reject: false
     });
@@ -884,15 +883,15 @@ export function nodeImportTestFixture(): MockFixture {
 
       context.treeOutput = await getTreeOutput(context);
 
-      const { code, stdout, stderr } = await run(bin, [...args, indexPath], {
+      const { exitCode, stdout, stderr } = await run(bin, [...args, indexPath], {
         cwd: context.root,
         ...options
       });
 
       context.testResult = {
-        code,
-        stdout,
-        stderr
+        code: exitCode ?? -1,
+        stdout: stdout?.toString() || '',
+        stderr: stderr?.toString() || ''
       };
     }
   };
