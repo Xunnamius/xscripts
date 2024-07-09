@@ -350,10 +350,6 @@ export async function deriveVirtualPrettierIgnoreLines(
   return ignore;
 }
 
-export function isNonEmptyString(o: unknown): o is string {
-  return typeof o === 'string' && o.length > 0;
-}
-
 // TODO: stuff like this should be co-located in @-xun/project-utils alongside
 // TODO: the @projector-js/core redux
 export async function getImportSpecifierEntriesFromFiles(
@@ -378,7 +374,11 @@ export async function getImportSpecifierEntriesFromFiles(
 
       await transformFileAsync(path, {
         configFile: false,
-        plugins: ['@babel/syntax-typescript', importLister.plugin]
+        plugins: [
+          '@babel/syntax-import-attributes',
+          '@babel/syntax-typescript',
+          importLister.plugin
+        ]
       });
 
       debugImportLister_(
@@ -394,15 +394,6 @@ export async function getImportSpecifierEntriesFromFiles(
 
   debugImportLister('import specifiers: %O', importSpecifierEntries);
   return importSpecifierEntries;
-}
-
-export function checkChoicesNotEmpty(argName: string, adjective = 'non-empty') {
-  return function (currentArg: unknown[]) {
-    return (
-      (currentArg.length > 0 && currentArg.every((file) => isNonEmptyString(file))) ||
-      ErrorMessage.RequiresMinArgs(argName, 1, undefined, adjective)
-    );
-  };
 }
 
 export function checkAllChoiceIfGivenIsByItself(allChoice: string, noun: string) {
@@ -421,4 +412,17 @@ export function checkIsNonNegative(argName: string) {
   return function (currentArg: number) {
     return currentArg >= 0 || ErrorMessage.ArgumentMustBeNonNegative(argName);
   };
+}
+
+export function checkChoicesNotEmpty(argName: string, adjective = 'non-empty') {
+  return function (currentArg: unknown[]) {
+    return (
+      (currentArg.length > 0 && currentArg.every((file) => isNonEmptyString(file))) ||
+      ErrorMessage.RequiresMinArgs(argName, 1, undefined, adjective)
+    );
+  };
+}
+
+function isNonEmptyString(o: unknown): o is string {
+  return typeof o === 'string' && o.length > 0;
 }
