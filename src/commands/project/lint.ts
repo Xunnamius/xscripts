@@ -66,6 +66,7 @@ export default function command({
       // TODO (no dot imports outside lib directory; all dot imports inside packages within lib directory must not reach outside those packages)
       //
       // TODO (error when ./dist dir is not available for scanning (prompt to build dist first))
+      // TODO (warn when using --experimental-vm-modules and jest's `transformIgnorePatterns: []` together!)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
