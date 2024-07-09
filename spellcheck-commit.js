@@ -3,7 +3,6 @@
 /* eslint-disable no-console */
 const spellcheck = require('spellchecker');
 const read = require('node:fs/promises').readFile;
-const execa = require('execa');
 
 const debug = require('debug')('commit-spell');
 
@@ -82,7 +81,11 @@ void (async () => {
           ...keys(pkg.devDependencies),
           ...keys(pkg.scripts),
           ...splitOutWords(
-            (await execa('git', ['log', '--format="%B"', 'HEAD~1'])).stdout
+            (
+              await (
+                await import('execa')
+              ).execa('git', ['log', '--format="%B"', 'HEAD~1'])
+            ).stdout
           ).slice(0, -1)
         ]
           .flat()
