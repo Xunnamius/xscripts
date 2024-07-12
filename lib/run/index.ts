@@ -1,11 +1,32 @@
 import { debugFactory } from 'multiverse/debug-extended';
 
 import type {
-  Options as RunOptions,
-  Result as RunReturnType
+  Options,
+  Result,
+  ResultPromise
 } from 'execa' with { 'resolution-mode': 'import' };
 
+import type { Merge, Promisable } from 'type-fest';
+
 const debug = debugFactory('@-xun/run:runtime');
+
+export type { Subprocess } from 'execa' with { 'resolution-mode': 'import' };
+
+export type RunOptions = Options & {
+  /**
+   * Access the {@link RunIntermediateReturnType} object, a thin wrapper around
+   * execa's {@link ResultPromise}, via this callback function.
+   */
+  useIntermediate?: (intermediateResult: RunIntermediateReturnType) => Promisable<void>;
+};
+
+export type RunReturnType<OptionsType extends RunOptions = RunOptions> = Merge<
+  Result<OptionsType>,
+  { stdout: string; stderr: string }
+>;
+
+export type RunIntermediateReturnType<OptionsType extends RunOptions = RunOptions> =
+  ResultPromise<OptionsType>;
 
 // TODO: merge with the "run" from test/setup.ts that includes debugging by
 // TODO: default
@@ -17,18 +38,25 @@ const debug = debugFactory('@-xun/run:runtime');
  * Note that, by default, this function rejects on a non-zero exit code.
  * Set `reject: false` to override this, or use {@link runNoRejectOnBadExit}.
  */
-export async function run(file: string, args?: string[], options?: RunOptions) {
+export async function run(
+  file: string,
+  args?: string[],
+  { useIntermediate, ...execaOptions }: RunOptions = {}
+): Promise<RunReturnType> {
   debug(`executing command: ${file}${args ? ` ${args.join(' ')}` : ''}`);
 
-  const result = await (await import('execa')).execa(file, args, options);
+  const intermediateResult = (await import('execa')).execa(file, args, execaOptions);
+  await useIntermediate?.(intermediateResult);
 
-  debug('execution result: %O', result);
-
-  return {
+  const result = await intermediateResult;
+  const returnValue = {
     ...result,
     stdout: result.stdout?.toString() || '',
     stderr: result.stderr?.toString() || ''
   };
+
+  debug('execution result: %O', returnValue);
+  return returnValue;
 }
 
 /**
@@ -68,5 +96,3 @@ export function runnerFactory(file: string, args?: string[], options?: RunOption
   return (args?: string[], options?: RunOptions) =>
     run(file, args || factoryArgs, { ...factoryOptions, ...options });
 }
-
-export { RunOptions, RunReturnType };
