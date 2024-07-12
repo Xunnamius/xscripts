@@ -39,7 +39,8 @@ export async function readFile(path: string) {
   try {
     return await fs.readFile(path, { encoding: 'utf8' });
   } catch (error) {
-    throw new CliError(new Error(ErrorMessage.CannotReadFile(path), { cause: error }), {
+    throw new CliError(ErrorMessage.CannotReadFile(path), {
+      cause: error,
       suggestedExitCode: FrameworkExitCode.AssertionFailed
     });
   }
@@ -49,7 +50,8 @@ export async function writeFile(path: string, contents: string) {
   try {
     return await fs.writeFile(path, contents);
   } catch (error) {
-    throw new CliError(new Error(ErrorMessage.CannotWriteFile(path), { cause: error }), {
+    throw new CliError(ErrorMessage.CannotWriteFile(path), {
+      cause: error,
       suggestedExitCode: FrameworkExitCode.AssertionFailed
     });
   }

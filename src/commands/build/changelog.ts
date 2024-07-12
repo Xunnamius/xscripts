@@ -169,11 +169,9 @@ export default function command(
           debug('import successful');
         } catch (error) {
           debug('import attempt failed catastrophically: %O', error);
-          throw new CliError(
-            new Error(ErrorMessage.BadChangelogPatcher(changelogPatcherFile), {
-              cause: error
-            })
-          );
+          throw new CliError(ErrorMessage.BadChangelogPatcher(changelogPatcherFile), {
+            cause: error
+          });
         }
 
         debug('changelogPatcher: %O', changelogPatcher);

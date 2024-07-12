@@ -209,7 +209,9 @@ export default function command({
             }
           );
         } catch (error) {
-          throw new Error(ErrorMessage.MarkdownNoUndefinedReferences(), { cause: error });
+          throw new CliError(ErrorMessage.MarkdownNoUndefinedReferences(), {
+            cause: error
+          });
         }
       }
 

@@ -1153,12 +1153,10 @@ export async function getInvocableExtendedHandler<
     >;
   } catch (error) {
     // ? We do this instead of a hard assert because we want to track the cause
-    throw new CliError(
-      new Error(ErrorMessage.FrameworkError(ErrorMessage.FalsyCommandExport()), {
-        cause: error
-      }),
-      { suggestedExitCode: FrameworkExitCode.AssertionFailed }
-    );
+    throw new CliError(ErrorMessage.FrameworkError(ErrorMessage.FalsyCommandExport()), {
+      cause: error,
+      suggestedExitCode: FrameworkExitCode.AssertionFailed
+    });
   }
 
   hardAssert(command, ErrorMessage.FalsyCommandExport());
