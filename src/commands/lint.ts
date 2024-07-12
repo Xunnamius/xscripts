@@ -1,4 +1,4 @@
-import { type ChildConfiguration } from '@black-flag/core';
+import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
@@ -9,8 +9,8 @@ import {
 } from 'universe/util';
 
 import {
-  LogTag,
   logStartTime,
+  LogTag,
   standardSuccessMessage
 } from 'multiverse/@-xun/cli-utils/logging';
 
@@ -21,7 +21,7 @@ import {
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-import { run } from 'multiverse/run';
+import { runNoRejectOnBadExit, type run, type Subprocess } from 'multiverse/run';
 
 export enum Linter {
   Tsc = 'tsc',
@@ -100,6 +100,8 @@ export default function command({
       debug('scope: %O', scope);
       debug('skipIgnored: %O', skipIgnored);
 
+      let aborted = false;
+
       const {
         project: {
           // ? This does NOT end in a slash and this must be taken into account!
@@ -117,36 +119,29 @@ export default function command({
         scope === 'all' ? `tsconfig.eslint.json` : `tsconfig.lint.json`;
 
       debug('tsconfigFilePath: %O', tsconfigFilePath);
+      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
       const promisedLinters: Promise<unknown>[] = [];
+      const linterSubprocesses: Subprocess[] = [];
 
       if (allLinters || linters.includes(Linter.Tsc)) {
         debug('running tsc');
         promisedLinters.push(
-          run('npx', ['tsc', '--project', tsconfigFilePath], {
-            stdout: isHushed ? 'ignore' : 'inherit',
-            stderr: isQuieted ? 'ignore' : 'inherit'
-          })
+          runLinter('npx', ['tsc', '--pretty', '--project', tsconfigFilePath])
         );
       }
 
       if (allLinters || linters.includes(Linter.Eslint)) {
         debug('running eslint');
         promisedLinters.push(
-          run(
-            'npx',
-            [
-              'eslint',
-              `--parser-options=project:${tsconfigFilePath}`,
-              '--no-error-on-unmatched-pattern',
-              '--max-warnings=0',
-              ...(scope === 'all' ? ['.'] : limitedScopeDirectories)
-            ],
-            {
-              stdout: isHushed ? 'ignore' : 'inherit',
-              stderr: isQuieted ? 'ignore' : 'inherit'
-            }
-          )
+          runLinter('npx', [
+            'eslint',
+            '--color',
+            `--parser-options=project:${tsconfigFilePath}`,
+            '--no-error-on-unmatched-pattern',
+            '--max-warnings=0',
+            ...(scope === 'all' ? ['.'] : limitedScopeDirectories)
+          ])
         );
       }
 
@@ -155,20 +150,19 @@ export default function command({
         const { mdFiles } = await findProjectFiles(runtimeContext, { skipIgnored });
 
         promisedLinters.push(
-          run(
+          runLinter(
             'npx',
             [
               'remark',
               ...(isHushed ? ['--quiet'] : []),
+              '--color',
               '--frail',
               '--no-stdout',
               '--silently-ignore',
               ...mdFiles
             ],
             {
-              env: { NODE_ENV: 'lint' },
-              stdout: isHushed ? 'ignore' : 'inherit',
-              stderr: isQuieted ? 'ignore' : 'inherit'
+              env: { NODE_ENV: 'lint' }
             }
           )
         );
@@ -177,7 +171,44 @@ export default function command({
       debug('waiting for linters to finish running...');
       await Promise.all(promisedLinters);
 
+      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+
+      async function runLinter(
+        ...[exec, args = [], options = {}]: Parameters<typeof run>
+      ) {
+        const { stdout, stderr, exitCode } = await runNoRejectOnBadExit(exec, args, {
+          ...options,
+          stdout: isHushed ? 'ignore' : 'pipe',
+          stderr: isQuieted ? 'ignore' : 'pipe',
+          killSignal: 'SIGKILL',
+          useIntermediate(subprocess) {
+            debug(
+              `tracking ${exec === 'npx' ? args[0] || 'unknown' : exec} linter subprocess`
+            );
+
+            linterSubprocesses.push(subprocess);
+          }
+        });
+
+        if (!aborted) {
+          if (stdout) {
+            process.stdout.write(stdout + (stdout.endsWith('\n') ? '' : '\n'));
+          }
+
+          if (stderr) {
+            process.stderr.write(stderr + (stderr.endsWith('\n') ? '' : '\n'));
+          }
+
+          if (exitCode !== 0) {
+            aborted = true;
+            linterSubprocesses.forEach((subprocess) => subprocess.kill('SIGKILL'));
+
+            genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+            throw new CliError(ErrorMessage.LintingFailed(), { dangerouslyFatal: true });
+          }
+        }
+      }
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
 }
