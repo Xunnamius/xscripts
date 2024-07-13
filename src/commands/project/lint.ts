@@ -67,6 +67,7 @@ export default function command({
       //
       // TODO (error when ./dist dir is not available for scanning (prompt to build dist first))
       // TODO (warn when using --experimental-vm-modules and jest's `transformIgnorePatterns: []` together!)
+      // TODO (warn when copyright dates, like with LICENSE, are out of date)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

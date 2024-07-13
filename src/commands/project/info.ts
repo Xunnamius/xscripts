@@ -51,7 +51,8 @@ export default function command({
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Analyzing project...');
 
-      // TODO: what is the next version gonna be, if any?
+      // TODO (what is the next version gonna be, if any?)
+      // TODO (report on which vscode settings are used via .vscode, but also warn that in a vscode multi-root workspace, options are ignored in favor of the options in said workspace's configuration file directly)
 
       genericLogger([LogTag.IF_NOT_QUIETED], 'Preparing report...');
 

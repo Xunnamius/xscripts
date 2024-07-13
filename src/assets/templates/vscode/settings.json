@@ -1,0 +1,32 @@
+{
+  // ! Note that some of these configurations are ignored when the project is
+  // ! opened as part of a vscode workspace (especially multi-root). In such a
+  // ! case, look to the workspace's configuration file for tweakable settings.
+
+  "debug.javascript.terminalOptions": {
+    //"skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+    "skipFiles": []
+  },
+  "cSpell.words": [
+    "arg-vals",
+    "BFE's",
+    "conflicteds",
+    "conflicter",
+    "entr",
+    "gwav",
+    "implier",
+    "iodef",
+    "isequal",
+    "JMES",
+    "odata",
+    "Punycode",
+    "requireds",
+    "rootcmd",
+    "subcmd",
+    "subsubcmd",
+    "trycatch",
+    "USERPROFILE"
+  ],
+  // ? Use the version of TypeScript that is installed alongside the project
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

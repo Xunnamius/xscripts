@@ -52,6 +52,9 @@ export default function command({
       genericLogger([LogTag.IF_NOT_QUIETED], 'Initializing new project...');
 
       // TODO: (select either: create a new directory at custom path OR use cwd)
+      // TODO: is idempotent
+      // TODO: if handlebar notation suffixed by \n\n, replace suffix with \n (or is this handled via prettier already?)
+      // TODO: (includes the lenses: cli, next.js, react, library)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
