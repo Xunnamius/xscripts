@@ -378,6 +378,7 @@ export default async function command({
               '--out-dir',
               `${outputDirPath}/src`,
               '--out-file-extension',
+              '--copy-files',
               outputExtension,
               ...(isInMonorepo ? ['--root-mode', 'upward'] : [])
             ],
