@@ -425,6 +425,6 @@ export function checkChoicesNotEmpty(argName: string, adjective = 'non-empty') {
   };
 }
 
-function isNonEmptyString(o: unknown): o is string {
+export function isNonEmptyString(o: unknown): o is string {
   return typeof o === 'string' && o.length > 0;
 }
