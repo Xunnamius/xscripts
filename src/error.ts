@@ -10,6 +10,9 @@ export { TaskError } from 'multiverse/@-xun/cli-utils/error';
 /* istanbul ignore next */
 export const ErrorMessage = {
   ...UpstreamErrorMessage,
+  AssertionFailureIsEmptyString(key: string) {
+    return `assertion failed: string at key ${key} is empty or undefined`;
+  },
   BadChangelogPatcher(path: string) {
     return `unable to import "${path}" as a JavaScript module. Please ensure it is syntactically sound and contains the expected exports (see documentation).`;
   },
@@ -55,5 +58,8 @@ export const ErrorMessage = {
   },
   LintingFailed() {
     return 'one or more linters returned a bad exit code';
+  },
+  AssertRetrievalFailed(path: string) {
+    return `failed to retrieve asset at ${path}`;
   }
 };
