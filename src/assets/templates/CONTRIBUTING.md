@@ -78,21 +78,21 @@ likelihood your PR passes review:
 At this point, you're ready to create your PR and ✨ contribute ✨!
 
 [atomic-commits]: https://www.codewithjason.com/atomic-commits-testing
-[choose-new-issue]: {{githubRepoUrl}}/issues/new/choose
-[code-of-conduct]: {{githubRepoUrl}}/.github/CODE_OF_CONDUCT.md
+[choose-new-issue]: {{repoUrl}}/issues/new/choose
+[code-of-conduct]: {{repoUrl}}/.github/CODE_OF_CONDUCT.md
 [codecov]: https://about.codecov.io
 [conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0#summary
 [cosmetic-commits]:
   https://github.com/rails/rails/pull/13771#issuecomment-32746700
-[fork]: {{githubRepoUrl}}/fork
+[fork]: {{repoUrl}}/fork
 [github-actions]: https://github.com/features/actions
 [how-to-clone]:
   https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/cloning-a-repository
 [how-to-contribute]: https://www.dataschool.io/how-to-contribute-on-github
-[husky-cl]: {{githubRepoUrl}}/tree/main/.husky
+[husky-cl]: {{repoUrl}}/tree/main/.husky
 [npm-ci]: https://docs.npmjs.com/cli/v6/commands/npm-ci
-[open-issues]: {{githubRepoUrl}}/issues?q=
+[open-issues]: {{repoUrl}}/issues?q=
 [pkg-debug]: https://www.npmjs.com/package/debug
 [pkg-debug-wildcards]: https://www.npmjs.com/package/debug#wildcards
-[pr-compare]: {{githubRepoUrl}}/compare
-[projector]: {{githubRepoUrl}}#readme
+[pr-compare]: {{repoUrl}}/compare
+[projector]: {{repoUrl}}#readme

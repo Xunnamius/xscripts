@@ -8,7 +8,7 @@
 
 <!-- TODO -->
 
-{{description}}
+{{packageDescription}}
 
 ---
 
@@ -102,8 +102,8 @@ Thanks goes to these wonderful people
 This project follows the {{repoReferenceAllContributors:all-contributors}}
 specification. Contributions of any kind welcome!
 
-{{badgeReferenceDefinitions}}
+{{repoReferenceDefinitionsBadge}}
 
-{{packageReferenceDefinitions}}
+{{repoReferenceDefinitionsPackage}}
 
-{{repoReferenceDefinitions}}
+{{repoReferenceDefinitionsRepo}}

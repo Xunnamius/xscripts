@@ -143,9 +143,9 @@ Thank you so much for helping to maintain this project!
 
 [commit]:
   https://github.com/conventional-changelog-archived-repos/conventional-changelog-angular/blob/ed32559941719a130bb0327f886d6a32a8cbc2ba/convention.md
-[1]: {{githubRepoUrl}}/.github/CODE_OF_CONDUCT.md
+[1]: {{repoUrl}}/.github/CODE_OF_CONDUCT.md
 [2]: http://makeapullrequest.com
-[3]: {{githubRepoUrl}}/.github/workflows
+[3]: {{repoUrl}}/.github/workflows
 [4]:
   https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#rebase-and-merge-your-commits
 [5]:
