@@ -6,6 +6,7 @@ import { type ChildConfiguration } from '@black-flag/core';
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import {
   checkAllChoiceIfGivenIsByItself,
+  checkChoicesNotEmpty,
   checkIsNonNegative,
   globalPreChecks
 } from 'universe/util';
@@ -102,7 +103,10 @@ export default function command({
         choices: testTypes,
         description: 'Which test type(s) to run',
         default: [TestType.All],
-        check: checkAllChoiceIfGivenIsByItself(TestType.All, 'test type')
+        check: [
+          checkChoicesNotEmpty('--type'),
+          checkAllChoiceIfGivenIsByItself(TestType.All, 'test type')
+        ]
       },
       scope: {
         alias: 'scopes',
@@ -110,7 +114,10 @@ export default function command({
         choices: testScopes,
         description: 'The context(s) in which test types are discovered and run',
         default: [TestType.All],
-        check: checkAllChoiceIfGivenIsByItself(TestScope.All, 'test scope')
+        check: [
+          checkChoicesNotEmpty('--scope'),
+          checkAllChoiceIfGivenIsByItself(TestScope.All, 'test scope')
+        ]
       },
       repeat: {
         number: true,

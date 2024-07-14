@@ -4,6 +4,7 @@ import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/c
 import { ErrorMessage } from 'universe/error';
 import {
   checkAllChoiceIfGivenIsByItself,
+  checkChoicesNotEmpty,
   findProjectFiles,
   globalPreChecks
 } from 'universe/util';
@@ -56,7 +57,10 @@ export default function command({
       choices: linters,
       description: 'Which linters to run',
       default: [Linter.All],
-      check: checkAllChoiceIfGivenIsByItself(Linter.All, 'linter value')
+      check: [
+        checkChoicesNotEmpty('--linter'),
+        checkAllChoiceIfGivenIsByItself(Linter.All, 'linter value')
+      ]
     },
     scope: {
       choices: ['limited', 'all'],
