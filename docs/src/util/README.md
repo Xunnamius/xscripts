@@ -22,9 +22,13 @@
 
 ### Functions
 
+- [checkAllChoiceIfGivenIsByItself](functions/checkAllChoiceIfGivenIsByItself.md)
+- [checkChoicesNotEmpty](functions/checkChoicesNotEmpty.md)
+- [checkIsNonNegative](functions/checkIsNonNegative.md)
 - [deriveVirtualPrettierIgnoreLines](functions/deriveVirtualPrettierIgnoreLines.md)
 - [findMainBinFile](functions/findMainBinFile.md)
 - [findProjectFiles](functions/findProjectFiles.md)
+- [getImportSpecifierEntriesFromFiles](functions/getImportSpecifierEntriesFromFiles.md)
 - [getProjectMetadata](functions/getProjectMetadata.md)
 - [globalPreChecks](functions/globalPreChecks.md)
 - [hasExitCode](functions/hasExitCode.md)

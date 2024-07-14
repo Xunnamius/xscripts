@@ -13,4 +13,4 @@ https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124?permalink_commen
 
 ## Defined in
 
-[lib/rejoinder/index.ts:38](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/rejoinder/index.ts#L38)
+[lib/rejoinder/index.ts:38](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/rejoinder/index.ts#L38)

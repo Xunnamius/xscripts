@@ -41,4 +41,4 @@ false
 
 ## Defined in
 
-[lib/@-xun/cli-utils/configure.ts:28](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/@-xun/cli-utils/configure.ts#L28)
+[lib/@-xun/cli-utils/configure.ts:26](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/@-xun/cli-utils/configure.ts#L26)

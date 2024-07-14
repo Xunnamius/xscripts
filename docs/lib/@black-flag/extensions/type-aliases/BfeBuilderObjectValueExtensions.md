@@ -22,9 +22,9 @@ This type + [BfeBuilderObjectValueWithoutExtensions](BfeBuilderObjectValueWithou
 
 ## Type declaration
 
-### check()?
+### check?
 
-> `optional` **check**: (`currentArgumentValue`, `argv`) => `Promisable`\<`unknown`\>
+> `optional` **check**: [`BfeCheckFunction`](BfeCheckFunction.md)\<`CustomCliArguments`, `CustomExecutionContext`\> \| [`BfeCheckFunction`](BfeCheckFunction.md)\<`CustomCliArguments`, `CustomExecutionContext`\>[]
 
 `check` is the declarative option-specific version of vanilla yargs's
 `yargs::check()`. Also supports async and promise-returning functions.
@@ -35,19 +35,13 @@ the exception will bubble. If this function returns an instance of `Error`,
 a string, or any non-truthy value (including `undefined` or not returning
 anything), Black Flag will throw a `CliError` on your behalf.
 
+You may also pass an array of check functions, each being executed after
+the other. Note that providing an array of one or more async check
+functions will result in them being awaited concurrently.
+
 See [the
 documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#check)
 for details.
-
-#### Parameters
-
-• **currentArgumentValue**: `any`
-
-• **argv**: `Arguments`\<`CustomCliArguments`, `CustomExecutionContext`\>
-
-#### Returns
-
-`Promisable`\<`unknown`\>
 
 ### conflicts?
 
@@ -216,4 +210,4 @@ For describing simpler implicative relations, see `implies`.
 
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:197](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/@black-flag/extensions/index.ts#L197)
+[lib/@black-flag/extensions/index.ts:197](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/@black-flag/extensions/index.ts#L197)

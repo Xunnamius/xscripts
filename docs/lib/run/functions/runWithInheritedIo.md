@@ -6,7 +6,7 @@
 
 # Function: runWithInheritedIo()
 
-> **runWithInheritedIo**(...`__namedParameters`): `Promise`\<[`RunReturnType`](../interfaces/RunReturnType.md)\<`string`\> & `object`\>
+> **runWithInheritedIo**(...`__namedParameters`): `Promise`\<`object` & `object`\>
 
 Runs (executes) `file` with the given `args` with respect to the given
 `options` (merged with `{ stdout: 'inherit', stderr: 'inherit' }`).
@@ -16,12 +16,12 @@ Set `reject: false` to override this, or use [runNoRejectOnBadExit](runNoRejectO
 
 ## Parameters
 
-• ...**\_\_namedParameters**: [`string`, `string`[], [`RunOptions`](../interfaces/RunOptions.md)\<`string`\>]
+• ...**\_\_namedParameters**: [`string`, `string`[], `RunOptions?`]
 
 ## Returns
 
-`Promise`\<[`RunReturnType`](../interfaces/RunReturnType.md)\<`string`\> & `object`\>
+`Promise`\<`object` & `object`\>
 
 ## Defined in
 
-[lib/run/index.ts:38](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/run/index.ts#L38)
+[lib/run/index.ts:69](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/run/index.ts#L69)

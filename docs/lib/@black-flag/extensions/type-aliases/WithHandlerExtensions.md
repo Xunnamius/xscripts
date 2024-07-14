@@ -40,4 +40,4 @@ means all possible arguments must be included in [CustomCliArguments](WithHandle
 
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:544](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/@black-flag/extensions/index.ts#L544)
+[lib/@black-flag/extensions/index.ts:560](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/@black-flag/extensions/index.ts#L560)

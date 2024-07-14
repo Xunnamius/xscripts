@@ -6,7 +6,7 @@
 
 # Function: runnerFactory()
 
-> **runnerFactory**(`file`, `args`?, `options`?): (`args`?, `options`?) => `Promise`\<[`RunReturnType`](../../../lib/run/interfaces/RunReturnType.md)\<`string`\> & `object`\>
+> **runnerFactory**(`file`, `args`?, `options`?): (`args`?, `options`?) => `Promise`\<`Result`\<`object`\>\>
 
 ## Parameters
 
@@ -28,8 +28,8 @@
 
 ### Returns
 
-`Promise`\<[`RunReturnType`](../../../lib/run/interfaces/RunReturnType.md)\<`string`\> & `object`\>
+`Promise`\<`Result`\<`object`\>\>
 
 ## Defined in
 
-[test/setup.ts:514](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/test/setup.ts#L514)
+[test/setup.ts:511](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/test/setup.ts#L511)

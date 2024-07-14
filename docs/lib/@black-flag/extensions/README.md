@@ -23,6 +23,7 @@
 - [BfeBuilderObjectValueExtensions](type-aliases/BfeBuilderObjectValueExtensions.md)
 - [BfeBuilderObjectValueWithoutExtensions](type-aliases/BfeBuilderObjectValueWithoutExtensions.md)
 - [BfeBuilderObjectValueWithoutSubOptionOfExtension](type-aliases/BfeBuilderObjectValueWithoutSubOptionOfExtension.md)
+- [BfeCheckFunction](type-aliases/BfeCheckFunction.md)
 - [BfeCustomBuilderFunctionParameters](type-aliases/BfeCustomBuilderFunctionParameters.md)
 - [BfeStrictArguments](type-aliases/BfeStrictArguments.md)
 - [BfeSubOptionOfExtensionValue](type-aliases/BfeSubOptionOfExtensionValue.md)

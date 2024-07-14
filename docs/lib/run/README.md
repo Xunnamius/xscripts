@@ -8,10 +8,12 @@
 
 ## Index
 
-### Interfaces
+### Type Aliases
 
-- [RunOptions](interfaces/RunOptions.md)
-- [RunReturnType](interfaces/RunReturnType.md)
+- [RunIntermediateReturnType](type-aliases/RunIntermediateReturnType.md)
+- [RunOptions](type-aliases/RunOptions.md)
+- [RunReturnType](type-aliases/RunReturnType.md)
+- [Subprocess](type-aliases/Subprocess.md)
 
 ### Functions
 

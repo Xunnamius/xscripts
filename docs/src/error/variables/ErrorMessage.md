@@ -198,7 +198,11 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AllScopeMustBeAlone()
+### AllOptionValueMustBeAlone()
+
+#### Parameters
+
+• **noun**: `string`
 
 #### Returns
 
@@ -209,6 +213,16 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **name**: `string`
+
+#### Returns
+
+`string`
+
+### AssertRetrievalFailed()
+
+#### Parameters
+
+• **path**: `string`
 
 #### Returns
 
@@ -275,6 +289,16 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **name**: `string`
+
+#### Returns
+
+`string`
+
+### AssertionFailureIsEmptyString()
+
+#### Parameters
+
+• **key**: `string`
 
 #### Returns
 
@@ -566,6 +590,12 @@ A collection of possible error and warning messages.
 
 `string`
 
+### LintingFailed()
+
+#### Returns
+
+`string`
+
 ### MarkdownNoUndefinedReferences()
 
 #### Returns
@@ -662,4 +692,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/src/error.ts#L11)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/src/error.ts#L11)

@@ -22,7 +22,7 @@
 
 #### Defined in
 
-[test/setup.ts:573](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/test/setup.ts#L573)
+[test/setup.ts:570](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/test/setup.ts#L570)
 
 ***
 
@@ -36,7 +36,7 @@
 
 #### Defined in
 
-[test/setup.ts:572](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/test/setup.ts#L572)
+[test/setup.ts:569](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/test/setup.ts#L569)
 
 ***
 
@@ -46,7 +46,7 @@
 
 #### Defined in
 
-[test/setup.ts:570](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/test/setup.ts#L570)
+[test/setup.ts:567](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/test/setup.ts#L567)
 
 ***
 
@@ -56,7 +56,7 @@
 
 #### Defined in
 
-[test/setup.ts:568](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/test/setup.ts#L568)
+[test/setup.ts:565](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/test/setup.ts#L565)
 
 ***
 
@@ -66,7 +66,7 @@
 
 #### Defined in
 
-[test/setup.ts:569](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/test/setup.ts#L569)
+[test/setup.ts:566](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/test/setup.ts#L566)
 
 ***
 
@@ -92,7 +92,7 @@
 
 #### Defined in
 
-[test/setup.ts:578](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/test/setup.ts#L578)
+[test/setup.ts:575](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/test/setup.ts#L575)
 
 ***
 
@@ -106,7 +106,7 @@
 
 #### Defined in
 
-[test/setup.ts:583](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/test/setup.ts#L583)
+[test/setup.ts:580](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/test/setup.ts#L580)
 
 ***
 
@@ -116,4 +116,4 @@
 
 #### Defined in
 
-[test/setup.ts:571](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/test/setup.ts#L571)
+[test/setup.ts:568](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/test/setup.ts#L568)

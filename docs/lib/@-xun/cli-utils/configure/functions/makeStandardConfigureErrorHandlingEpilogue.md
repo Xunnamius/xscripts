@@ -17,4 +17,4 @@ across [Xunnamius](https://github.com/Xunnamius)'s CLI projects.
 
 ## Defined in
 
-[lib/@-xun/cli-utils/configure.ts:71](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/@-xun/cli-utils/configure.ts#L71)
+[lib/@-xun/cli-utils/configure.ts:69](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/@-xun/cli-utils/configure.ts#L69)

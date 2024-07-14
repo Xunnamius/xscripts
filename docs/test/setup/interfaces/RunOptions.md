@@ -8,7 +8,7 @@
 
 ## Extends
 
-- [`RunOptions`](../../../lib/run/interfaces/RunOptions.md)
+- `Options`
 
 ## Properties
 
@@ -16,7 +16,7 @@
 
 > `readonly` `optional` **all**: `boolean`
 
-Add an `.all` property on the promise and the resolved value. The property contains the output of the process with `stdout` and `stderr` interleaved.
+Add a `subprocess.all` stream and a `result.all` property. They contain the combined/interleaved output of the subprocess' `stdout` and `stderr`.
 
 #### Default
 
@@ -26,11 +26,11 @@ false
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`all`](../../../lib/run/interfaces/RunOptions.md#all)
+`ExecaOptions.all`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:96
+node\_modules/execa/types/arguments/options.d.ts:147
 
 ***
 
@@ -38,25 +38,31 @@ node\_modules/execa/index.d.ts:96
 
 > `readonly` `optional` **argv0**: `string`
 
-Explicitly set the value of `argv[0]` sent to the child process. This will be set to `command` or `file` if not specified.
+Value of [`argv[0]`](https://nodejs.org/api/process.html#processargv0) sent to the subprocess.
+
+#### Default
+
+```ts
+file being executed
+```
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`argv0`](../../../lib/run/interfaces/RunOptions.md#argv0)
+`ExecaOptions.argv0`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:129
+node\_modules/execa/types/arguments/options.d.ts:347
 
 ***
 
 ### buffer?
 
-> `readonly` `optional` **buffer**: `boolean`
+> `readonly` `optional` **buffer**: `FdGenericOption`\<`boolean`\>
 
-Buffer the output from the spawned process. When set to `false`, you must read the output of `stdout` and `stderr` (or `all` if the `all` option is `true`). Otherwise the returned promise will not be resolved/rejected.
+When `buffer` is `false`, the `result.stdout`, `result.stderr`, `result.all` and `result.stdio` properties are not set.
 
-If the spawned process fails, `error.stdout`, `error.stderr`, and `error.all` will contain the buffered data.
+By default, this applies to both `stdout` and `stderr`, but different values can also be passed.
 
 #### Default
 
@@ -66,11 +72,52 @@ true
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`buffer`](../../../lib/run/interfaces/RunOptions.md#buffer)
+`ExecaOptions.buffer`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:61
+node\_modules/execa/types/arguments/options.d.ts:202
+
+***
+
+### cancelSignal?
+
+> `readonly` `optional` **cancelSignal**: `AbortSignal`
+
+When the `cancelSignal` is [aborted](https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort), terminate the subprocess using a `SIGTERM` signal.
+
+When aborted, `error.isCanceled` becomes `true`.
+
+#### Example
+
+```
+import {execaNode} from 'execa';
+
+const controller = new AbortController();
+const cancelSignal = controller.signal;
+
+setTimeout(() => {
+	controller.abort();
+}, 5000);
+
+try {
+	await execaNode({cancelSignal})`build.js`;
+} catch (error) {
+	if (error.isCanceled) {
+		console.error('Canceled by cancelSignal.');
+	}
+
+	throw error;
+}
+```
+
+#### Inherited from
+
+`ExecaOptions.cancelSignal`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:283
 
 ***
 
@@ -78,9 +125,7 @@ node\_modules/execa/index.d.ts:61
 
 > `readonly` `optional` **cleanup**: `boolean`
 
-Kill the spawned process when the parent process exits unless either:
-	- the spawned process is [`detached`](https://nodejs.org/api/child_process.html#child_process_options_detached)
-	- the parent process is terminated abruptly, for example, with `SIGKILL` as opposed to `SIGTERM` or a normal exit
+Kill the subprocess when the current process exits.
 
 #### Default
 
@@ -90,19 +135,21 @@ true
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`cleanup`](../../../lib/run/interfaces/RunOptions.md#cleanup)
+`ExecaOptions.cleanup`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:23
+node\_modules/execa/types/arguments/options.d.ts:326
 
 ***
 
 ### cwd?
 
-> `readonly` `optional` **cwd**: `string`
+> `readonly` `optional` **cwd**: `string` \| `URL`
 
-Current working directory of the child process.
+Current [working directory](https://en.wikipedia.org/wiki/Working_directory) of the subprocess.
+
+This is also used to resolve the `nodePath` option when it is a relative path.
 
 #### Default
 
@@ -112,11 +159,11 @@ process.cwd()
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`cwd`](../../../lib/run/interfaces/RunOptions.md#cwd)
+`ExecaOptions.cwd`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:117
+node\_modules/execa/types/arguments/options.d.ts:71
 
 ***
 
@@ -124,7 +171,7 @@ node\_modules/execa/index.d.ts:117
 
 > `readonly` `optional` **detached**: `boolean`
 
-Prepare child to run independently of its parent process. Specific behavior [depends on the platform](https://nodejs.org/api/child_process.html#child_process_options_detached).
+Run the subprocess independently from the current process.
 
 #### Default
 
@@ -134,19 +181,25 @@ false
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`detached`](../../../lib/run/interfaces/RunOptions.md#detached)
+`ExecaOptions.detached`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:156
+node\_modules/execa/types/arguments/options.d.ts:319
 
 ***
 
 ### encoding?
 
-> `readonly` `optional` **encoding**: `string`
+> `readonly` `optional` **encoding**: `EncodingOption`
 
-Specify the character encoding used to decode the `stdout` and `stderr` output. If set to `null`, then `stdout` and `stderr` will be a `Buffer` instead of a string.
+If the subprocess outputs text, specifies its character encoding, either [`'utf8'`](https://en.wikipedia.org/wiki/UTF-8) or [`'utf16le'`](https://en.wikipedia.org/wiki/UTF-16).
+
+If it outputs binary data instead, this should be either:
+- `'buffer'`: returns the binary output as an `Uint8Array`.
+- [`'hex'`](https://en.wikipedia.org/wiki/Hexadecimal), [`'base64'`](https://en.wikipedia.org/wiki/Base64), [`'base64url'`](https://en.wikipedia.org/wiki/Base64#URL_applications), [`'latin1'`](https://nodejs.org/api/buffer.html#buffers-and-character-encodings) or [`'ascii'`](https://nodejs.org/api/buffer.html#buffers-and-character-encodings): encodes the binary output as a string.
+
+The output is available with `result.stdout`, `result.stderr` and `result.stdio`.
 
 #### Default
 
@@ -156,11 +209,11 @@ Specify the character encoding used to decode the `stdout` and `stderr` output. 
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`encoding`](../../../lib/run/interfaces/RunOptions.md#encoding)
+`ExecaOptions.encoding`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:185
+node\_modules/execa/types/arguments/options.d.ts:160
 
 ***
 
@@ -168,49 +221,23 @@ node\_modules/execa/index.d.ts:185
 
 > `readonly` `optional` **env**: `ProcessEnv`
 
-Environment key-value pairs. Extends automatically from `process.env`. Set `extendEnv` to `false` if you don't want this.
+[Environment variables](https://en.wikipedia.org/wiki/Environment_variable).
+
+Unless the `extendEnv` option is `false`, the subprocess also uses the current process' environment variables ([`process.env`](https://nodejs.org/api/process.html#processenv)).
 
 #### Default
 
 ```ts
-process.env
+[process.env](https://nodejs.org/api/process.html#processenv)
 ```
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`env`](../../../lib/run/interfaces/RunOptions.md#env)
+`ExecaOptions.env`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:124
-
-***
-
-### execPath?
-
-> `readonly` `optional` **execPath**: `string`
-
-Path to the Node.js executable to use in child processes.
-
-This can be either an absolute path or a path relative to the `cwd` option.
-
-Requires `preferLocal` to be `true`.
-
-For example, this can be used together with [`get-node`](https://github.com/ehmicky/get-node) to run a specific Node.js version in a child process.
-
-#### Default
-
-```ts
-process.execPath
-```
-
-#### Inherited from
-
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`execPath`](../../../lib/run/interfaces/RunOptions.md#execpath)
-
-#### Defined in
-
-node\_modules/execa/index.d.ts:52
+node\_modules/execa/types/arguments/options.d.ts:80
 
 ***
 
@@ -218,7 +245,8 @@ node\_modules/execa/index.d.ts:52
 
 > `readonly` `optional` **extendEnv**: `boolean`
 
-Set to `false` if you don't want to extend the environment variables when providing the `env` property.
+If `true`, the subprocess uses both the `env` option and the current process' environment variables ([`process.env`](https://nodejs.org/api/process.html#processenv)).
+If `false`, only the `env` option is used, not `process.env`.
 
 #### Default
 
@@ -228,11 +256,35 @@ true
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`extendEnv`](../../../lib/run/interfaces/RunOptions.md#extendenv)
+`ExecaOptions.extendEnv`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:110
+node\_modules/execa/types/arguments/options.d.ts:88
+
+***
+
+### forceKillAfterDelay?
+
+> `readonly` `optional` **forceKillAfterDelay**: `number` \| `boolean`
+
+If the subprocess is terminated but does not exit, forcefully exit it by sending [`SIGKILL`](https://en.wikipedia.org/wiki/Signal_(IPC)#SIGKILL).
+
+When this happens, `error.isForcefullyTerminated` becomes `true`.
+
+#### Default
+
+```ts
+5000
+```
+
+#### Inherited from
+
+`ExecaOptions.forceKillAfterDelay`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:303
 
 ***
 
@@ -240,107 +292,33 @@ node\_modules/execa/index.d.ts:110
 
 > `readonly` `optional` **gid**: `number`
 
-Sets the group identity of the process.
-
-#### Inherited from
-
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`gid`](../../../lib/run/interfaces/RunOptions.md#gid)
-
-#### Defined in
-
-node\_modules/execa/index.d.ts:166
-
-***
-
-### input?
-
-> `readonly` `optional` **input**: `string` \| `Buffer` \| `Readable`
-
-Write some input to the `stdin` of your binary.
-
-#### Inherited from
-
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`input`](../../../lib/run/interfaces/RunOptions.md#input)
-
-#### Defined in
-
-node\_modules/execa/index.d.ts:227
-
-***
-
-### killSignal?
-
-> `readonly` `optional` **killSignal**: `string` \| `number`
-
-Signal value to be used when the spawned process will be killed.
+Sets the [group identifier](https://en.wikipedia.org/wiki/Group_identifier) of the subprocess.
 
 #### Default
 
 ```ts
-'SIGTERM'
+current group identifier
 ```
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`killSignal`](../../../lib/run/interfaces/RunOptions.md#killsignal)
+`ExecaOptions.gid`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:206
+node\_modules/execa/types/arguments/options.d.ts:340
 
 ***
 
-### localDir?
+### gracefulCancel?
 
-> `readonly` `optional` **localDir**: `string`
+> `readonly` `optional` **gracefulCancel**: `boolean`
 
-Preferred path to find locally installed binaries in (use with `preferLocal`).
+When the `cancelSignal` option is [aborted](https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort), do not send any `SIGTERM`. Instead, abort the [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) returned by `getCancelSignal()`. The subprocess should use it to terminate gracefully.
 
-#### Default
+The subprocess must be a Node.js file.
 
-```ts
-process.cwd()
-```
-
-#### Inherited from
-
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`localDir`](../../../lib/run/interfaces/RunOptions.md#localdir)
-
-#### Defined in
-
-node\_modules/execa/index.d.ts:39
-
-***
-
-### maxBuffer?
-
-> `readonly` `optional` **maxBuffer**: `number`
-
-Largest amount of data in bytes allowed on `stdout` or `stderr`. Default: 100 MB.
-
-#### Default
-
-```ts
-100_000_000
-```
-
-#### Inherited from
-
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`maxBuffer`](../../../lib/run/interfaces/RunOptions.md#maxbuffer)
-
-#### Defined in
-
-node\_modules/execa/index.d.ts:199
-
-***
-
-### preferLocal?
-
-> `readonly` `optional` **preferLocal**: `boolean`
-
-Prefer locally installed binaries when looking for a binary to execute.
-
-If you `$ npm install foo`, you can then `execa('foo')`.
+When aborted, `error.isGracefullyCanceled` becomes `true`.
 
 #### Default
 
@@ -350,11 +328,269 @@ false
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`preferLocal`](../../../lib/run/interfaces/RunOptions.md#preferlocal)
+`ExecaOptions.gracefulCancel`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:32
+node\_modules/execa/types/arguments/options.d.ts:294
+
+***
+
+### input?
+
+> `readonly` `optional` **input**: `string` \| `Uint8Array` \| `Readable`
+
+Write some input to the subprocess' [`stdin`](https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)).
+
+See also the `inputFile` and `stdin` options.
+
+#### Inherited from
+
+`ExecaOptions.input`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:95
+
+***
+
+### inputFile?
+
+> `readonly` `optional` **inputFile**: `string` \| `URL`
+
+Use a file as input to the subprocess' [`stdin`](https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)).
+
+See also the `input` and `stdin` options.
+
+#### Inherited from
+
+`ExecaOptions.inputFile`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:102
+
+***
+
+### ipc?
+
+> `readonly` `optional` **ipc**: `boolean`
+
+Enables exchanging messages with the subprocess using `subprocess.sendMessage(message)`, `subprocess.getOneMessage()` and `subprocess.getEachMessage()`.
+
+The subprocess must be a Node.js file.
+
+#### Default
+
+`true` if the `node`, `ipcInput` or `gracefulCancel` option is set, `false` otherwise
+
+#### Inherited from
+
+`ExecaOptions.ipc`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:211
+
+***
+
+### ipcInput?
+
+> `readonly` `optional` **ipcInput**: `Message`
+
+Sends an IPC message when the subprocess starts.
+
+The subprocess must be a Node.js file. The value's type depends on the `serialization` option.
+
+#### Inherited from
+
+`ExecaOptions.ipcInput`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:225
+
+***
+
+### killSignal?
+
+> `readonly` `optional` **killSignal**: `number` \| `Signals`
+
+Default [signal](https://en.wikipedia.org/wiki/Signal_(IPC)) used to terminate the subprocess.
+
+This can be either a name (like `'SIGTERM'`) or a number (like `9`).
+
+#### Default
+
+```ts
+'SIGTERM'
+```
+
+#### Inherited from
+
+`ExecaOptions.killSignal`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:312
+
+***
+
+### lines?
+
+> `readonly` `optional` **lines**: `FdGenericOption`\<`boolean`\>
+
+Set `result.stdout`, `result.stderr`, `result.all` and `result.stdio` as arrays of strings, splitting the subprocess' output into lines.
+
+This cannot be used if the `encoding` option is binary.
+
+By default, this applies to both `stdout` and `stderr`, but different values can also be passed.
+
+#### Default
+
+```ts
+false
+```
+
+#### Inherited from
+
+`ExecaOptions.lines`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:171
+
+***
+
+### localDir?
+
+> `readonly` `optional` **localDir**: `string` \| `URL`
+
+Preferred path to find locally installed binaries, when using the `preferLocal` option.
+
+#### Default
+
+`cwd` option
+
+#### Inherited from
+
+`ExecaOptions.localDir`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:24
+
+***
+
+### maxBuffer?
+
+> `readonly` `optional` **maxBuffer**: `FdGenericOption`\<`number`\>
+
+Largest amount of data allowed on `stdout`, `stderr` and `stdio`.
+
+By default, this applies to both `stdout` and `stderr`, but different values can also be passed.
+
+When reached, `error.isMaxBuffer` becomes `true`.
+
+#### Default
+
+```ts
+100_000_000
+```
+
+#### Inherited from
+
+`ExecaOptions.maxBuffer`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:193
+
+***
+
+### node?
+
+> `readonly` `optional` **node**: `boolean`
+
+If `true`, runs with Node.js. The first argument must be a Node.js file.
+
+The subprocess inherits the current Node.js [CLI flags](https://nodejs.org/api/cli.html#options) and version. This can be overridden using the `nodeOptions` and `nodePath` options.
+
+#### Default
+
+`true` with `execaNode()`, `false` otherwise
+
+#### Inherited from
+
+`ExecaOptions.node`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:33
+
+***
+
+### nodeOptions?
+
+> `readonly` `optional` **nodeOptions**: readonly `string`[]
+
+List of [CLI flags](https://nodejs.org/api/cli.html#cli_options) passed to the Node.js executable.
+
+Requires the `node` option to be `true`.
+
+#### Default
+
+[`process.execArgv`](https://nodejs.org/api/process.html#process_process_execargv) (current Node.js CLI flags)
+
+#### Inherited from
+
+`ExecaOptions.nodeOptions`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:42
+
+***
+
+### nodePath?
+
+> `readonly` `optional` **nodePath**: `string` \| `URL`
+
+Path to the Node.js executable.
+
+Requires the `node` option to be `true`.
+
+#### Default
+
+[`process.execPath`](https://nodejs.org/api/process.html#process_process_execpath) (current Node.js executable)
+
+#### Inherited from
+
+`ExecaOptions.nodePath`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:51
+
+***
+
+### preferLocal?
+
+> `readonly` `optional` **preferLocal**: `boolean`
+
+Prefer locally installed binaries when looking for a binary to execute.
+
+#### Default
+
+`true` with `$`, `false` otherwise
+
+#### Inherited from
+
+`ExecaOptions.preferLocal`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:17
 
 ***
 
@@ -372,11 +608,11 @@ false
 
 #### Overrides
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`reject`](../../../lib/run/interfaces/RunOptions.md#reject)
+`ExecaOptions.reject`
 
 #### Defined in
 
-[test/setup.ts:497](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/test/setup.ts#L497)
+[test/setup.ts:496](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/test/setup.ts#L496)
 
 ***
 
@@ -384,40 +620,33 @@ false
 
 > `readonly` `optional` **serialization**: `"json"` \| `"advanced"`
 
-Specify the kind of serialization used for sending messages between processes when using the `stdio: 'ipc'` option or `execa.node()`:
-	- `json`: Uses `JSON.stringify()` and `JSON.parse()`.
-	- `advanced`: Uses [`v8.serialize()`](https://nodejs.org/api/v8.html#v8_v8_serialize_value)
-
-Requires Node.js `13.2.0` or later.
-
-[More info.](https://nodejs.org/api/child_process.html#child_process_advanced_serialization)
+Specify the kind of serialization used for sending messages between subprocesses when using the `ipc` option.
 
 #### Default
 
 ```ts
-'json'
+'advanced'
 ```
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`serialization`](../../../lib/run/interfaces/RunOptions.md#serialization)
+`ExecaOptions.serialization`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:149
+node\_modules/execa/types/arguments/options.d.ts:218
 
 ***
 
 ### shell?
 
-> `readonly` `optional` **shell**: `string` \| `boolean`
+> `readonly` `optional` **shell**: `string` \| `boolean` \| `URL`
 
-If `true`, runs `command` inside of a shell. Uses `/bin/sh` on UNIX and `cmd.exe` on Windows. A different shell can be specified as a string. The shell should understand the `-c` switch on UNIX or `/d /s /c` on Windows.
+If `true`, runs the command inside of a [shell](https://en.wikipedia.org/wiki/Shell_(computing)).
 
-We recommend against using this option since it is:
-- not cross-platform, encouraging shell-specific syntax.
-- slower, because of the additional shell interpretation.
-- unsafe, potentially allowing command injection.
+Uses [`/bin/sh`](https://en.wikipedia.org/wiki/Unix_shell) on UNIX and [`cmd.exe`](https://en.wikipedia.org/wiki/Cmd.exe) on Windows. A different shell can be specified as a string. The shell should understand the `-c` switch on UNIX or `/d /s /c` on Windows.
+
+We recommend against using this option.
 
 #### Default
 
@@ -427,19 +656,21 @@ false
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`shell`](../../../lib/run/interfaces/RunOptions.md#shell)
+`ExecaOptions.shell`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:178
+node\_modules/execa/types/arguments/options.d.ts:62
 
 ***
 
 ### stderr?
 
-> `readonly` `optional` **stderr**: `StdioOption`
+> `readonly` `optional` **stderr**: `StdoutStderrOptionCommon`\<`false`\>
 
-Same options as [`stdio`](https://nodejs.org/dist/latest-v6.x/docs/api/child_process.html#child_process_options_stdio).
+How to setup the subprocess' [standard error](https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)). This can be `'pipe'`, `'overlapped'`, `'ignore`, `'inherit'`, a file descriptor integer, a Node.js `Writable` stream, a web `WritableStream`, a `{ file: 'path' }` object, a file URL, a generator function, a `Duplex` or a web `TransformStream`.
+
+This can be an array of values such as `['inherit', 'pipe']` or `[fileUrl, 'pipe']`.
 
 #### Default
 
@@ -449,41 +680,45 @@ Same options as [`stdio`](https://nodejs.org/dist/latest-v6.x/docs/api/child_pro
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`stderr`](../../../lib/run/interfaces/RunOptions.md#stderr)
+`ExecaOptions.stderr`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:82
+node\_modules/execa/types/arguments/options.d.ts:129
 
 ***
 
 ### stdin?
 
-> `readonly` `optional` **stdin**: `StdioOption`
+> `readonly` `optional` **stdin**: `StdinOptionCommon`\<`false`\>
 
-Same options as [`stdio`](https://nodejs.org/dist/latest-v6.x/docs/api/child_process.html#child_process_options_stdio).
+How to setup the subprocess' [standard input](https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)). This can be `'pipe'`, `'overlapped'`, `'ignore`, `'inherit'`, a file descriptor integer, a Node.js `Readable` stream, a web `ReadableStream`, a `{ file: 'path' }` object, a file URL, an `Iterable`, an `AsyncIterable`, an `Uint8Array`, a generator function, a `Duplex` or a web `TransformStream`.
+
+This can be an array of values such as `['inherit', 'pipe']` or `[fileUrl, 'pipe']`.
 
 #### Default
 
-```ts
-'pipe'
-```
+`'inherit'` with `$`, `'pipe'` otherwise
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`stdin`](../../../lib/run/interfaces/RunOptions.md#stdin)
+`ExecaOptions.stdin`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:68
+node\_modules/execa/types/arguments/options.d.ts:111
 
 ***
 
 ### stdio?
 
-> `readonly` `optional` **stdio**: `"pipe"` \| `"ignore"` \| `"inherit"` \| readonly `StdioOption`[]
+> `readonly` `optional` **stdio**: `StdioOptionsProperty`\<`false`\>
 
-Child's [stdio](https://nodejs.org/api/child_process.html#child_process_options_stdio) configuration.
+Like the `stdin`, `stdout` and `stderr` options but for all [file descriptors](https://en.wikipedia.org/wiki/File_descriptor) at once. For example, `{stdio: ['ignore', 'pipe', 'pipe']}` is the same as `{stdin: 'ignore', stdout: 'pipe', stderr: 'pipe'}`.
+
+A single string can be used as a shortcut.
+
+The array can have more than 3 items, to create additional file descriptors beyond `stdin`/`stdout`/`stderr`.
 
 #### Default
 
@@ -493,19 +728,21 @@ Child's [stdio](https://nodejs.org/api/child_process.html#child_process_options_
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`stdio`](../../../lib/run/interfaces/RunOptions.md#stdio)
+`ExecaOptions.stdio`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:136
+node\_modules/execa/types/arguments/options.d.ts:140
 
 ***
 
 ### stdout?
 
-> `readonly` `optional` **stdout**: `StdioOption`
+> `readonly` `optional` **stdout**: `StdoutStderrOptionCommon`\<`false`\>
 
-Same options as [`stdio`](https://nodejs.org/dist/latest-v6.x/docs/api/child_process.html#child_process_options_stdio).
+How to setup the subprocess' [standard output](https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)). This can be `'pipe'`, `'overlapped'`, `'ignore`, `'inherit'`, a file descriptor integer, a Node.js `Writable` stream, a web `WritableStream`, a `{ file: 'path' }` object, a file URL, a generator function, a `Duplex` or a web `TransformStream`.
+
+This can be an array of values such as `['inherit', 'pipe']` or `[fileUrl, 'pipe']`.
 
 #### Default
 
@@ -515,19 +752,23 @@ Same options as [`stdio`](https://nodejs.org/dist/latest-v6.x/docs/api/child_pro
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`stdout`](../../../lib/run/interfaces/RunOptions.md#stdout)
+`ExecaOptions.stdout`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:75
+node\_modules/execa/types/arguments/options.d.ts:120
 
 ***
 
 ### stripFinalNewline?
 
-> `readonly` `optional` **stripFinalNewline**: `boolean`
+> `readonly` `optional` **stripFinalNewline**: `FdGenericOption`\<`boolean`\>
 
 Strip the final [newline character](https://en.wikipedia.org/wiki/Newline) from the output.
+
+If the `lines` option is true, this applies to each output line instead.
+
+By default, this applies to both `stdout` and `stderr`, but different values can also be passed.
 
 #### Default
 
@@ -537,11 +778,11 @@ true
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`stripFinalNewline`](../../../lib/run/interfaces/RunOptions.md#stripfinalnewline)
+`ExecaOptions.stripFinalNewline`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:103
+node\_modules/execa/types/arguments/options.d.ts:182
 
 ***
 
@@ -549,7 +790,9 @@ node\_modules/execa/index.d.ts:103
 
 > `readonly` `optional` **timeout**: `number`
 
-If `timeout` is greater than `0`, the parent will send the signal identified by the `killSignal` property (the default is `SIGTERM`) if the child runs longer than `timeout` milliseconds.
+If `timeout` is greater than `0`, the subprocess will be terminated if it runs for longer than that amount of milliseconds.
+
+On timeout, `error.timedOut` becomes `true`.
 
 #### Default
 
@@ -559,11 +802,11 @@ If `timeout` is greater than `0`, the parent will send the signal identified by 
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`timeout`](../../../lib/run/interfaces/RunOptions.md#timeout)
+`ExecaOptions.timeout`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:192
+node\_modules/execa/types/arguments/options.d.ts:254
 
 ***
 
@@ -571,15 +814,49 @@ node\_modules/execa/index.d.ts:192
 
 > `readonly` `optional` **uid**: `number`
 
-Sets the user identity of the process.
+Sets the [user identifier](https://en.wikipedia.org/wiki/User_identifier) of the subprocess.
+
+#### Default
+
+```ts
+current user identifier
+```
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`uid`](../../../lib/run/interfaces/RunOptions.md#uid)
+`ExecaOptions.uid`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:161
+node\_modules/execa/types/arguments/options.d.ts:333
+
+***
+
+### verbose?
+
+> `readonly` `optional` **verbose**: `VerboseOption`
+
+If `verbose` is `'short'`, prints the command on [`stderr`](https://en.wikipedia.org/wiki/Standard_streams#Standard_error_(stderr)): its file, arguments, duration and (if it failed) error message.
+
+If `verbose` is `'full'` or a function, the command's [`stdout`](https://en.wikipedia.org/wiki/Standard_streams#Standard_output_(stdout)), `stderr` and IPC messages are also printed.
+
+A function can be passed to customize logging.
+
+By default, this applies to both `stdout` and `stderr`, but different values can also be passed.
+
+#### Default
+
+```ts
+'none'
+```
+
+#### Inherited from
+
+`ExecaOptions.verbose`
+
+#### Defined in
+
+node\_modules/execa/types/arguments/options.d.ts:238
 
 ***
 
@@ -587,7 +864,7 @@ node\_modules/execa/index.d.ts:161
 
 > `readonly` `optional` **windowsHide**: `boolean`
 
-On Windows, do not create a new console window. Please note this also prevents `CTRL-C` [from working](https://github.com/nodejs/node/issues/29837) on Windows.
+On Windows, do not create a new console window.
 
 #### Default
 
@@ -597,11 +874,11 @@ true
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`windowsHide`](../../../lib/run/interfaces/RunOptions.md#windowshide)
+`ExecaOptions.windowsHide`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:220
+node\_modules/execa/types/arguments/options.d.ts:354
 
 ***
 
@@ -609,18 +886,16 @@ node\_modules/execa/index.d.ts:220
 
 > `readonly` `optional` **windowsVerbatimArguments**: `boolean`
 
-If `true`, no quoting or escaping of arguments is done on Windows. Ignored on other platforms. This is set to `true` automatically when the `shell` option is `true`.
+If `false`, escapes the command arguments on Windows.
 
 #### Default
 
-```ts
-false
-```
+`true` if the `shell` option is `true`, `false` otherwise
 
 #### Inherited from
 
-[`RunOptions`](../../../lib/run/interfaces/RunOptions.md).[`windowsVerbatimArguments`](../../../lib/run/interfaces/RunOptions.md#windowsverbatimarguments)
+`ExecaOptions.windowsVerbatimArguments`
 
 #### Defined in
 
-node\_modules/execa/index.d.ts:213
+node\_modules/execa/types/arguments/options.d.ts:361

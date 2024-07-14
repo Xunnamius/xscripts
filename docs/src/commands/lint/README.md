@@ -8,9 +8,18 @@
 
 ## Index
 
+### Enumerations
+
+- [Linter](enumerations/Linter.md)
+
 ### Type Aliases
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
+
+### Variables
+
+- [limitedScopeDirectories](variables/limitedScopeDirectories.md)
+- [linters](variables/linters.md)
 
 ### Functions
 

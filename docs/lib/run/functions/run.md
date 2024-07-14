@@ -6,7 +6,7 @@
 
 # Function: run()
 
-> **run**(`file`, `args`?, `options`?): `Promise`\<[`RunReturnType`](../interfaces/RunReturnType.md)\<`string`\>\>
+> **run**(`file`, `args`?, `__namedParameters`?): `Promise`\<[`RunReturnType`](../type-aliases/RunReturnType.md)\>
 
 Runs (executes) `file` with the given `args` with respect to the given
 `options`.
@@ -20,12 +20,12 @@ Set `reject: false` to override this, or use [runNoRejectOnBadExit](runNoRejectO
 
 • **args?**: `string`[]
 
-• **options?**: [`RunOptions`](../interfaces/RunOptions.md)\<`string`\>
+• **\_\_namedParameters?**: [`RunOptions`](../type-aliases/RunOptions.md) = `{}`
 
 ## Returns
 
-`Promise`\<[`RunReturnType`](../interfaces/RunReturnType.md)\<`string`\>\>
+`Promise`\<[`RunReturnType`](../type-aliases/RunReturnType.md)\>
 
 ## Defined in
 
-[lib/run/index.ts:22](https://github.com/Xunnamius/xscripts/blob/09056cae12d2b8f174c6d0ccc038e6099f396bc6/lib/run/index.ts#L22)
+[lib/run/index.ts:41](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/run/index.ts#L41)
