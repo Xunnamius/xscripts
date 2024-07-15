@@ -40,4 +40,4 @@ instance, and an optional [TransformerOptions](../type-aliases/TransformerOption
 
 ## Defined in
 
-[src/assets/index.ts:126](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/src/assets/index.ts#L126)
+[src/assets/index.ts:139](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/src/assets/index.ts#L139)

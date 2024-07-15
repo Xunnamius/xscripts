@@ -32,4 +32,4 @@ BfeBuilderObjectValueExtensions.check
 
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:469](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/@black-flag/extensions/index.ts#L469)
+[lib/@black-flag/extensions/index.ts:469](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/@black-flag/extensions/index.ts#L469)

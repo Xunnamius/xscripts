@@ -27,7 +27,7 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:94](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/rejoinder/index.ts#L94)
+[lib/rejoinder/index.ts:94](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/rejoinder/index.ts#L94)
 
 > **ExtendedLogger**(...`args`): `void`
 
@@ -43,7 +43,7 @@ Send a tagged optionally-formatted message to output.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:98](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/rejoinder/index.ts#L98)
+[lib/rejoinder/index.ts:98](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/rejoinder/index.ts#L98)
 
 ## Properties
 
@@ -84,7 +84,7 @@ A sub-instance for outputting warning messages.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:108](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/debug-extended/index.ts#L108)
+[lib/debug-extended/index.ts:108](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L108)
 
 ***
 
@@ -160,7 +160,7 @@ A sub-instance for outputting error messages.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:131](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/debug-extended/index.ts#L131)
+[lib/debug-extended/index.ts:131](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L131)
 
 ***
 
@@ -182,7 +182,7 @@ A sub-instance for outputting error messages.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:51](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/debug-extended/index.ts#L51)
+[lib/debug-extended/index.ts:51](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L51)
 
 ***
 
@@ -198,7 +198,7 @@ A sub-instance for outputting messages to the attention of the reader.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:127](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/debug-extended/index.ts#L127)
+[lib/debug-extended/index.ts:127](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L127)
 
 ***
 
@@ -228,7 +228,7 @@ A sub-instance for outputting warning messages.
 
 #### Defined in
 
-[lib/debug-extended/index.ts:135](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/debug-extended/index.ts#L135)
+[lib/debug-extended/index.ts:135](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L135)
 
 ## Methods
 
@@ -249,7 +249,7 @@ namespace.
 
 #### Defined in
 
-[lib/rejoinder/index.ts:128](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/rejoinder/index.ts#L128)
+[lib/rejoinder/index.ts:128](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/rejoinder/index.ts#L128)
 
 ***
 
@@ -271,7 +271,7 @@ Send a blank newline to output.
 
 ##### Defined in
 
-[lib/rejoinder/index.ts:107](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/rejoinder/index.ts#L107)
+[lib/rejoinder/index.ts:107](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/rejoinder/index.ts#L107)
 
 #### newline(args)
 
@@ -289,4 +289,4 @@ Send a blank newline to output.
 
 ##### Defined in
 
-[lib/rejoinder/index.ts:121](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/rejoinder/index.ts#L121)
+[lib/rejoinder/index.ts:121](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/rejoinder/index.ts#L121)

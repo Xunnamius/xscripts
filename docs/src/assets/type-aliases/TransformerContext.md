@@ -8,9 +8,9 @@
 
 > **TransformerContext**: `Record`\<`string`, `string`\>
 
-The context object passed directly to each transformer. Will be wrapped with
-Partial.
+The xscripts project init-time (or renovate-time) context object passed
+directly to each transformer. Will be wrapped with Partial.
 
 ## Defined in
 
-[src/assets/index.ts:64](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/src/assets/index.ts#L64)
+[src/assets/index.ts:72](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/src/assets/index.ts#L72)

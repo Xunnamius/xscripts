@@ -10,9 +10,12 @@
 
 Retrieve an asset via its filename. For example, to retrieve an
 `.eslintrc.js` file (the transformer source for which exists in
-`./configs/_.eslintrc.js.ts`), pass `".eslintrc.js"` as the `name` parameter.
+`./config/_.eslintrc.js.ts`), pass `".eslintrc.js"` as the `name` parameter.
 
 Throws if no corresponding transformer for `name` can be found.
+
+Expects an xscripts project init-time (or renovate-time) context object (i.e.
+[TransformerContext](../type-aliases/TransformerContext.md) + [RequiredTransformerContext](../type-aliases/RequiredTransformerContext.md)).
 
 ## Parameters
 
@@ -30,4 +33,4 @@ Throws if no corresponding transformer for `name` can be found.
 
 ## Defined in
 
-[src/assets/index.ts:88](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/src/assets/index.ts#L88)
+[src/assets/index.ts:101](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/src/assets/index.ts#L101)

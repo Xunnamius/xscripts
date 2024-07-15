@@ -514,4 +514,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[lib/@black-flag/extensions/error.ts:14](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/lib/@black-flag/extensions/error.ts#L14)
+[lib/@black-flag/extensions/error.ts:14](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/@black-flag/extensions/error.ts#L14)

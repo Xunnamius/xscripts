@@ -228,6 +228,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### AssertionFailureBadAssetContextKey()
+
+#### Parameters
+
+• **key**: `string`
+
+#### Returns
+
+`string`
+
 ### AssertionFailureBadConfigurationPath()
 
 #### Parameters
@@ -289,16 +299,6 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **name**: `string`
-
-#### Returns
-
-`string`
-
-### AssertionFailureIsEmptyString()
-
-#### Parameters
-
-• **key**: `string`
 
 #### Returns
 
@@ -692,4 +692,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/c4bd6059488244ad158454492e5cfe3fcc65a457/src/error.ts#L11)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/src/error.ts#L11)
