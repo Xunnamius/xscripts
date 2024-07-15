@@ -1,4 +1,5 @@
-import { CliError } from '@black-flag/core';
+import { CliError, FrameworkExitCode } from '@black-flag/core';
+import mergeWith from 'lodash.mergewith';
 
 import { globalDebuggerNamespace } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
@@ -6,7 +7,12 @@ import { isNonEmptyString } from 'universe/util';
 
 import { createDebugLogger } from 'multiverse/rejoinder';
 
-import type { Promisable } from 'type-fest';
+import type { EmptyObject, Promisable } from 'type-fest';
+
+/**
+ * The `MergeWithCustomizer` type from lodash's {@link mergeWith}.
+ */
+export type MergeWithCustomizer = Parameters<typeof mergeWith<unknown, unknown>>[2];
 
 /**
  * A collection of key-value pairs that will always be available via a
@@ -18,6 +24,8 @@ export type RequiredTransformerContext = {
    */
   name: string;
 };
+
+export const requiredTransformerContextKeys = ['name'];
 
 /**
  * A union of well-known context keys. You should extract common
@@ -58,13 +66,14 @@ export type StandardTransformerContext = {
 };
 
 /**
- * The context object passed directly to each transformer. Will be wrapped with
- * {@link Partial}.
+ * The xscripts project init-time (or renovate-time) context object passed
+ * directly to each transformer. Will be wrapped with {@link Partial}.
  */
 export type TransformerContext = Record<string, string>;
 
 /**
- * Options to tweak the runtime of {@link makeTransformer}.
+ * Options to tweak the runtime of {@link makeTransformer} at xscripts project
+ * init-time (or renovate-time).
  */
 export type TransformerOptions = {
   //
@@ -72,7 +81,8 @@ export type TransformerOptions = {
 
 /**
  * A mapping between relative file paths and the contents of said files. These
- * files can then be created and/or overwritten at the discretion of the caller.
+ * files will be created and/or overwritten at xscripts project init-time (or
+ * renovate-time).
  */
 export type TransformerResult = Promisable<{
   [fileRelativePath: string]: string;
@@ -81,9 +91,12 @@ export type TransformerResult = Promisable<{
 /**
  * Retrieve an asset via its filename. For example, to retrieve an
  * `.eslintrc.js` file (the transformer source for which exists in
- * `./configs/_.eslintrc.js.ts`), pass `".eslintrc.js"` as the `name` parameter.
+ * `./config/_.eslintrc.js.ts`), pass `".eslintrc.js"` as the `name` parameter.
  *
  * Throws if no corresponding transformer for `name` can be found.
+ *
+ * Expects an xscripts project init-time (or renovate-time) context object (i.e.
+ * {@link TransformerContext} + {@link RequiredTransformerContext}).
  */
 export async function retrieveAsset({
   name,
@@ -98,7 +111,7 @@ export async function retrieveAsset({
     namespace: `${globalDebuggerNamespace}:retrieveAsset`
   });
 
-  const transformerPath = `./configs/_${name}.js`;
+  const transformerPath = `./config/_${name}.js`;
 
   debug('retrieving asset');
   debug('transformerPath: %O', transformerPath);
@@ -146,16 +159,33 @@ export function makeTransformer<
 
 /**
  * Asserts `record` (a `Record<string, unknown>`) is actually a `Record<string,
- * string>`.
+ * string> & RequiredTransformerContext` that contains each string in
+ * `expectedKeys` as a property with a non-empty string value.
  */
-export function assertIsNonEmptyStrings<T extends Record<string, unknown>>(
-  record: T
-): { [K in keyof T]: Exclude<T[K], undefined> } {
-  Object.entries(record).forEach(([key, value]) => {
+export function assertIsExpectedTransformerContext<
+  T extends Record<string, unknown>,
+  const U extends string[]
+>(record: T, expectedKeys: U = [] as unknown as U) {
+  [...expectedKeys, ...requiredTransformerContextKeys].forEach((key) => {
+    const value = record[key];
     if (!isNonEmptyString(value)) {
-      throw new CliError(ErrorMessage.AssertionFailureIsEmptyString(key));
+      throw new CliError(ErrorMessage.AssertionFailureBadAssetContextKey(key), {
+        suggestedExitCode: FrameworkExitCode.AssertionFailed
+      });
     }
   });
 
-  return record as ReturnType<typeof assertIsNonEmptyStrings<T>>;
+  return record as unknown as Record<U[number], string> & RequiredTransformerContext;
+}
+
+/**
+ * A thin wrapper around lodash's {@link mergeWith} that does not mutate
+ * `originalConfiguration`.
+ */
+export function deepMergeConfig<ConfigurationType>(
+  originalConfiguration: ConfigurationType,
+  overwrites: ConfigurationType | EmptyObject = {},
+  customReplacer?: MergeWithCustomizer
+): ConfigurationType {
+  return mergeWith({}, originalConfiguration, overwrites, customReplacer);
 }
