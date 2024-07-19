@@ -1,5 +1,3 @@
-import assert from 'node:assert';
-
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import {
@@ -12,6 +10,7 @@ import {
   type CustomCliArguments as FormatCliArguments
 } from 'universe/commands/format';
 
+import { changelogTopmatter } from 'universe/assets/config/_conventional.config.js';
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
 import { globalPreChecks, readFile, writeFile } from 'universe/util';
@@ -110,12 +109,7 @@ export default function command(
       } else {
         debug('prepending topmatter to CHANGELOG.md');
 
-        const { changelogTitle: changelogTopmatter } = (
-          await import(conventionalConfigPath)
-        ).default;
-
         debug('changelogTopmatter: %O', changelogTopmatter);
-        assert(typeof changelogTopmatter === 'string', ErrorMessage.GuruMeditation());
 
         const contents = await readFile('CHANGELOG.md');
         debug(`prepending changelog topmatter to file at path: %O`, 'CHANGELOG.md');

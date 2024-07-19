@@ -1,5 +1,4 @@
 /* eslint-disable unicorn/prevent-abbreviations */
-import assert from 'node:assert';
 import fs from 'node:fs/promises';
 
 import { transformFileAsync } from '@babel/core';
@@ -9,6 +8,7 @@ import { glob } from 'glob-gitignore';
 import { globalLoggerNamespace } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
 
+import { softAssert } from 'multiverse/@-xun/cli-utils/error';
 import { createDebugLogger } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
 
@@ -282,7 +282,10 @@ export async function getProjectMetadata(
     attributes.push(ProjectMetaAttribute.Next);
   }
 
-  assert(['module', 'commonjs'].includes(type as string));
+  softAssert(
+    ['module', 'commonjs'].includes(type as string),
+    ErrorMessage.BadProjectTypeInPackageJson()
+  );
 
   if (type === 'module') {
     attributes.push(ProjectMetaAttribute.Esm);
@@ -307,7 +310,7 @@ export async function getProjectMetadata(
     attributes.push(ProjectMetaAttribute.Vercel);
   }
 
-  assert(
+  softAssert(
     !(
       attributes.includes(ProjectMetaAttribute.Cli) &&
       attributes.includes(ProjectMetaAttribute.Next)

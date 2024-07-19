@@ -1,5 +1,3 @@
-import assert from 'node:assert';
-
 import { type ChildConfiguration } from '@black-flag/core';
 import askPassword from 'askpassword';
 import uniqueFilename from 'unique-filename';
@@ -19,6 +17,7 @@ import {
   withStandardUsage
 } from 'multiverse/@-xun/cli-utils/extensions';
 
+import { softAssert } from 'multiverse/@-xun/cli-utils/error';
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { run } from 'multiverse/run';
@@ -222,7 +221,7 @@ export default function command({
 
       switch (target) {
         case DeployTarget.Vercel: {
-          assert(
+          softAssert(
             attributes.includes(ProjectMetaAttribute.Vercel),
             ErrorMessage.WrongProjectAttributes([ProjectMetaAttribute.Vercel], attributes)
           );

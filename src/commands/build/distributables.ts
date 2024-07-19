@@ -1,5 +1,4 @@
 /* eslint-disable no-await-in-loop */
-import assert from 'node:assert';
 import { chmod, rename, stat, symlink } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 
@@ -33,6 +32,7 @@ import {
   withStandardUsage
 } from 'multiverse/@-xun/cli-utils/extensions';
 
+import { softAssert } from 'multiverse/@-xun/cli-utils/error';
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { SHORT_TAB } from 'multiverse/rejoinder';
@@ -433,13 +433,14 @@ export default async function command({
               ? { [rootPkg.name]: rootPkg.bin }
               : rootPkg.bin;
 
-          const mainBinFile = findMainBinFile(runtimeContext);
-          assert(mainBinFile, ErrorMessage.GuruMeditation());
+          const mainBinFile =
+            findMainBinFile(runtimeContext) ||
+            softAssert(ErrorMessage.CliProjectHasBadBinConfig());
 
           const binFiles = Object.values(binConfig);
           const binFileInodes = await Promise.all(
             binFiles.map(async (path) => {
-              assert(path, ErrorMessage.GuruMeditation());
+              softAssert(path, ErrorMessage.GuruMeditation());
               return stat(path).then(({ ino }) => ino);
             })
           );
@@ -450,7 +451,7 @@ export default async function command({
                   // ? We go through all this to avoid race conditions where we
                   // ? might end up writing to the same file
                   const path = binFiles.at(binFileInodes.indexOf(inode));
-                  assert(path, ErrorMessage.GuruMeditation());
+                  softAssert(path, ErrorMessage.GuruMeditation());
                   const contents = await readFile(path);
 
                   if (contents.startsWith('#!')) {
@@ -471,7 +472,7 @@ export default async function command({
                 })
               : []),
             ...Object.entries(binConfig).map(async ([name, path]) => {
-              assert(path, ErrorMessage.GuruMeditation());
+              softAssert(path, ErrorMessage.GuruMeditation());
 
               const symlinkTargetPath = relative(
                 nodeModulesBinDir,

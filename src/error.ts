@@ -10,8 +10,8 @@ export { TaskError } from 'multiverse/@-xun/cli-utils/error';
 /* istanbul ignore next */
 export const ErrorMessage = {
   ...UpstreamErrorMessage,
-  AssertionFailureIsEmptyString(key: string) {
-    return `assertion failed: string at key ${key} is empty or undefined`;
+  BadAssetContextKey(key: string) {
+    return `assertion failed: asset context value at expected key "${key}" is either not a string, is empty, or is undefined`;
   },
   BadChangelogPatcher(path: string) {
     return `unable to import "${path}" as a JavaScript module. Please ensure it is syntactically sound and contains the expected exports (see documentation).`;
@@ -28,11 +28,14 @@ export const ErrorMessage = {
   CannotBeCliAndNextJs() {
     return 'project must either provide a CLI or be a Next.js project';
   },
+  CliProjectHasBadBinConfig() {
+    return 'this project appears to be a CLI project but has one or more poorly configured "bin" entries in package.json';
+  },
   CannotBuildIntermediatesForNextJs() {
     return 'intermediates cannot be generated for a Next.js project';
   },
   CannotRunOutsideRoot() {
-    return 'the current working directory must be the project root or a workspace sub-root';
+    return 'the current working directory must be the project root or a workspace (package) sub-root';
   },
   CleanCalledWithoutForce() {
     return 'no deletions were performed (try again with --force)';
@@ -40,9 +43,15 @@ export const ErrorMessage = {
   WrongProjectAttributes(
     expected: ProjectMetaAttribute[],
     actual: ProjectMetaAttribute[],
-    withOrWithout: 'with' | 'without' = 'with'
+    preposition = 'with'
   ) {
-    return `expected a project ${withOrWithout} the following attributes: ${expected.join(', ')}; saw ${actual.join(', ')} instead`;
+    return `expected a project ${preposition} the following attributes: ${expected.join(', ')}; saw ${actual.join(', ')} instead`;
+  },
+  BadProjectTypeInPackageJson() {
+    return `a package.json file must contain a "type" field with a value of either "module" or "commonjs", otherwise the "type" field must be omitted`;
+  },
+  BadProjectNameInPackageJson() {
+    return `a package.json file must contain a valid "name" field`;
   },
   MustChooseDeployEnvironment() {
     return 'must choose either --preview or --production deployment environment';
@@ -59,7 +68,13 @@ export const ErrorMessage = {
   LintingFailed() {
     return 'one or more linters returned a bad exit code';
   },
-  AssertRetrievalFailed(path: string) {
+  RetrievalFailed(path: string) {
     return `failed to retrieve asset at ${path}`;
+  },
+  UnmatchedCommitType(type: string | undefined, variableName: string) {
+    return `unmatched commit type ${type ? `"${type}" ` : ''}in ${variableName}`;
+  },
+  IssuePrefixContainsIllegalCharacters() {
+    return 'issue prefixes cannot contain characters recognized by the RegExp constructor';
   }
 };
