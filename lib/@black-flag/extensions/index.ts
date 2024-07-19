@@ -25,6 +25,7 @@ import {
 
 import { globalLoggerNamespace } from 'universe/constant';
 
+import { hardAssert, softAssert } from 'multiverse/@-xun/cli-utils/error';
 import { createDebugLogger } from 'multiverse/rejoinder';
 
 import { ErrorMessage, type KeyValueEntry } from './error';
@@ -1229,35 +1230,6 @@ export async function getInvocableExtendedHandler<
     debug('invoking handler');
     return handler(argv);
   };
-}
-
-/**
- * Throw a {@link CliError} with the given string message, which
- * causes Black Flag to exit with the {@link FrameworkExitCode.DefaultError}
- * status code.
- *
- * Use this function to assert end user error.
- */
-function softAssert(value: unknown, message: string): asserts value {
-  if (!value) {
-    throw new CliError(message, { suggestedExitCode: FrameworkExitCode.DefaultError });
-  }
-}
-
-/**
- * Throw a so-called "FrameworkError" with the given string message, which
- * causes Black Flag to exit with the {@link FrameworkExitCode.AssertionFailed}
- * status code.
- *
- * Use this function to assert developer errors that end users can do nothing
- * about.
- */
-function hardAssert(value: unknown, message: string): asserts value {
-  if (!value) {
-    throw new CliError(ErrorMessage.FrameworkError(message), {
-      suggestedExitCode: FrameworkExitCode.AssertionFailed
-    });
-  }
 }
 
 function transmuteBFEBuilderToBFBuilder<
