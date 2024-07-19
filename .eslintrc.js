@@ -66,6 +66,10 @@ const rules = {
     'error',
     { disallowTypeAnnotations: false, fixStyle: 'inline-type-imports' }
   ],
+  '@typescript-eslint/consistent-type-exports': [
+    'error',
+    { fixMixedExportsWithInlineTypeSpecifier: true }
+  ],
   'no-unused-vars': 'off',
   'unicorn/no-keyword-prefix': 'warn',
   'unicorn/prefer-string-replace-all': 'warn',
@@ -93,6 +97,8 @@ const rules = {
         dest: false,
         obj: false,
         val: false,
+        env: false,
+        temp: false,
         req: false,
         res: false,
         ctx: false
@@ -120,6 +126,14 @@ const rules = {
   'unicorn/explicit-length-check': 'off',
   // ? I don't think so
   'unicorn/no-negated-condition': 'off',
+  // ? This is not it, chief (Prettier prevails)
+  'unicorn/number-literal-case': 'off',
+  // ? I'll decide when I want switch cases for fallthrough or not, thanks
+  'unicorn/prefer-switch': 'off',
+  // ? No, thanks
+  'unicorn/prefer-set-has': 'off',
+  // ? Nah
+  'unicorn/prefer-top-level-await': 'off',
   // ? No.
   'unicorn/import-style': 'off',
   // ? This rule is broken as of 05/30/2024
@@ -168,6 +182,7 @@ module.exports = {
         'jest/no-conditional-in-test': 'off',
         'jest/no-conditional-expect': 'off',
         'jest/prefer-each': 'off',
+        'jest/prefer-snapshot-hint': 'off',
         'jest/prefer-importing-jest-globals': 'off'
       }
     }
@@ -198,7 +213,8 @@ module.exports = {
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
       },
       typescript: {},
-      'babel-module': {}
+      'babel-module': {},
+      node: {}
     },
     'import/ignore': [
       // ? Don't go complaining about anything that we don't own

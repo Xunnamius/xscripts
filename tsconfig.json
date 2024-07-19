@@ -27,7 +27,7 @@
     "noUnusedParameters": true,
     "paths": {
       // ! If changed, also update these aliases in jest.config.js,
-      // ! webpack.config.js, next.config.ts, and .eslintrc.js
+      // ! webpack.config.js, next.config.ts, and eslint.config.js
       "externals/*": ["external-scripts/*"],
       "multiverse/*": ["lib/*"],
       "package": ["package.json"],

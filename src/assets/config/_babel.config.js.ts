@@ -35,7 +35,7 @@ export function moduleExport() {
           root: '.',
           extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
           // ! If changed, also update these aliases in tsconfig.json,
-          // ! webpack.config.js, next.config.ts, eslintrc.js, and jest.config.js
+          // ! webpack.config.js, next.config.ts, eslint.config.js, and jest.config.js
           alias: {
             '^universe/(.*)$': String.raw`./src/\1`,
             '^multiverse/(.*)$': String.raw`./lib/\1`,

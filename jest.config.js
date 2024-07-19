@@ -22,7 +22,7 @@ module.exports = {
   verbose: false,
   testPathIgnorePatterns: ['/node_modules/', '/dist/', '/src/'],
   // ! If changed, also update these aliases in tsconfig.json,
-  // ! babel.config.js, webpack.config.js, next.config.ts, and .eslintrc.js
+  // ! babel.config.js, webpack.config.js, next.config.ts, and eslint.config.js
   moduleNameMapper: {
     '^universe/(.*)$': '<rootDir>/src/$1',
     '^multiverse/(.*)$': '<rootDir>/lib/$1',

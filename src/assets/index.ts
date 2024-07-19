@@ -90,8 +90,9 @@ export type TransformerResult = Promisable<{
 
 /**
  * Retrieve an asset via its filename. For example, to retrieve an
- * `.eslintrc.js` file (the transformer source for which exists in
- * `./config/_.eslintrc.js.ts`), pass `".eslintrc.js"` as the `name` parameter.
+ * `eslint.config.js` file (the transformer source for which exists in
+ * `./config/_eslint.config.js.ts`), pass `"eslint.config.js"` as the `name`
+ * parameter.
  *
  * Throws if no corresponding transformer for `name` can be found.
  *

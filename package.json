@@ -147,7 +147,7 @@
     "debug": "^4.3.5",
     "doctoc": "^2.2.1",
     "dotenv": "^16.4.5",
-    "eslint": "^8.57.0",
+    "eslint": "^9.7.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-babel-module": "^5.3.2",
     "eslint-import-resolver-typescript": "^3.6.1",
@@ -239,6 +239,7 @@
   },
   "devDependencies": {
     "@-xun/scripts": "^1.16.1",
+    "@types/eslint": "^8.56.10",
     "@types/through2": "^2.0.41"
   },
   "engines": {
