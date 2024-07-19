@@ -5,21 +5,19 @@ import fs from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, join as joinPath, resolve as resolvePath } from 'node:path';
 
-// TODO: replace debug with rejoinder
-import debugFactory from 'debug';
 import glob from 'glob';
 import uniqueFilename from 'unique-filename';
-//import gitFactory from 'simple-git';
 // ? https://github.com/jest-community/jest-extended#typescript
 import 'jest-extended';
 import 'jest-extended/all';
+import { type SimpleGit, simpleGit } from 'simple-git';
 
+import { createDebugLogger, type ExtendedDebugger } from 'multiverse/rejoinder';
+import { run, type RunReturnType } from 'multiverse/run';
 import { name as pkgName, version as pkgVersion } from 'package';
 
-import type { Debugger } from 'debug';
 import type { Options as ExecaOptions } from 'execa' with { 'resolution-mode': 'import' };
 import type { Promisable } from 'type-fest';
-//import type { SimpleGit } from 'simple-git';
 
 // TODO: automated tests against both Windows and Linux (and for all tooling)
 
@@ -35,7 +33,7 @@ import type { Promisable } from 'type-fest';
 // TODO: ability to copy entire arbitrary directories recursively into fixture
 // TODO: root
 
-const globalDebug = debugFactory(`${pkgName}:jest-setup`);
+const globalDebug = createDebugLogger({ namespace: `${pkgName}:jest-setup` });
 
 globalDebug(`pkgName: "${pkgName}"`);
 globalDebug(`pkgVersion: "${pkgVersion}"`);
@@ -65,7 +63,7 @@ export type MockEnvOptions = {
 async function writeFile({
   path,
   data,
-  context: { debug },
+  context: { debug, root },
   noDebugOutput = false
 }: {
   path: string;
@@ -73,6 +71,7 @@ async function writeFile({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
+  path = resolvePath(root, path);
   !noDebugOutput && debug(`writing file: ${path}`);
   !noDebugOutput && debug.extend('contents >')(data);
   return fs.writeFile(path, data);
@@ -80,13 +79,14 @@ async function writeFile({
 
 async function readFile({
   path,
-  context: { debug },
+  context: { debug, root },
   noDebugOutput = false
 }: {
   path: string;
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
+  path = resolvePath(root, path);
   !noDebugOutput && debug(`reading file: ${path}`);
   const data = await fs.readFile(path, 'utf8');
   !noDebugOutput && debug.extend('contents >')(data);
@@ -95,13 +95,14 @@ async function readFile({
 
 async function accessFile({
   path,
-  context: { debug },
+  context: { debug, root },
   noDebugOutput = false
 }: {
   path: string;
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
+  path = resolvePath(root, path);
   !noDebugOutput && debug(`determining accessibility of file: ${path}`);
   return fs.access(path);
 }
@@ -110,7 +111,7 @@ async function symlink({
   actualPath,
   linkPath,
   isDir = true,
-  context: { debug },
+  context: { debug, root },
   noDebugOutput = false
 }: {
   actualPath: string;
@@ -119,6 +120,9 @@ async function symlink({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
+  actualPath = resolvePath(root, actualPath);
+  linkPath = resolvePath(root, linkPath);
+
   if (!noDebugOutput) {
     debug(
       `creating symlink (${isDir ? 'dir' : 'not dir'}): ${actualPath} => ${linkPath}`
@@ -134,13 +138,15 @@ async function symlink({
 
 async function mkdir({
   paths,
-  context: { debug },
+  context: { debug, root },
   noDebugOutput = false
 }: {
   paths: string[];
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
+  paths = paths.map((path) => resolvePath(root, path));
+
   return Promise.all(
     paths.map((path) => {
       !noDebugOutput && debug(`making directory: ${path}`);
@@ -151,13 +157,15 @@ async function mkdir({
 
 async function remove({
   paths,
-  context: { debug },
+  context: { debug, root },
   noDebugOutput = false
 }: {
   paths: string[];
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
+  paths = paths.map((path) => resolvePath(root, path));
+
   return Promise.all(
     paths.map((path) => {
       !noDebugOutput && debug(`deleting item: ${path}`);
@@ -169,7 +177,7 @@ async function remove({
 async function copy({
   sourcePaths,
   destinationPath,
-  context: { debug },
+  context: { debug, root },
   noDebugOutput = false
 }: {
   sourcePaths: string[];
@@ -177,6 +185,9 @@ async function copy({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
+  sourcePaths = sourcePaths.map((path) => resolvePath(root, path));
+  destinationPath = resolvePath(root, destinationPath);
+
   return Promise.all(
     sourcePaths.map((src) => {
       // eslint-disable-next-line unicorn/prevent-abbreviations
@@ -190,7 +201,7 @@ async function copy({
 async function rename({
   oldPath,
   newPath,
-  context: { debug },
+  context: { debug, root },
   noDebugOutput = false
 }: {
   oldPath: string;
@@ -198,13 +209,16 @@ async function rename({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
+  oldPath = resolvePath(root, oldPath);
+  newPath = resolvePath(root, newPath);
+
   !noDebugOutput && debug(`renaming (moving) item: ${oldPath} => ${newPath}`);
   return fs.rename(oldPath, newPath);
 }
 
 // TODO: XXX: make this into a separate (mock-argv) package
 export async function withMockedArgv(
-  fn: () => Promisable<void>,
+  test: () => Promisable<void>,
   simulatedArgv: string[],
   // eslint-disable-next-line unicorn/no-object-as-default-parameter
   options: MockArgvOptions = { replace: false }
@@ -213,7 +227,7 @@ export async function withMockedArgv(
   const previousArgv = process.argv.splice(options?.replace ? 0 : 2, process.argv.length);
   process.argv.push(...simulatedArgv);
 
-  await fn();
+  await test();
 
   process.argv.splice(options?.replace ? 0 : 2, process.argv.length);
   process.argv.push(...previousArgv);
@@ -226,12 +240,12 @@ export function mockArgvFactory(
   factoryOptions: MockArgvOptions = { replace: false }
 ) {
   return (
-    fn: () => Promisable<void>,
+    test: () => Promisable<void>,
     simulatedArgv?: string[],
     options?: MockArgvOptions
   ) => {
     return withMockedArgv(
-      fn,
+      test,
       [...factorySimulatedArgv, ...(simulatedArgv || [])],
       options || factoryOptions
     );
@@ -240,7 +254,7 @@ export function mockArgvFactory(
 
 // TODO: XXX: make this into a separate (mock-env) package
 export async function withMockedEnv(
-  fn: () => Promisable<void>,
+  test: () => Promisable<void>,
   simulatedEnv: Record<string, string>,
   // eslint-disable-next-line unicorn/no-object-as-default-parameter
   options: MockEnvOptions = { replace: true }
@@ -255,7 +269,7 @@ export async function withMockedEnv(
   if (options.replace) clearEnv();
   Object.assign(process.env, simulatedEnv);
 
-  await fn();
+  await test();
 
   clearEnv();
   Object.assign(process.env, previousEnv);
@@ -268,12 +282,12 @@ export function mockEnvFactory(
   factoryOptions: MockEnvOptions = { replace: true }
 ) {
   return (
-    fn: () => Promisable<void>,
+    test: () => Promisable<void>,
     simulatedEnv: Record<string, string> = {},
     options?: MockEnvOptions
   ) => {
     return withMockedEnv(
-      fn,
+      test,
       { ...factorySimulatedEnv, ...simulatedEnv },
       options || factoryOptions
     );
@@ -334,14 +348,14 @@ export function isolatedImportFactory<T = unknown>(args: {
 
 // TODO: XXX: make this into a separate (mock-exit) package
 export async function withMockedExit(
-  fn: (spies: { exitSpy: jest.SpyInstance }) => Promisable<void>
+  test: (spies: { exitSpy: jest.SpyInstance }) => Promisable<void>
 ) {
   const exitSpy = jest
     .spyOn(process, 'exit')
     .mockImplementation(() => undefined as never);
 
   try {
-    await fn({ exitSpy });
+    await test({ exitSpy });
   } finally {
     exitSpy.mockRestore();
   }
@@ -386,14 +400,14 @@ export type MockedOutputOptions = {
 
 // TODO: XXX: make this into a separate (mock-output) package
 export async function withMockedOutput(
-  fn: (spies: {
+  test: (spies: {
     logSpy: jest.SpyInstance;
     warnSpy: jest.SpyInstance;
     errorSpy: jest.SpyInstance;
     infoSpy: jest.SpyInstance;
     stdoutSpy: jest.SpyInstance;
     stderrSpy: jest.SpyInstance;
-  }) => unknown,
+  }) => Promisable<unknown>,
   { passthrough = [], passthroughOutputIfDebugging = true }: MockedOutputOptions = {}
 ) {
   const spies = {
@@ -455,7 +469,7 @@ export async function withMockedOutput(
   }
 
   try {
-    await fn(spies);
+    await test(spies);
 
     // ? Let us know when output was swallowed unexpectedly
     for (const [name, spy] of Object.entries(spies)) {
@@ -496,17 +510,6 @@ export interface RunOptions extends ExecaOptions {
   reject?: boolean;
 }
 
-// TODO: XXX: make this into a separate (run) package (actually, throw this out)
-// ! By default, does NOT reject on bad exit code (set reject: true to override)
-async function run(file: string, args?: string[], options?: RunOptions) {
-  const result = await (
-    await import('execa')
-  ).execa(file, args, { reject: false, ...options });
-
-  globalDebug.extend('run')('executed command result: %O', result);
-  return result;
-}
-
 // TODO: XXX: make this into a separate (run) package (along w/ above)
 export function runnerFactory(file: string, args?: string[], options?: RunOptions) {
   const factoryArgs = args;
@@ -522,7 +525,7 @@ export function runnerFactory(file: string, args?: string[], options?: RunOption
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
 export interface FixtureOptions
   extends Partial<WebpackTestFixtureOptions>,
-    /*Partial<GitRepositoryFixtureOptions>,*/
+    Partial<GitRepositoryFixtureOptions>,
     Partial<NodeImportTestFixtureOptions>,
     Partial<DummyDirectoriesFixtureOptions> {
   performCleanup: boolean;
@@ -536,9 +539,9 @@ export interface WebpackTestFixtureOptions {
 }
 
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
-/* export interface GitRepositoryFixtureOptions {
+export interface GitRepositoryFixtureOptions {
   setupGit: (git: SimpleGit) => Promisable<void>;
-} */
+}
 
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
 export interface DummyDirectoriesFixtureOptions {
@@ -556,23 +559,45 @@ export interface NodeImportTestFixtureOptions {
   };
 }
 
+export type WithoutContextProperty<T> = T extends (config: infer U) => infer V
+  ? (config: Omit<U, 'context'>) => V
+  : never;
+
+export type WithContextProperty<T> = T extends (config: infer U) => infer V
+  ? (config: U & { context: FixtureContext }) => V
+  : never;
+
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
-// eslint-disable-next-line @typescript-eslint/ban-types
-export interface FixtureContext<CustomOptions extends Record<string, unknown> = {}>
-  extends Partial<TestResultProvider>,
-    Partial<TreeOutputProvider> /*,
-    Partial<GitProvider>*/ {
+export interface FixtureContext<
+  CustomOptions extends Record<string, unknown> = Record<string, unknown>
+> extends Partial<TestResultProvider>,
+    Partial<TreeOutputProvider>,
+    Partial<GitProvider> {
   root: string;
   testIdentifier: string;
   options: FixtureOptions & CustomOptions;
   using: MockFixture[];
   fileContents: { [filePath: string]: string };
-  debug: Debugger;
+  debug: ExtendedDebugger;
+  /**
+   * Convenience filesystem functions. All paths are local to the current
+   * context root.
+   */
+  fs: {
+    writeFile: WithoutContextProperty<typeof writeFile>;
+    readFile: WithoutContextProperty<typeof readFile>;
+    accessFile: WithoutContextProperty<typeof accessFile>;
+    symlink: WithoutContextProperty<typeof symlink>;
+    mkdir: WithoutContextProperty<typeof mkdir>;
+    remove: WithoutContextProperty<typeof remove>;
+    copy: WithoutContextProperty<typeof copy>;
+    rename: WithoutContextProperty<typeof rename>;
+  };
 }
 
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
 export interface TestResultProvider {
-  testResult: { code: number; stdout: string; stderr: string };
+  testResult: RunReturnType;
 }
 
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
@@ -581,12 +606,11 @@ export interface TreeOutputProvider {
 }
 
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
-/* export interface GitProvider {
+export interface GitProvider {
   git: SimpleGit;
-} */
+}
 
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type FixtureAction<Context = FixtureContext> = (
   context: Context
 ) => Promise<unknown>;
@@ -777,7 +801,7 @@ export function webpackTestFixture(): MockFixture {
     name: 'webpack-test',
     description: 'setting up webpack jest integration test',
     setup: async (context) => {
-      if (typeof context.options.webpackVersion != 'string') {
+      if (typeof context.options.webpackVersion !== 'string') {
         throw new TypeError('invalid or missing options.webpackVersion, expected string');
       }
 
@@ -824,16 +848,10 @@ export function webpackTestFixture(): MockFixture {
 
       await run('npx', ['webpack'], { cwd: context.root, reject: true });
 
-      const { exitCode, stdout, stderr } = await run('node', [
+      context.testResult = await run('node', [
         '--no-warnings',
         `${context.root}/dist/index.js`
       ]);
-
-      context.testResult = {
-        code: exitCode ?? -1,
-        stdout: stdout?.toString() || '',
-        stderr: stderr?.toString() || ''
-      };
     }
   };
 }
@@ -853,61 +871,61 @@ async function getTreeOutput(context: FixtureContext) {
 }
 
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
-export function nodeImportTestFixture(): MockFixture {
+export function nodeImportAndRunTestFixture(): MockFixture {
   return {
-    name: 'node-import-test',
-    description: 'setting up node import jest integration test',
+    name: 'node-import-and-run-test',
+    description: 'setting up node import and runtime integration test',
     setup: async (context) => {
-      const indexPath = Object.keys(context.fileContents).find((path) =>
+      const targetPath = Object.keys(context.fileContents).find((path) =>
         /^src\/index(\.test)?\.(((c|m)?js)|ts)x?$/.test(path)
       );
 
-      if (!indexPath) {
+      if (!targetPath) {
         throw new Error('could not find initial contents for src/index test file');
       }
 
       await writeFile({
-        path: `${context.root}/${indexPath}`,
-        data: context.fileContents[indexPath],
+        path: `${context.root}/${targetPath}`,
+        data: context.fileContents[targetPath],
         context
       });
 
-      // TODO: also test all current/active/maintenance versions of node too
-      // TODO: and enable that functionality
       const bin = context.options.runWith?.binary || 'node';
+
       const args = context.options.runWith?.args || [
         '--no-warnings',
         '--experimental-json-modules'
       ];
-      const options = context.options.runWith?.opts || {};
+
+      const options = Object.assign(
+        { env: { DEBUG_COLORS: 'false' } },
+        context.options.runWith?.opts || {}
+      );
 
       context.treeOutput = await getTreeOutput(context);
-
-      const { exitCode, stdout, stderr } = await run(bin, [...args, indexPath], {
+      context.testResult = await run(bin, ['--no-warnings', ...args, targetPath], {
         cwd: context.root,
         ...options
       });
-
-      context.testResult = {
-        code: exitCode ?? -1,
-        stdout: stdout?.toString() || '',
-        stderr: stderr?.toString() || ''
-      };
     }
   };
 }
 
+// ! TODO: XXX: make fixture creation functions accept their own options, then
+// ! TODO: XXX: make all options from fixtures available in the global context.
+// ! TODO: XXX: This allows for easy of typing on both ends while preserving the
+// ! TODO: XXX: ability for cross-plugin communication
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
-/* export function gitRepositoryFixture(): MockFixture {
+export function gitRepositoryFixture(): MockFixture {
   return {
     name: 'git-repository',
     description: 'configuring fixture root to be a git repository',
     setup: async (context) => {
-      if (context.options.setupGit && typeof context.options.setupGit != 'function') {
-        throw new Error('invalid or missing options.setupGit, expected function');
+      if (context.options.setupGit && typeof context.options.setupGit !== 'function') {
+        throw new Error('invalid options.setupGit, expected function');
       }
 
-      context.git = gitFactory({ baseDir: context.root });
+      context.git = simpleGit({ baseDir: context.root });
 
       await (context.options.setupGit
         ? context.options.setupGit(context.git)
@@ -917,7 +935,7 @@ export function nodeImportTestFixture(): MockFixture {
             .addConfig('user.email', 'fake@email'));
     }
   };
-} */
+}
 
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
 export function dummyDirectoriesFixture(): MockFixture {
@@ -985,18 +1003,30 @@ export function describeRootFixture(): MockFixture {
   };
 }
 
+function wrapFilesystemFunction<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends WithContextProperty<(...args: any[]) => Promise<any>>
+>(filesystemFn: T, context: FixtureContext) {
+  return function wrapper(config: Parameters<WithoutContextProperty<T>>[0]) {
+    return filesystemFn({ ...config, context });
+  };
+}
+
+export type WithMockedFixtureOptions<
+  CustomOptions extends Record<string, unknown> = Record<string, unknown>,
+  CustomContext extends Record<string, unknown> = Record<string, unknown>
+> = Parameters<typeof withMockedFixture<CustomOptions, CustomContext>>[0];
+
 // TODO: XXX: make this into a separate (mock-fixture) package
 export async function withMockedFixture<
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  CustomOptions extends Record<string, unknown> = {},
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  CustomContext extends Record<string, unknown> = {}
+  CustomOptions extends Record<string, unknown> = Record<string, unknown>,
+  CustomContext extends Record<string, unknown> = Record<string, unknown>
 >({
-  fn,
+  test,
   testIdentifier,
   options
 }: {
-  fn: FixtureAction<
+  test: FixtureAction<
     FixtureContext<FixtureOptions & Partial<Record<string, unknown> & CustomOptions>> &
       CustomContext
   >;
@@ -1024,10 +1054,23 @@ export async function withMockedFixture<
     using: [] as MockFixture[],
     options: finalOptions,
     fileContents: { ...finalOptions.initialFileContents }
-  } as CustomizedFixtureContext & { using: CustomizedMockFixture[] };
+  } satisfies Omit<FixtureContext, 'fs'> as CustomizedFixtureContext & {
+    using: CustomizedMockFixture[];
+  };
+
+  context.fs = {
+    writeFile: wrapFilesystemFunction(writeFile, context),
+    readFile: wrapFilesystemFunction(readFile, context),
+    accessFile: wrapFilesystemFunction(accessFile, context),
+    symlink: wrapFilesystemFunction(symlink, context),
+    mkdir: wrapFilesystemFunction(mkdir, context),
+    remove: wrapFilesystemFunction(remove, context),
+    copy: wrapFilesystemFunction(copy, context),
+    rename: wrapFilesystemFunction(rename, context)
+  };
 
   if (finalOptions.use) {
-    if (finalOptions.use?.[0]?.name != 'root') context.using.push(rootFixture());
+    if (finalOptions.use?.[0]?.name !== 'root') context.using.push(rootFixture());
     context.using = [...context.using, ...finalOptions.use];
     // ? `describe-root` fixture doesn't have to be the last one, but a fixture
     // ? with that name must be included at least once
@@ -1038,7 +1081,7 @@ export async function withMockedFixture<
   context.using.push({
     name: testSymbol,
     description: '',
-    setup: fn
+    setup: test
   });
 
   let ranDescribe = false;
@@ -1046,15 +1089,15 @@ export async function withMockedFixture<
 
   const setupDebugger = async (fixture: CustomizedMockFixture, error = false) => {
     const toString = async (
-      p: CustomizedMockFixture['name'] | CustomizedMockFixture['description']
-      // TODO: replace with toss
-    ) =>
-      typeof p === 'function' ? p(context) : typeof p === 'string' ? p : ':impossible:';
-    const name = await toString(fixture.name.toString());
+      source: CustomizedMockFixture['name'] | CustomizedMockFixture['description']
+    ) => String(typeof source === 'function' ? source(context) : source);
+
+    const name = await toString(fixture.name);
     const desc = await toString(fixture.description);
-    const dbg = globalDebug.extend(error ? `${name}:<error>` : name);
-    context.debug = dbg;
-    dbg(desc);
+    const debug_ = globalDebug.extend(name);
+
+    context.debug = error ? (debug_.error as unknown as typeof debug_) : debug_;
+    context.debug(desc);
   };
 
   /*eslint-disable no-await-in-loop */
@@ -1075,7 +1118,7 @@ export async function withMockedFixture<
       if (mockFixture.name === 'describe-root') ranDescribe = true;
     }
   } catch (error) {
-    context.debug.extend('<error>')('exception occurred: %O', error);
+    context.debug.error('exception occurred: %O', error);
     throw error;
   } finally {
     if (!ranDescribe) {
@@ -1086,8 +1129,8 @@ export async function withMockedFixture<
 
     context.debug = globalDebug.extend('<cleanup>');
 
-    for (const cfn of cleanupFunctions.reverse()) {
-      await cfn(context).catch((error) =>
+    for (const cleanupFn of cleanupFunctions.reverse()) {
+      await cleanupFn(context).catch((error) =>
         context.debug(
           `ignored exception in teardown function: ${
             error?.message || error.toString() || '<no error message>'
@@ -1101,15 +1144,18 @@ export async function withMockedFixture<
 
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ above)
 export function mockFixtureFactory<
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  CustomOptions extends Record<string, unknown> = {},
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  CustomContext extends Record<string, unknown> = {}
+  CustomOptions extends Record<string, unknown> = Record<string, unknown>,
+  CustomContext extends Record<string, unknown> = Record<string, unknown>
 >(testIdentifier: string, options?: Partial<FixtureOptions & CustomOptions>) {
   return (
-    fn: FixtureAction<
+    test: FixtureAction<
       FixtureContext<FixtureOptions & Partial<Record<string, unknown> & CustomOptions>> &
         CustomContext
     >
-  ) => withMockedFixture<CustomOptions, CustomContext>({ fn, testIdentifier, options });
+  ) =>
+    withMockedFixture<CustomOptions, CustomContext>({
+      test,
+      testIdentifier,
+      options
+    });
 }
