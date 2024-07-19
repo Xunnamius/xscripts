@@ -62,8 +62,6 @@ TODO
 
 Further documentation can be found under [`docs/`][x-repo-docs].
 
-<!-- TODO: enumerate and talk about rationale behind use of peer dependencies and the link between this package and @-xun/configs -->
-
 ### Published Package Details
 
 This is a [CJS2 package][x-pkg-cjs-mojito] with statically-analyzable exports
