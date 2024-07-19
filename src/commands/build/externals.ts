@@ -88,6 +88,7 @@ export default function command({
       if (await isAccessible(externalScriptsDir)) {
         genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
+        // TODO: debug mode => add babel environment variable to spit out seen config
         await run(
           'npx',
           [
