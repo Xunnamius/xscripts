@@ -1,0 +1,23 @@
+{{> header}}
+
+{{#if noteGroups}}
+{{#each noteGroups}}
+
+### 💥 {{title}} 💥
+
+{{#each notes}}
+* {{!-- {{#if commit.scope}}**_{{commit.scope}}_:** {{/if}} --}}{{text}}
+{{/each}}
+{{/each}}
+{{/if}}
+{{#each commitGroups}}
+
+{{#if title}}
+#### {{title}}
+
+{{/if}}
+{{#each commits}}
+{{> commit root=@root}}
+{{/each}}
+
+{{/each}}

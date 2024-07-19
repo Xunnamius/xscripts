@@ -110,12 +110,13 @@ export const { transformer } = makeTransformer<Context>({
 // @ts-check
 
 // TODO: publish latest rejoinder package first, then update configs to use it
-/*const debug = createDebugLogger({
-  namespace: '${globalDebuggerNamespace}:config:eslint'
+/*const { createDebugLogger } = require('debug-extended');
+const debug = createDebugLogger({
+  namespace: '${globalDebuggerNamespace}:config:remarkrc'
 });*/
 
-const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/config/.remarkrc.mjs');
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/.remarkrc.mjs';
 
 const mode = process.env.NODE_ENV;
 const shouldRenumberReferences =
@@ -125,13 +126,15 @@ if (!['lint', 'format'].includes(mode)) {
   throw new Error('remark expects NODE_ENV to be one of either: lint, format');
 }
 
-export default deepMergeConfig(moduleExport(mode, shouldRenumberReferences), {
+const config = deepMergeConfig(moduleExport(mode, shouldRenumberReferences), {
   // Any custom configs here will be deep merged with moduleExport
 });
 
+export default config;
+
 /*debug('lintConfig: %O', lintConfig);
 debug('formatConfig: %O', formatConfig);
-debug('export config: %O', config);*/
+debug('exported config: %O', config);*/
 `.trimStart()
     };
   }

@@ -227,9 +227,11 @@ export const { transformer } = makeTransformer<Context>({
     return {
       [name]: /*js*/ `
 // @ts-check
+'use strict';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
-/*const debug = createDebugLogger({
+/*const { createDebugLogger } = require('debug-extended');
+const debug = createDebugLogger({
   namespace: '${globalDebuggerNamespace}:config:eslint'
 });*/
 
@@ -240,7 +242,7 @@ module.exports = deepMergeConfig(moduleExport, {
   // Any custom configs here will be deep merged with moduleExport
 });
 
-/*debug('exports: %O', module.exports);*/
+/*debug('exported config: %O', module.exports);*/
 `.trimStart()
     };
   }

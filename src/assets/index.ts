@@ -125,7 +125,7 @@ export async function retrieveAsset({
 
     return await transformer(context, options);
   } catch (error) {
-    throw new CliError(ErrorMessage.AssertRetrievalFailed(transformerPath), {
+    throw new CliError(ErrorMessage.RetrievalFailed(transformerPath), {
       cause: error
     });
   }
@@ -164,12 +164,12 @@ export function makeTransformer<
  */
 export function assertIsExpectedTransformerContext<
   T extends Record<string, unknown>,
-  const U extends string[]
->(record: T, expectedKeys: U = [] as unknown as U) {
-  [...expectedKeys, ...requiredTransformerContextKeys].forEach((key) => {
+  const U extends string[] = never[]
+>(record: T, expectedKeys?: U) {
+  [...(expectedKeys || []), ...requiredTransformerContextKeys].forEach((key) => {
     const value = record[key];
     if (!isNonEmptyString(value)) {
-      throw new CliError(ErrorMessage.AssertionFailureBadAssetContextKey(key), {
+      throw new CliError(ErrorMessage.BadAssetContextKey(key), {
         suggestedExitCode: FrameworkExitCode.AssertionFailed
       });
     }
