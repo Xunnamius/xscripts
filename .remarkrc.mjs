@@ -3,7 +3,7 @@
  * import('unified-engine/lib/configuration').PluggableList |
  * import('unified-engine/lib/configuration').PluginIdList}} Config
  */
-const debug = (await import('debug')).default('@-xun/configs:remark');
+const debug = (await import('debug')).default('xscripts:config:remark');
 
 /**
  * Remark configuration loaded when `NODE_ENV === 'lint'`. The goal here is to
