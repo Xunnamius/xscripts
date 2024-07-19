@@ -27,6 +27,10 @@
       "types": "./dist/src/assets/index.d.ts",
       "default": "./dist/src/assets/index.js"
     },
+    "./assets/config/*": {
+      "types": "./dist/src/assets/config/_*",
+      "default": "./dist/src/assets/config/_*"
+    },
     "./configure": {
       "types": "./dist/src/configure.d.ts",
       "default": "./dist/src/configure.js"
@@ -111,6 +115,10 @@
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "@types/confusing-browser-globals": "^1.0.3",
+    "@types/conventional-changelog-config-spec": "^2.1.5",
+    "@types/conventional-changelog-core": "^4.2.8",
+    "@types/conventional-changelog-writer": "^4.0.10",
     "@types/debug": "^4.1.12",
     "@types/jest": "^29.5.12",
     "@types/lodash.camelcase": "^4.3.9",
@@ -118,6 +126,7 @@
     "@types/lodash.clonedeepwith": "^4.5.9",
     "@types/lodash.isequal": "^4.5.8",
     "@types/lodash.merge": "^4.6.9",
+    "@types/lodash.mergewith": "^4.6.9",
     "@types/node": "^20.14.10",
     "@types/spellchecker": "^3.5.2",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
@@ -133,6 +142,7 @@
     "babel-plugin-transform-rewrite-imports": "^1.2.0",
     "confusing-browser-globals": "^1.0.11",
     "conventional-changelog-cli": "https://xunn.at/conventional-changelog-cli@master",
+    "conventional-changelog-core": "https://xunn.at/conventional-changelog-core@master",
     "core-js": "3.37.1",
     "debug": "^4.3.5",
     "doctoc": "^2.2.1",
@@ -161,6 +171,7 @@
     "lodash.clonedeepwith": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "lodash.merge": "^4.6.2",
+    "lodash.mergewith": "^4.6.2",
     "merge-descriptors": "^2.0.0",
     "prettier": "^3.3.3",
     "remark-capitalize-headings": "^2.0.1",
@@ -213,6 +224,8 @@
     "remark-validate-links": "^13.0.1",
     "rimraf": "^6.0.1",
     "semantic-release": "https://xunn.at/semantic-release-atam@22.0.7",
+    "semver": "^7.6.2",
+    "simple-git": "^3.25.0",
     "sort-package-json": "^2.10.0",
     "spellchecker": "^3.7.1",
     "supports-color": "^8.1.1",
@@ -225,7 +238,8 @@
     "unique-filename": "^3.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.16.1"
+    "@-xun/scripts": "^1.16.1",
+    "@types/through2": "^2.0.41"
   },
   "engines": {
     "node": "^20.10.0 || >=22.3.0"
