@@ -38,3 +38,14 @@ export function toFirstLowerCase(str: string) {
 export function scriptBasename(scriptFullName: string) {
   return scriptFullName.split(' ').at(-1)!;
 }
+
+/**
+ * Interpolate simple handlebars templates without actually using handlebars.
+ */
+export function interpolateTemplate(template: string, context: Record<string, string>) {
+  Object.keys(context).forEach((key) => {
+    template = template.replaceAll(new RegExp(`{{${key}}}`, 'g'), context[key]);
+  });
+
+  return template;
+}
