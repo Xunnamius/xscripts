@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/prevent-abbreviations */
+import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 
 import { transformFileAsync } from '@babel/core';
@@ -49,6 +50,28 @@ export async function readFile(path: string) {
 export async function writeFile(path: string, contents: string) {
   try {
     return await fs.writeFile(path, contents);
+  } catch (error) {
+    throw new CliError(ErrorMessage.CannotWriteFile(path), {
+      cause: error,
+      suggestedExitCode: FrameworkExitCode.AssertionFailed
+    });
+  }
+}
+
+export function __read_file_sync(path: string) {
+  try {
+    return fsSync.readFileSync(path, { encoding: 'utf8' });
+  } catch (error) {
+    throw new CliError(ErrorMessage.CannotReadFile(path), {
+      cause: error,
+      suggestedExitCode: FrameworkExitCode.AssertionFailed
+    });
+  }
+}
+
+export function __write_file_sync(path: string, contents: string) {
+  try {
+    return fsSync.writeFileSync(path, contents);
   } catch (error) {
     throw new CliError(ErrorMessage.CannotWriteFile(path), {
       cause: error,
