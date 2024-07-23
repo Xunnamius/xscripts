@@ -10,6 +10,9 @@ export { TaskError } from 'multiverse/@-xun/cli-utils/error';
 /* istanbul ignore next */
 export const ErrorMessage = {
   ...UpstreamErrorMessage,
+  EslintPluginReturnedSomethingUnexpected(identifier: string) {
+    return `assertion failed: the eslint plugin "${identifier}" returned something unexpected`;
+  },
   BadAssetContextKey(key: string) {
     return `assertion failed: asset context value at expected key "${key}" is either not a string, is empty, or is undefined`;
   },
