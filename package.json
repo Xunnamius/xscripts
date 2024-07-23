@@ -132,7 +132,7 @@
     "@types/lodash.isequal": "^4.5.8",
     "@types/lodash.merge": "^4.6.9",
     "@types/lodash.mergewith": "^4.6.9",
-    "@types/node": "^20.14.11",
+    "@types/node": "^20.14.12",
     "@types/semver": "^7.5.8",
     "@types/spellchecker": "^3.5.2",
     "@typescript-eslint/utils": "^8.0.0-alpha.51",
@@ -240,12 +240,12 @@
     "type-fest": "^4.23.0",
     "typedoc": "^0.26.5",
     "typedoc-plugin-markdown": "^4.2.2",
-    "typescript": "^5.5.3",
+    "typescript": "^5.5.4",
     "typescript-eslint": "^8.0.0-alpha.51",
     "unique-filename": "^3.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.16.1",
+    "@-xun/scripts": "^1.17.0",
     "@types/eslint": "^9.6.0",
     "@types/through2": "^2.0.41"
   },
