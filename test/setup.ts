@@ -72,8 +72,12 @@ async function writeFile({
   noDebugOutput?: boolean;
 }) {
   path = resolvePath(root, path);
-  !noDebugOutput && debug(`writing file: ${path}`);
-  !noDebugOutput && debug.extend('contents >')(data);
+
+  if (!noDebugOutput) {
+    debug(`writing file: ${path}`);
+    debug.extend('contents >')(data);
+  }
+
   return fs.writeFile(path, data);
 }
 
@@ -87,9 +91,15 @@ async function readFile({
   noDebugOutput?: boolean;
 }) {
   path = resolvePath(root, path);
-  !noDebugOutput && debug(`reading file: ${path}`);
+  if (!noDebugOutput) {
+    debug(`reading file: ${path}`);
+  }
+
   const data = await fs.readFile(path, 'utf8');
-  !noDebugOutput && debug.extend('contents >')(data);
+  if (!noDebugOutput) {
+    debug.extend('contents >')(data);
+  }
+
   return data;
 }
 
@@ -103,7 +113,11 @@ async function accessFile({
   noDebugOutput?: boolean;
 }) {
   path = resolvePath(root, path);
-  !noDebugOutput && debug(`determining accessibility of file: ${path}`);
+
+  if (!noDebugOutput) {
+    debug(`determining accessibility of file: ${path}`);
+  }
+
   return fs.access(path);
 }
 
@@ -149,7 +163,10 @@ async function mkdir({
 
   return Promise.all(
     paths.map((path) => {
-      !noDebugOutput && debug(`making directory: ${path}`);
+      if (!noDebugOutput) {
+        debug(`making directory: ${path}`);
+      }
+
       return fs.mkdir(path, { recursive: true });
     })
   );
@@ -168,7 +185,10 @@ async function remove({
 
   return Promise.all(
     paths.map((path) => {
-      !noDebugOutput && debug(`deleting item: ${path}`);
+      if (!noDebugOutput) {
+        debug(`deleting item: ${path}`);
+      }
+
       return fs.rm(path, { force: true, recursive: true });
     })
   );
@@ -190,9 +210,11 @@ async function copy({
 
   return Promise.all(
     sourcePaths.map((src) => {
-      // eslint-disable-next-line unicorn/prevent-abbreviations
       const dst = joinPath(destinationPath, basename(src));
-      !noDebugOutput && debug(`copying item: ${src} => ${dst}`);
+      if (!noDebugOutput) {
+        debug(`copying item: ${src} => ${dst}`);
+      }
+
       return fs.cp(src, dst, { force: true, recursive: true });
     })
   );
@@ -212,7 +234,10 @@ async function rename({
   oldPath = resolvePath(root, oldPath);
   newPath = resolvePath(root, newPath);
 
-  !noDebugOutput && debug(`renaming (moving) item: ${oldPath} => ${newPath}`);
+  if (!noDebugOutput) {
+    debug(`renaming (moving) item: ${oldPath} => ${newPath}`);
+  }
+
   return fs.rename(oldPath, newPath);
 }
 
@@ -246,8 +271,8 @@ export function mockArgvFactory(
   ) => {
     return withMockedArgv(
       test,
-      [...factorySimulatedArgv, ...(simulatedArgv || [])],
-      options || factoryOptions
+      [...factorySimulatedArgv, ...(simulatedArgv ?? [])],
+      options ?? factoryOptions
     );
   };
 }
@@ -289,7 +314,7 @@ export function mockEnvFactory(
     return withMockedEnv(
       test,
       { ...factorySimulatedEnv, ...simulatedEnv },
-      options || factoryOptions
+      options ?? factoryOptions
     );
   };
 }
@@ -516,7 +541,7 @@ export function runnerFactory(file: string, args?: string[], options?: RunOption
   const factoryOptions = options;
 
   return (args?: string[], options?: RunOptions) =>
-    run(file, args || factoryArgs, { ...factoryOptions, ...options });
+    run(file, args ?? factoryArgs, { ...factoryOptions, ...options });
 }
 
 // TODO: XXX: need some way to make setting different fixture options for
@@ -890,16 +915,16 @@ export function nodeImportAndRunTestFixture(): MockFixture {
         context
       });
 
-      const bin = context.options.runWith?.binary || 'node';
+      const bin = context.options.runWith?.binary ?? 'node';
 
-      const args = context.options.runWith?.args || [
+      const args = context.options.runWith?.args ?? [
         '--no-warnings',
         '--experimental-json-modules'
       ];
 
       const options = Object.assign(
         { env: { DEBUG_COLORS: 'false' } },
-        context.options.runWith?.opts || {}
+        context.options.runWith?.opts ?? {}
       );
 
       context.treeOutput = await getTreeOutput(context);
@@ -997,7 +1022,7 @@ export function describeRootFixture(): MockFixture {
     setup: async (context) => {
       context.debug('test identifier: %O', context.testIdentifier);
       context.debug('root: %O', context.root);
-      context.debug(context.treeOutput || (await getTreeOutput(context)));
+      context.debug(context.treeOutput ?? (await getTreeOutput(context)));
       context.debug('per-file contents: %O', context.fileContents);
     }
   };
@@ -1111,9 +1136,9 @@ export async function withMockedFixture<
         if (mockFixture.teardown) cleanupFunctions.push(mockFixture.teardown);
       }
 
-      mockFixture.setup
+      void (mockFixture.setup
         ? await mockFixture.setup(context)
-        : context.debug('(warning: mock fixture has no setup function)');
+        : context.debug('(warning: mock fixture has no setup function)'));
 
       if (mockFixture.name === 'describe-root') ranDescribe = true;
     }

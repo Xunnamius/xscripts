@@ -55,6 +55,7 @@ export default function command({
       // TODO: is idempotent
       // TODO: if handlebar notation suffixed by \n\n, replace suffix with \n (or is this handled via prettier already?)
       // TODO: (includes the lenses: cli, next.js, react, library)
+      // TODO: (launch and task examples in vscode are materialized)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

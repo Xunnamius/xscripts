@@ -10,7 +10,7 @@ describe('debug-js feature parity', () => {
 
     const log = debug('test');
     log.enabled = true;
-    log.log = () => {};
+    log.log = () => undefined;
 
     expect(() => log('hello world')).not.toThrow();
   });
@@ -20,7 +20,7 @@ describe('debug-js feature parity', () => {
 
     const log = debug('test');
     log.enabled = true;
-    log.log = () => {};
+    log.log = () => undefined;
 
     // @ts-expect-error: wrong on purpose
     expect(() => debug.enable(true)).not.toThrow();
@@ -60,7 +60,7 @@ describe('debug-js feature parity', () => {
 
       const log = debug('foo');
       log.enabled = true;
-      log.log = () => {};
+      log.log = () => undefined;
 
       const logBar = log.extend('bar');
       expect(logBar.namespace).toBe('foo:bar');
@@ -71,7 +71,7 @@ describe('debug-js feature parity', () => {
 
       const log = debug('foo');
       log.enabled = true;
-      log.log = () => {};
+      log.log = () => undefined;
 
       const logBar = log.extend('bar', '--');
       expect(logBar.namespace).toBe('foo--bar');
@@ -82,7 +82,7 @@ describe('debug-js feature parity', () => {
 
       const log = debug('foo');
       log.enabled = true;
-      log.log = () => {};
+      log.log = () => undefined;
 
       const logBar = log.extend('bar', '');
       expect(logBar.namespace).toBe('foobar');
@@ -92,7 +92,7 @@ describe('debug-js feature parity', () => {
       expect.hasAssertions();
 
       const log = debug('foo');
-      log.log = () => {};
+      log.log = () => undefined;
 
       const logBar = log.extend('bar');
       expect(log.log).toBe(logBar.log);

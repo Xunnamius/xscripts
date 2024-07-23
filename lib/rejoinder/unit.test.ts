@@ -379,7 +379,7 @@ describe('::createListrManager', () => {
     await withMockedEnv(
       () => {
         const { fallbackRendererCondition: fallback } =
-          createListrManager().options || {};
+          createListrManager().options ?? {};
 
         expect(typeof fallback === 'boolean' ? fallback : fallback?.()).toBeTrue();
       },
@@ -393,7 +393,7 @@ describe('::createListrManager', () => {
     createDebugLogger({ namespace }).enabled = true;
 
     await withMockedEnv(() => {
-      const { fallbackRendererCondition: fallback } = createListrManager().options || {};
+      const { fallbackRendererCondition: fallback } = createListrManager().options ?? {};
 
       expect(typeof fallback === 'boolean' ? fallback : fallback?.()).toBeTrue();
     }, {});

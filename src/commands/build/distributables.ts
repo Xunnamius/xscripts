@@ -434,7 +434,7 @@ export default async function command({
               : rootPkg.bin;
 
           const mainBinFile =
-            findMainBinFile(runtimeContext) ||
+            findMainBinFile(runtimeContext) ??
             softAssert(ErrorMessage.CliProjectHasBadBinConfig());
 
           const binFiles = Object.values(binConfig);

@@ -138,7 +138,7 @@ export function findMainBinFile(
   } = runtimeContext;
 
   const mainBinFile =
-    typeof bin === 'string' ? bin : Object.values(bin || {}).find((path) => !!path);
+    typeof bin === 'string' ? bin : Object.values(bin ?? {}).find((path) => !!path);
 
   debug('mainBinFile: %O', mainBinFile);
 

@@ -63,7 +63,7 @@ export default function command({
         project: { json: rootPkgJson, packages: packages_ }
       } = runtimeContext;
 
-      const workspacePkgsJson = Array.from(packages_?.values() || []).map(
+      const workspacePkgsJson = Array.from(packages_?.values() ?? []).map(
         ({ json }) => json
       );
 
@@ -74,7 +74,7 @@ export default function command({
       const packages = [rootPkgJson, ...workspacePkgsJson];
 
       for (const [index, { name, scripts }] of packages.entries()) {
-        const pkgName = name || '(unnamed package)';
+        const pkgName = name ?? '(unnamed package)';
         const pkgLogger =
           packages.length > 1 ? genericLogger.extend(`[${pkgName}]`) : genericLogger;
 
@@ -82,7 +82,7 @@ export default function command({
           [LogTag.IF_NOT_QUIETED],
           `Available NPM run commands for ${pkgName}:${full ? '\n' : ''}` +
             frontmatter +
-            Object.entries(scripts || {})
+            Object.entries(scripts ?? {})
               .map(([name, script], index_, array) => {
                 let str = name;
 

@@ -47,7 +47,6 @@ const genericRules = {
     }
   ],
   'no-restricted-globals': ['warn', ...restrictedGlobals],
-  'no-extra-boolean-cast': 'off',
   'no-empty': 'off',
   '@typescript-eslint/camelcase': 'off',
   // ? I am an enby of simple tastes, who does commonjs sometimes

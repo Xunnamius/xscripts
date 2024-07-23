@@ -51,8 +51,8 @@ export async function run(
   const result = await intermediateResult;
   const returnValue = {
     ...result,
-    stdout: result.stdout?.toString() || '',
-    stderr: result.stderr?.toString() || ''
+    stdout: result.stdout?.toString() ?? '',
+    stderr: result.stderr?.toString() ?? ''
   };
 
   debug('execution result: %O', returnValue);
@@ -94,5 +94,5 @@ export function runnerFactory(file: string, args?: string[], options?: RunOption
   const factoryOptions = options;
 
   return (args?: string[], options?: RunOptions) =>
-    run(file, args || factoryArgs, { ...factoryOptions, ...options });
+    run(file, args ?? factoryArgs, { ...factoryOptions, ...options });
 }

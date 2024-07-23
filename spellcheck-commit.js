@@ -1,5 +1,5 @@
 // @ts-check
-/* eslint-disable unicorn/prefer-top-level-await */
+
 /* eslint-disable no-console */
 const spellcheck = require('spellchecker');
 const read = require('node:fs/promises').readFile;
@@ -124,7 +124,12 @@ void (async () => {
       console.warn(`${typo}${suggestion}`);
     }
 
-    typos.length > 5 && console.warn(`${typos.length - 5} more...`);
-    typos.length && console.warn('---');
+    if (typos.length > 5) {
+      console.warn(`${typos.length - 5} more...`);
+    }
+
+    if (typos.length) {
+      console.warn('---');
+    }
   }
 })();

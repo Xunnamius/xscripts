@@ -222,7 +222,6 @@ export default function command({
       debug('allTypes: %O', allTypes);
       debug('allScopes: %O', allScopes);
 
-      // eslint-disable-next-line unicorn/prevent-abbreviations
       const env: Record<string, string> = {
         DEBUG_COLORS: 'false',
         NODE_ENV: 'test',
@@ -234,15 +233,15 @@ export default function command({
       };
 
       if (scopes.includes(TestScope.Intermediate)) {
-        env['JEST_TRANSPILED'] = 'true';
+        env.JEST_TRANSPILED = 'true';
       }
 
       if (scopes.includes(TestScope.External)) {
-        env['JEST_EXTERNALS'] = 'true';
+        env.JEST_EXTERNALS = 'true';
       }
 
       if (isRepeating) {
-        env['JEST_SILENT_REPORTER_SHOW_WARNINGS'] = 'true';
+        env.JEST_SILENT_REPORTER_SHOW_WARNINGS = 'true';
       }
 
       debug('env: %O', env);

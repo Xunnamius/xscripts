@@ -413,7 +413,7 @@ async function filterOutPathsUnsupportedByPrettier(files: string[] | undefined) 
   }
 
   const supportedExtensions = new Set(
-    (await getSupportInfo()).languages.flatMap((language) => language.extensions || [])
+    (await getSupportInfo()).languages.flatMap((language) => language.extensions ?? [])
   );
 
   const supportedFiles = files.filter((path) => {

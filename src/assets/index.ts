@@ -75,9 +75,7 @@ export type TransformerContext = Record<string, string>;
  * Options to tweak the runtime of {@link makeTransformer} at xscripts project
  * init-time (or renovate-time).
  */
-export type TransformerOptions = {
-  //
-};
+export type TransformerOptions = EmptyObject;
 
 /**
  * A mapping between relative file paths and the contents of said files. These
@@ -167,7 +165,7 @@ export function assertIsExpectedTransformerContext<
   T extends Record<string, unknown>,
   const U extends string[] = never[]
 >(record: T, expectedKeys?: U) {
-  [...(expectedKeys || []), ...requiredTransformerContextKeys].forEach((key) => {
+  [...(expectedKeys ?? []), ...requiredTransformerContextKeys].forEach((key) => {
     const value = record[key];
     if (!isNonEmptyString(value)) {
       throw new CliError(ErrorMessage.BadAssetContextKey(key), {
