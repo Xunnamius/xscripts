@@ -6,7 +6,7 @@
 
 # Function: mockEnvFactory()
 
-> **mockEnvFactory**(`factorySimulatedEnv`, `factoryOptions`): (`fn`, `simulatedEnv`, `options`?) => `Promise`\<`void`\>
+> **mockEnvFactory**(`factorySimulatedEnv`, `factoryOptions`): (`test`, `simulatedEnv`, `options`?) => `Promise`\<`void`\>
 
 ## Parameters
 
@@ -20,7 +20,7 @@
 
 ### Parameters
 
-• **fn**
+• **test**
 
 • **simulatedEnv**: `Record`\<`string`, `string`\> = `{}`
 
@@ -32,4 +32,4 @@
 
 ## Defined in
 
-[test/setup.ts:265](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L265)
+[test/setup.ts:304](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L304)

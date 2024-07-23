@@ -15,7 +15,8 @@ An InternalDebug factory interface that returns
 
 > **ExtendedDebug**(...`args`): [`ExtendedDebugger`](ExtendedDebugger.md)
 
-Send an optionally-formatted message to output.
+An InternalDebug factory interface that returns
+[ExtendedDebugger](ExtendedDebugger.md) instances.
 
 ## Parameters
 
@@ -27,11 +28,12 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/debug-extended/index.ts:69](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L69)
+[lib/debug-extended/index.ts:68](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L68)
 
 > **ExtendedDebug**(...`args`): `InternalDebugger`
 
-Send an optionally-formatted message to output.
+An InternalDebug factory interface that returns
+[ExtendedDebugger](ExtendedDebugger.md) instances.
 
 ## Parameters
 
@@ -43,7 +45,7 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/debug-extended/index.ts:65](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L65)
+[lib/debug-extended/index.ts:64](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L64)
 
 > **ExtendedDebug**(`namespace`): `Debugger`
 
@@ -60,7 +62,7 @@ An InternalDebug factory interface that returns
 
 ## Defined in
 
-[lib/debug-extended/index.ts:65](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L65)
+[lib/debug-extended/index.ts:64](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L64)
 
 ## Properties
 
@@ -104,7 +106,7 @@ node\_modules/@types/debug/index.d.ts:9
 
 #### Defined in
 
-[lib/debug-extended/index.ts:71](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L71)
+[lib/debug-extended/index.ts:70](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L70)
 
 ***
 

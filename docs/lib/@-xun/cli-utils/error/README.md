@@ -15,3 +15,8 @@
 ### Variables
 
 - [ErrorMessage](variables/ErrorMessage.md)
+
+### Functions
+
+- [hardAssert](functions/hardAssert.md)
+- [softAssert](functions/softAssert.md)

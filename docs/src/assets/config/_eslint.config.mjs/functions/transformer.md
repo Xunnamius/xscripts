@@ -2,7 +2,7 @@
 
 ***
 
-[@-xun/scripts](../../../../../README.md) / [src/assets/config/\_.eslintrc.js](../README.md) / transformer
+[@-xun/scripts](../../../../../README.md) / [src/assets/config/\_eslint.config.mjs](../README.md) / transformer
 
 # Function: transformer()
 
@@ -12,7 +12,7 @@
 
 • **context**: `Partial`\<`EmptyObject`\> & [`RequiredTransformerContext`](../../../type-aliases/RequiredTransformerContext.md)
 
-• **options**: [`TransformerOptions`](../../../type-aliases/TransformerOptions.md) = `{}`
+• **options**: `EmptyObject` = `{}`
 
 ## Returns
 
@@ -20,4 +20,4 @@
 
 ## Defined in
 
-[src/assets/config/\_.eslintrc.js.ts:223](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/src/assets/config/_.eslintrc.js.ts#L223)
+[src/assets/config/\_eslint.config.mjs.ts:363](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/assets/config/_eslint.config.mjs.ts#L363)

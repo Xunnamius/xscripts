@@ -19,7 +19,8 @@ An instance of InternalDebugger that cannot be extended via
 
 > **UnextendableInternalDebugger**(...`args`): `void`
 
-Send an optionally-formatted message to output.
+An instance of InternalDebugger that cannot be extended via
+`InternalDebugger.extend`.
 
 ## Parameters
 
@@ -31,7 +32,7 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/debug-extended/index.ts:57](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L57)
+[lib/debug-extended/index.ts:56](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L56)
 
 ## Properties
 
@@ -113,7 +114,7 @@ node\_modules/@types/debug/index.d.ts:44
 
 #### Defined in
 
-[lib/debug-extended/index.ts:58](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L58)
+[lib/debug-extended/index.ts:57](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L57)
 
 ***
 
@@ -135,7 +136,7 @@ node\_modules/@types/debug/index.d.ts:44
 
 #### Defined in
 
-[lib/debug-extended/index.ts:51](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L51)
+[lib/debug-extended/index.ts:50](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L50)
 
 ***
 

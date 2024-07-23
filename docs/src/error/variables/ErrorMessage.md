@@ -218,26 +218,6 @@ A collection of possible error and warning messages.
 
 `string`
 
-### AssertRetrievalFailed()
-
-#### Parameters
-
-• **path**: `string`
-
-#### Returns
-
-`string`
-
-### AssertionFailureBadAssetContextKey()
-
-#### Parameters
-
-• **key**: `string`
-
-#### Returns
-
-`string`
-
 ### AssertionFailureBadConfigurationPath()
 
 #### Parameters
@@ -326,11 +306,33 @@ A collection of possible error and warning messages.
 
 `string`
 
+### BadAssetContextKey()
+
+#### Parameters
+
+• **key**: `string`
+
+#### Returns
+
+`string`
+
 ### BadChangelogPatcher()
 
 #### Parameters
 
 • **path**: `string`
+
+#### Returns
+
+`string`
+
+### BadProjectNameInPackageJson()
+
+#### Returns
+
+`string`
+
+### BadProjectTypeInPackageJson()
 
 #### Returns
 
@@ -395,6 +397,12 @@ A collection of possible error and warning messages.
 `string`
 
 ### CleanCalledWithoutForce()
+
+#### Returns
+
+`string`
+
+### CliProjectHasBadBinConfig()
 
 #### Returns
 
@@ -498,6 +506,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### EslintPluginReturnedSomethingUnexpected()
+
+#### Parameters
+
+• **identifier**: `string`
+
+#### Returns
+
+`string`
+
 ### FalsyCommandExport()
 
 #### Returns
@@ -590,6 +608,12 @@ A collection of possible error and warning messages.
 
 `string`
 
+### IssuePrefixContainsIllegalCharacters()
+
+#### Returns
+
+`string`
+
 ### LintingFailed()
 
 #### Returns
@@ -658,6 +682,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### RetrievalFailed()
+
+#### Parameters
+
+• **path**: `string`
+
+#### Returns
+
+`string`
+
 ### UnexpectedValueFromInternalYargsMethod()
 
 #### Returns
@@ -665,6 +699,18 @@ A collection of possible error and warning messages.
 `string`
 
 ### UnexpectedlyFalsyDetailedArguments()
+
+#### Returns
+
+`string`
+
+### UnmatchedCommitType()
+
+#### Parameters
+
+• **type**: `undefined` \| `string`
+
+• **variableName**: `string`
 
 #### Returns
 
@@ -684,7 +730,7 @@ A collection of possible error and warning messages.
 
 • **actual**: [`ProjectMetaAttribute`](../../util/enumerations/ProjectMetaAttribute.md)[]
 
-• **withOrWithout**: `"with"` \| `"without"` = `'with'`
+• **preposition**: `string` = `'with'`
 
 #### Returns
 
@@ -692,4 +738,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/src/error.ts#L11)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/error.ts#L11)

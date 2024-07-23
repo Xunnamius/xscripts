@@ -14,8 +14,10 @@
 
 ### Variables
 
-- [babelExpectedEnv](variables/babelExpectedEnv.md)
+- [NODE\_LTS](variables/NODE_LTS.md)
+- [babelExpectedEnvironment](variables/babelExpectedEnvironment.md)
 
 ### Functions
 
+- [moduleExport](functions/moduleExport.md)
 - [transformer](functions/transformer.md)

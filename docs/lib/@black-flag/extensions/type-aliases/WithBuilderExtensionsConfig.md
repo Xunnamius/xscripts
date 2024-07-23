@@ -54,4 +54,4 @@ false
 
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:585](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/@black-flag/extensions/index.ts#L585)
+[lib/@black-flag/extensions/index.ts:586](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/@black-flag/extensions/index.ts#L586)

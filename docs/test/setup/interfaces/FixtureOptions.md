@@ -8,7 +8,7 @@
 
 ## Extends
 
-- `Partial`\<[`WebpackTestFixtureOptions`](WebpackTestFixtureOptions.md)\>.`Partial`\<[`NodeImportTestFixtureOptions`](NodeImportTestFixtureOptions.md)\>.`Partial`\<[`DummyDirectoriesFixtureOptions`](DummyDirectoriesFixtureOptions.md)\>
+- `Partial`\<[`WebpackTestFixtureOptions`](WebpackTestFixtureOptions.md)\>.`Partial`\<[`GitRepositoryFixtureOptions`](GitRepositoryFixtureOptions.md)\>.`Partial`\<[`NodeImportTestFixtureOptions`](NodeImportTestFixtureOptions.md)\>.`Partial`\<[`DummyDirectoriesFixtureOptions`](DummyDirectoriesFixtureOptions.md)\>
 
 ## Properties
 
@@ -22,7 +22,7 @@
 
 #### Defined in
 
-[test/setup.ts:545](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L545)
+[test/setup.ts:573](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L573)
 
 ***
 
@@ -36,7 +36,7 @@
 
 #### Defined in
 
-[test/setup.ts:530](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L530)
+[test/setup.ts:558](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L558)
 
 ***
 
@@ -50,7 +50,7 @@
 
 #### Defined in
 
-[test/setup.ts:550](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L550)
+[test/setup.ts:578](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L578)
 
 ***
 
@@ -60,7 +60,7 @@
 
 #### Defined in
 
-[test/setup.ts:528](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L528)
+[test/setup.ts:556](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L556)
 
 ***
 
@@ -74,7 +74,7 @@
 
 #### Defined in
 
-[test/setup.ts:551](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L551)
+[test/setup.ts:579](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L579)
 
 ***
 
@@ -100,17 +100,39 @@
 
 #### Defined in
 
-[test/setup.ts:552](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L552)
+[test/setup.ts:580](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L580)
+
+***
+
+### setupGit()?
+
+> `optional` **setupGit**: (`git`) => `Promisable`\<`void`\>
+
+#### Parameters
+
+• **git**: `SimpleGit`
+
+#### Returns
+
+`Promisable`\<`void`\>
+
+#### Inherited from
+
+`Partial.setupGit`
+
+#### Defined in
+
+[test/setup.ts:568](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L568)
 
 ***
 
 ### use
 
-> **use**: [`MockFixture`](MockFixture.md)\<[`FixtureContext`](FixtureContext.md)\<`object`\>\>[]
+> **use**: [`MockFixture`](MockFixture.md)\<[`FixtureContext`](FixtureContext.md)\<`Record`\<`string`, `unknown`\>\>\>[]
 
 #### Defined in
 
-[test/setup.ts:529](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L529)
+[test/setup.ts:557](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L557)
 
 ***
 
@@ -124,4 +146,4 @@
 
 #### Defined in
 
-[test/setup.ts:535](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L535)
+[test/setup.ts:563](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L563)

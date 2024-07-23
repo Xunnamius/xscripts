@@ -6,13 +6,13 @@
 
 # Function: mockFixtureFactory()
 
-> **mockFixtureFactory**\<`CustomOptions`, `CustomContext`\>(`testIdentifier`, `options`?): (`fn`) => `Promise`\<`void`\>
+> **mockFixtureFactory**\<`CustomOptions`, `CustomContext`\>(`testIdentifier`, `options`?): (`test`) => `Promise`\<`void`\>
 
 ## Type Parameters
 
-• **CustomOptions** *extends* `Record`\<`string`, `unknown`\> = `object`
+• **CustomOptions** *extends* `Record`\<`string`, `unknown`\> = `Record`\<`string`, `unknown`\>
 
-• **CustomContext** *extends* `Record`\<`string`, `unknown`\> = `object`
+• **CustomContext** *extends* `Record`\<`string`, `unknown`\> = `Record`\<`string`, `unknown`\>
 
 ## Parameters
 
@@ -26,7 +26,7 @@
 
 ### Parameters
 
-• **fn**: [`FixtureAction`](../type-aliases/FixtureAction.md)\<[`FixtureContext`](../interfaces/FixtureContext.md)\<[`FixtureOptions`](../interfaces/FixtureOptions.md) & `Partial`\<`Record`\<`string`, `unknown`\> & `CustomOptions`\>\> & `CustomContext`\>
+• **test**: [`FixtureAction`](../type-aliases/FixtureAction.md)\<[`FixtureContext`](../interfaces/FixtureContext.md)\<[`FixtureOptions`](../interfaces/FixtureOptions.md) & `Partial`\<`Record`\<`string`, `unknown`\> & `CustomOptions`\>\> & `CustomContext`\>
 
 ### Returns
 
@@ -34,4 +34,4 @@
 
 ## Defined in
 
-[test/setup.ts:1103](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L1103)
+[test/setup.ts:1171](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L1171)

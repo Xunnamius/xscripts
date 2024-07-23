@@ -6,11 +6,11 @@
 
 # Function: withMockedOutput()
 
-> **withMockedOutput**(`fn`, `__namedParameters`): `Promise`\<`void`\>
+> **withMockedOutput**(`test`, `__namedParameters`): `Promise`\<`void`\>
 
 ## Parameters
 
-• **fn**
+• **test**
 
 • **\_\_namedParameters**: [`MockedOutputOptions`](../type-aliases/MockedOutputOptions.md) = `{}`
 
@@ -20,4 +20,4 @@
 
 ## Defined in
 
-[test/setup.ts:388](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L388)
+[test/setup.ts:427](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L427)

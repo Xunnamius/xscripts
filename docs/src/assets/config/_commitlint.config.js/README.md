@@ -12,6 +12,10 @@
 
 - [Context](type-aliases/Context.md)
 
+### Variables
+
+- [moduleExport](variables/moduleExport.md)
+
 ### Functions
 
 - [transformer](functions/transformer.md)

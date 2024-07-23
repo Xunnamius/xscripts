@@ -9,8 +9,9 @@
 > **retrieveAsset**(`__namedParameters`): `Promise`\<[`TransformerResult`](../type-aliases/TransformerResult.md)\>
 
 Retrieve an asset via its filename. For example, to retrieve an
-`.eslintrc.js` file (the transformer source for which exists in
-`./config/_.eslintrc.js.ts`), pass `".eslintrc.js"` as the `name` parameter.
+`eslint.config.js` file (the transformer source for which exists in
+`./config/_eslint.config.js.ts`), pass `"eslint.config.js"` as the `name`
+parameter.
 
 Throws if no corresponding transformer for `name` can be found.
 
@@ -25,7 +26,7 @@ Expects an xscripts project init-time (or renovate-time) context object (i.e.
 
 • **\_\_namedParameters.name**: `string`
 
-• **\_\_namedParameters.options?**: [`TransformerOptions`](../type-aliases/TransformerOptions.md) = `{}`
+• **\_\_namedParameters.options?**: `EmptyObject` = `{}`
 
 ## Returns
 
@@ -33,4 +34,4 @@ Expects an xscripts project init-time (or renovate-time) context object (i.e.
 
 ## Defined in
 
-[src/assets/index.ts:101](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/src/assets/index.ts#L101)
+[src/assets/index.ts:100](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/assets/index.ts#L100)

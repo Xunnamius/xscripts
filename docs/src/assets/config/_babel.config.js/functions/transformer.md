@@ -12,7 +12,7 @@
 
 • **context**: `Partial`\<`EmptyObject`\> & [`RequiredTransformerContext`](../../../type-aliases/RequiredTransformerContext.md)
 
-• **options**: [`TransformerOptions`](../../../type-aliases/TransformerOptions.md) = `{}`
+• **options**: `EmptyObject` = `{}`
 
 ## Returns
 
@@ -20,4 +20,4 @@
 
 ## Defined in
 
-[src/assets/config/\_babel.config.js.ts:16](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/src/assets/config/_babel.config.js.ts#L16)
+[src/assets/config/\_babel.config.js.ts:137](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/assets/config/_babel.config.js.ts#L137)

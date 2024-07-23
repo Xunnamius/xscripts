@@ -13,6 +13,8 @@
 - [DummyDirectoriesFixtureOptions](interfaces/DummyDirectoriesFixtureOptions.md)
 - [FixtureContext](interfaces/FixtureContext.md)
 - [FixtureOptions](interfaces/FixtureOptions.md)
+- [GitProvider](interfaces/GitProvider.md)
+- [GitRepositoryFixtureOptions](interfaces/GitRepositoryFixtureOptions.md)
 - [MockFixture](interfaces/MockFixture.md)
 - [NodeImportTestFixtureOptions](interfaces/NodeImportTestFixtureOptions.md)
 - [RunOptions](interfaces/RunOptions.md)
@@ -27,6 +29,9 @@
 - [MockEnvOptions](type-aliases/MockEnvOptions.md)
 - [MockedOutputOptions](type-aliases/MockedOutputOptions.md)
 - [ReturnsString](type-aliases/ReturnsString.md)
+- [WithContextProperty](type-aliases/WithContextProperty.md)
+- [WithMockedFixtureOptions](type-aliases/WithMockedFixtureOptions.md)
+- [WithoutContextProperty](type-aliases/WithoutContextProperty.md)
 
 ### Functions
 
@@ -34,12 +39,13 @@
 - [dummyDirectoriesFixture](functions/dummyDirectoriesFixture.md)
 - [dummyFilesFixture](functions/dummyFilesFixture.md)
 - [dummyNpmPackageFixture](functions/dummyNpmPackageFixture.md)
+- [gitRepositoryFixture](functions/gitRepositoryFixture.md)
 - [isolatedImport](functions/isolatedImport.md)
 - [isolatedImportFactory](functions/isolatedImportFactory.md)
 - [mockArgvFactory](functions/mockArgvFactory.md)
 - [mockEnvFactory](functions/mockEnvFactory.md)
 - [mockFixtureFactory](functions/mockFixtureFactory.md)
-- [nodeImportTestFixture](functions/nodeImportTestFixture.md)
+- [nodeImportAndRunTestFixture](functions/nodeImportAndRunTestFixture.md)
 - [npmCopySelfFixture](functions/npmCopySelfFixture.md)
 - [npmLinkSelfFixture](functions/npmLinkSelfFixture.md)
 - [protectedImportFactory](functions/protectedImportFactory.md)

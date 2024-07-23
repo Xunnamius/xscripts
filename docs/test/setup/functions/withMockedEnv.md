@@ -6,11 +6,11 @@
 
 # Function: withMockedEnv()
 
-> **withMockedEnv**(`fn`, `simulatedEnv`, `options`): `Promise`\<`void`\>
+> **withMockedEnv**(`test`, `simulatedEnv`, `options`): `Promise`\<`void`\>
 
 ## Parameters
 
-• **fn**
+• **test**
 
 • **simulatedEnv**: `Record`\<`string`, `string`\>
 
@@ -22,4 +22,4 @@
 
 ## Defined in
 
-[test/setup.ts:242](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L242)
+[test/setup.ts:281](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L281)

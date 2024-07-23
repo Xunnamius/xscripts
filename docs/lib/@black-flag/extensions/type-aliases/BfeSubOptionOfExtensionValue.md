@@ -58,4 +58,4 @@ a boolean indicating whether the `update` function should run or not.
 
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:417](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/@black-flag/extensions/index.ts#L417)
+[lib/@black-flag/extensions/index.ts:418](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/@black-flag/extensions/index.ts#L418)

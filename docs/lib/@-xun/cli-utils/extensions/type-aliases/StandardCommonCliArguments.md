@@ -34,4 +34,4 @@ are considered standard common CLI arguments by this package.
 
 ## Defined in
 
-[lib/@-xun/cli-utils/extensions.ts:94](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/@-xun/cli-utils/extensions.ts#L94)
+[lib/@-xun/cli-utils/extensions.ts:94](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/@-xun/cli-utils/extensions.ts#L94)

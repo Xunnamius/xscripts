@@ -20,4 +20,4 @@ Upper-cases the first letter of `str`.
 
 ## Defined in
 
-[lib/@-xun/cli-utils/util.ts:4](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/@-xun/cli-utils/util.ts#L4)
+[lib/@-xun/cli-utils/util.ts:4](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/@-xun/cli-utils/util.ts#L4)

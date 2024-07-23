@@ -10,17 +10,17 @@
 
 ## Type Parameters
 
-• **CustomOptions** *extends* `Record`\<`string`, `unknown`\> = `object`
+• **CustomOptions** *extends* `Record`\<`string`, `unknown`\> = `Record`\<`string`, `unknown`\>
 
-• **CustomContext** *extends* `Record`\<`string`, `unknown`\> = `object`
+• **CustomContext** *extends* `Record`\<`string`, `unknown`\> = `Record`\<`string`, `unknown`\>
 
 ## Parameters
 
 • **\_\_namedParameters**
 
-• **\_\_namedParameters.fn**: [`FixtureAction`](../type-aliases/FixtureAction.md)\<[`FixtureContext`](../interfaces/FixtureContext.md)\<[`FixtureOptions`](../interfaces/FixtureOptions.md) & `Partial`\<`Record`\<`string`, `unknown`\> & `CustomOptions`\>\> & `CustomContext`\>
-
 • **\_\_namedParameters.options?**: `Partial`\<[`FixtureOptions`](../interfaces/FixtureOptions.md) & `CustomOptions`\>
+
+• **\_\_namedParameters.test**: [`FixtureAction`](../type-aliases/FixtureAction.md)\<[`FixtureContext`](../interfaces/FixtureContext.md)\<[`FixtureOptions`](../interfaces/FixtureOptions.md) & `Partial`\<`Record`\<`string`, `unknown`\> & `CustomOptions`\>\> & `CustomContext`\>
 
 • **\_\_namedParameters.testIdentifier**: `string`
 
@@ -30,4 +30,4 @@
 
 ## Defined in
 
-[test/setup.ts:989](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/test/setup.ts#L989)
+[test/setup.ts:1046](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/test/setup.ts#L1046)

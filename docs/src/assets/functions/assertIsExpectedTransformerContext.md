@@ -6,7 +6,7 @@
 
 # Function: assertIsExpectedTransformerContext()
 
-> **assertIsExpectedTransformerContext**\<`T`, `U`\>(`record`, `expectedKeys`): `Record`\<`U`\[`number`\], `string`\> & [`RequiredTransformerContext`](../type-aliases/RequiredTransformerContext.md)
+> **assertIsExpectedTransformerContext**\<`T`, `U`\>(`record`, `expectedKeys`?): `Record`\<`U`\[`number`\], `string`\> & [`RequiredTransformerContext`](../type-aliases/RequiredTransformerContext.md)
 
 Asserts `record` (a `Record<string, unknown>`) is actually a `Record<string,
 string> & RequiredTransformerContext` that contains each string in
@@ -16,13 +16,13 @@ string> & RequiredTransformerContext` that contains each string in
 
 • **T** *extends* `Record`\<`string`, `unknown`\>
 
-• **U** *extends* `string`[]
+• **U** *extends* `string`[] = `never`[]
 
 ## Parameters
 
 • **record**: `T`
 
-• **expectedKeys**: `U` = `...`
+• **expectedKeys?**: `U`
 
 ## Returns
 
@@ -30,4 +30,4 @@ string> & RequiredTransformerContext` that contains each string in
 
 ## Defined in
 
-[src/assets/index.ts:165](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/src/assets/index.ts#L165)
+[src/assets/index.ts:164](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/assets/index.ts#L164)

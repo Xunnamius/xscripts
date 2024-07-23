@@ -10,6 +10,7 @@
 
 ### Functions
 
+- [interpolateTemplate](functions/interpolateTemplate.md)
 - [scriptBasename](functions/scriptBasename.md)
 - [toFirstLowerCase](functions/toFirstLowerCase.md)
 - [toSentenceCase](functions/toSentenceCase.md)

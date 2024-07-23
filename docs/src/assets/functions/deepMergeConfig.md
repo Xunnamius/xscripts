@@ -19,7 +19,7 @@ A thin wrapper around lodash's mergeWith that does not mutate
 
 • **originalConfiguration**: `ConfigurationType`
 
-• **overwrites**: `ConfigurationType` \| `EmptyObject` = `{}`
+• **overwrites**: `EmptyObject` \| `ConfigurationType` = `{}`
 
 • **customReplacer?**
 
@@ -29,4 +29,4 @@ A thin wrapper around lodash's mergeWith that does not mutate
 
 ## Defined in
 
-[src/assets/index.ts:185](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/src/assets/index.ts#L185)
+[src/assets/index.ts:184](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/assets/index.ts#L184)

@@ -22,6 +22,8 @@
 
 ### Functions
 
+- [\_\_read\_file\_sync](functions/read_file_sync.md)
+- [\_\_write\_file\_sync](functions/write_file_sync.md)
 - [checkAllChoiceIfGivenIsByItself](functions/checkAllChoiceIfGivenIsByItself.md)
 - [checkChoicesNotEmpty](functions/checkChoicesNotEmpty.md)
 - [checkIsNonNegative](functions/checkIsNonNegative.md)

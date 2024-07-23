@@ -21,4 +21,4 @@ function that always throws.
 
 ## Defined in
 
-[lib/debug-extended/index.ts:227](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L227)
+[lib/debug-extended/index.ts:226](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L226)

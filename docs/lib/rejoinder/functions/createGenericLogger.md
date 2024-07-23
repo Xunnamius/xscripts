@@ -29,4 +29,4 @@ https://npm.im/debug#namespace-colors
 
 ## Defined in
 
-[lib/rejoinder/index.ts:176](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/rejoinder/index.ts#L176)
+[lib/rejoinder/index.ts:176](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/rejoinder/index.ts#L176)

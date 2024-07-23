@@ -15,7 +15,8 @@ An instance of [UnextendableInternalDebugger](../../debug-extended/interfaces/Un
 
 > **UnextendableInternalLogger**(...`args`): `void`
 
-Send an optionally-formatted message to output.
+An instance of [UnextendableInternalDebugger](../../debug-extended/interfaces/UnextendableInternalDebugger.md) that that belongs to an
+[ExtendedLogger](ExtendedLogger.md).
 
 ## Parameters
 
@@ -27,11 +28,12 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:79](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/rejoinder/index.ts#L79)
+[lib/rejoinder/index.ts:79](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/rejoinder/index.ts#L79)
 
 > **UnextendableInternalLogger**(...`args`): `void`
 
-Send a tagged optionally-formatted message to output.
+An instance of [UnextendableInternalDebugger](../../debug-extended/interfaces/UnextendableInternalDebugger.md) that that belongs to an
+[ExtendedLogger](ExtendedLogger.md).
 
 ## Parameters
 
@@ -43,11 +45,12 @@ Send a tagged optionally-formatted message to output.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:83](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/rejoinder/index.ts#L83)
+[lib/rejoinder/index.ts:83](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/rejoinder/index.ts#L83)
 
 > **UnextendableInternalLogger**(...`args`): `void`
 
-Send an optionally-formatted message to output.
+An instance of [UnextendableInternalDebugger](../../debug-extended/interfaces/UnextendableInternalDebugger.md) that that belongs to an
+[ExtendedLogger](ExtendedLogger.md).
 
 ## Parameters
 
@@ -59,7 +62,7 @@ Send an optionally-formatted message to output.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:75](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/rejoinder/index.ts#L75)
+[lib/rejoinder/index.ts:75](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/rejoinder/index.ts#L75)
 
 ## Properties
 
@@ -141,7 +144,7 @@ node\_modules/@types/debug/index.d.ts:44
 
 #### Defined in
 
-[lib/debug-extended/index.ts:58](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L58)
+[lib/debug-extended/index.ts:57](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L57)
 
 ***
 
@@ -163,7 +166,7 @@ node\_modules/@types/debug/index.d.ts:44
 
 #### Defined in
 
-[lib/debug-extended/index.ts:51](https://github.com/Xunnamius/xscripts/blob/df637b64db981c14c22a425e27a52a97500c0199/lib/debug-extended/index.ts#L51)
+[lib/debug-extended/index.ts:50](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L50)
 
 ***
 
