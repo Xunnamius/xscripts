@@ -26,8 +26,8 @@ coverage
 next-env.d.ts
 
 # Ignore local configuration
-.vscode
-!.vscode/launch.example.json
+.vscode/**
+!.vscode/*.example.json
 
 # Ignore relevant NPM artifacts
 node_modules
