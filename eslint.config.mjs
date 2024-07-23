@@ -50,6 +50,12 @@ const genericRules = {
   'no-extra-boolean-cast': 'off',
   'no-empty': 'off',
   '@typescript-eslint/camelcase': 'off',
+  // ? I am an enby of simple tastes, who does commonjs sometimes
+  '@typescript-eslint/no-require-imports': 'off',
+  // ? I will decide when I feel like using an interface
+  '@typescript-eslint/consistent-type-definitions': 'off',
+  // ? I will decide when I feel like using a Record
+  '@typescript-eslint/consistent-indexed-object-style': 'off',
   '@typescript-eslint/explicit-function-return-type': 'off',
   '@typescript-eslint/explicit-module-boundary-types': 'off',
   '@typescript-eslint/prefer-ts-expect-error': 'warn',

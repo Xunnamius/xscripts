@@ -160,7 +160,7 @@ hardAssert(
  */
 const commitSectionOrder = commitTypeOrder.map(function (type) {
   return (
-    allowedCommitTypesInfo.find((entry) => entry.type === type)?.section ||
+    allowedCommitTypesInfo.find((entry) => entry.type === type)?.section ??
     hardAssert(ErrorMessage.UnmatchedCommitType(type, 'commitTypeOrder'))
   );
 });
@@ -243,7 +243,7 @@ export function moduleExport(
 
             if (new RegExp(`^${pkgName}@.{5,}$`).test(commit.version)) {
               // ? Remove the package name from the version string
-              commit.version = commit.version.split('@').at(-1) as string;
+              commit.version = commit.version.split('@').at(-1)!;
               debug_(`using version: ${commit.version}`);
             }
           }
@@ -277,15 +277,15 @@ export function moduleExport(
 
         let discard = true;
         const issues: string[] = [];
-        const typeKey = (commit.revert ? 'revert' : commit.type || '').toLowerCase();
+        const typeKey = (commit.revert ? 'revert' : (commit.type ?? '')).toLowerCase();
 
         const typeEntry = allowedCommitTypesInfo.find(
           (entry) =>
             entry.type === typeKey && (!entry.scope || entry.scope === commit.scope)
         );
 
-        const skipCmdEvalTarget = `${commit.subject || ''}${
-          commit.header || ''
+        const skipCmdEvalTarget = `${commit.subject ?? ''}${
+          commit.header ?? ''
         }`.toLowerCase();
 
         // ? Ignore any commits with skip commands in them (including BCs)
@@ -524,7 +524,7 @@ export function moduleExport(
    * `test(system)!: hello world` but with no `BREAKING CHANGE` in body.
    */
   function addBangNotes({ header, notes }: Commit) {
-    const { breakingHeaderPattern } = finalConfig?.parserOpts || {};
+    const { breakingHeaderPattern } = finalConfig?.parserOpts ?? {};
 
     if (breakingHeaderPattern) {
       const match = header?.match(breakingHeaderPattern);

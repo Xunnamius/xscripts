@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { $executionContext, type Arguments } from '@black-flag/core';
 import { isCommandNotImplementedError } from '@black-flag/core/util';
 

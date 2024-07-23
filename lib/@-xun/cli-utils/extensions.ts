@@ -300,7 +300,7 @@ export function withStandardBuilder<
 
           try {
             debug('invoking customHandler (or defaultHandler if undefined)');
-            await (customHandler || defaultHandler)(argv);
+            await (customHandler ?? defaultHandler)(argv);
           } finally {
             if (wasArtificiallyInvoked) {
               debug('undoing state changes due to artificial invocation');

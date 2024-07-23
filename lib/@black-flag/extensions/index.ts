@@ -134,7 +134,7 @@ export type BfBuilderFunction<
   CustomExecutionContext extends ExecutionContext
 > = Extract<
   Configuration<CustomCliArguments, CustomExecutionContext>['builder'],
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   Function
 >;
 
@@ -146,7 +146,7 @@ export type BfBuilderObject<
   CustomExecutionContext extends ExecutionContext
 > = Exclude<
   Configuration<CustomCliArguments, CustomExecutionContext>['builder'],
-  // eslint-disable-next-line @typescript-eslint/ban-types
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   Function
 >;
 
@@ -305,8 +305,8 @@ export type BfeBuilderObjectValueExtensions<
    * For describing more complex implications, see `subOptionOf`.
    */
   implies?:
-    | Exclude<BfeBuilderObjectValueExtensionValue, string | Array<unknown>>
-    | Exclude<BfeBuilderObjectValueExtensionValue, string | Array<unknown>>[];
+    | Exclude<BfeBuilderObjectValueExtensionValue, string | unknown[]>
+    | Exclude<BfeBuilderObjectValueExtensionValue, string | unknown[]>[];
   /**
    * When `looseImplications` is set to `true`, any implied arguments, when
    * explicitly given on the command line, will _override_ their configured
@@ -1076,7 +1076,7 @@ export function withBuilderExtensions<
         }
 
         debug('invoking customHandler (or defaultHandler if undefined)');
-        await (customHandler || defaultHandler)(
+        await (customHandler ?? defaultHandler)(
           // ? customHandler is more strict from an intellisense perspective,
           // ? but it still meets the Black Flag handler's argv constraints even
           // ? if TypeScript isn't yet smart enough to understand it
@@ -1492,7 +1492,7 @@ function expandOptionNameAndAliasesWithRespectToParserConfiguration({
     ...parserConfiguration
   };
 
-  const targetNames = [option, stripAliased ? [] : aliases || []].flat();
+  const targetNames = [option, stripAliased ? [] : (aliases ?? [])].flat();
   const expandedNamesSet = new Set<string>();
 
   targetNames.forEach((name) => {
@@ -1631,9 +1631,7 @@ function validateAndFlattenExtensionValue(
 
   return mergedConfig;
 
-  function mergeInto(
-    option: Exclude<BfeBuilderObjectValueExtensionValue, Array<unknown>>
-  ) {
+  function mergeInto(option: Exclude<BfeBuilderObjectValueExtensionValue, unknown[]>) {
     if (typeof option === 'string') {
       mergedConfig[option] = $exists;
     } else {
