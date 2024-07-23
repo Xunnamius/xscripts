@@ -24,7 +24,7 @@ import { globalDebuggerNamespace } from 'universe/constant';
 import type { EmptyObject } from 'type-fest';
 import { ErrorMessage } from 'universe/error';
 
-type EslintConfig = Extract<Config, unknown[]>[number];
+export type EslintConfig = Extract<Config, unknown[]>[number];
 
 /**
  * The name of the tsconfig JSON file used by the linter.
