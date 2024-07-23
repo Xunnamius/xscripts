@@ -133,6 +133,7 @@
     "@types/lodash.merge": "^4.6.9",
     "@types/lodash.mergewith": "^4.6.9",
     "@types/node": "^20.14.11",
+    "@types/semver": "^7.5.8",
     "@types/spellchecker": "^3.5.2",
     "@typescript-eslint/utils": "^8.0.0-alpha.51",
     "@xunnamius/conventional-changelog-projector": "^1.2.1",
