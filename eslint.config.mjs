@@ -34,6 +34,19 @@ const config = deepMergeConfig(moduleExport, {
 
 const tsconfigProject = 'tsconfig.eslint.json';
 const jsFileExtensions = ['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs'];
+// TODO: replace this with the @projector-js/core unified alias configuration
+const wellKnownPackageAliases = [
+  // ! If changed, also update these aliases in tsconfig.json,
+  // ! webpack.config.js, next.config.ts, babel.config.js, and
+  // ! jest.config.js
+  ['package', './package.json'],
+  ['multiverse', './lib'],
+  ['extverse', './external-scripts'],
+  ['universe', './src'],
+  ['pkgverse', 'packages/*'],
+  ['testverse', './test'],
+  ['typeverse', './types']
+];
 
 const genericRules = {
   // * eslint
@@ -337,17 +350,7 @@ const config = makeTsEslintConfig(
         },
         'import/resolver': {
           alias: {
-            map: [
-              // ! If changed, also update these aliases in tsconfig.json,
-              // ! webpack.config.js, next.config.ts, babel.config.js, and
-              // ! jest.config.js
-              ['universe', './src'],
-              ['multiverse', './lib'],
-              ['testverse', './test'],
-              ['externals', './external-scripts'],
-              ['types', './types'],
-              ['package', './package.json']
-            ],
+            map: wellKnownPackageAliases,
             extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
           },
           typescript: {

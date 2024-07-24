@@ -28,13 +28,13 @@
     "paths": {
       // ! If changed, also update these aliases in jest.config.js,
       // ! webpack.config.js, next.config.ts, and eslint.config.js
-      "externals/*": ["external-scripts/*"],
-      "multiverse/*": ["lib/*"],
       "package": ["package.json"],
+      "multiverse/*": ["lib/*"],
+      "extverse/*": ["external-scripts/*"],
+      "universe/*": ["src/*"],
       "pkgverse/*": ["packages/*"],
       "testverse/*": ["test/*"],
-      "types/*": ["types/*"],
-      "universe/*": ["src/*"]
+      "typeverse/*": ["types/*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
