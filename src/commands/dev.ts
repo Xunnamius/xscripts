@@ -1,15 +1,5 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
-
-import {
-  ProjectMetaAttribute,
-  getProjectMetadata,
-  globalPreChecks,
-  hasExitCode
-} from 'universe/util';
-
 import { LogTag, logStartTime } from 'multiverse/@-xun/cli-utils/logging';
 
 import {
@@ -20,6 +10,16 @@ import {
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { run, runWithInheritedIo } from 'multiverse/run';
+
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { ErrorMessage } from 'universe/error';
+
+import {
+  ProjectMetaAttribute,
+  getProjectMetadata,
+  globalPreChecks,
+  hasExitCode
+} from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments;
 

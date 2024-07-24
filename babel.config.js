@@ -4,9 +4,13 @@
 
 // ? https://nodejs.org/en/about/releases
 const NODE_LTS = 'maintained node versions';
+
+const debug_ = require('debug');
+
 // TODO: replace with 'package'
 const pkgName = require('./package.json').name;
-const debug = require('debug')(`${pkgName}:babel-config`);
+
+const debug = debug_(`${pkgName}:babel-config`);
 
 debug('NODE_ENV: %O', process.env.NODE_ENV);
 

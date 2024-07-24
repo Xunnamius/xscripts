@@ -1,14 +1,5 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
-import {
-  checkAllChoiceIfGivenIsByItself,
-  checkChoicesNotEmpty,
-  findProjectFiles,
-  globalPreChecks
-} from 'universe/util';
-
 import {
   logStartTime,
   LogTag,
@@ -23,6 +14,16 @@ import {
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { runNoRejectOnBadExit, type run, type Subprocess } from 'multiverse/run';
+
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { ErrorMessage } from 'universe/error';
+
+import {
+  checkAllChoiceIfGivenIsByItself,
+  checkChoicesNotEmpty,
+  findProjectFiles,
+  globalPreChecks
+} from 'universe/util';
 
 export enum Linter {
   Tsc = 'tsc',

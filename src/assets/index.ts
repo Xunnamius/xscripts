@@ -1,11 +1,11 @@
 import { CliError, FrameworkExitCode } from '@black-flag/core';
 import mergeWith from 'lodash.mergewith';
 
+import { createDebugLogger } from 'multiverse/rejoinder';
+
 import { globalDebuggerNamespace } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
 import { isNonEmptyString } from 'universe/util';
-
-import { createDebugLogger } from 'multiverse/rejoinder';
 
 import type { EmptyObject, Promisable } from 'type-fest';
 

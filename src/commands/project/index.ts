@@ -1,10 +1,15 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-import { type GlobalExecutionContext } from 'universe/configure';
 
 import { withStandardUsage } from 'multiverse/@-xun/cli-utils/extensions';
-import { default as projectInfo, type CustomCliArguments } from './info';
+
+import { type GlobalExecutionContext } from 'universe/configure';
+
+import {
+  default as projectInfo,
+  type CustomCliArguments
+} from 'universe/commands/project/info';
 
 export type { CustomCliArguments };
 

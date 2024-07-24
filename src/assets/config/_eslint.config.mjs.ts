@@ -1,28 +1,40 @@
 import assert from 'node:assert';
 
-import { fixupConfigRules, fixupPluginRules } from '@eslint/compat';
+import { fixupConfigRules } from '@eslint/compat';
 import eslintJs from '@eslint/js';
 import { getRunContext } from '@projector-js/core/project';
-/*import eslintPluginTsEslint from '@typescript-eslint/eslint-plugin';*/
-import eslintTsParser from '@typescript-eslint/parser';
 import restrictedGlobals from 'confusing-browser-globals';
-/*import eslintPluginImport from 'eslint-plugin-import';*/
 import eslintPluginJest from 'eslint-plugin-jest';
-import eslintPluginModuleResolver from 'eslint-plugin-module-resolver';
+import eslintPluginNode from 'eslint-plugin-n';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import jsGlobals from 'globals';
 
 import {
   configs as eslintTsConfigs,
+  parser as eslintTsParser,
   config as makeTsEslintConfig,
   type Config
 } from 'typescript-eslint';
 
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
 import { globalDebuggerNamespace } from 'universe/constant';
+import { ErrorMessage } from 'universe/error';
 
 import type { EmptyObject } from 'type-fest';
-import { ErrorMessage } from 'universe/error';
+
+// TODO: replace this with the @projector-js/core unified alias configuration
+const wellKnownPackageAliases = [
+  // ! If changed, also update these aliases in tsconfig.json,
+  // ! webpack.config.js, next.config.ts, babel.config.js, and
+  // ! jest.config.js
+  ['package', './package.json'],
+  ['multiverse', './lib'],
+  ['extverse', './external-scripts'],
+  ['universe', './src'],
+  ['pkgverse', 'packages/*'],
+  ['testverse', './test'],
+  ['typeverse', './types']
+];
 
 export type EslintConfig = Extract<Config, unknown[]>[number];
 
@@ -49,7 +61,7 @@ export const eslintPlugins = {
   /* unicorn: eslintPluginUnicorn ... included by imports */
   /* '@typescript-eslint': eslintPluginTsEslint ... included by imports */
   /* import: fixupPluginRules(eslintPluginImport) ... included by imports */
-  'module-resolver': fixupPluginRules(eslintPluginModuleResolver)
+  node: eslintPluginNode
   /* jest ... included by imports */
 };
 
@@ -58,18 +70,54 @@ export const genericRules: NonNullable<EslintConfig['rules']> = {
   'no-console': 'warn',
   'no-return-await': 'warn',
   'no-await-in-loop': 'warn',
-  'import/no-unresolved': ['error', { commonjs: true }],
-  'module-resolver/use-alias': [
-    'error',
-    {
-      extensions: ['.ts', '.tsx', '.jsx']
-    }
-  ],
   'no-restricted-globals': ['warn', ...restrictedGlobals],
   'no-empty': 'off',
   // ? Ever since v4, we will rely on TypeScript to catch these
   'no-undef': 'off',
   'no-unused-vars': 'off',
+
+  // * import
+  'import/no-unresolved': ['error', { commonjs: true }],
+  'import/no-empty-named-blocks': 'warn',
+  'import/first': 'warn',
+  'import/newline-after-import': 'warn',
+  'import/no-relative-packages': 'warn',
+  'import/no-absolute-path': 'warn',
+  'import/no-cycle': 'warn',
+  'import/no-self-import': 'warn',
+  'import/order': [
+    'warn',
+    {
+      groups: [
+        'builtin',
+        'external',
+        'internal',
+        ['parent', 'sibling', 'index'],
+        ['object', 'type']
+      ],
+      pathGroups: wellKnownPackageAliases.map(([alias]) => ({
+        pattern: alias === 'package' ? alias : `${alias}/**`,
+        group: alias === 'package' ? 'builtin' : 'external',
+        position: 'after'
+      })),
+      'newlines-between': 'always-and-inside-groups',
+      distinctGroup: true
+    }
+  ],
+
+  // * node (n)
+  'node/hashbang': 'warn',
+  'node/no-unpublished-bin': 'error',
+  // ? This is disabled (later) for source files under ./lib
+  'node/no-restricted-import': [
+    'warn',
+    [
+      {
+        name: '{.,..}/*',
+        message: 'Try an aliased import (e.g. universe, multiverse) instead'
+      }
+    ]
+  ],
 
   // * typescript-eslint
   '@typescript-eslint/camelcase': 'off',
@@ -304,9 +352,8 @@ export async function moduleExport(
     eslintTsConfigs.strictTypeChecked,
     eslintTsConfigs.stylisticTypeChecked,
     eslintTsConfigs.eslintRecommended,
+    legacyExtends('plugin:import/recommended', 'eslint-plugin-import:recommended'),
     legacyExtends('plugin:import/typescript', 'eslint-plugin-import:typescript'),
-    legacyExtends('plugin:import/warnings', 'eslint-plugin-import:warnings'),
-    legacyExtends('plugin:import/errors', 'eslint-plugin-import:errors'),
     eslintPluginUnicornRecommended,
     {
       name: '@-xun/scripts:base',
@@ -339,25 +386,15 @@ export async function moduleExport(
         },
         'import/resolver': {
           alias: {
-            map: [
-              // ! If changed, also update these aliases in tsconfig.json,
-              // ! webpack.config.js, next.config.ts, babel.config.js, and
-              // ! jest.config.js
-              ['universe', './src'],
-              ['multiverse', './lib'],
-              ['testverse', './test'],
-              ['externals', './external-scripts'],
-              ['types', './types'],
-              ['package', './package.json']
-            ],
+            map: wellKnownPackageAliases,
             extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
           },
           typescript: {
             alwaysTryTypes: true,
             project: tsconfigProject
           },
-          'babel-module': {},
-          node: {}
+          'babel-module': true,
+          node: true
         },
         'import/ignore': [
           // ? Don't go complaining about anything that we don't own
@@ -384,6 +421,11 @@ export async function moduleExport(
         `**/*.{${jsFileExtensions.map((extension) => extension.slice(1)).join(',')}}`
       ])
     ),
+    {
+      name: '@-xun/scripts:contextual-relative-imports',
+      files: ['lib/**/*', '**/*.mjs'],
+      rules: { 'node/no-restricted-import': 'off' }
+    },
     {
       name: '@-xun/scripts:jest',
       files: [

@@ -1,8 +1,5 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { checkChoicesNotEmpty, globalPreChecks } from 'universe/util';
-
 import {
   logStartTime,
   LogTag,
@@ -17,6 +14,9 @@ import {
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { run } from 'multiverse/run';
+
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { checkChoicesNotEmpty, globalPreChecks } from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments & {
   entries: string[];

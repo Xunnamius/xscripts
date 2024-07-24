@@ -1,8 +1,5 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { globalPreChecks } from 'universe/util';
-
 import {
   LogTag,
   logStartTime,
@@ -16,6 +13,9 @@ import {
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
+
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { globalPreChecks } from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments;
 

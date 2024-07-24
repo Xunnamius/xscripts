@@ -6,16 +6,6 @@ import {
 } from 'multiverse/@black-flag/extensions';
 
 import {
-  default as format,
-  type CustomCliArguments as FormatCliArguments
-} from 'universe/commands/format';
-
-import { changelogTopmatter } from 'universe/assets/config/_conventional.config.js';
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
-import { globalPreChecks, readFile, writeFile } from 'universe/util';
-
-import {
   logStartTime,
   LogTag,
   standardSuccessMessage
@@ -28,6 +18,16 @@ import {
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { run } from 'multiverse/run';
+
+import {
+  default as format,
+  type CustomCliArguments as FormatCliArguments
+} from 'universe/commands/format';
+
+import { changelogTopmatter } from 'universe/assets/config/_conventional.config.js';
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { ErrorMessage } from 'universe/error';
+import { globalPreChecks, readFile, writeFile } from 'universe/util';
 
 import type { Promisable } from 'type-fest';
 

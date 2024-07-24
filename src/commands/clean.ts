@@ -1,10 +1,6 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { rimraf as forceDeletePaths } from 'rimraf';
 
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
-import { globalPreChecks } from 'universe/util';
-
 import {
   LogTag,
   logStartTime,
@@ -19,6 +15,10 @@ import {
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { run } from 'multiverse/run';
+
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { ErrorMessage } from 'universe/error';
+import { globalPreChecks } from 'universe/util';
 
 const matchNothing = '(?!)';
 

@@ -1,9 +1,9 @@
 // @ts-check
 
 /* eslint-disable no-console */
-const spellcheck = require('spellchecker');
 const read = require('node:fs/promises').readFile;
 
+const spellcheck = require('spellchecker');
 const debug = require('debug')('commit-spell');
 
 const tryToRead = async (

@@ -6,14 +6,14 @@ import { transformFileAsync } from '@babel/core';
 import { CliError, FrameworkExitCode } from '@black-flag/core';
 import { glob } from 'glob-gitignore';
 
-import { globalLoggerNamespace } from 'universe/constant';
-import { ErrorMessage } from 'universe/error';
-
 import { softAssert } from 'multiverse/@-xun/cli-utils/error';
 import { createDebugLogger } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
 
-import type { GlobalExecutionContext } from './configure';
+import { globalLoggerNamespace } from 'universe/constant';
+import { ErrorMessage } from 'universe/error';
+
+import type { GlobalExecutionContext } from 'universe/configure';
 
 // ? Might want to do something async in the future, so we reserve the right
 // ? now.

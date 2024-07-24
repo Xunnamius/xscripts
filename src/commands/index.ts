@@ -1,14 +1,14 @@
 import { type RootConfiguration } from '@black-flag/core';
 import { CommandNotImplementedError } from '@black-flag/core/util';
 
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-
 import {
   withStandardBuilder,
   withStandardUsage
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
+
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 
 export type CustomCliArguments = GlobalCliArguments;
 

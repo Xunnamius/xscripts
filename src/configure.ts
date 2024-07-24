@@ -2,8 +2,6 @@ import { type ConfigureExecutionContext } from '@black-flag/core';
 
 import { getRunContext } from '@projector-js/core/project';
 
-import { globalDebuggerNamespace, globalLoggerNamespace } from 'universe/constant';
-
 import { createDebugLogger, createGenericLogger } from 'multiverse/rejoinder';
 
 import {
@@ -15,6 +13,8 @@ import {
   type StandardCommonCliArguments,
   type StandardExecutionContext
 } from 'multiverse/@-xun/cli-utils/extensions';
+
+import { globalDebuggerNamespace, globalLoggerNamespace } from 'universe/constant';
 
 const rootGenericLogger = createGenericLogger({ namespace: globalLoggerNamespace });
 const rootDebugLogger = createDebugLogger({ namespace: globalDebuggerNamespace });

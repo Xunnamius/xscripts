@@ -6,21 +6,6 @@ import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { rimraf as forceDeletePaths } from 'rimraf';
 import uniqueFilename from 'unique-filename';
 
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { standardNodeShebang } from 'universe/constant';
-import { ErrorMessage } from 'universe/error';
-
-import {
-  ProjectMetaAttribute,
-  findMainBinFile,
-  findProjectFiles,
-  getImportSpecifierEntriesFromFiles,
-  getProjectMetadata,
-  globalPreChecks,
-  readFile,
-  writeFile
-} from 'universe/util';
-
 import {
   LogTag,
   logStartTime,
@@ -37,6 +22,21 @@ import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
+
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { standardNodeShebang } from 'universe/constant';
+import { ErrorMessage } from 'universe/error';
+
+import {
+  ProjectMetaAttribute,
+  findMainBinFile,
+  findProjectFiles,
+  getImportSpecifierEntriesFromFiles,
+  getProjectMetadata,
+  globalPreChecks,
+  readFile,
+  writeFile
+} from 'universe/util';
 
 /**
  * Possible intermediate transpilation targets (non-production

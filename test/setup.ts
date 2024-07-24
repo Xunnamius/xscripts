@@ -6,6 +6,8 @@ import fs from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, join as joinPath, resolve as resolvePath } from 'node:path';
 
+import { name as pkgName, version as pkgVersion } from 'package';
+
 import glob from 'glob';
 import uniqueFilename from 'unique-filename';
 // ? https://github.com/jest-community/jest-extended#typescript
@@ -15,7 +17,6 @@ import { type SimpleGit, simpleGit } from 'simple-git';
 
 import { createDebugLogger, type ExtendedDebugger } from 'multiverse/rejoinder';
 import { run, type RunReturnType } from 'multiverse/run';
-import { name as pkgName, version as pkgVersion } from 'package';
 
 import type { Options as ExecaOptions } from 'execa' with { 'resolution-mode': 'import' };
 import type { LiteralUnion, Promisable } from 'type-fest';

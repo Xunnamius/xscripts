@@ -4,16 +4,6 @@ import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { glob } from 'glob-gitignore';
 import { getSupportInfo } from 'prettier';
 
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
-
-import {
-  checkChoicesNotEmpty,
-  deriveVirtualPrettierIgnoreLines,
-  findProjectFiles,
-  globalPreChecks
-} from 'universe/util';
-
 import {
   LogTag,
   logStartTime,
@@ -29,6 +19,16 @@ import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
+
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { ErrorMessage } from 'universe/error';
+
+import {
+  checkChoicesNotEmpty,
+  deriveVirtualPrettierIgnoreLines,
+  findProjectFiles,
+  globalPreChecks
+} from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments & {
   renumberReferences: boolean;

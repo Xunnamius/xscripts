@@ -1,9 +1,6 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { glob } from 'glob';
 
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { globalPreChecks, isAccessible, readFile, writeFile } from 'universe/util';
-
 import {
   LogTag,
   logStartTime,
@@ -18,8 +15,11 @@ import {
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { run } from 'multiverse/run';
+
+import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { standardNodeShebang } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
+import { globalPreChecks, isAccessible, readFile, writeFile } from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments & {
   prependShebang: boolean;
