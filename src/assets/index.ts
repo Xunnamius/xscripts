@@ -148,6 +148,7 @@ export function makeTransformer<
 }) {
   return {
     transformer(
+      this: void,
       context: Partial<CustomTransformContext> & RequiredTransformerContext,
       options: TransformerOptions = {}
     ) {

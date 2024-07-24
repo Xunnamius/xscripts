@@ -54,6 +54,7 @@ export const eslintPlugins = {
 };
 
 export const genericRules: NonNullable<EslintConfig['rules']> = {
+  // * eslint
   'no-console': 'warn',
   'no-return-await': 'warn',
   'no-await-in-loop': 'warn',
@@ -65,18 +66,25 @@ export const genericRules: NonNullable<EslintConfig['rules']> = {
     }
   ],
   'no-restricted-globals': ['warn', ...restrictedGlobals],
-  'no-extra-boolean-cast': 'off',
   'no-empty': 'off',
+  // ? Ever since v4, we will rely on TypeScript to catch these
+  'no-undef': 'off',
+  'no-unused-vars': 'off',
+
+  // * typescript-eslint
   '@typescript-eslint/camelcase': 'off',
   // ? I am an enby of simple tastes, who does commonjs sometimes
   '@typescript-eslint/no-require-imports': 'off',
   // ? I will decide when I feel like using an interface
   '@typescript-eslint/consistent-type-definitions': 'off',
+  // ? I will decide when I feel like using a Record
+  '@typescript-eslint/consistent-indexed-object-style': 'off',
   '@typescript-eslint/explicit-function-return-type': 'off',
   '@typescript-eslint/explicit-module-boundary-types': 'off',
   '@typescript-eslint/prefer-ts-expect-error': 'warn',
   '@typescript-eslint/no-misused-promises': ['error'],
   '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
+  // ? Force the powerful ts comments to come with a brief explanation
   '@typescript-eslint/ban-ts-comment': [
     'warn',
     {
@@ -97,16 +105,54 @@ export const genericRules: NonNullable<EslintConfig['rules']> = {
       caughtErrors: 'all'
     }
   ],
-  // ? Ever since v4, we will rely on TypeScript to catch these
-  'no-undef': 'off',
-  '@typescript-eslint/no-var-requires': 'off',
-  // ? I'll be good, I promise
-  '@typescript-eslint/no-non-null-assertion': 'off',
+  // ? Make sure types are marked as such
   '@typescript-eslint/consistent-type-imports': [
     'error',
     { disallowTypeAnnotations: false, fixStyle: 'inline-type-imports' }
   ],
-  'no-unused-vars': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-var-requires': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-non-null-assertion': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-unsafe-assignment': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-unsafe-argument': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-unsafe-call': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-unsafe-member-access': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-unsafe-return': 'off',
+  // ? Numbers are fine.
+  '@typescript-eslint/restrict-template-expressions': [
+    'warn',
+    {
+      allowAny: false,
+      allowBoolean: false,
+      allowNullish: false,
+      allowNumber: true,
+      allowRegExp: false
+    }
+  ],
+  // ? "this: void" annotations are fine.
+  '@typescript-eslint/no-invalid-void-type': [
+    'warn',
+    {
+      allowAsThisParameter: true,
+      allowInGenericTypeArguments: true
+    }
+  ],
+  // ? Void expressions are fine.
+  '@typescript-eslint/no-confusing-void-expression': [
+    'warn',
+    {
+      ignoreVoidOperator: true,
+      ignoreArrowShorthand: true
+    }
+  ],
+
+  // * unicorn
   'unicorn/no-keyword-prefix': 'warn',
   'unicorn/prefer-string-replace-all': 'warn',
   // ? Handled by integration tests
@@ -114,8 +160,7 @@ export const genericRules: NonNullable<EslintConfig['rules']> = {
   // ? I am of the opinion that there is a difference between something being
   // ? defined as nothing and something being undefined
   'unicorn/no-null': 'off',
-  // ? If MongoDB can get away with "DB" in its name, so can we. Also,
-  // ? unnecessary underscores are a big no-no.
+  // ? If MongoDB can get away with "DB" in its name, so can we.
   'unicorn/prevent-abbreviations': [
     'warn',
     {
@@ -179,6 +224,7 @@ export const genericRules: NonNullable<EslintConfig['rules']> = {
 };
 
 export const jestRules: NonNullable<EslintConfig['rules']> = {
+  // * Jest
   'jest/lowercase': 'off',
   'jest/consistent-test-it': 'off',
   'jest/require-top-level-describe': 'off',
@@ -197,7 +243,11 @@ export const jestRules: NonNullable<EslintConfig['rules']> = {
   'jest/no-conditional-expect': 'off',
   'jest/prefer-each': 'off',
   'jest/prefer-snapshot-hint': 'off',
-  'jest/prefer-importing-jest-globals': 'off'
+  'jest/prefer-importing-jest-globals': 'off',
+
+  // * typescript-eslint
+  '@typescript-eslint/require-await': 'off',
+  '@typescript-eslint/prefer-promise-reject-errors': 'off'
 };
 
 export const globals = {
@@ -251,9 +301,9 @@ export async function moduleExport(
 
   const extendedEslintConfigs: (EslintConfig | EslintConfig[])[] = [
     { ...eslintJs.configs.recommended, name: '@eslint/js:recommended' },
-    eslintTsConfigs.recommended,
-    eslintTsConfigs.eslintRecommended,
+    eslintTsConfigs.strictTypeChecked,
     eslintTsConfigs.stylisticTypeChecked,
+    eslintTsConfigs.eslintRecommended,
     legacyExtends('plugin:import/typescript', 'eslint-plugin-import:typescript'),
     legacyExtends('plugin:import/warnings', 'eslint-plugin-import:warnings'),
     legacyExtends('plugin:import/errors', 'eslint-plugin-import:errors'),

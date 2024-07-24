@@ -165,10 +165,15 @@ export const TAB = '    ';
  */
 export const SHORT_TAB = '  ';
 
-// eslint-disable-next-line no-console
-const consoleLog = (...args: unknown[]) => console.log(...args);
-// eslint-disable-next-line no-console
-const consoleError = (...args: unknown[]) => console.error(...args);
+const consoleLog = (...args: unknown[]) => {
+  // eslint-disable-next-line no-console
+  console.log(...args);
+};
+
+const consoleError = (...args: unknown[]) => {
+  // eslint-disable-next-line no-console
+  console.error(...args);
+};
 
 /**
  * Create and return new set of logger instances.
@@ -502,7 +507,7 @@ function makeExtendedLogger(
 
       if (property === 'newline') {
         return function (...args: Parameters<ExtendedLogger['newline']>) {
-          return baseNewlineFn(...args);
+          baseNewlineFn(...args);
         };
       }
 

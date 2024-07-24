@@ -493,12 +493,12 @@ export default async function command({
                 `${SHORT_TAB}${symlinkRealPath} ⮕ ${symlinkTargetPath}`
               );
             }),
-            chmod(mainBinFile, 0o775).then(() =>
+            chmod(mainBinFile, 0o775).then(() => {
               genericLogger(
                 [LogTag.IF_NOT_QUIETED],
                 `${SHORT_TAB}chmod 0775 ${mainBinFile}`
-              )
-            )
+              );
+            })
           ]);
         } else {
           debug('skipped symlinking and chmod-ing cli.js');

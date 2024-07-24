@@ -69,6 +69,7 @@ export default function command({
       // TODO (warn when using --experimental-vm-modules and jest's `transformIgnorePatterns: []` together!)
       // TODO (warn when copyright dates, like with LICENSE, are out of date)
       // TODO (warn when launch.example and task.example diverge from expected launch and task files in .vscode)
+      // TODO: (new flag: --run-to-completion for finishing all linting then error/success; also update the task and example task to use this new flag)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

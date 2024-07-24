@@ -177,6 +177,8 @@ export default function command(
           }
 
           // ? ESM <=> CJS interop, again. See: @black-flag/core/src/discover.ts
+          // ! We cannot trust the type of changelogPatcher.default yet
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (changelogPatcher?.default !== undefined) {
             changelogPatcher = changelogPatcher.default;
           }

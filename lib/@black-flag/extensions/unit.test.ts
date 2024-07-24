@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { setTimeout as delay } from 'node:timers/promises';
@@ -5986,7 +5987,7 @@ function makeMockBuilderRunner({
       }
     };
 
-    const argv: Arguments<typeof dummyArgv, ExecutionContext> = Object.assign(
+    const argv: Arguments = Object.assign(
       {
         _: [],
         $0: 'fake'
@@ -6026,6 +6027,8 @@ function generateFakeExecutionContext() {
 
 async function trycatch<T extends () => any>(fn: T): Promise<ReturnType<T> | Error> {
   try {
+    // ? fn() could return literally anything, including a promise
+    // eslint-disable-next-line @typescript-eslint/return-await
     return await fn();
   } catch (error) {
     return error as Error;

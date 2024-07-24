@@ -236,7 +236,7 @@ export default function command({
         }
 
         const sortedPkgJsonFiles = shouldDoPkgJson
-          ? run('npx', ['sort-package-json', ...allPkgFiles]).catch((error) => {
+          ? run('npx', ['sort-package-json', ...allPkgFiles]).catch((error: unknown) => {
               status.sort = false;
               throw error;
             })
@@ -254,7 +254,7 @@ export default function command({
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
             }
-          ).catch((error) => {
+          ).catch((error: unknown) => {
             status.doctoc = false;
             throw error;
           });
@@ -277,7 +277,7 @@ export default function command({
                 stdout: isHushed ? 'ignore' : 'inherit',
                 stderr: isQuieted ? 'ignore' : 'inherit'
               }
-            ).catch((error) => {
+            ).catch((error: unknown) => {
               status.allContrib = false;
               throw error;
             });
@@ -309,7 +309,7 @@ export default function command({
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
             }
-          ).catch((error) => {
+          ).catch((error: unknown) => {
             status.remark = false;
             throw error;
           });
@@ -344,7 +344,7 @@ export default function command({
                 stdout: isHushed ? 'ignore' : 'inherit',
                 stderr: isQuieted ? 'ignore' : 'inherit'
               }
-            ).catch((error) => {
+            ).catch((error: unknown) => {
               status.prettier = false;
               throw error;
             });
@@ -420,7 +420,7 @@ async function filterOutPathsUnsupportedByPrettier(files: string[] | undefined) 
     const fileBasename = basename(path);
     return (
       fileBasename.includes('.') &&
-      supportedExtensions.has(`.${fileBasename.split('.').at(-1)}`)
+      supportedExtensions.has(`.${fileBasename.split('.').at(-1)!}`)
     );
   });
 

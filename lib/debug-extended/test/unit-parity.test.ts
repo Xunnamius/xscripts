@@ -12,7 +12,9 @@ describe('debug-js feature parity', () => {
     log.enabled = true;
     log.log = () => undefined;
 
-    expect(() => log('hello world')).not.toThrow();
+    expect(() => {
+      log('hello world');
+    }).not.toThrow();
   });
 
   it('allows namespaces to be a non-string value', () => {
@@ -22,8 +24,10 @@ describe('debug-js feature parity', () => {
     log.enabled = true;
     log.log = () => undefined;
 
-    // @ts-expect-error: wrong on purpose
-    expect(() => debug.enable(true)).not.toThrow();
+    expect(() => {
+      // @ts-expect-error: wrong on purpose
+      debug.enable(true);
+    }).not.toThrow();
   });
 
   it('honors global debug namespace enable calls', () => {

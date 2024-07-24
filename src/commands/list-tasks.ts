@@ -87,7 +87,7 @@ export default function command({
                 let str = name;
 
                 if (full) {
-                  str += `\n${script}${index_ < array.length - 1 ? '\n' : ''}`;
+                  str += `\n${String(script)}${index_ < array.length - 1 ? '\n' : ''}`;
                 }
 
                 return str;

@@ -10,12 +10,12 @@ const tryToRead = async (
   /** @type {import("fs").PathLike | import("fs/promises").FileHandle} */ path
 ) => {
   try {
-    debug(`attempting to read ${path}`);
+    debug(`attempting to read ${String(path)}`);
     const data = await read(path, 'utf8');
-    debug(`successfully read ${path}`);
+    debug(`successfully read ${String(path)}`);
     return data;
   } catch {
-    debug(`failed to read ${path}`);
+    debug(`failed to read ${String(path)}`);
     return '';
   }
 };

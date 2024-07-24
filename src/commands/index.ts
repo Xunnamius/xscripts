@@ -26,7 +26,7 @@ export default function command({
     description:
       "A collection of commands for interacting with Xunnamius's NPM-based projects",
     usage: withStandardUsage(),
-    handler: withStandardHandler(async function () {
+    handler: withStandardHandler(function () {
       const debug = debug_.extend('handler');
       debug('entered handler');
       throw new CommandNotImplementedError();

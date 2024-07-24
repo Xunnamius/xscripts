@@ -128,7 +128,9 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
         if (causalStack.length) {
           context.log.newline([IF_NOT_QUIETED], 'alternate');
           context.log.error([IF_NOT_QUIETED], '❌ Causal stack:');
-          causalStack.forEach((item) => context.log.error([IF_NOT_QUIETED], item));
+          causalStack.forEach((item) => {
+            context.log.error([IF_NOT_QUIETED], item);
+          });
         }
       }
 
@@ -143,6 +145,7 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
         const { ListrErrorTypes } = await import('listr2');
 
         for (const taskError of context.taskManager.errors) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
           if (taskError.type !== ListrErrorTypes.HAS_FAILED_WITHOUT_ERROR) {
             context.log.error(
               [IF_NOT_HUSHED],

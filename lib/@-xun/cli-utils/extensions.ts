@@ -6,7 +6,6 @@ import { globalLoggerNamespace } from 'universe/constant';
 import {
   withBuilderExtensions,
   type BfeBuilderObject,
-  type BfeCustomBuilderFunctionParameters,
   type WithBuilderExtensionsConfig,
   type WithBuilderExtensionsReturnType
 } from 'multiverse/@black-flag/extensions/index';
@@ -207,14 +206,7 @@ export function withStandardBuilder<
 
       const customCliArguments =
         (typeof customBuilder === 'function'
-          ? customBuilder(
-              blackFlag as BfeCustomBuilderFunctionParameters<
-                CustomCliArguments,
-                CustomExecutionContext
-              >[0],
-              helpOrVersionSet,
-              argv
-            )
+          ? customBuilder(blackFlag, helpOrVersionSet, argv)
           : customBuilder) || {};
 
       debug_('exited withStandardBuilder::builder wrapper function');

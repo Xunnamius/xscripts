@@ -41,6 +41,9 @@ export type CustomCliArguments = GlobalCliArguments & {
   remarkSkipIgnored: boolean;
 };
 
+// TODO: (new flag: --run-to-completion for finishing all linting then error/success; also update the task and example task to use this new flag)
+// TODO: (new flag: --ignore-warnings to ignore eslint, tsc, and remark warnings; default false)
+
 export default function command({
   log,
   debug_,

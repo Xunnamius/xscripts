@@ -123,6 +123,8 @@ type OptionsMetadata = {
  */
 type FlattenedExtensionValue = Record<
   string,
+  // ? This type is written like this for posterity
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   BfeBuilderObjectValueExtensionObject[string] | typeof $exists
 > & { [$genesis]?: string };
 
@@ -632,6 +634,8 @@ export function withBuilderExtensions<
           CustomCliArguments,
           CustomExecutionContext
         >
+        // ? This is a valid use of void here
+        // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
       ) => BfeBuilderObject<CustomCliArguments, CustomExecutionContext> | void),
   {
     commonOptions = ['help'],
@@ -993,10 +997,7 @@ export function withBuilderExtensions<
             }
           });
 
-          softAssert(
-            sawAtLeastOne !== undefined,
-            ErrorMessage.DemandGenericXorViolation(groupEntries)
-          );
+          softAssert(sawAtLeastOne, ErrorMessage.DemandGenericXorViolation(groupEntries));
         });
 
         // ? Take advantage of our loop through optionsMetadata.implied to
@@ -1104,6 +1105,7 @@ export function withBuilderExtensions<
         // ? We know these are defined due to the hard assert above
         aliases: previousBfBuilderObject![defaultedOption].alias,
         parserConfiguration: previousBfParserConfiguration!
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       }).forEach((expandedName) => delete argv[expandedName]);
     });
 
@@ -1116,7 +1118,7 @@ export function withBuilderExtensions<
  * Generate command usage text consistently yet flexibly.
  */
 export function withUsageExtensions(altDescription = '$1.') {
-  if (altDescription?.endsWith('.') === false) {
+  if (!altDescription.endsWith('.')) {
     altDescription += '.';
   }
 
@@ -1168,6 +1170,8 @@ export async function getInvocableExtendedHandler<
   }
 
   // ? ESM <=> CJS interop, again. See: @black-flag/core/src/discover.ts
+  // ! We cannot trust the type of command.default yet, hence the next line:
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (command?.default !== undefined) {
     command = command.default;
   }
@@ -1177,8 +1181,11 @@ export async function getInvocableExtendedHandler<
   if (typeof command === 'function') {
     config = await command(context);
   } else {
+    // ! We cannot trust the type of command if we've reached this point
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     hardAssert(command && typeof command === 'object', ErrorMessage.FalsyCommandExport());
 
+    // * Now we can trust its type :)
     config = command;
   }
 
@@ -1521,13 +1528,11 @@ function expandOptionNameAndAliasesWithRespectToParserConfiguration({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getParserConfigurationFromBlackFlagInstance(blackFlag: any) {
   hardAssert(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    typeof (blackFlag as any).getInternalMethods === 'function',
+    typeof blackFlag.getInternalMethods === 'function',
     ErrorMessage.UnexpectedValueFromInternalYargsMethod()
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const yargsInternalMethods = (blackFlag as any).getInternalMethods();
+  const yargsInternalMethods = blackFlag.getInternalMethods();
 
   hardAssert(
     typeof yargsInternalMethods.getParserConfiguration === 'function',
@@ -1538,6 +1543,8 @@ function getParserConfigurationFromBlackFlagInstance(blackFlag: any) {
     yargsInternalMethods.getParserConfiguration();
 
   hardAssert(
+    // ! We cannot trust the type of parserConfiguration, hence the next line:
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     parserConfiguration && typeof parserConfiguration === 'object',
     ErrorMessage.UnexpectedValueFromInternalYargsMethod()
   );
@@ -1617,17 +1624,19 @@ function validateAndFlattenExtensionValue(
   const mergedConfig: FlattenedExtensionValue = {};
 
   if (Array.isArray(extendedOption)) {
-    extendedOption.forEach((option) => mergeInto(option));
+    extendedOption.forEach((option) => {
+      mergeInto(option);
+    });
   } else {
     mergeInto(extendedOption);
   }
 
-  Object.keys(mergedConfig).forEach((referredOptionName) =>
+  Object.keys(mergedConfig).forEach((referredOptionName) => {
     hardAssert(
       referredOptionName in builderObject,
       ErrorMessage.ReferencedNonExistentOption(optionName, referredOptionName)
-    )
-  );
+    );
+  });
 
   return mergedConfig;
 

@@ -224,7 +224,7 @@ export function moduleExport(
         const debug_ = debug.extend('writerOpts:generateOn');
         let decision = false;
 
-        debug_(`saw version: ${commit.version}`);
+        debug_(`saw version: ${commit.version!}`);
 
         if (commit.version) {
           const { context, package: pkg } = getRunContext();
@@ -318,6 +318,8 @@ export function moduleExport(
         });
 
         // ? Discard entries of unknown or hidden types if discard === true
+        // ! TypeScript incorrectly believes discard can never be false...
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (discard && (typeEntry === undefined || typeEntry.hidden)) {
           debug_('decision: commit discarded');
           return false;
@@ -340,23 +342,26 @@ export function moduleExport(
               const { issueUrlFormat } = intermediateConfig;
               // ? Replace issue refs with URIs
               const issueRegex = new RegExp(
-                `(${intermediateConfig.issuePrefixes?.join('|')})([0-9]+)`,
+                `(${intermediateConfig.issuePrefixes.join('|')})([0-9]+)`,
                 'g'
               );
 
-              commit.subject = commit.subject.replace(issueRegex, (_, prefix, issue) => {
-                const issueStr = `${prefix}${issue}`;
-                const url = interpolateTemplate(issueUrlFormat, {
-                  host,
-                  owner,
-                  repository,
-                  id: issue,
-                  prefix: prefix
-                });
+              commit.subject = commit.subject.replace(
+                issueRegex,
+                (_, prefix: string, issue: string) => {
+                  const issueStr = `${prefix}${issue}`;
+                  const url = interpolateTemplate(issueUrlFormat, {
+                    host,
+                    owner,
+                    repository,
+                    id: issue,
+                    prefix: prefix
+                  });
 
-                issues.push(issueStr);
-                return `[${issueStr}](${url})`;
-              });
+                  issues.push(issueStr);
+                  return `[${issueStr}](${url})`;
+                }
+              );
             }
 
             if (intermediateConfig.userUrlFormat) {
@@ -365,7 +370,7 @@ export function moduleExport(
               commit.subject = commit.subject.replaceAll(
                 // * https://github.com/shinnn/github-username-regex
                 usernameRegex,
-                (_, user) => {
+                (_, user: string) => {
                   const usernameUrl = interpolateTemplate(userUrlFormat, {
                     host,
                     owner,
@@ -524,7 +529,7 @@ export function moduleExport(
    * `test(system)!: hello world` but with no `BREAKING CHANGE` in body.
    */
   function addBangNotes({ header, notes }: Commit) {
-    const { breakingHeaderPattern } = finalConfig?.parserOpts ?? {};
+    const { breakingHeaderPattern } = finalConfig.parserOpts ?? {};
 
     if (breakingHeaderPattern) {
       const match = header?.match(breakingHeaderPattern);
@@ -576,11 +581,12 @@ function mergeCustomizer(
   _objValue: unknown,
   srcValue: unknown,
   key: string,
-  object: Record<string, unknown>,
-  source: Record<string, unknown>
+  object: Record<string, unknown> | undefined,
+  source: Record<string, unknown> | undefined
 ) {
-  if (object) {
+  if (object && source) {
     if (srcValue === undefined && key in source) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete object[key];
     } else if (Array.isArray(srcValue)) {
       return srcValue;

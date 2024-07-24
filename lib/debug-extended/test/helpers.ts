@@ -1,6 +1,6 @@
 import { type ExtendedDebugger } from 'multiverse/debug-extended/index';
 
-export function expectExtendedDebugger(instance: unknown): boolean | void {
+export function expectExtendedDebugger(instance: unknown) {
   const dbg = instance as ExtendedDebugger;
 
   expectUnextendableDebugger(dbg.message);
@@ -11,7 +11,7 @@ export function expectExtendedDebugger(instance: unknown): boolean | void {
   expect(instance).toHaveProperty('newline');
 }
 
-export function expectUnextendableDebugger(instance: unknown): boolean | void {
+export function expectUnextendableDebugger(instance: unknown) {
   expect(instance).not.toHaveProperty('message');
   expect(instance).not.toHaveProperty('error');
   expect(instance).not.toHaveProperty('warn');

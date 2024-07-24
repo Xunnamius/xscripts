@@ -263,9 +263,9 @@ export default function command({
           const sudoPassword = await askPassword(process.stdin);
 
           const uploadScript = [
-            `echo ${sudoPassword} | sudo -S rm -rf ${toPath}`,
-            `echo ${sudoPassword} | sudo -S mv ${remoteTmpdirPath}/dist ${toPath}`,
-            `echo ${sudoPassword} | sudo -S chown -R www-data:www-data ${toPath}`
+            `echo ${sudoPassword.toString('utf8')} | sudo -S rm -rf ${toPath}`,
+            `echo ${sudoPassword.toString('utf8')} | sudo -S mv ${remoteTmpdirPath}/dist ${toPath}`,
+            `echo ${sudoPassword.toString('utf8')} | sudo -S chown -R www-data:www-data ${toPath}`
           ];
 
           await run('ssh', [host, uploadScript.join(' && ')]);
@@ -275,13 +275,13 @@ export default function command({
       }
 
       if (bumpVersion) {
-        const oldVersion = JSON.parse(
+        const oldVersion: string = JSON.parse(
           (await run('npm', ['pkg', 'get', 'version'])).stdout
         );
 
         await run('npm', ['--no-git-tag-version', 'version', 'patch']);
 
-        const updatedVersion = JSON.parse(
+        const updatedVersion: string = JSON.parse(
           (await run('npm', ['pkg', 'get', 'version'])).stdout
         );
 

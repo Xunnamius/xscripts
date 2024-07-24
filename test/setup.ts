@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/no-keyword-prefix */
 import assert from 'node:assert';
@@ -17,7 +18,7 @@ import { run, type RunReturnType } from 'multiverse/run';
 import { name as pkgName, version as pkgVersion } from 'package';
 
 import type { Options as ExecaOptions } from 'execa' with { 'resolution-mode': 'import' };
-import type { Promisable } from 'type-fest';
+import type { LiteralUnion, Promisable } from 'type-fest';
 
 // TODO: automated tests against both Windows and Linux (and for all tooling)
 
@@ -249,12 +250,12 @@ export async function withMockedArgv(
   options: MockArgvOptions = { replace: false }
 ) {
   // ? Take care to preserve the original argv array reference in memory
-  const previousArgv = process.argv.splice(options?.replace ? 0 : 2, process.argv.length);
+  const previousArgv = process.argv.splice(options.replace ? 0 : 2, process.argv.length);
   process.argv.push(...simulatedArgv);
 
   await test();
 
-  process.argv.splice(options?.replace ? 0 : 2, process.argv.length);
+  process.argv.splice(options.replace ? 0 : 2, process.argv.length);
   process.argv.push(...previousArgv);
 }
 
@@ -285,10 +286,12 @@ export async function withMockedEnv(
   options: MockEnvOptions = { replace: true }
 ) {
   const previousEnv = { ...process.env };
-  const clearEnv = () =>
-    Object.getOwnPropertyNames(process.env).forEach(
-      (property) => delete process.env[property]
-    );
+  const clearEnv = () => {
+    Object.getOwnPropertyNames(process.env).forEach((property) => {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete process.env[property];
+    });
+  };
 
   // ? Take care to preserve the original env object reference in memory
   if (options.replace) clearEnv();
@@ -647,7 +650,7 @@ export type ReturnsString<Context = FixtureContext> = (
 
 // TODO: XXX: make this into a separate (mock-fixture) package (along w/ below)
 export interface MockFixture<Context = FixtureContext> {
-  name: 'root' | 'describe-root' | string | ReturnsString<Context> | symbol;
+  name: LiteralUnion<'root' | 'describe-root', string | symbol> | ReturnsString<Context>;
   description: string | ReturnsString<Context>;
   setup?: FixtureAction<Context>;
   teardown?: FixtureAction<Context>;
@@ -1114,8 +1117,10 @@ export async function withMockedFixture<
 
   const setupDebugger = async (fixture: CustomizedMockFixture, error = false) => {
     const toString = async (
-      source: CustomizedMockFixture['name'] | CustomizedMockFixture['description']
-    ) => String(typeof source === 'function' ? source(context) : source);
+      source:
+        | CustomizedMockFixture['name']
+        | LiteralUnion<Exclude<CustomizedMockFixture['description'], string>, string>
+    ) => String(typeof source === 'function' ? await source(context) : source);
 
     const name = await toString(fixture.name);
     const desc = await toString(fixture.description);
@@ -1155,11 +1160,12 @@ export async function withMockedFixture<
     context.debug = globalDebug.extend('<cleanup>');
 
     for (const cleanupFn of cleanupFunctions.reverse()) {
-      await cleanupFn(context).catch((error) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/use-unknown-in-catch-callback-variable
+      await cleanupFn(context).catch((error: any) =>
         context.debug(
-          `ignored exception in teardown function: ${
+          `ignored exception in teardown function: ${String(
             error?.message || error.toString() || '<no error message>'
-          }`
+          )}`
         )
       );
     }

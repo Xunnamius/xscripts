@@ -36,6 +36,7 @@ const tsconfigProject = 'tsconfig.eslint.json';
 const jsFileExtensions = ['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs'];
 
 const genericRules = {
+  // * eslint
   'no-console': 'warn',
   'no-return-await': 'warn',
   'no-await-in-loop': 'warn',
@@ -48,6 +49,11 @@ const genericRules = {
   ],
   'no-restricted-globals': ['warn', ...restrictedGlobals],
   'no-empty': 'off',
+  // ? Ever since v4, we will rely on TypeScript to catch these
+  'no-undef': 'off',
+  'no-unused-vars': 'off',
+
+  // * typescript-eslint
   '@typescript-eslint/camelcase': 'off',
   // ? I am an enby of simple tastes, who does commonjs sometimes
   '@typescript-eslint/no-require-imports': 'off',
@@ -60,6 +66,7 @@ const genericRules = {
   '@typescript-eslint/prefer-ts-expect-error': 'warn',
   '@typescript-eslint/no-misused-promises': ['error'],
   '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
+  // ? Force the powerful ts comments to come with a brief explanation
   '@typescript-eslint/ban-ts-comment': [
     'warn',
     {
@@ -80,16 +87,54 @@ const genericRules = {
       caughtErrors: 'all'
     }
   ],
-  // ? Ever since v4, we will rely on TypeScript to catch these
-  'no-undef': 'off',
-  '@typescript-eslint/no-var-requires': 'off',
-  // ? I'll be good, I promise
-  '@typescript-eslint/no-non-null-assertion': 'off',
+  // ? Make sure types are marked as such
   '@typescript-eslint/consistent-type-imports': [
     'error',
     { disallowTypeAnnotations: false, fixStyle: 'inline-type-imports' }
   ],
-  'no-unused-vars': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-var-requires': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-non-null-assertion': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-unsafe-assignment': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-unsafe-argument': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-unsafe-call': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-unsafe-member-access': 'off',
+  // ? I'll be good, I promise
+  '@typescript-eslint/no-unsafe-return': 'off',
+  // ? Numbers are fine.
+  '@typescript-eslint/restrict-template-expressions': [
+    'warn',
+    {
+      allowAny: false,
+      allowBoolean: false,
+      allowNullish: false,
+      allowNumber: true,
+      allowRegExp: false
+    }
+  ],
+  // ? "this: void" annotations are fine.
+  '@typescript-eslint/no-invalid-void-type': [
+    'warn',
+    {
+      allowAsThisParameter: true,
+      allowInGenericTypeArguments: true
+    }
+  ],
+  // ? Void expressions are fine.
+  '@typescript-eslint/no-confusing-void-expression': [
+    'warn',
+    {
+      ignoreVoidOperator: true,
+      ignoreArrowShorthand: true
+    }
+  ],
+
+  // * unicorn
   'unicorn/no-keyword-prefix': 'warn',
   'unicorn/prefer-string-replace-all': 'warn',
   // ? Handled by integration tests
@@ -97,8 +142,7 @@ const genericRules = {
   // ? I am of the opinion that there is a difference between something being
   // ? defined as nothing and something being undefined
   'unicorn/no-null': 'off',
-  // ? If MongoDB can get away with "DB" in its name, so can we. Also,
-  // ? unnecessary underscores are a big no-no.
+  // ? If MongoDB can get away with "DB" in its name, so can we.
   'unicorn/prevent-abbreviations': [
     'warn',
     {
@@ -162,6 +206,7 @@ const genericRules = {
 };
 
 const jestRules = {
+  // * Jest
   'jest/lowercase': 'off',
   'jest/consistent-test-it': 'off',
   'jest/require-top-level-describe': 'off',
@@ -180,7 +225,11 @@ const jestRules = {
   'jest/no-conditional-expect': 'off',
   'jest/prefer-each': 'off',
   'jest/prefer-snapshot-hint': 'off',
-  'jest/prefer-importing-jest-globals': 'off'
+  'jest/prefer-importing-jest-globals': 'off',
+
+  // * typescript-eslint
+  '@typescript-eslint/require-await': 'off',
+  '@typescript-eslint/prefer-promise-reject-errors': 'off'
 };
 
 const globals = {
@@ -250,9 +299,9 @@ const config = makeTsEslintConfig(
   },
   ...[
     { ...eslintJs.configs.recommended, name: '@eslint/js:recommended' },
-    eslintTsConfigs.recommended,
-    eslintTsConfigs.eslintRecommended,
+    eslintTsConfigs.strictTypeChecked,
     eslintTsConfigs.stylisticTypeChecked,
+    eslintTsConfigs.eslintRecommended,
     legacyExtends('plugin:import/typescript', 'eslint-plugin-import:typescript'),
     legacyExtends('plugin:import/warnings', 'eslint-plugin-import:warnings'),
     legacyExtends('plugin:import/errors', 'eslint-plugin-import:errors'),

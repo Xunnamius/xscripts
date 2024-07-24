@@ -15,6 +15,9 @@ import { run } from 'multiverse/run';
 
 import type { GlobalExecutionContext } from './configure';
 
+// ? Might want to do something async in the future, so we reserve the right
+// ? now.
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function globalPreChecks({
   debug_,
   runtimeContext
@@ -49,7 +52,7 @@ export async function readFile(path: string) {
 
 export async function writeFile(path: string, contents: string) {
   try {
-    return await fs.writeFile(path, contents);
+    await fs.writeFile(path, contents);
   } catch (error) {
     throw new CliError(ErrorMessage.CannotWriteFile(path), {
       cause: error,
@@ -71,7 +74,7 @@ export function __read_file_sync(path: string) {
 
 export function __write_file_sync(path: string, contents: string) {
   try {
-    return fsSync.writeFileSync(path, contents);
+    fsSync.writeFileSync(path, contents);
   } catch (error) {
     throw new CliError(ErrorMessage.CannotWriteFile(path), {
       cause: error,
