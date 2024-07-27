@@ -14,7 +14,8 @@
         "all",
         "--linter",
         "tsc",
-        "eslint"
+        "eslint",
+        "--run-to-completion"
       ],
       "presentation": {
         "echo": true,
