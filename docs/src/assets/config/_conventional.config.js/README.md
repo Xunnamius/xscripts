@@ -15,16 +15,12 @@
 
 ### Variables
 
-- [allowedCommitTypes](variables/allowedCommitTypes.md)
-- [allowedCommitTypesInfo](variables/allowedCommitTypesInfo.md)
-- [changelogTopmatter](variables/changelogTopmatter.md)
-- [commitTypeOrder](variables/commitTypeOrder.md)
-- [issuePrefixes](variables/issuePrefixes.md)
+- [defaultChangelogTopmatter](variables/defaultChangelogTopmatter.md)
+- [defaultIssuePrefixes](variables/defaultIssuePrefixes.md)
+- [defaultSkipCommands](variables/defaultSkipCommands.md)
+- [defaultTemplates](variables/defaultTemplates.md)
 - [noteTitleForBreakingChange](variables/noteTitleForBreakingChange.md)
-- [revertPrefixRegex](variables/revertPrefixRegex.md)
-- [skipCommands](variables/skipCommands.md)
-- [templates](variables/templates.md)
-- [usernameRegex](variables/usernameRegex.md)
+- [wellKnownCommitTypes](variables/wellKnownCommitTypes.md)
 
 ### Functions
 

@@ -28,7 +28,7 @@ An instance of [UnextendableInternalDebugger](../../debug-extended/interfaces/Un
 
 ## Defined in
 
-[lib/rejoinder/index.ts:79](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/rejoinder/index.ts#L79)
+[lib/rejoinder/index.ts:79](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/rejoinder/index.ts#L79)
 
 > **UnextendableInternalLogger**(...`args`): `void`
 
@@ -45,7 +45,7 @@ An instance of [UnextendableInternalDebugger](../../debug-extended/interfaces/Un
 
 ## Defined in
 
-[lib/rejoinder/index.ts:83](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/rejoinder/index.ts#L83)
+[lib/rejoinder/index.ts:83](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/rejoinder/index.ts#L83)
 
 > **UnextendableInternalLogger**(...`args`): `void`
 
@@ -62,7 +62,7 @@ An instance of [UnextendableInternalDebugger](../../debug-extended/interfaces/Un
 
 ## Defined in
 
-[lib/rejoinder/index.ts:75](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/rejoinder/index.ts#L75)
+[lib/rejoinder/index.ts:75](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/rejoinder/index.ts#L75)
 
 ## Properties
 
@@ -144,7 +144,7 @@ node\_modules/@types/debug/index.d.ts:44
 
 #### Defined in
 
-[lib/debug-extended/index.ts:57](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L57)
+[lib/debug-extended/index.ts:57](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/debug-extended/index.ts#L57)
 
 ***
 
@@ -166,7 +166,7 @@ node\_modules/@types/debug/index.d.ts:44
 
 #### Defined in
 
-[lib/debug-extended/index.ts:50](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/debug-extended/index.ts#L50)
+[lib/debug-extended/index.ts:50](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/debug-extended/index.ts#L50)
 
 ***
 

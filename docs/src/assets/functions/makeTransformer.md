@@ -30,6 +30,8 @@ instance, and an optional [TransformerOptions](../type-aliases/TransformerOption
 
 #### Parameters
 
+• **this**: `void`
+
 • **context**: `Partial`\<`CustomTransformContext`\> & [`RequiredTransformerContext`](../type-aliases/RequiredTransformerContext.md)
 
 • **options**: `EmptyObject` = `{}`
@@ -40,4 +42,4 @@ instance, and an optional [TransformerOptions](../type-aliases/TransformerOption
 
 ## Defined in
 
-[src/assets/index.ts:138](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/assets/index.ts#L138)
+[src/assets/index.ts:138](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/assets/index.ts#L138)

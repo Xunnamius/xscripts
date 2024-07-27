@@ -10,4 +10,4 @@
 
 ## Defined in
 
-[src/assets/config/\_babel.config.js.ts:10](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/assets/config/_babel.config.js.ts#L10)
+[src/assets/config/\_babel.config.js.ts:10](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/assets/config/_babel.config.js.ts#L10)

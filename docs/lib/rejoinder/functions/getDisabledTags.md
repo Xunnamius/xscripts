@@ -16,4 +16,4 @@ Returns an array of the tags disabled via [disableLoggingByTag](disableLoggingBy
 
 ## Defined in
 
-[lib/rejoinder/index.ts:438](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/rejoinder/index.ts#L438)
+[lib/rejoinder/index.ts:443](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/rejoinder/index.ts#L443)

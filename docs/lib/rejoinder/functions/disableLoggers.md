@@ -37,4 +37,4 @@ The type of logging to disable. Valid values are one of:
 
 ## Defined in
 
-[lib/rejoinder/index.ts:326](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/rejoinder/index.ts#L326)
+[lib/rejoinder/index.ts:331](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/rejoinder/index.ts#L331)

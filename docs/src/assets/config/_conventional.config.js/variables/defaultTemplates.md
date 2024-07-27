@@ -2,11 +2,11 @@
 
 ***
 
-[@-xun/scripts](../../../../../README.md) / [src/assets/config/\_conventional.config.js](../README.md) / templates
+[@-xun/scripts](../../../../../README.md) / [src/assets/config/\_conventional.config.js](../README.md) / defaultTemplates
 
-# Variable: templates
+# Variable: defaultTemplates
 
-> `const` **templates**: `object`
+> `const` **defaultTemplates**: `object`
 
 Handlebars template data (not processed by our custom configuration).
 
@@ -46,4 +46,4 @@ Handlebars template data (not processed by our custom configuration).
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.js.ts:106](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/assets/config/_conventional.config.js.ts#L106)
+[src/assets/config/\_conventional.config.js.ts:158](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/assets/config/_conventional.config.js.ts#L158)

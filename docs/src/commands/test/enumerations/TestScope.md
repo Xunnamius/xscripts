@@ -18,7 +18,7 @@ Run tests across all scopes except `Intermediate`.
 
 #### Defined in
 
-[src/commands/test.ts:72](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/commands/test.ts#L72)
+[src/commands/test.ts:73](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/commands/test.ts#L73)
 
 ***
 
@@ -30,7 +30,7 @@ Run tests under the ./tests directory except `Source`
 
 #### Defined in
 
-[src/commands/test.ts:64](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/commands/test.ts#L64)
+[src/commands/test.ts:65](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/commands/test.ts#L65)
 
 ***
 
@@ -42,7 +42,7 @@ Run tests under the ./.transpiled directory
 
 #### Defined in
 
-[src/commands/test.ts:68](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/commands/test.ts#L68)
+[src/commands/test.ts:69](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/commands/test.ts#L69)
 
 ***
 
@@ -54,7 +54,7 @@ Run tests under the ./lib directory
 
 #### Defined in
 
-[src/commands/test.ts:60](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/commands/test.ts#L60)
+[src/commands/test.ts:61](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/commands/test.ts#L61)
 
 ***
 
@@ -66,4 +66,4 @@ Run tests under the ./tests directory except `External`
 
 #### Defined in
 
-[src/commands/test.ts:56](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/commands/test.ts#L56)
+[src/commands/test.ts:57](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/commands/test.ts#L57)

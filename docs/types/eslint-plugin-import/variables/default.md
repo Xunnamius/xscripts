@@ -10,4 +10,4 @@
 
 ## Defined in
 
-[types/eslint-plugin-import.d.ts:3](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/types/eslint-plugin-import.d.ts#L3)
+[types/eslint-plugin-import.d.ts:4](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/types/eslint-plugin-import.d.ts#L4)

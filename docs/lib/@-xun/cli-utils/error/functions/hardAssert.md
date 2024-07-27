@@ -27,7 +27,7 @@ about.
 
 ### Defined in
 
-[lib/@-xun/cli-utils/error.ts:76](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/@-xun/cli-utils/error.ts#L76)
+[lib/@-xun/cli-utils/error.ts:78](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/@-xun/cli-utils/error.ts#L78)
 
 ## hardAssert(value, message)
 
@@ -52,4 +52,4 @@ about.
 
 ### Defined in
 
-[lib/@-xun/cli-utils/error.ts:85](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/@-xun/cli-utils/error.ts#L85)
+[lib/@-xun/cli-utils/error.ts:87](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/@-xun/cli-utils/error.ts#L87)

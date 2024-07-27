@@ -10,6 +10,10 @@
 
 ## Type declaration
 
+### ignoreWarnings
+
+> **ignoreWarnings**: `boolean`
+
 ### linter
 
 > **linter**: [`Linter`](../enumerations/Linter.md)[]
@@ -18,10 +22,14 @@
 
 > **remarkSkipIgnored**: `boolean`
 
+### runToCompletion
+
+> **runToCompletion**: `boolean`
+
 ### scope
 
 > **scope**: `"limited"` \| `"all"`
 
 ## Defined in
 
-[src/commands/lint.ts:38](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/commands/lint.ts#L38)
+[src/commands/lint.ts:39](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/commands/lint.ts#L39)

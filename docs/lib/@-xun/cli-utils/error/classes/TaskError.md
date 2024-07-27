@@ -32,7 +32,7 @@ An `Error` class where the first letter of the message is capitalized.
 
 #### Defined in
 
-[lib/@-xun/cli-utils/error.ts:9](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/@-xun/cli-utils/error.ts#L9)
+[lib/@-xun/cli-utils/error.ts:11](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/@-xun/cli-utils/error.ts#L11)
 
 ## Properties
 

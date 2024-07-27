@@ -14,9 +14,9 @@ be perfectly accurate.
 
 ## Type declaration
 
-### changelogTitle
+### changelogTopmatter
 
-> **changelogTitle**: `string`
+> **changelogTopmatter**: `string`
 
 This string is prepended to all generated `CHANGELOG.md` files.
 
@@ -24,9 +24,7 @@ This string is prepended to all generated `CHANGELOG.md` files.
 
 > **conventionalChangelog**: `ConventionalChangelogCoreOptions.Config.Object`
 
-Conventional Changelog Core options. Last time I scanned its source, it
-seemed this key was required, so it is included here for now.
-TODO: Verify that this key is still necessary.
+Conventional Changelog Core options.
 
 ### skipCommands
 
@@ -37,4 +35,4 @@ pipelines should not be triggered by said commit.
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.js.ts:45](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/assets/config/_conventional.config.js.ts#L45)
+[src/assets/config/\_conventional.config.js.ts:66](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/assets/config/_conventional.config.js.ts#L66)

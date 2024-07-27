@@ -12,4 +12,4 @@ The CLI-wide namespace that appears in debugger output.
 
 ## Defined in
 
-[src/constant.ts:9](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/src/constant.ts#L9)
+[src/constant.ts:9](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/constant.ts#L9)

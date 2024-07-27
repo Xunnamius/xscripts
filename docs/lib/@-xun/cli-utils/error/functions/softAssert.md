@@ -26,7 +26,7 @@ Use this function to assert end user error.
 
 ### Defined in
 
-[lib/@-xun/cli-utils/error.ts:41](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/@-xun/cli-utils/error.ts#L41)
+[lib/@-xun/cli-utils/error.ts:43](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/@-xun/cli-utils/error.ts#L43)
 
 ## softAssert(value, message)
 
@@ -50,4 +50,4 @@ Use this function to assert end user error.
 
 ### Defined in
 
-[lib/@-xun/cli-utils/error.ts:49](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/@-xun/cli-utils/error.ts#L49)
+[lib/@-xun/cli-utils/error.ts:51](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/@-xun/cli-utils/error.ts#L51)

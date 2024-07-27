@@ -31,4 +31,4 @@ The type of loggers to return. Valid values are one of:
 
 ## Defined in
 
-[lib/rejoinder/index.ts:296](https://github.com/Xunnamius/xscripts/blob/98c638c52caf3664112e7ea66eccd36ad205df77/lib/rejoinder/index.ts#L296)
+[lib/rejoinder/index.ts:301](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/rejoinder/index.ts#L301)
