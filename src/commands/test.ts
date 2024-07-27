@@ -228,7 +228,7 @@ export default function command({
         NODE_ENV: 'test',
         // eslint-disable-next-line unicorn/no-array-reduce
         NODE_OPTIONS: nodeOptions.reduce(
-          (previous, current) => (previous + current).trim(),
+          (previous, current) => (previous + ' ' + current).trim(),
           ''
         )
       };
