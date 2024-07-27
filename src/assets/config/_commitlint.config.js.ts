@@ -1,5 +1,5 @@
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
-import { allowedCommitTypes } from 'universe/assets/config/_conventional.config.js';
+import { wellKnownCommitTypes } from 'universe/assets/config/_conventional.config.js';
 import { globalDebuggerNamespace } from 'universe/constant';
 
 import type { EmptyObject } from 'type-fest';
@@ -9,7 +9,7 @@ export const moduleExport = {
   rules: {
     'body-leading-blank': [2, 'always'],
     'footer-leading-blank': [2, 'always'],
-    'type-enum': [2, 'always', allowedCommitTypes]
+    'type-enum': [2, 'always', wellKnownCommitTypes.map(({ type }) => type)]
   }
 };
 

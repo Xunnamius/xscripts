@@ -96,9 +96,45 @@ export const revertPrefixRegex = /^Revert\s+/;
 /**
  * The character(s) used to reference issues by number on GitHub.
  */
-export const issuePrefixes = ['#'] as const;
 
-const templateDirectory = '../template/conventional-changelog';
+/**
+ * These are the only conventional commit types supported by xscripts-based
+ * pipelines and are therefore considered "well known".
+ *
+ * Commit types corresponding to entries with `{ hidden: false }` will appear in
+ * the generated `CHANGELOG.md` file. Commit types with `{ hidden: true }` will
+ * not appear in `CHANGELOG.md` _unless the commit is marked "BREAKING" in some
+ * way_.
+ *
+ * Multiple commit types can have the same `section`, which means commits of
+ * that type will be combined together under said section.
+ *
+ * Note that the order of values in this array is significant. Commits, having
+ * been grouped (sectioned) by type, will appear in the changelog in the order
+ * they appear in this array. Unknown types, i.e. types that are not listed in
+ * `wellKnownCommitTypes`, will appear _after_ any well-known sections if they
+ * are set to appear at all (e.g. if they are marked as breaking changes).
+ *
+ * Also note that conventional-changelog-* have internal lists of "well-known
+ * commit types" that this type will be merged on top of; the implication being:
+ * not overwriting an internal type's configuration can lead to that type (feat,
+ * fix, ci) being included even if it is not present in the below array.
+ */
+export const wellKnownCommitTypes: ConventionalChangelogConfigSpecOptions.Type[] = [
+  { type: 'feat', section: '✨ Features', hidden: false },
+  { type: 'feature', section: '✨ Features', hidden: false },
+  { type: 'fix', section: '🪄 Fixes', hidden: false },
+  { type: 'perf', section: '⚡️ Optimizations', hidden: false },
+  { type: 'build', section: '⚙️ Build system', hidden: false },
+  { type: 'docs', section: '📚 Documentation', hidden: true },
+  { type: 'style', section: '💎 Aesthetics', hidden: true },
+  { type: 'ci', section: '🏭 CI/CD', hidden: true },
+  { type: 'cd', section: '🏭 CI/CD', hidden: true },
+  { type: 'refactor', section: '🧙🏿 Refactored', hidden: true },
+  { type: 'test', section: '⚗️ Test system', hidden: true },
+  { type: 'chore', section: '🗄️ Miscellaneous', hidden: true },
+  { type: 'revert', section: '🔥 Reverted', hidden: false }
+];
 
 /**
  * Handlebars template data (not processed by our custom configuration).
