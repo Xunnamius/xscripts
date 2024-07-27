@@ -288,7 +288,14 @@ export default async function command({
           debug('running tsc');
           await run(
             'npx',
-            ['tsc', '--project', 'tsconfig.types.json', '--incremental', 'false'],
+            [
+              'tsc',
+              '--project',
+              'tsconfig.types.json',
+              '--incremental',
+              'false',
+              '--noCheck'
+            ],
             {
               env: { NODE_ENV: 'production' },
               stdout: isHushed ? 'ignore' : 'inherit',
