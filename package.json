@@ -98,7 +98,7 @@
     "test:unit:repeat": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --type unit --repeat 99"
   },
   "dependencies": {
-    "@arethetypeswrong/cli": "^0.16.0",
+    "@arethetypeswrong/cli": "^0.15.0",
     "@babel/cli": "^7.24.8",
     "@babel/core": "^7.24.9",
     "@babel/eslint-parser": "^7.24.8",
