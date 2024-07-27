@@ -3,8 +3,8 @@
   "include": [
     "types/**/*",
     "lib/**/*",
+    "lib/**/.*",
     "src/**/*",
-    "test/**/*",
     "external-scripts/**/*"
   ]
 }
