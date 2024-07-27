@@ -302,7 +302,7 @@ or more argument-value pairs and not raw strings. For example:
 }
 ```
 
-This configuration make it so that `‑x` and `‑x ‑y=true` result in the exact
+This configuration makes it so that `‑x` and `‑x ‑y=true` result in the exact
 same `argv`. Further, unlike `requires`, `implies` _makes no demands on argument
 existence_ and so allows the following arguments: no arguments (`∅`), `‑x`,
 `‑y=true`, `‑y=false`, `‑x ‑y=true`; and disallows: `‑x ‑y=false`.
@@ -320,6 +320,9 @@ example:
   "y": { "default": false } // ◄ y will still default to true if x is given
 }
 ```
+
+Also note the [special behavior][52] of `implies` specifically for non-array
+[`boolean`][25]-type options.
 
 For describing much more intricate implications between various arguments and
 their values, see [`subOptionOf`][19].
@@ -345,15 +348,16 @@ This has implications beyond just `implies`. **An implied value will not
 transitively satisfy any other BFE logic checks** (such as
 [`demandThisOptionXor`][18]) **or trigger any relational behavior** (such as
 with [`subOptionOf`][19]). The implied argument-value pair will simply be merged
-into `argv` as if you had done it manually in your command's [`handler`][23].
-Instead of relying on implicit transitive relationships via `implies`, prefer
-the explicit direct relationships described by other [configuration keys][24].
+into `argv` as if you had done it manually in your command's [`handler`][23]. If
+this is a problem, prefer the explicit direct relationships described by other
+[configuration keys][24] instead of relying on the implicit transitive
+relationships described by `implies`.
 
-However, any per-option [`check`][9]s you've configured, which are run last (at
-the very end of `withHandlerExtensions`), _will_ see the implied argument-value
-pairs. Therefore, use [`check`][9] to guarantee any complex invariants, if
-necessary; ideally, you shouldn't be setting bad defaults via `implies`, but BFE
-won't stop you from doing so.
+Despite this constraint, any per-option [`check`][9]s you've configured, which
+are run last (at the very end of `withHandlerExtensions`), _will_ see the
+implied argument-value pairs. Therefore, use [`check`][9] to guarantee any
+complex invariants, if necessary; ideally, you shouldn't be setting bad defaults
+via `implies`, but BFE won't stop you from doing so.
 
 ###### Handling Parser Configuration
 
@@ -362,15 +366,6 @@ settings][51] `camel-case-expansion`, `strip-aliased`, and `strip-dashed`; but
 _does not_ currently pay attention to `dot-notation` or
 `duplicate-arguments-array`. `implies` may still work when using the latter
 parser configurations, but it is recommended you turn them off instead.
-
-###### `looseImplications`
-
-If [`looseImplications`][20] is set to `true`, any of the specified arguments,
-when explicitly given in `argv` (e.g. via the command line), will _override_ any
-configured implications instead of causing an error. When
-[`looseImplications`][20] is set to `false`, which is the default, values
-explicitly given in `argv` must match the specified argument-value pairs
-respectively (similar to [`requires`][10]/[`conflicts`][11]).
 
 ###### `implies` versus `requires`/`conflicts`
 
@@ -384,6 +379,115 @@ value of another _while_ requiring the other argument to be explicitly given in
 Choose `conflicts` over BFE's `implies` when you think you want to use `implies`
 but you don't actually need to override the default value of the implied
 argument and only want the conflict semantics.
+
+###### `looseImplications`
+
+If `looseImplications` is set to `true`, any of the specified arguments, when
+explicitly given in `argv` (e.g. via the command line), will _override_ any
+configured implications instead of causing an error. When `looseImplications` is
+set to `false`, which is the default, values explicitly given in `argv` must
+match the specified argument-value pairs respectively (similar to
+[`requires`][10]/[`conflicts`][11]).
+
+###### `vacuousImplications`
+
+By default, in the special case where an option is configured as both (1) a
+non-array [`boolean`][25] type and (2) has an [`implies`][14] configuration, the
+implication will only take effect if the option/argument is given in `argv` with
+a `true` value. For example:
+
+```jsonc
+{
+  "x": {
+    "boolean": true,
+    "implies": { "y": true }
+  },
+  "y": {
+    "boolean": true,
+    // This example works regardless of the type of y!
+    //"array": true,
+    //"count": true,
+    //"number": true,
+    //"string": true,
+    "default": false
+  }
+}
+```
+
+If `‑x` (or `‑x=true`) is given, it is synonymous with `‑x ‑y` (or
+`‑x=true ‑y=true`) being given and vice-versa. However, if `‑x=false` (or
+`‑no-x`) is given, the `implies` key is effectively ignored. This means
+`‑x=false` _does not imply anything about `‑y`_; `‑x=false -y=true` and
+`‑x=false -y=false` are both accepted by BFE without incident.
+
+In this way, the configured implications of [`boolean`][25]-type options are
+never [vacuously satisfied][53]; a `false` condition does not "imply" anything
+about its [consequent][54].
+
+This feature reduces confusion for end users. For instance, suppose we had a CLI
+build tool that accepted the arguments `‑patch` and `‑only‑patch`. `‑patch`
+instructs the tool to patch the recompiled output before committing it to disk,
+while `‑only‑patch` instructs the tool to _only_ patch the pre-existing output
+already on disk _without_ doing any recompiling. The command's options
+configuration could look something like the following:
+
+```jsonc
+{
+  "patch": {
+    "boolean": true,
+    "description": "Patch compiled output using the nearest patcher file",
+    "default": true
+  },
+  "only‑patch": {
+    "boolean": true,
+    "description": "Instead of compiling new output, only patch existing output",
+    "default": false,
+    "implies": { "patch": true }
+  }
+}
+```
+
+The following are rightly allowed by BFE (synonymous commands are grouped):
+
+_Is compiling and patching:_
+
+- `build-tool`
+- `build-tool ‑patch`
+- `build-tool ‑patch=true`
+- `build-tool ‑only‑patch=false`
+- `build-tool ‑no‑only‑patch`
+
+_Is compiling and not patching:_
+
+- `build-tool ‑patch=false`
+- `build-tool ‑no‑patch`
+- _`build-tool ‑no‑patch ‑no‑only‑patch`_ (this is the interesting one)
+
+_Is patching and not compiling:_
+
+- `build-tool ‑only‑patch`
+- `build-tool ‑only‑patch=true`
+- `build-tool ‑patch ‑only‑patch`
+
+On the other hand, the following rightly cause BFE to throw:
+
+- `build-tool ‑patch=false ‑only‑patch`
+- `build-tool ‑no‑patch ‑only‑patch`
+
+If BFE didn't ignore vacuous implications by default, the command
+`build-tool ‑no‑patch ‑no‑only‑patch` would erroneously cause BFE to throw since
+`implies: { patch: true }` means "any time `‑only‑patch` is given, set
+`{ patch: true }` in `argv`", which conflicts with `‑no‑patch` which already
+sets `{ patch: false }` in `argv`. This can be confusing for end users since the
+command, while redundant, technically makes sense; it is logically
+indistinguishable from `build-tool ‑no‑only-patch`, which does not throw an
+error.
+
+To remedy this, BFE simply ignores the `implies` configurations of non-array
+[`boolean`][25]-type options when their value is `false` in `argv`. To disable
+this behavior for a specific option, set `vacuousImplications` to `true` (it is
+`false` by default) or consider using
+[`requires`][10]/[`conflicts`][11]/[`subOptionOf`][19] over `implies`.
 
 ---
 
@@ -423,7 +527,7 @@ example:
 ```
 
 This configuration allows the following arguments: no arguments (`∅`), `‑x`,
-`‑y=...`, `‑x ‑y=...`, `‑xz`, `-xz y=...`; and disallows: `‑z`, `‑y=one`,
+`‑y=...`, `‑x ‑y=...`, `‑xz`, `‑xz y=...`; and disallows: `‑z`, `‑y=one`,
 `‑y=... ‑z`.
 
 Note that a more powerful implementation of `demandThisOptionIf` can be achieved
@@ -1509,8 +1613,8 @@ export default function command({ state }: CustomExecutionContext) {
       choices: deployTargets,
       subOptionOf: {
         target: {
-          // Since subOptionOf runs on 2nd parse, target MUST be a DeployTarget
-          // by the time subOptionOf is considered. Yay!
+          // This update will run whenever --target is given, which is useful
+          // when BF generates help text for specific combinations of arguments
           when: () => true,
           update(oldOptionConfig, { target }) {
             return {
@@ -1532,9 +1636,6 @@ export default function command({ state }: CustomExecutionContext) {
       looseImplications: true,
       subOptionOf: {
         target: {
-          // Since subOptionOf runs on 2nd parse, target MUST be defined (as
-          // a DeployTarget) by the time subOptionOf is considered. If it
-          // weren't, we'd have to ensure target was not undefined, too. Boo!
           when: (target: DeployTarget) => target !== DeployTarget.Vercel,
           update(oldOptionConfig) {
             return {
@@ -1665,7 +1766,7 @@ export default function command({ state }: CustomExecutionContext) {
 }
 ```
 
-#### Sample Outputs (From Example 2)
+#### Example 2: Sample Outputs
 
 ```text
 $ x deploy
@@ -1753,8 +1854,7 @@ Common Options:
   --silent  No output will be generated (implies --quiet)                   [boolean] [default: false]
 
   xscripts:<error> ❌ Execution failed: the following arguments must be given alongside "to-path":
-  xscripts:<error>
-  xscripts:<error> ⮞  --target="ssh"
+  xscripts:<error>   ➜ target == "ssh"
 ```
 
 ```text
@@ -1775,8 +1875,7 @@ Common Options:
   --silent  No output will be generated (implies --quiet)                [boolean] [default: false]
 
   xscripts:<error> ❌ Execution failed: the following arguments must be given alongside "preview":
-  xscripts:<error>
-  xscripts:<error> ⮞  --target="vercel"
+  xscripts:<error>   ➜ target == vercel
 ```
 
 ```text
@@ -1833,7 +1932,7 @@ export function builder(blackFlag) {
 +     demandThisOption: true,
 +     default: '/etc/passwd',
 +     describe: 'x marks the spot',
-+     type: 'string'
++     string: true
 +   }
 + };
 }
@@ -2049,12 +2148,12 @@ specification. Contributions of any kind welcome!
 [18]: #demandthisoptionxor
 [19]: #suboptionof
 [20]: #looseImplications
-[21]: https://yargs.js.org/docs#implies
-[22]: https://yargs.js.org/docs#conflicts
+[21]: https://yargs.js.org/docs#api-reference-impliesx-y
+[22]: https://yargs.js.org/docs#api-reference-conflictsx-y
 [23]:
   https://github.com/Xunnamius/black-flag/blob/main/docs/index/type-aliases/Configuration.md#handler
 [24]: #new-option-configuration-keys
-[25]: https://yargs.js.org/docs#demandOption
+[25]: https://yargs.js.org/docs#api-reference-demandoptionkey-msg-boolean
 [26]: https://yargs.js.org/docs#api-reference-checkfn-globaltrue
 [27]:
   https://github.com/Xunnamius/black-flag/blob/main/docs/index/type-aliases/ConfigureErrorHandlingEpilogue.md
@@ -2063,7 +2162,7 @@ specification. Contributions of any kind welcome!
 [29]:
   https://github.com/Xunnamius/black-flag/tree/main?tab=readme-ov-file#built-in-support-for-dynamic-options-
 [30]: https://github.com/Xunnamius/black-flag-demo/blob/main/commands/init.js
-[31]: #impossible-configurations
+[31]: #strange-and-impossible-configurations
 [32]: https://yargs.js.org/docs#api-reference-groupkeys-groupname
 [33]: https://github.com/Xunnamius/xunnctl?tab=readme-ov-file#xunnctl
 [34]: ./docs/functions/withUsageExtensions.md
@@ -2086,3 +2185,6 @@ specification. Contributions of any kind welcome!
 [49]: https://github.com/yargs/yargs/issues/1611
 [50]: ./docs/functions/getInvocableExtendedHandler.md
 [51]: https://github.com/yargs/yargs-parser?tab=readme-ov-file#configuration
+[52]: #vacuousimplications
+[53]: https://en.wikipedia.org/wiki/Vacuous_truth
+[54]: https://en.wikipedia.org/wiki/Consequent
