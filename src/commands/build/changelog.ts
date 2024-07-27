@@ -35,6 +35,8 @@ export type CustomCliArguments = GlobalCliArguments & {
   skipTopmatter: boolean;
   patchChangelog: boolean;
   formatChangelog: boolean;
+  onlyPatchChangelog: boolean;
+  outputUnreleased: boolean;
 };
 
 export default function command(
@@ -58,10 +60,23 @@ export default function command(
       description: 'Patch compiled output using the nearest changelog patcher file',
       default: true
     },
+    'only-patch-changelog': {
+      boolean: true,
+      description:
+        'Instead of compiling new output, only patch an existing CHANGELOG.md file',
+      default: false,
+      conflicts: 'skip-topmatter',
+      implies: { 'patch-changelog': true }
+    },
     'format-changelog': {
       boolean: true,
       description: 'Run the "format" command on compiled output',
       default: true
+    },
+    'output-unreleased': {
+      boolean: true,
+      description: 'Add all commits, including unreleased commits, to the changelog',
+      default: false
     }
   });
 
@@ -69,10 +84,17 @@ export default function command(
     builder,
     description: 'Compile a changelog from conventional commits',
     usage: withStandardUsage(
-      '$1.\n\nUse --patch-changelog and --no-patch-changelog to control CHANGELOG.md patching via the changelog.patch.js (or changelog.patch.[cm]js) file. Searching for this file will begin at the current working directory and, if not found, continue up to the project root.\n\nSee the xscripts documentation for details.'
+      '$1.\n\nUse --patch-changelog and --no-patch-changelog (or --only-patch-changelog) to control CHANGELOG.md patching via the changelog.patch.js (or changelog.patch.[cm]js) file. Searching for this file will begin at the current working directory and, if not found, continue up to the project root.\n\nSee the xscripts documentation for details.'
     ),
     handler: withStandardHandler(async function (argv) {
-      const { $0: scriptFullName, skipTopmatter, formatChangelog, patchChangelog } = argv;
+      const {
+        $0: scriptFullName,
+        skipTopmatter,
+        formatChangelog,
+        patchChangelog,
+        onlyPatchChangelog,
+        outputUnreleased
+      } = argv;
 
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
@@ -93,28 +115,31 @@ export default function command(
       const conventionalConfigPath = `${root}/conventional.config.js`;
       debug('conventionalConfigPath: %O', conventionalConfigPath);
 
-      await run('npx', [
-        'conventional-changelog',
-        '--outfile',
-        'CHANGELOG.md',
-        '--config',
-        conventionalConfigPath,
-        '--release-count',
-        '0',
-        '--skip-unstable'
-      ]);
+      if (!onlyPatchChangelog) {
+        await run('npx', [
+          'conventional-changelog',
+          '--outfile',
+          'CHANGELOG.md',
+          '--config',
+          conventionalConfigPath,
+          '--release-count',
+          '0',
+          '--skip-unstable',
+          ...(outputUnreleased ? ['--output-unreleased'] : [])
+        ]);
 
-      if (skipTopmatter) {
-        debug('skipped prepending topmatter to CHANGELOG.md');
-      } else {
-        debug('prepending topmatter to CHANGELOG.md');
+        if (skipTopmatter) {
+          debug('skipped prepending topmatter to CHANGELOG.md');
+        } else {
+          debug('prepending topmatter to CHANGELOG.md');
 
-        debug('defaultChangelogTopmatter: %O', defaultChangelogTopmatter);
+          debug('defaultChangelogTopmatter: %O', defaultChangelogTopmatter);
 
-        const contents = await readFile('CHANGELOG.md');
-        debug(`prepending changelog topmatter to file at path: %O`, 'CHANGELOG.md');
+          const contents = await readFile('CHANGELOG.md');
+          debug(`prepending changelog topmatter to file at path: %O`, 'CHANGELOG.md');
 
-        await writeFile('CHANGELOG.md', `${defaultChangelogTopmatter}\n\n${contents}`);
+          await writeFile('CHANGELOG.md', `${defaultChangelogTopmatter}\n\n${contents}`);
+        }
       }
 
       if (formatChangelog) {
