@@ -199,6 +199,13 @@ export const genericRules: NonNullable<EslintConfig['rules']> = {
       ignoreArrowShorthand: true
     }
   ],
+  // ? Static references are fine.
+  '@typescript-eslint/unbound-method': [
+    'warn',
+    {
+      ignoreStatic: true
+    }
+  ],
 
   // * unicorn
   'unicorn/no-keyword-prefix': 'warn',
