@@ -960,7 +960,10 @@ export function gitRepositoryFixture(): MockFixture {
         : context.git
             .init()
             .addConfig('user.name', 'fake-user')
-            .addConfig('user.email', 'fake@email'));
+            .addConfig('user.email', 'fake@email')
+            .addConfig('user.signingkey', '')
+            .addConfig('commit.gpgsign', 'false')
+            .addConfig('tag.gpgsign', 'false'));
     }
   };
 }
