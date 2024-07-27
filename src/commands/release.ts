@@ -54,7 +54,7 @@ export default function command({
       // TODO (need flag for updating changelog or not updating changelog that also is compat with UPDATE_CHANGELOG)
       // TODO (use changelog.patch.?(cm)js if available)
       // TODO (do codecov upload last)
-      // TODO (tests run without --no-warnings !!!)
+      // TODO (tests run WITHOUT --no-warnings !!!)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

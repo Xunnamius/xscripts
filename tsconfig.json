@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    // ? Needed to type check our various .js files
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
@@ -13,6 +14,8 @@
     "incremental": true,
     "inlineSourceMap": true,
     "isolatedModules": true,
+    // ? Tried it. Not a fan. Also conflicts with allowJs
+    "isolatedDeclarations": false,
     "lib": [
       "ESNext",
       "DOM",
