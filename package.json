@@ -245,7 +245,7 @@
     "unique-filename": "^3.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.17.0",
+    "@-xun/scripts": "^1.18.0",
     "@types/eslint": "^9.6.0",
     "@types/through2": "^2.0.41"
   },
