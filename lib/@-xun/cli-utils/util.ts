@@ -2,7 +2,7 @@
  * Upper-cases the first letter of `str`.
  */
 export function toSentenceCase(str: string) {
-  return str[0].toLocaleUpperCase() + str.slice(1);
+  return (str.at(0)?.toLocaleUpperCase() ?? '') + str.slice(1);
 }
 
 /**
@@ -27,7 +27,7 @@ export function toSpacedSentenceCase(str: string) {
 export function toFirstLowerCase(str: string) {
   const secondCharacter = str.at(1);
   return secondCharacter && secondCharacter === secondCharacter.toLocaleLowerCase()
-    ? str[0].toLocaleLowerCase() + str.slice(1)
+    ? (str.at(0)?.toLocaleLowerCase() ?? '') + str.slice(1)
     : str;
 }
 

@@ -1337,7 +1337,7 @@ function analyzeBuilderObject<
 
     hardAssert(
       conflictingNamesSet.size === 0,
-      ErrorMessage.DuplicateOptionName(getFirstValueFromSet(conflictingNamesSet))
+      ErrorMessage.DuplicateOptionName(getFirstValueFromNonEmptySet(conflictingNamesSet))
     );
 
     metadata.optionNames = metadata.optionNames.union(
@@ -1347,7 +1347,7 @@ function analyzeBuilderObject<
     // ? Keep track of the key we can reference to get this option's value
     // ? from argv. We have to do this because argv might strip out an
     // ? option's canonical name depending on yargs-parser configuration
-    metadata.optionNamesAsSeenInArgv[option] = getFirstValueFromSet(
+    metadata.optionNamesAsSeenInArgv[option] = getFirstValueFromNonEmptySet(
       allPossibleOptionNamesAndAliasesSet
     );
 
@@ -1678,6 +1678,8 @@ function superiorClone<T>(o: T): T {
   });
 }
 
-function getFirstValueFromSet(set: Set<unknown>) {
+function getFirstValueFromNonEmptySet<T extends Set<unknown>>(
+  set: T
+): Parameters<T['add']>[0] {
   return set.values().next().value;
 }
