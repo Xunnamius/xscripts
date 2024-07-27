@@ -40,6 +40,8 @@ export type CustomCliArguments = GlobalCliArguments & {
   linter: Linter[];
   scope: 'limited' | 'all';
   remarkSkipIgnored: boolean;
+  ignoreWarnings: boolean;
+  runToCompletion: boolean;
 };
 
 // TODO: (new flag: --run-to-completion for finishing all linting then error/success; also update the task and example task to use this new flag)
@@ -75,6 +77,16 @@ export default function command({
       boolean: true,
       description: 'Ignore files listed in .prettierignore when running remark linter',
       default: true
+    },
+    'run-to-completion': {
+      boolean: true,
+      description: 'Do not exit until all linters have finished running',
+      default: false
+    },
+    'ignore-warnings': {
+      boolean: true,
+      description: 'Ignore linter warnings (and tsc errors) but not errors',
+      default: false
     }
   });
 
@@ -89,6 +101,8 @@ export default function command({
       linter: linters,
       scope,
       remarkSkipIgnored: skipIgnored,
+      ignoreWarnings,
+      runToCompletion,
       hush: isHushed,
       quiet: isQuieted
     }) {
@@ -107,6 +121,8 @@ export default function command({
       debug('linters: %O', linters);
       debug('scope: %O', scope);
       debug('skipIgnored: %O', skipIgnored);
+      debug('ignoreWarnings: %O', ignoreWarnings);
+      debug('runToCompletion: %O', runToCompletion);
 
       let aborted = false;
 
@@ -133,8 +149,9 @@ export default function command({
       const linterSubprocesses: Subprocess[] = [];
 
       if (allLinters || linters.includes(Linter.Tsc)) {
-        debug('running tsc');
+        debug(ignoreWarnings ? 'running tsc (ignoring errors)' : 'running tsc');
         promisedLinters.push(
+          // ! tsc must always be the first linter in the promisedLinters array
           runLinter('npx', ['tsc', '--pretty', '--project', tsconfigFilePath])
         );
       }
@@ -147,7 +164,7 @@ export default function command({
             '--color',
             `--parser-options=project:${tsconfigFilePath}`,
             '--no-error-on-unmatched-pattern',
-            '--max-warnings=0',
+            ...(ignoreWarnings ? [] : ['--max-warnings=0']),
             ...(scope === 'all' ? ['.'] : limitedScopeDirectories)
           ])
         );
@@ -164,7 +181,7 @@ export default function command({
               'remark',
               ...(isHushed ? ['--quiet'] : []),
               '--color',
-              '--frail',
+              ...(ignoreWarnings ? [] : ['--frail']),
               '--no-stdout',
               '--silently-ignore',
               ...mdFiles
@@ -177,7 +194,22 @@ export default function command({
       }
 
       debug('waiting for linters to finish running...');
-      await Promise.all(promisedLinters);
+
+      if (runToCompletion) {
+        debug.message('linters will run to completion even if an error occurs');
+
+        const results = await Promise.allSettled(promisedLinters);
+
+        if (
+          results.some((result, index) => {
+            return result.status !== 'fulfilled' && (index !== 0 || !ignoreWarnings);
+          })
+        ) {
+          throw new CliError(ErrorMessage.LintingFailed());
+        }
+      } else {
+        await Promise.all(promisedLinters);
+      }
 
       genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
@@ -209,11 +241,19 @@ export default function command({
           }
 
           if (exitCode !== 0) {
-            aborted = true;
-            linterSubprocesses.forEach((subprocess) => subprocess.kill('SIGKILL'));
+            debug.error('a linter exited with a non-zero exit code');
+            debug.error('failing linter stdout: %O', stdout);
+            debug.error('failing linter stderr: %O', stderr);
 
-            genericLogger.newline([LogTag.IF_NOT_QUIETED]);
-            throw new CliError(ErrorMessage.LintingFailed(), { dangerouslyFatal: true });
+            if (!runToCompletion) {
+              aborted = true;
+              linterSubprocesses.forEach((subprocess) => subprocess.kill('SIGKILL'));
+
+              genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+              throw new CliError(ErrorMessage.LintingFailed(), {
+                dangerouslyFatal: true
+              });
+            }
           }
         }
       }
