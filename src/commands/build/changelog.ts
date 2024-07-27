@@ -112,10 +112,18 @@ export default function command(
         project: { root }
       } = runtimeContext;
 
+      debug('skipTopmatter: %O', skipTopmatter);
+      debug('formatChangelog: %O', formatChangelog);
+      debug('patchChangelog: %O', patchChangelog);
+      debug('onlyPatchChangelog: %O', onlyPatchChangelog);
+      debug('outputUnreleased: %O', outputUnreleased);
+
       const conventionalConfigPath = `${root}/conventional.config.js`;
       debug('conventionalConfigPath: %O', conventionalConfigPath);
 
-      if (!onlyPatchChangelog) {
+      if (onlyPatchChangelog) {
+        debug('skipped regenerating CHANGELOG.md');
+      } else {
         await run('npx', [
           'conventional-changelog',
           '--outfile',
