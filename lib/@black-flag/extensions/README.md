@@ -426,16 +426,16 @@ about its [consequent][54].
 
 This feature reduces confusion for end users. For instance, suppose we had a CLI
 build tool that accepted the arguments `‑patch` and `‑only‑patch`. `‑patch`
-instructs the tool to patch the recompiled output before committing it to disk,
+instructs the tool to patch the compiled output before committing it to disk,
 while `‑only‑patch` instructs the tool to _only_ patch the pre-existing output
-already on disk _without_ doing any recompiling. The command's options
+already on disk _without_ doing any compiling. The command's options
 configuration could look something like the following:
 
 ```jsonc
 {
   "patch": {
     "boolean": true,
-    "description": "Patch compiled output using the nearest patcher file",
+    "description": "Patch output using the nearest patcher file",
     "default": true
   },
   "only‑patch": {
