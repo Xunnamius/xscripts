@@ -56,6 +56,7 @@ export default function command({
       // TODO: if handlebar notation suffixed by \n\n, replace suffix with \n (or is this handled via prettier already?)
       // TODO: (includes the lenses: cli, next.js, react, library)
       // TODO: (launch and task examples in vscode are materialized)
+      // TODO: (can init new monorepo packages with proper setup including tsconfig files and what not)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
