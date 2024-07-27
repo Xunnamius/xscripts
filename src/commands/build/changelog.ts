@@ -24,7 +24,7 @@ import {
   type CustomCliArguments as FormatCliArguments
 } from 'universe/commands/format';
 
-import { changelogTopmatter } from 'universe/assets/config/_conventional.config.js';
+import { defaultChangelogTopmatter } from 'universe/assets/config/_conventional.config.js';
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
 import { globalPreChecks, readFile, writeFile } from 'universe/util';
@@ -109,12 +109,12 @@ export default function command(
       } else {
         debug('prepending topmatter to CHANGELOG.md');
 
-        debug('changelogTopmatter: %O', changelogTopmatter);
+        debug('defaultChangelogTopmatter: %O', defaultChangelogTopmatter);
 
         const contents = await readFile('CHANGELOG.md');
         debug(`prepending changelog topmatter to file at path: %O`, 'CHANGELOG.md');
 
-        await writeFile('CHANGELOG.md', `${changelogTopmatter}\n\n${contents}`);
+        await writeFile('CHANGELOG.md', `${defaultChangelogTopmatter}\n\n${contents}`);
       }
 
       if (formatChangelog) {

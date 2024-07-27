@@ -1,23 +1,33 @@
 {{> header}}
 
 {{#if noteGroups}}
-{{#each noteGroups}}
+  {{~#each noteGroups}}
 
-### 💥 {{title}} 💥
+    {{#if @root.isPatch~}}
+      ####
+    {{~else~}}
+      ###
+    {{~/if}} 💥 {{title}} 💥
 
-{{#each notes}}
-* {{!-- {{#if commit.scope}}**_{{commit.scope}}_:** {{/if}} --}}{{text}}
-{{/each}}
-{{/each}}
-{{/if}}
-{{#each commitGroups}}
+    {{#each notes~}}
+      * {{text}}{{#unless @last}}
+    {{/unless}}
+    {{~/each}}
+  {{~/each}}
+{{~/if}}
 
-{{#if title}}
-#### {{title}}
+{{~#each commitGroups}}
+  {{#if title}}
 
-{{/if}}
-{{#each commits}}
-{{> commit root=@root}}
-{{/each}}
+    {{#if @root.isPatch~}}
+      ####
+    {{~else~}}
+      ###
+    {{~/if}} {{title}}
 
-{{/each}}
+  {{/if}}
+  {{~#each commits}}
+    {{~> commit root=@root}}
+  {{/each}}
+{{~/each}}
+

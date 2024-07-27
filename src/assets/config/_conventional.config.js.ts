@@ -20,6 +20,15 @@ const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:conventional`
 });
 
+/**
+ * The location of the handlebars templates in relation to this file's location
+ * on disk.
+ */
+const templateDirectory = '../template/conventional-changelog';
+
+/**
+ * Characters that must never appear in a custom regular expression.
+ */
 const illegalRegExpCharacters = [
   '.',
   '*',
@@ -38,6 +47,18 @@ const illegalRegExpCharacters = [
 ];
 
 /**
+ * Matches a valid GitHub username with respect to the following:
+ *  - Avoids matching scoped package names (e.g. @xunnamius/package).
+ *  - Will match multiple usernames separated by slash (e.g. @user1/@user2).
+ */
+const usernameRegex = /\B@([\da-z](?:[\da-z]|-(?=[\da-z])){0,38})\b(?!\/(?!@))/gi;
+
+/**
+ * Used to normalize the aesthetic of revert changelog entries.
+ */
+const revertPrefixRegex = /^Revert\s+/;
+
+/**
  * What seems to be the shape of a conventional changelog configuration file
  * with some custom additions. Note that this type is a best effort and may not
  * be perfectly accurate.
@@ -47,17 +68,18 @@ export type ConventionalChangelogCliConfig = ConventionalChangelogConfigSpecOpti
     /**
      * This string is prepended to all generated `CHANGELOG.md` files.
      */
-    changelogTitle: string;
+    changelogTopmatter: string;
     /**
      * Strings that, if present in a commit message, will indicate that CI/CD
      * pipelines should not be triggered by said commit.
      */
     skipCommands: string[];
     /**
-     * Conventional Changelog Core options. Last time I scanned its source, it
-     * seemed this key was required, so it is included here for now.
-     * TODO: Verify that this key is still necessary.
+     * Conventional Changelog Core options.
      */
+    // TODO: Last time I scanned its source, it seemed this key was required, so
+    // TODO: it is included here for now.Verify that this key is still
+    // TODO: necessary.
     conventionalChangelog: ConventionalChangelogCoreOptions.Config.Object;
   };
 
@@ -70,7 +92,7 @@ export const noteTitleForBreakingChange = 'BREAKING CHANGES';
 /**
  * The preamble prefixed to any generated `CHANGELOG.md` file.
  */
-export const changelogTopmatter =
+export const defaultChangelogTopmatter =
   `# Changelog\n\n` +
   `All notable changes to this project will be documented in this auto-generated\n` +
   `file. The format is based on [Conventional Commits](https://conventionalcommits.org);\n` +
@@ -79,23 +101,17 @@ export const changelogTopmatter =
 /**
  * Strings in commit messages that, when found, are skipped.
  */
-export const skipCommands = ['[skip ci]', '[ci skip]', '[skip cd]', '[cd skip]'];
-
-/**
- * Matches a valid GitHub username with respect to the following:
- *  - Avoids matching scoped package names (e.g. @xunnamius/package).
- *  - Will match multiple usernames separated by slash (e.g. @user1/@user2).
- */
-export const usernameRegex = /\B@([\da-z](?:[\da-z]|-(?=[\da-z])){0,38})\b(?!\/(?!@))/gi;
-
-/**
- * Used to normalize the aesthetic of revert CHANGELOG entries.
- */
-export const revertPrefixRegex = /^Revert\s+/;
+export const defaultSkipCommands = [
+  '[skip ci]',
+  '[ci skip]',
+  '[skip cd]',
+  '[cd skip]'
+].map((cmd) => cmd.toLowerCase());
 
 /**
  * The character(s) used to reference issues by number on GitHub.
  */
+export const defaultIssuePrefixes = ['#'];
 
 /**
  * These are the only conventional commit types supported by xscripts-based
@@ -139,11 +155,12 @@ export const wellKnownCommitTypes: ConventionalChangelogConfigSpecOptions.Type[]
 /**
  * Handlebars template data (not processed by our custom configuration).
  */
-export const templates = {
+export const defaultTemplates = {
   commit: __read_file_sync(require.resolve(`${templateDirectory}/commit.hbs`)),
   footer: __read_file_sync(require.resolve(`${templateDirectory}/footer.hbs`)),
   header: __read_file_sync(require.resolve(`${templateDirectory}/header.hbs`)),
   template: __read_file_sync(require.resolve(`${templateDirectory}/template.hbs`)),
+  // TODO: should these be passed in the "partials" core configs?
   // ? Handlebars partials for property substitutions using commit context
   partials: {
     owner: '{{#if this.owner}}{{~this.owner}}{{else}}{{~@root.owner}}{{/if}}',
@@ -152,54 +169,6 @@ export const templates = {
       '{{#if this.repository}}{{~this.repository}}{{else}}{{~@root.repository}}{{/if}}'
   }
 };
-
-/**
- * These are the only commit types that will appear in a `CHANGELOG.md` file.
- */
-export const allowedCommitTypesInfo: ConventionalChangelogConfigSpecOptions.Type[] = [
-  { type: 'feat', section: '✨ Features', hidden: false },
-  { type: 'feature', section: '✨ Features', hidden: false },
-  { type: 'fix', section: '🪄 Fixes', hidden: false },
-  { type: 'perf', section: '⚡️ Optimizations', hidden: false },
-  { type: 'revert', section: '🔥 Reverted', hidden: false },
-  { type: 'build', section: '⚙️ Build system', hidden: false },
-  { type: 'docs', section: '📚 Documentation', hidden: true },
-  { type: 'style', section: '💎 Aesthetics', hidden: true },
-  { type: 'refactor', section: '🧙🏿 Refactored', hidden: true },
-  { type: 'test', section: '⚗️ Test system', hidden: true },
-  { type: 'ci', section: '🏭 CI/CD', hidden: true },
-  { type: 'cd', section: '🏭 CI/CD', hidden: true },
-  { type: 'chore', section: '🗄️ Miscellaneous', hidden: true }
-];
-
-/**
- * @see {@link allowedCommitTypesInfo}
- */
-export const allowedCommitTypes: ConventionalChangelogConfigSpecOptions.Type['type'][] =
-  allowedCommitTypesInfo.map(({ type }) => type);
-
-/**
- * Commits, having been grouped by type, will appear in the CHANGELOG in the
- * order they appear in this array. Types that are not listed in this array will
- * appear in input order _after_ listed types.
- */
-export const commitTypeOrder = ['feat', 'fix', 'perf', 'build', 'revert'];
-
-hardAssert(
-  commitTypeOrder.every((type) => allowedCommitTypes.includes(type)),
-  ErrorMessage.UnmatchedCommitType(undefined, 'commitTypeOrder vs allowedCommitTypes')
-);
-
-/**
- * The order commit type groups will appear in (ordered by section title);
- * derived from {@link allowedCommitTypesInfo}.
- */
-const commitSectionOrder = commitTypeOrder.map(function (type) {
-  return (
-    allowedCommitTypesInfo.find((entry) => entry.type === type)?.section ??
-    hardAssert(ErrorMessage.UnmatchedCommitType(type, 'commitTypeOrder'))
-  );
-});
 
 /**
  * This function returns an "unconventional" conventional-changelog
@@ -220,13 +189,10 @@ export function moduleExport(
     | ((config: ConventionalChangelogCliConfig) => ConventionalChangelogCliConfig)
     | Partial<ConventionalChangelogCliConfig> = {}
 ) {
-  // ? Single source of truth for shared values
-  let internalIssuePrefixes: string[] = [...issuePrefixes];
-
   const intermediateConfig: ConventionalChangelogCliConfig = {
     // * Custom configuration keys * \\
-    changelogTitle: changelogTopmatter,
-    skipCommands: skipCommands.map((cmd) => cmd.toLowerCase()),
+    changelogTopmatter: defaultChangelogTopmatter,
+    skipCommands: defaultSkipCommands,
 
     // * Core configuration keys * \\
     // ? conventionalChangelog and recommendedBumpOpts keys are redefined below
@@ -246,12 +212,7 @@ export function moduleExport(
       // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#warn
       // eslint-disable-next-line no-console
       warn: console.warn.bind(console),
-      get issuePrefixes() {
-        return internalIssuePrefixes;
-      },
-      set issuePrefixes(v) {
-        internalIssuePrefixes = v;
-      }
+      issuePrefixes: defaultIssuePrefixes
     },
 
     // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-writer#options
@@ -290,9 +251,9 @@ export function moduleExport(
         debug_(`decision: ${decision ? 'NEW block' : 'same block'}`);
         return decision;
       },
-      mainTemplate: templates.template,
-      // * headerPartial and commitPartial sub-keys are defined in finish()
-      footerPartial: templates.footer,
+      mainTemplate: defaultTemplates.template,
+      // * headerPartial and commitPartial sub-keys are defined below
+      footerPartial: defaultTemplates.footer,
       groupBy: 'type',
       commitsSort: ['scope', 'subject'],
       noteGroupsSort: 'title',
@@ -311,13 +272,12 @@ export function moduleExport(
         // ? Scope should always be lowercase (or undefined)
         commit.scope = commit.scope?.toLowerCase();
 
-        let discard = true;
+        let discard = true as boolean;
         const issues: string[] = [];
         const typeKey = (commit.revert ? 'revert' : (commit.type ?? '')).toLowerCase();
 
-        const typeEntry = allowedCommitTypesInfo.find(
-          (entry) =>
-            entry.type === typeKey && (!entry.scope || entry.scope === commit.scope)
+        const typeEntry = finalConfig.types?.find(
+          ({ type, scope }) => type === typeKey && (!scope || scope === commit.scope)
         );
 
         const skipCmdEvalTarget = `${commit.subject ?? ''}${
@@ -335,27 +295,26 @@ export function moduleExport(
 
         addBangNotes(commit);
 
-        // ? Otherwise, never ignore breaking changes. Additionally, make all scopes
-        // ? bold. For multi-line notes, make the first line bold and each
-        // ? successive line indented with two spaces. Scope-less subjects are made
-        // ? sentence case.
+        // ? Otherwise, never ignore breaking changes. Additionally, make all
+        // ? scopes bold. For multi-line notes, collapse them down into one
+        // ? line.
         commit.notes.forEach((note) => {
           if (note.text) {
             debug_('saw BC notes for this commit; NOT discarding...');
 
-            const [firstLine, ...remainder] = note.text.trim().split('\n');
-            const firstLineSentenceCase = toSentenceCase(firstLine);
+            const paragraphs = note.text
+              .trim()
+              .split('\n\n')
+              .map((paragraph) => toSentenceCase(paragraph.replace('\n', ' ')));
 
             // ? Never discard breaking changes
             discard = false;
             note.title = noteTitleForBreakingChange;
-            note.text = firstLineSentenceCase + remainder.join(' ') + '\n';
+            note.text = paragraphs.join('\n\n') + '\n';
           }
         });
 
         // ? Discard entries of unknown or hidden types if discard === true
-        // ! TypeScript incorrectly believes discard can never be false...
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (discard && (typeEntry === undefined || typeEntry.hidden)) {
           debug_('decision: commit discarded');
           return false;
@@ -440,23 +399,16 @@ export function moduleExport(
     // * Spec-compliant configuration keys * \\
     // ? See: https://github.com/conventional-changelog/conventional-changelog-config-spec/blob/master/versions/2.1.0/README.md
 
-    // ? Commits are grouped by section; new types can alias existing types by
-    // ? matching sections:
-    // prettier-ignore
-    types: allowedCommitTypesInfo,
+    types: wellKnownCommitTypes,
     commitUrlFormat: '{{host}}/{{owner}}/{{repository}}/commit/{{hash}}',
     compareUrlFormat:
       '{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}',
     issueUrlFormat: '{{host}}/{{owner}}/{{repository}}/issues/{{id}}',
     userUrlFormat: '{{host}}/{{user}}',
-    get issuePrefixes() {
-      return internalIssuePrefixes;
-    },
-    set issuePrefixes(v) {
-      internalIssuePrefixes = v;
-    }
+    issuePrefixes: defaultIssuePrefixes
   };
 
+  // TODO: is this still necessary?
   intermediateConfig.conventionalChangelog = {
     parserOpts: intermediateConfig.parserOpts,
     writerOpts: intermediateConfig.writerOpts
@@ -512,11 +464,13 @@ export function moduleExport(
       ? configOverrides(intermediateConfig)
       : deepMerge(intermediateConfig, configOverrides, mergeCustomizer);
 
+  const commitSectionOrder = finalConfig.types?.map(({ section }) => section) ?? [];
+
   if (finalConfig.issuePrefixes) {
     debug('validating finalConfig.issuePrefixes');
     hardAssert(
       illegalRegExpCharacters.every(
-        (char) => !finalConfig.issuePrefixes!.join('').includes(char)
+        (char) => !finalConfig.issuePrefixes?.join('').includes(char)
       ),
       ErrorMessage.IssuePrefixContainsIllegalCharacters()
     );
@@ -526,13 +480,16 @@ export function moduleExport(
     debug('finalizing writerOpts');
 
     if (!finalConfig.writerOpts.headerPartial && finalConfig.compareUrlFormat) {
-      finalConfig.writerOpts.headerPartial = interpolateTemplate(templates.header, {
-        compareUrlFormat: interpolateTemplate(finalConfig.compareUrlFormat, {
-          host: templates.partials.host,
-          owner: templates.partials.owner,
-          repository: templates.partials.repository
-        })
-      });
+      finalConfig.writerOpts.headerPartial = interpolateTemplate(
+        defaultTemplates.header,
+        {
+          compareUrlFormat: interpolateTemplate(finalConfig.compareUrlFormat, {
+            host: defaultTemplates.partials.host,
+            owner: defaultTemplates.partials.owner,
+            repository: defaultTemplates.partials.repository
+          })
+        }
+      );
     }
 
     if (
@@ -540,20 +497,23 @@ export function moduleExport(
       finalConfig.commitUrlFormat &&
       finalConfig.issueUrlFormat
     ) {
-      finalConfig.writerOpts.commitPartial = interpolateTemplate(templates.commit, {
-        commitUrlFormat: interpolateTemplate(finalConfig.commitUrlFormat, {
-          host: templates.partials.host,
-          owner: templates.partials.owner,
-          repository: templates.partials.repository
-        }),
-        issueUrlFormat: interpolateTemplate(finalConfig.issueUrlFormat, {
-          host: templates.partials.host,
-          owner: templates.partials.owner,
-          repository: templates.partials.repository,
-          id: '{{this.issue}}',
-          prefix: '{{this.prefix}}'
-        })
-      });
+      finalConfig.writerOpts.commitPartial = interpolateTemplate(
+        defaultTemplates.commit,
+        {
+          commitUrlFormat: interpolateTemplate(finalConfig.commitUrlFormat, {
+            host: defaultTemplates.partials.host,
+            owner: defaultTemplates.partials.owner,
+            repository: defaultTemplates.partials.repository
+          }),
+          issueUrlFormat: interpolateTemplate(finalConfig.issueUrlFormat, {
+            host: defaultTemplates.partials.host,
+            owner: defaultTemplates.partials.owner,
+            repository: defaultTemplates.partials.repository,
+            id: '{{this.issue}}',
+            prefix: '{{this.prefix}}'
+          })
+        }
+      );
     }
   }
 
