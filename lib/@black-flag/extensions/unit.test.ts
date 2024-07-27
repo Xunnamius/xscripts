@@ -946,6 +946,146 @@ describe('::withBuilderExtensions', () => {
       }
     });
 
+    it('does not throw when a non-array boolean-type arg with a false value has a conflicting implication', async () => {
+      expect.hasAssertions();
+
+      {
+        const runner = makeMockBuilderRunner({
+          customHandler,
+          customBuilder: {
+            x: { boolean: true, implies: { y: true } },
+            y: {}
+          }
+        });
+
+        await runner({ x: false, y: false });
+        expect(getArgv()).toStrictEqual({ x: false, y: false });
+
+        await runner({ x: false, y: true });
+        expect(getArgv()).toStrictEqual({ x: false, y: true });
+
+        await runner({ x: false, y: 'hello' });
+        expect(getArgv()).toStrictEqual({ x: true, y: 'hello' });
+      }
+
+      {
+        const runner = makeMockBuilderRunner({
+          customHandler,
+          customBuilder: {
+            x: { type: 'boolean', implies: { y: true } },
+            y: {}
+          }
+        });
+
+        await runner({ x: false, y: false });
+        expect(getArgv()).toStrictEqual({ x: false, y: false });
+
+        await runner({ x: false, y: true });
+        expect(getArgv()).toStrictEqual({ x: false, y: true });
+
+        await runner({ x: false, y: 'hello' });
+        expect(getArgv()).toStrictEqual({ x: true, y: 'hello' });
+      }
+
+      {
+        const runner = makeMockBuilderRunner({
+          customHandler,
+          customBuilder: {
+            x: { array: true, boolean: true, implies: { y: true } },
+            y: {}
+          }
+        });
+
+        const { handlerResult } = await runner({ x: [false], y: false });
+
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.ImpliesViolation('x', [['y', false]])
+        });
+      }
+
+      {
+        const runner = makeMockBuilderRunner({
+          customHandler,
+          customBuilder: {
+            x: { number: true, implies: { y: true } },
+            y: {}
+          }
+        });
+
+        const { handlerResult } = await runner({ x: 0, y: false });
+
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.ImpliesViolation('x', [['y', false]])
+        });
+      }
+    });
+
+    it('throws when a non-array boolean-type arg with a false value has a conflicting implication and "vacuousImplications" is enabled', async () => {
+      expect.hasAssertions();
+
+      {
+        const runner = makeMockBuilderRunner({
+          customHandler,
+          customBuilder: {
+            x: { boolean: true, implies: { y: true }, vacuousImplications: true },
+            y: {}
+          }
+        });
+
+        {
+          const { handlerResult } = await runner({ x: false, y: false });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ImpliesViolation('x', [['y', false]])
+          });
+        }
+
+        {
+          await runner({ x: false, y: true });
+          expect(getArgv()).toStrictEqual({ x: false, y: true });
+        }
+
+        {
+          const { handlerResult } = await runner({ x: true, y: 'hello' });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ImpliesViolation('x', [['y', 'hello']])
+          });
+        }
+      }
+
+      {
+        const runner = makeMockBuilderRunner({
+          customHandler,
+          customBuilder: {
+            x: { type: 'boolean', implies: { y: true } },
+            y: {}
+          }
+        });
+
+        {
+          const { handlerResult } = await runner({ x: false, y: false });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ImpliesViolation('x', [['y', false]])
+          });
+        }
+
+        {
+          await runner({ x: false, y: true });
+          expect(getArgv()).toStrictEqual({ x: false, y: true });
+        }
+
+        {
+          const { handlerResult } = await runner({ x: true, y: 'hello' });
+
+          expect(handlerResult).toMatchObject({
+            message: ErrorMessage.ImpliesViolation('x', [['y', 'hello']])
+          });
+        }
+      }
+    });
+
     it('[readme #2] override configured defaults', async () => {
       expect.hasAssertions();
 
