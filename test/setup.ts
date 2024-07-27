@@ -736,8 +736,7 @@ export function npmCopySelfFixture(): MockFixture {
     setup: async (context) => {
       const root = resolvePath(__dirname, '..');
 
-      // @ts-expect-error: CJS<=>ESM dark magic (may not be working actually!)
-      const { files: patterns } = await (await import('package')).default;
+      const { files: patterns } = (await import('package')).default;
 
       const sourcePaths = patterns.flatMap((p: string) =>
         glob.sync(p, { cwd: root, root })
