@@ -138,7 +138,6 @@ export const defaultIssuePrefixes = ['#'];
  */
 export const wellKnownCommitTypes: ConventionalChangelogConfigSpecOptions.Type[] = [
   { type: 'feat', section: '✨ Features', hidden: false },
-  { type: 'feature', section: '✨ Features', hidden: false },
   { type: 'fix', section: '🪄 Fixes', hidden: false },
   { type: 'perf', section: '⚡️ Optimizations', hidden: false },
   { type: 'build', section: '⚙️ Build system', hidden: false },
