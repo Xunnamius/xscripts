@@ -70,10 +70,11 @@ export type ConventionalChangelogCliConfig = ConventionalChangelogConfigSpecOpti
      */
     changelogTopmatter: string;
     /**
-     * Strings that, if present in a commit message, will indicate that CI/CD
-     * pipelines should not be triggered by said commit.
+     * Strings that will be removed from the end of each commit message when
+     * they are encountered. These are the CI/CD commands recognized by
+     * `@-xun/cicd-utils` and `@-xun/pipeline`.
      */
-    skipCommands: string[];
+    xpipelineCommands: string[];
     /**
      * Conventional Changelog Core options.
      */
@@ -99,9 +100,11 @@ export const defaultChangelogTopmatter =
   `this project adheres to [Semantic Versioning](https://semver.org).`;
 
 /**
- * Strings in commit messages that, when found, are skipped.
+ * These are xpipeline commands that may appear at the end of commit subjects.
+ * They should not be printed to the changelog.
  */
-export const defaultSkipCommands = [
+// TODO: import these from @-xun/pipeline instead
+export const wellKnownXpipelineCommands = [
   '[skip ci]',
   '[ci skip]',
   '[skip cd]',
@@ -135,6 +138,9 @@ export const defaultIssuePrefixes = ['#'];
  * commit types" that this type will be merged on top of; the implication being:
  * not overwriting an internal type's configuration can lead to that type (feat,
  * fix, ci) being included even if it is not present in the below array.
+ *
+ * Valid commit types are alphanumeric and may contain an underscore (_) or dash
+ * (-). Using characters other than these will lead to undefined behavior.
  */
 export const wellKnownCommitTypes: ConventionalChangelogConfigSpecOptions.Type[] = [
   { type: 'feat', section: '✨ Features', hidden: false },
@@ -188,10 +194,13 @@ export function moduleExport(
     | ((config: ConventionalChangelogCliConfig) => ConventionalChangelogCliConfig)
     | Partial<ConventionalChangelogCliConfig> = {}
 ) {
+  // ? Later on we'll be keep'n reverter commits but discarding reverted commits
+  const revertedCommitHashesSet = new Set<string>();
+
   const intermediateConfig: ConventionalChangelogCliConfig = {
     // * Custom configuration keys * \\
     changelogTopmatter: defaultChangelogTopmatter,
-    skipCommands: defaultSkipCommands,
+    xpipelineCommands: wellKnownXpipelineCommands,
 
     // * Core configuration keys * \\
     // ? conventionalChangelog and recommendedBumpOpts keys are redefined below
@@ -205,7 +214,7 @@ export function moduleExport(
       headerCorrespondence: ['type', 'scope', 'subject'],
       mergePattern: /^Merge pull request #(\d+) from (.*)$/,
       mergeCorrespondence: ['id', 'source'],
-      revertPattern: /^(?:revert|revert:)\s"?([\S\s]+?)"?\s*this reverts commit (\w*)\./i,
+      revertPattern: /^revert:?\s"?([\S\s]*?)"?\s*this reverts commit (\w*)\.?/i,
       revertCorrespondence: ['header', 'hash'],
       noteKeywords: ['BREAKING CHANGE', noteTitleForBreakingChange, 'BREAKING'],
       // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#warn
@@ -256,6 +265,10 @@ export function moduleExport(
       groupBy: 'type',
       commitsSort: ['scope', 'subject'],
       noteGroupsSort: 'title',
+      // ! Currently, the transformer used to filter out revert commits expects
+      // ! commits to arrive in chronological order. If this is somehow not the
+      // ! case, then invert this value. This should never be necessary.
+      reverse: false,
       // ? Commit message groupings (e.g. Features) are sorted by their
       // ? importance. Unlike the original version, this is a stable sort algo!
       // ? See: https://v8.dev/features/stable-sort
@@ -264,6 +277,8 @@ export function moduleExport(
         const b = commitSectionOrder.indexOf(groupB.title || '');
         return a === -1 || b === -1 ? b - a : a - b;
       },
+      // ? We'll handle ignoring reverts on our own
+      ignoreReverted: false,
       transform(commit, context) {
         const debug_ = debug.extend('writerOpts:transform');
         debug_('pre-transform commit: %O', commit);
@@ -279,27 +294,63 @@ export function moduleExport(
           ({ type, scope }) => type === typeKey && (!scope || scope === commit.scope)
         );
 
-        const skipCmdEvalTarget = `${commit.subject ?? ''}${
-          commit.header ?? ''
-        }`.toLowerCase();
+        const commandStringSubjectMatch = commit.subject?.match(
+          commandStringParserRegexp
+        );
+        const commandStringHeaderMatch = commit.header?.match(commandStringParserRegexp);
 
-        // ? Ignore any commits with skip commands in them (including BCs)
-        if (
-          intermediateConfig.skipCommands.some((cmd) => skipCmdEvalTarget.includes(cmd))
-        ) {
-          debug_('saw skip command in commit message; discarding immediately');
-          debug_('decision: commit discarded');
-          return false;
+        // ? Delete xpipeline command suffixes from the subjects of commits
+        if (commandStringSubjectMatch?.[2]) {
+          const [, subject, commands] = commandStringSubjectMatch;
+          debug_(
+            'updated commit subject; removed xpipeline command string: %O',
+            commands
+          );
+
+          commit.subject = subject;
+        }
+
+        // ? Delete xpipeline command suffixes from the headers of commits
+        if (commandStringHeaderMatch?.[2]) {
+          const [, header, commands] = commandStringHeaderMatch;
+          debug_('updated commit header; removed xpipeline command string: %O', commands);
+
+          commit.header = header;
+        }
+
+        // ? Ignore any commits that have been reverted...
+        if (commit.hash) {
+          // ? ... but keep reverter commits...
+          if (revertedCommitHashesSet.has(commit.hash)) {
+            debug_('decision: commit discarded (reverted)');
+            return false;
+          }
+
+          if (commit.revert) {
+            // ? (there may be duplicate headers so ignore them here)
+            if (commit.revert.hash) {
+              revertedCommitHashesSet.add(commit.revert.hash);
+            }
+
+            // ? ... unless the reverter is reverting something irrelevant
+            if (
+              !commit.revert.header ||
+              isHeaderOfIrrelevantCommit(commit.revert.header)
+            ) {
+              debug_('decision: commit discarded (probably irrelevant reverter)');
+              return false;
+            }
+          }
         }
 
         addBangNotes(commit);
 
-        // ? Otherwise, never ignore breaking changes. Additionally, make all
-        // ? scopes bold. For multi-line notes, collapse them down into one
-        // ? line.
+        // ? NEVER ignore non-reverted breaking changes. For multi-line notes,
+        // ? collapse them down into one line. Also note that BC notes are
+        // ? always sentence-cased.
         commit.notes.forEach((note) => {
           if (note.text) {
-            debug_('saw BC notes for this commit; NOT discarding...');
+            debug_('saw BC notes for this commit; will likely keep commit');
 
             const paragraphs = note.text
               .trim()
@@ -315,7 +366,10 @@ export function moduleExport(
 
         // ? Discard entries of unknown or hidden types if discard === true
         if (discard && (typeEntry === undefined || typeEntry.hidden)) {
-          debug_('decision: commit discarded');
+          debug_(
+            `decision: commit discarded (${typeEntry === undefined ? 'unknown' : 'hidden'} type)`
+          );
+
           return false;
         } else debug_('decision: commit NOT discarded');
 
@@ -463,7 +517,33 @@ export function moduleExport(
       ? configOverrides(intermediateConfig)
       : deepMerge(intermediateConfig, configOverrides, mergeCustomizer);
 
-  const commitSectionOrder = finalConfig.types?.map(({ section }) => section) ?? [];
+  const commitSectionOrder = Array.from(
+    new Set(finalConfig.types?.map(({ section }) => section) ?? [])
+  );
+
+  const nonHiddenKnownTypesPartialRegexp = finalConfig.types
+    ?.filter(({ hidden }) => !hidden)
+    .map(({ type }) => type)
+    .join('|');
+
+  const relevantHeaderRegexp = new RegExp(
+    `(^(${nonHiddenKnownTypesPartialRegexp ?? 'feat|fix'})\\W)|(^[^!(:]*(\\([^)]*\\))?!:)`,
+    'i'
+  );
+
+  const commandStringPartialRegexp = finalConfig.xpipelineCommands
+    // ? Escape all RegExp characters (taken from MDN)
+    .map((cmd) => cmd.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`))
+    .join(String.raw`\s*|\s*`);
+
+  const commandStringParserRegexp = new RegExp(
+    `^(.*?)\\s*?((?:${commandStringPartialRegexp})+)$`,
+    'i'
+  );
+
+  debug('commitSectionOrder: %O', commitSectionOrder);
+  debug('relevantHeaderRegexp: %O', relevantHeaderRegexp);
+  debug('commandStringParserRegex: %O', commandStringParserRegexp);
 
   if (finalConfig.issuePrefixes) {
     debug('validating finalConfig.issuePrefixes');
@@ -534,6 +614,13 @@ export function moduleExport(
         notes.push({ text: noteText, title: noteTitleForBreakingChange });
       }
     }
+  }
+
+  /**
+   * Returns `true` if `header` describes an unremarkable commit.
+   */
+  function isHeaderOfIrrelevantCommit(header: string) {
+    return !relevantHeaderRegexp.test(header);
   }
 }
 

@@ -38,7 +38,7 @@ const commitTypeSections: Record<
 
 // TODO: need to do monorepo tests too
 
-it('matches changelog snapshot and ignores string case when there is a semver tag in the repo', async () => {
+it('matches changelog snapshot when there are semver tags in the repo', async () => {
   expect.hasAssertions();
 
   await withMockedFixtureWrapper(
@@ -53,7 +53,7 @@ it('matches changelog snapshot and ignores string case when there is a semver ta
   );
 });
 
-it('matches changelog snapshot and ignores string case when there are no semver tags in the repo', async () => {
+it('matches changelog snapshot when there are no semver tags in the repo', async () => {
   expect.hasAssertions();
 
   await withMockedFixtureWrapper(
@@ -292,6 +292,47 @@ it('handles aliased types with the same section name', async () => {
   );
 });
 
+it('recognizes scope setting with multiple matching types in types configuration', async () => {
+  expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        const regexp = /### Dependencies\n+\* \*\*deps:\*\* upgrade example from 1 to 2/;
+
+        {
+          const config = moduleExport((config) => ({
+            ...config,
+            types: [
+              { type: 'chore', scope: 'deps', section: 'Dependencies', hidden: false },
+              ...(config.types ?? [])
+            ]
+          }));
+
+          const changelog = await runConventionalChangelog(config);
+          expect(changelog).toMatch(regexp);
+          expect(changelog).not.toInclude('release 0.0.0');
+        }
+
+        {
+          const config = moduleExport((config) => ({
+            ...config,
+            types: [
+              { type: 'chore', scope: 'reps', section: 'Dependencies', hidden: false },
+              ...(config.types ?? [])
+            ]
+          }));
+
+          const changelog = await runConventionalChangelog(config);
+          expect(changelog).not.toMatch(regexp);
+          expect(changelog).not.toInclude('release 0.0.0');
+        }
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
+});
+
 it('indents majors with h2, minors with h3, and adjusts section heading level as required', async () => {
   expect.hasAssertions();
 
@@ -309,24 +350,205 @@ it('indents majors with h2, minors with h3, and adjusts section heading level as
   );
 });
 
-it('recognizes scope setting in types configuration', async () => {
-  expect.hasAssertions();
-});
-
 it('makes bold, lowercases, and appends colon for scope strings in non-breaking commits', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        const config = moduleExport();
+        const changelog = await runConventionalChangelog(config);
+        expect(changelog).toInclude('\n* **ngoptions:** make it faster ([X]');
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
 });
 
 it('removes scope strings in and capitalizes first letter of breaking commits', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        const config = moduleExport();
+        const changelog = await runConventionalChangelog(config, { releaseCount: 2 });
+        expect(changelog).toInclude('\n* This completely changes the API\n');
+      }
+    },
+    generatePatchesForEnvironment9()
+  );
 });
 
 it('capitalizes commit subject if no scope present', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        const config = moduleExport();
+        const changelog = await runConventionalChangelog(config);
+        expect(changelog).toInclude('\n* Amazing new module ([X]');
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
 });
 
-it('does not list commits that have been reverted by revert commits', async () => {
+it('discards commits that have been reverted', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test(context) {
+        const { git } = context;
+        await createBasicCommit('feat: this commit is gonna get reverted!', context);
+
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config);
+          expect(changelog).not.toInclude('*"feat: this commit is gonna get reverted!"*');
+          expect(changelog).toInclude('* This commit is gonna get reverted!');
+        }
+
+        await git.revert('HEAD');
+
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config);
+          expect(changelog).toInclude('*"feat: this commit is gonna get reverted!"*');
+          expect(changelog).not.toInclude('* This commit is gonna get reverted!');
+        }
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
+});
+
+it('discards commits that have been reverted even if they contain breaking changes', async () => {
+  expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test(context) {
+        const { git } = context;
+        await createBasicCommit(
+          'chore!: this commit is gonna get reverted!\n\nBREAKING: A breaking change.',
+          context
+        );
+
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config);
+
+          expect(changelog).not.toInclude('*"feat: this commit is gonna get reverted!"*');
+          expect(changelog).toInclude('* A breaking change.');
+          expect(changelog).toInclude('* This commit is gonna get reverted!');
+        }
+
+        await git.revert('HEAD');
+
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config);
+
+          expect(changelog).toInclude('*"chore!: this commit is gonna get reverted!"*');
+          expect(changelog).not.toInclude('* A breaking change.');
+          expect(changelog).not.toInclude('* This commit is gonna get reverted!');
+        }
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
+});
+
+it('discards revert commits that seem to target unknown/hidden non-breaking commits', async () => {
+  expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test(context) {
+        const { git } = context;
+
+        await createBasicCommit('feat: this commit is gonna get reverted 1', context);
+        await git.revert('HEAD');
+
+        await createBasicCommit('feat!: this commit is gonna get reverted 2', context);
+        await git.revert('HEAD');
+
+        await createBasicCommit(
+          'feat(scope): this commit is gonna get reverted 3',
+          context
+        );
+
+        await git.revert('HEAD');
+
+        await createBasicCommit(
+          'feat(scope)!: this commit is gonna get reverted 4',
+          context
+        );
+
+        await git.revert('HEAD');
+
+        await createBasicCommit('chore: this commit is gonna get reverted 5', context);
+        await git.revert('HEAD');
+
+        await createBasicCommit('chore!: this commit is gonna get reverted 6', context);
+        await git.revert('HEAD');
+
+        await createBasicCommit(
+          'chore(scope): this commit is gonna get reverted 7',
+          context
+        );
+
+        await git.revert('HEAD');
+
+        await createBasicCommit(
+          'chore(scope)!: this commit is gonna get reverted 8',
+          context
+        );
+
+        await git.revert('HEAD');
+
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config);
+
+          expect(changelog).toInclude('*"feat: this commit is gonna get reverted 1"*');
+          expect(changelog).toInclude('*"feat!: this commit is gonna get reverted 2"*');
+
+          expect(changelog).toInclude(
+            '*"feat(scope): this commit is gonna get reverted 3"*'
+          );
+
+          expect(changelog).toInclude(
+            '*"feat(scope)!: this commit is gonna get reverted 4"*'
+          );
+
+          expect(changelog).toInclude('*"chore!: this commit is gonna get reverted 6"*');
+
+          expect(changelog).toInclude(
+            '*"chore(scope)!: this commit is gonna get reverted 8"*'
+          );
+
+          expect(changelog).not.toInclude(
+            '*"chore: this commit is gonna get reverted 5"*'
+          );
+
+          expect(changelog).not.toInclude(
+            '*"chore(scope): this commit is gonna get reverted 7"*'
+          );
+
+          expect(changelog).not.toInclude('* This commit is gonna get reverted');
+
+          expect(changelog).not.toInclude(
+            '* **scope**: this commit is gonna get reverted'
+          );
+        }
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
 });
 
 it('populates breaking change notes if "!" is present', async () => {
@@ -348,7 +570,7 @@ it('does not list breaking change twice if "!" is used', async () => {
   );
 });
 
-it('omits optional "!" in breaking commit', async () => {
+it('omits optional "!" in breaking commit lines', async () => {
   expect.hasAssertions();
 });
 
@@ -413,11 +635,7 @@ it('falls back to the closest package.json when not providing a location for a p
   expect.hasAssertions();
 });
 
-it('discards all commits with skip commands in the subject', async () => {
-  expect.hasAssertions();
-});
-
-it('does not discard non-skip-command commit if it is a breaking change', async () => {
+it('removes xpipeline command suffixes from commit subjects', async () => {
   expect.hasAssertions();
 });
 
@@ -541,6 +759,10 @@ async function runConventionalChangelog(
 
   return changelog;
 }
+
+// * Note that any commits below with breaking changes that do not also include
+// * "!" after the scope are not technically xpipeline compliant. However, we
+// * still test these types of commits here for posterity.
 
 function generatePatchesForEnvironment1(): TestEnvironmentPatch[] {
   return [
@@ -718,7 +940,7 @@ function generatePatchesForEnvironment11(): TestEnvironmentPatch[] {
       messages: [
         'refactor(code): big bigly big change skip1! [skip ci]\n\nBREAKING CHANGE: the change is bigly luxurious 5-stars everybody is saying',
         'feat: something else skip2 [cd skip]',
-        'fix: something other skip3 [CI SKIP]',
+        'fix: something other skip3 [CI SKIP][skip ci][sKiP cd][cd skip]',
         'revert: "build(bore): include1 [skipcd]'
       ],
       async callback({ context: { git, fs } }) {
