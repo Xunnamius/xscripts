@@ -321,8 +321,8 @@ example:
 }
 ```
 
-Also note the [special behavior][52] of `implies` specifically for non-array
-[`boolean`][25]-type options.
+Also note the [special behavior][52] of `implies` specifically in the case where
+an argument value in `argv` is strictly equal to `false`.
 
 For describing much more intricate implications between various arguments and
 their values, see [`subOptionOf`][19].
@@ -391,10 +391,9 @@ match the specified argument-value pairs respectively (similar to
 
 ###### `vacuousImplications`
 
-By default, in the special case where an option is configured as both (1) a
-non-array [`boolean`][25] type and (2) has an [`implies`][14] configuration, the
-implication will only take effect if the option/argument is given in `argv` with
-a `true` value. For example:
+By default, in the special case where an option is configured with
+[`implies`][14], the implication will only take effect if the option/argument is
+given in `argv` with a non-`false` value. For example:
 
 ```jsonc
 {
@@ -403,8 +402,8 @@ a `true` value. For example:
     "implies": { "y": true }
   },
   "y": {
-    "boolean": true,
     // This example works regardless of the type of y!
+    "boolean": true,
     //"array": true,
     //"count": true,
     //"number": true,
@@ -426,10 +425,10 @@ about its [consequent][54].
 
 This feature reduces confusion for end users. For instance, suppose we had a CLI
 build tool that accepted the arguments `‑patch` and `‑only‑patch`. `‑patch`
-instructs the tool to patch the compiled output before committing it to disk,
-while `‑only‑patch` instructs the tool to _only_ patch the pre-existing output
-already on disk _without_ doing any compiling. The command's options
-configuration could look something like the following:
+instructs the tool to patch any output before committing it to disk while
+`‑only‑patch` instructs the tool to _only_ patch pre-existing output already on
+disk. The command's options configuration could look something like the
+following:
 
 ```jsonc
 {
@@ -440,7 +439,7 @@ configuration could look something like the following:
   },
   "only‑patch": {
     "boolean": true,
-    "description": "Instead of compiling new output, only patch existing output",
+    "description": "Instead of building new output, only patch existing output",
     "default": false,
     "implies": { "patch": true }
   }
@@ -449,7 +448,7 @@ configuration could look something like the following:
 
 The following are rightly allowed by BFE (synonymous commands are grouped):
 
-_Is compiling and patching:_
+_Is building and patching:_
 
 - `build-tool`
 - `build-tool ‑patch`
@@ -457,13 +456,13 @@ _Is compiling and patching:_
 - `build-tool ‑only‑patch=false`
 - `build-tool ‑no‑only‑patch`
 
-_Is compiling and not patching:_
+_Is building and not patching:_
 
 - `build-tool ‑patch=false`
 - `build-tool ‑no‑patch`
 - _`build-tool ‑no‑patch ‑no‑only‑patch`_ (this is the interesting one)
 
-_Is patching and not compiling:_
+_Is patching and not building:_
 
 - `build-tool ‑only‑patch`
 - `build-tool ‑only‑patch=true`
@@ -483,9 +482,9 @@ command, while redundant, technically makes sense; it is logically
 indistinguishable from `build-tool ‑no‑only-patch`, which does not throw an
 error.
 
-To remedy this, BFE simply ignores the `implies` configurations of non-array
-[`boolean`][25]-type options when their value is `false` in `argv`. To disable
-this behavior for a specific option, set `vacuousImplications` to `true` (it is
+To remedy this, BFE simply ignores the `implies` configurations of options when
+their argument value is strictly equal to `false` in `argv`. To disable this
+behavior for a specific option, set `vacuousImplications` to `true` (it is
 `false` by default) or consider using
 [`requires`][10]/[`conflicts`][11]/[`subOptionOf`][19] over `implies`.
 
