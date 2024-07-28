@@ -74,7 +74,7 @@ it('appends commit short-hash and repo link to the end of commits of non-hidden 
   await withMockedFixtureWrapper(
     {
       async test({ git }) {
-        const config = moduleExport({});
+        const config = moduleExport();
 
         const changelog = await runConventionalChangelog(config, {
           makeReplacements: false
@@ -145,18 +145,37 @@ it('translates each semver tag into a super-section link suffixed with commit da
   await withMockedFixtureWrapper(
     {
       async test({ git }) {
-        const config = moduleExport({});
-        const changelog = await runConventionalChangelog(config);
+        const config = moduleExport();
+        const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
+        const tags = await git.tags();
 
-        // TODO: each semver tag should also be a link too
+        tags.all.forEach((tag) => {
+          expect(changelog).toInclude(
+            `[${tag.slice(1)}](https://github.com/fake-user/fake-repo/compare/`
+          );
+        });
       }
     },
-    generatePatchesForEnvironment1()
+    generatePatchesForEnvironment11()
   );
 });
 
 it('adds a data image to external repository links', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        const config = moduleExport();
+        const changelog = await runConventionalChangelog(config);
+
+        expect(changelog).toMatch(
+          /\[#358<img .*? \/>]\(https:\/\/github\.com\/other-fake-user\/other-fake-repo\/issues\/358\)/
+        );
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
 });
 
 it('groups types sections by default order', async () => {
@@ -222,14 +241,72 @@ it('can overwrite types using object override form', async () => {
 
 it('can overwrite types using callback override form', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test(context) {
+        const config = moduleExport((config) => ({
+          ...config,
+          types: [{ type: 'mytype', section: 'FAKE TYPE SECTION', hidden: false }]
+        }));
+
+        await createBasicCommit('mytype: new type from Xunnamius', context);
+        await createBasicCommit('mytype(some-scope): new type from Xunnamius', context);
+        const changelog = await runConventionalChangelog(config);
+
+        expect(changelog).toMatch(
+          /# FAKE TYPE SECTION\n+\* New type from Xunnamius \S+\n\* \*\*some-scope:\*\* new type from Xunnamius \S+\n/
+        );
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
 });
 
 it('handles aliased types with the same section name', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test(context) {
+        const config = moduleExport((config) => ({
+          ...config,
+          types: [
+            ...(config.types ?? []),
+            { type: 'mytype', section: wellKnownCommitTypes[0].section, hidden: false }
+          ]
+        }));
+
+        await createBasicCommit('mytype: new type from Xunnamius', context);
+        await createBasicCommit('mytype(some-scope): new type from Xunnamius', context);
+        const changelog = await runConventionalChangelog(config);
+
+        expect(changelog).toMatch(
+          new RegExp(
+            `# ${wellKnownCommitTypes[0].section!}\n+[^#]+\\* Amazing new module[^#]+\\* New type from Xunnamius[^#]+\\* \\*\\*some-scope:\\*\\* new type from Xunnamius`
+          )
+        );
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
 });
 
 it('indents majors with h2, minors with h3, and adjusts section heading level as required', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        const config = moduleExport();
+        const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
+
+        expect(changelog).toMatch(/## \[0.2.0][^#]+\n### /);
+        expect(changelog).toMatch(/### \[0.2.1][^#]+\n#### /);
+      }
+    },
+    generatePatchesForEnvironment8()
+  );
 });
 
 it('recognizes scope setting in types configuration', async () => {
