@@ -355,7 +355,7 @@ export function moduleExport(
             const paragraphs = note.text
               .trim()
               .split('\n\n')
-              .map((paragraph) => toSentenceCase(paragraph.replace('\n', ' ')));
+              .map((paragraph) => toSentenceCase(paragraph.replaceAll('\n', ' ')));
 
             // ? Never discard breaking changes
             discard = false;
@@ -526,6 +526,7 @@ export function moduleExport(
     .map(({ type }) => type)
     .join('|');
 
+  // TODO: should probably just reuse breakingHeaderPattern, no?
   const relevantHeaderRegexp = new RegExp(
     `(^(${nonHiddenKnownTypesPartialRegexp ?? 'feat|fix'})\\W)|(^[^!(:]*(\\([^)]*\\))?!:)`,
     'i'

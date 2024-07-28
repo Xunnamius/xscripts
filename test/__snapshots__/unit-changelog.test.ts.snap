@@ -84,7 +84,9 @@ exports[`matches changelog snapshot when there are semver tags in the repo 1`] =
 
 * The Change is huge. Big. Really big.
 
-Really. Like super big. Wow! Here are some extra details!
+Really. Like super big. Wow!
+
+Here are some extra details!
 
 * This completely changes the API
 

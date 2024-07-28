@@ -160,24 +160,6 @@ it('translates each semver tag into a super-section link suffixed with commit da
   );
 });
 
-it('adds a data image to external repository links', async () => {
-  expect.hasAssertions();
-
-  await withMockedFixtureWrapper(
-    {
-      async test() {
-        const config = moduleExport();
-        const changelog = await runConventionalChangelog(config);
-
-        expect(changelog).toMatch(
-          /\[#358<img .*? \/>]\(https:\/\/github\.com\/other-fake-user\/other-fake-repo\/issues\/358\)/
-        );
-      }
-    },
-    generatePatchesForEnvironment1()
-  );
-});
-
 it('groups types sections by default order', async () => {
   expect.hasAssertions();
 
@@ -553,6 +535,17 @@ it('discards revert commits that seem to target unknown/hidden non-breaking comm
 
 it('populates breaking change notes if "!" is present', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        const config = moduleExport();
+        const changelog = await runConventionalChangelog(config, { releaseCount: 2 });
+        expect(changelog).toInclude('* Incredible new flag FIXES: #33');
+      }
+    },
+    generatePatchesForEnvironment9()
+  );
 });
 
 it('does not list breaking change twice if "!" is used', async () => {
@@ -563,36 +556,91 @@ it('does not list breaking change twice if "!" is used', async () => {
       async test() {
         const config = moduleExport();
         const changelog = await runConventionalChangelog(config);
-        expect(changelog).not.toMatch(/\* First build setup\r?\n/);
+        expect(changelog).toInclude('* New build system.\n');
+        expect(changelog).not.toInclude('* First build setup\n');
       }
     },
     generatePatchesForEnvironment1()
   );
 });
 
-it('omits optional "!" in breaking commit lines', async () => {
-  expect.hasAssertions();
-});
-
 it('outputs as one line all lines of multi-line breaking change notes with each line in sentence case', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        const config = moduleExport();
+        const changelog = await runConventionalChangelog(config, { releaseCount: 2 });
+        expect(changelog).toInclude(
+          '* The Change is huge. Big. Really big.\n\nReally. Like super big. Wow!\n\nHere are some extra details!'
+        );
+      }
+    },
+    generatePatchesForEnvironment9()
+  );
 });
 
-it('outputs unreleased commits as expected', async () => {
+it('adds a data image, proper owner/repo, and format to external repository issues by default', async () => {
   expect.hasAssertions();
-  void generatePatchesForEnvironment12;
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        const config = moduleExport();
+        const changelog = await runConventionalChangelog(config);
+
+        expect(changelog).toInclude(
+          '[#1](https://github.com/fake-user/fake-repo/issues/1)'
+        );
+
+        expect(changelog).toMatch(
+          /\[#358<img .*? \/>]\(https:\/\/github\.com\/other-fake-user\/other-fake-repo\/issues\/358\)/
+        );
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
 });
 
-it('properly formats external repository issues by default', async () => {
+it('properly formats repository issues given an issueUrlFormat and prefix', async () => {
   expect.hasAssertions();
-});
 
-it('properly formats external repository issues given an issueUrlFormat', async () => {
-  expect.hasAssertions();
-});
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        {
+          const config = moduleExport({
+            issuePrefixes: ['#', 'GH-'],
+            issueUrlFormat: 'issues://{{repository}}/issues/{{id}}'
+          });
 
-it('properly formats issues in external issue tracker given an issueUrlFormat with prefix', async () => {
-  expect.hasAssertions();
+          const changelog = await runConventionalChangelog(config);
+
+          expect(changelog).toInclude('[#1](issues://fake-repo/issues/1)');
+          expect(changelog).toInclude('[GH-1](issues://fake-repo/issues/1)');
+
+          expect(changelog).toMatch(
+            /\[#358<img .*? \/>]\(issues:\/\/fake-repo\/issues\/358\)/
+          );
+        }
+
+        {
+          const config = moduleExport({
+            issueUrlFormat: 'https://example.com/browse/{{prefix}}{{id}}',
+            issuePrefixes: ['EXAMPLE-']
+          });
+
+          const changelog = await runConventionalChangelog(config);
+
+          expect(changelog).toInclude(
+            '[EXAMPLE-1](https://example.com/browse/EXAMPLE-1)'
+          );
+        }
+      }
+    },
+    generatePatchesForEnvironment1()
+  );
 });
 
 it('replaces issues text with GitHub format issue URL by default', async () => {
@@ -776,8 +824,7 @@ function generatePatchesForEnvironment1(): TestEnvironmentPatch[] {
         'fix(changelog): proper issue links\n\nsee #1, other-fake-user/other-fake-repo#358',
         'revert(ngOptions): "feat(headstrong): bad commit"',
         'fix(*): oops',
-        'fix(changelog): proper issue links',
-        ' see GH-1',
+        'fix(changelog): proper issue links\n\nsee GH-1',
         'feat(awesome): address EXAMPLE-1',
         'chore(deps): upgrade example from 1 to 2',
         'chore(release): release 0.0.0'
@@ -891,7 +938,7 @@ function generatePatchesForEnvironment9(): TestEnvironmentPatch[] {
     {
       messages: [
         'fix: use npm@5 (@username)',
-        'build(deps): bump @dummy/package from 7.1.2 to 8.0.0 (thanks @Xunnamius, @suimannux @user1/@user2, @user3/@+u%+(#bad email@aol.com with help from @merchanz039f9)\n\nBREAKING CHANGE: The Change is huge. Big. Really big.\n\nReally. Like super big. Wow! Here are some extra details!',
+        'build(deps): bump @dummy/package from 7.1.2 to 8.0.0 (thanks @Xunnamius, @suimannux @user1/@user2, @user3/@+u%+(#bad email@aol.com with help from @merchanz039f9)\n\nBREAKING CHANGE: The Change is huge. Big. Really big.\n\nReally. Like super big.\nWow!\n\nHere\nare\nsome\nextra details!',
         'feat: complex new feature\n\nThis is a complex new feature with many reviewers\nReviewer: @hutson\nFixes: #99\nRefs: #100\n\nBREAKING CHANGE: this completely changes the API',
         'FEAT(FOO)!: incredible new flag FIXES: #33'
       ],
@@ -954,14 +1001,6 @@ function generatePatchesForEnvironment11(): TestEnvironmentPatch[] {
 
         return git.addAnnotatedTag('v1.1.1', 'v1.1.1');
       }
-    }
-  ]);
-}
-
-function generatePatchesForEnvironment12(): TestEnvironmentPatch[] {
-  return generatePatchesForEnvironment11().concat([
-    {
-      messages: ['feat(code): new feature', 'feat: another new feature', 'fix: a new fix']
     }
   ]);
 }
