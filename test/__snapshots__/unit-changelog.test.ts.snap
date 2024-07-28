@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`matches changelog snapshot and ignores string case when there are no semver tags in the repo 1`] = `
+exports[`matches changelog snapshot when there are no semver tags in the repo 1`] = `
 "## 0.0.0 (date)
 
 ### 💥 BREAKING CHANGES 💥
@@ -44,8 +44,24 @@ exports[`matches changelog snapshot and ignores string case when there are no se
 "
 `;
 
-exports[`matches changelog snapshot and ignores string case when there is a semver tag in the repo 1`] = `
+exports[`matches changelog snapshot when there are semver tags in the repo 1`] = `
 "### [1.1.1](https://github.com/fake-user/fake-repo/compare/v1.1.0...v1.1.1) (date)
+
+#### 💥 BREAKING CHANGES 💥
+
+* The change is bigly luxurious 5-stars everybody is saying
+
+#### ✨ Features
+
+* Something else skip2 ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+#### 🪄 Fixes
+
+* Something other skip3 ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+#### 🧙🏿 Refactored
+
+* **code:** big bigly big change skip1! ([X](https://github.com/fake-user/fake-repo/commit/X))
 
 #### 🔥 Reverted
 
