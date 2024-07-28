@@ -4,12 +4,36 @@ import { globalDebuggerNamespace } from 'universe/constant';
 
 import type { EmptyObject } from 'type-fest';
 
+/**
+ * @see https://github.com/conventional-changelog/commitlint/blob/master/docs/reference/rules-configuration.md
+ */
+export enum ErrorLevel {
+  Disabled = 0,
+  Warn = 1,
+  Error = 2
+}
+
+/**
+ * @see https://github.com/conventional-changelog/commitlint/blob/master/docs/reference/rules-configuration.md
+ */
+export enum Applicable {
+  FailIfEncountered = 'always',
+  FailIfNotEncountered = 'never'
+}
+
 export const moduleExport = {
   extends: ['@commitlint/config-conventional'],
   rules: {
-    'body-leading-blank': [2, 'always'],
-    'footer-leading-blank': [2, 'always'],
-    'type-enum': [2, 'always', wellKnownCommitTypes.map(({ type }) => type)]
+    'body-case': [ErrorLevel.Warn, Applicable.FailIfEncountered, 'sentence-case'],
+    'body-full-stop': [ErrorLevel.Warn, Applicable.FailIfEncountered],
+    'header-trim': [ErrorLevel.Warn, Applicable.FailIfEncountered],
+    'body-leading-blank': [ErrorLevel.Error, Applicable.FailIfEncountered],
+    'footer-leading-blank': [ErrorLevel.Error, Applicable.FailIfEncountered],
+    'type-enum': [
+      ErrorLevel.Error,
+      Applicable.FailIfEncountered,
+      wellKnownCommitTypes.map(({ type }) => type)
+    ]
   }
 };
 
