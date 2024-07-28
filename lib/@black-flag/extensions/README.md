@@ -391,9 +391,8 @@ match the specified argument-value pairs respectively (similar to
 
 ###### `vacuousImplications`
 
-By default, in the special case where an option is configured with
-[`implies`][14], the implication will only take effect if the option/argument is
-given in `argv` with a non-`false` value. For example:
+By default, an option's configured implications will only take effect if said
+option is given in `argv` _with a non-`false` value_. For example:
 
 ```jsonc
 {
@@ -420,8 +419,8 @@ If `‑x` (or `‑x=true`) is given, it is synonymous with `‑x ‑y` (or
 `‑x=false -y=false` are both accepted by BFE without incident.
 
 In this way, the configured implications of [`boolean`][25]-type options are
-never [vacuously satisfied][53]; a `false` condition does not "imply" anything
-about its [consequent][54].
+_never [vacuously satisfied][53]_; a strictly `false` condition does not "imply"
+anything about its [consequent][54].
 
 This feature reduces confusion for end users. For instance, suppose we had a CLI
 build tool that accepted the arguments `‑patch` and `‑only‑patch`. `‑patch`
