@@ -946,14 +946,14 @@ describe('::withBuilderExtensions', () => {
       }
     });
 
-    it('does not throw when a non-array boolean-type arg with a false value has a conflicting implication', async () => {
+    it('does not throw when an arg with a false value has a conflicting implication', async () => {
       expect.hasAssertions();
 
       {
         const runner = makeMockBuilderRunner({
           customHandler,
           customBuilder: {
-            x: { boolean: true, implies: { y: true } },
+            x: { implies: { y: true } },
             y: {}
           }
         });
@@ -964,27 +964,8 @@ describe('::withBuilderExtensions', () => {
         await runner({ x: false, y: true });
         expect(getArgv()).toStrictEqual({ x: false, y: true });
 
-        await runner({ x: false, y: 'hello' });
-        expect(getArgv()).toStrictEqual({ x: true, y: 'hello' });
-      }
-
-      {
-        const runner = makeMockBuilderRunner({
-          customHandler,
-          customBuilder: {
-            x: { type: 'boolean', implies: { y: true } },
-            y: {}
-          }
-        });
-
-        await runner({ x: false, y: false });
-        expect(getArgv()).toStrictEqual({ x: false, y: false });
-
-        await runner({ x: false, y: true });
-        expect(getArgv()).toStrictEqual({ x: false, y: true });
-
-        await runner({ x: false, y: 'hello' });
-        expect(getArgv()).toStrictEqual({ x: true, y: 'hello' });
+        await runner({ x: true, y: true });
+        expect(getArgv()).toStrictEqual({ x: true, y: true });
       }
 
       {
@@ -1020,45 +1001,14 @@ describe('::withBuilderExtensions', () => {
       }
     });
 
-    it('throws when a non-array boolean-type arg with a false value has a conflicting implication and "vacuousImplications" is enabled', async () => {
+    it('throws when an arg with a false value has a conflicting implication and "vacuousImplications" is enabled', async () => {
       expect.hasAssertions();
 
       {
         const runner = makeMockBuilderRunner({
           customHandler,
           customBuilder: {
-            x: { boolean: true, implies: { y: true }, vacuousImplications: true },
-            y: {}
-          }
-        });
-
-        {
-          const { handlerResult } = await runner({ x: false, y: false });
-
-          expect(handlerResult).toMatchObject({
-            message: ErrorMessage.ImpliesViolation('x', [['y', false]])
-          });
-        }
-
-        {
-          await runner({ x: false, y: true });
-          expect(getArgv()).toStrictEqual({ x: false, y: true });
-        }
-
-        {
-          const { handlerResult } = await runner({ x: true, y: 'hello' });
-
-          expect(handlerResult).toMatchObject({
-            message: ErrorMessage.ImpliesViolation('x', [['y', 'hello']])
-          });
-        }
-      }
-
-      {
-        const runner = makeMockBuilderRunner({
-          customHandler,
-          customBuilder: {
-            x: { type: 'boolean', implies: { y: true } },
+            x: { implies: { y: true }, vacuousImplications: true },
             y: {}
           }
         });
@@ -5382,7 +5332,7 @@ test('example #1 functions as expected', async () => {
     expect(handlerResult).toBeUndefined();
     expect(finalArgv).toStrictEqual({
       target: DeployTarget.Vercel,
-      ...prev(false), // ? Defaulted then overwritten by implication
+      ...prev(true), // ? Defaulted but NOT overwritten by vacuous implication
       ...prod(false)
     });
   }
@@ -5830,7 +5780,7 @@ test('example #2 functions as expected', async () => {
     expect(handlerResult).toBeUndefined();
     expect(finalArgv).toStrictEqual({
       target: DeployTarget.Vercel,
-      ...prev(false), // ? Defaulted
+      ...prev(false), // ? Defaulted but overwritten by prod's implications
       ...prod(true)
     });
   }
@@ -5870,6 +5820,26 @@ test('example #2 functions as expected', async () => {
     });
   }
 
+  {
+    // * This is an interesting edge case that is fixed thanks to
+    // * vacuousImplications being set to false by default.
+    const { handlerResult } = await runner(
+      {
+        target: DeployTarget.Vercel,
+        ...prev(true), // ? Defaulted then NOT overwritten by implication
+        ...prod(false) // ? Implies ...prev(false) vacuously
+      },
+      ['preview']
+    );
+
+    expect(handlerResult).toBeUndefined();
+    expect(finalArgv).toStrictEqual({
+      target: DeployTarget.Vercel,
+      ...prev(true), // ? Defaulted
+      ...prod(false)
+    });
+  }
+
   // * Nonsense
 
   {
@@ -5877,25 +5847,6 @@ test('example #2 functions as expected', async () => {
       target: DeployTarget.Vercel,
       ...prev(false)
     });
-
-    expect(handlerResult).toMatchObject({
-      message: 'must choose either --preview or --production deployment environment'
-    });
-  }
-
-  {
-    // * This is an interesting edge case. --prod=* implies --preview=false, but
-    // * if --prod=* takes the form of --prod=false, then both --prod and
-    // * --preview will be false, which should (and does) fail the no-both-false
-    // * check.
-    const { handlerResult } = await runner(
-      {
-        target: DeployTarget.Vercel,
-        ...prev(true), // ? Defaulted
-        ...prod(false) // ? Implies ...prev(false)
-      },
-      ['preview']
-    );
 
     expect(handlerResult).toMatchObject({
       message: 'must choose either --preview or --production deployment environment'

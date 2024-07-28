@@ -62,9 +62,15 @@ type OptionsMetadata = {
    */
   implied: (FlattenedExtensionValue & { [$canonical]: Record<string, unknown> })[];
   /**
-   * An array of canonical option names whose implications are considered loose.
+   * An array of canonical option names whose implications are considered
+   * loosely satisfiable (see docs for details).
    */
   implyLoosely: string[];
+  /**
+   * An array of canonical option names whose implications are considered
+   * vacuously satisfiable (see docs for details).
+   */
+  implyVacuously: string[];
   /**
    * An array of groups of canonical option names and their expected values that
    * are demanded condition on the existence of some other option.
@@ -304,7 +310,8 @@ export type BfeBuilderObjectValueExtensions<
    * }
    * ```
    *
-   * For describing more complex implications, see `subOptionOf`.
+   * @see {@link BfeBuilderObjectValueExtensions.looseImplications}
+   * @see {@link BfeBuilderObjectValueExtensions.vacuousImplications}
    */
   implies?:
     | Exclude<BfeBuilderObjectValueExtensionValue, string | unknown[]>
@@ -318,6 +325,17 @@ export type BfeBuilderObjectValueExtensions<
    * @see {@link BfeBuilderObjectValueExtensions.implies}
    */
   looseImplications?: boolean;
+  /**
+   * When `vacuousImplications` is set to `true` and the option is also
+   * configured as a "boolean" type, the implications configured via `implies`
+   * will still be applied to `argv` even if said option has a `false` value in
+   * `argv`. In the same scenario except with `vacuousImplications` set to
+   * `false`, the implications configured via `implies` are instead ignored.
+   *
+   * @default false
+   * @see {@link BfeBuilderObjectValueExtensions.implies}
+   */
+  vacuousImplications?: boolean;
   /**
    * `check` is the declarative option-specific version of vanilla yargs's
    * `yargs::check()`. Also supports async and promise-returning functions.
@@ -871,14 +889,14 @@ export function withBuilderExtensions<
         deleteDefaultedArguments({ argv: realArgv, defaultedOptions });
         debug('real argv with defaults deleted: %O', realArgv);
 
-        const fakeArgv = new Map<string, unknown>();
+        const pseudoArgv = new Map<string, unknown>();
 
         Object.entries(optionsMetadata.optionNamesAsSeenInArgv).forEach(
           ([name, realName]) =>
-            realArgv[realName] !== undefined && fakeArgv.set(name, realArgv[realName])
+            realArgv[realName] !== undefined && pseudoArgv.set(name, realArgv[realName])
         );
 
-        debug('argv used for checks: %O', fakeArgv);
+        debug('argv used for checks: %O', pseudoArgv);
 
         // * Run requires checks
         optionsMetadata.required.forEach(({ [$genesis]: requirer, ...requireds }) => {
@@ -887,15 +905,15 @@ export function withBuilderExtensions<
             ErrorMessage.MetadataInvariantViolated('requires')
           );
 
-          if (fakeArgv.has(requirer)) {
+          if (pseudoArgv.has(requirer)) {
             const missingRequiredKeyValues: Entries<typeof requireds> = [];
 
             Object.entries(requireds).forEach((required) => {
               const [key, value] = required;
 
               if (
-                !fakeArgv.has(key) ||
-                (value !== $exists && !isEqual(fakeArgv.get(key), value))
+                !pseudoArgv.has(key) ||
+                (value !== $exists && !isEqual(pseudoArgv.get(key), value))
               ) {
                 missingRequiredKeyValues.push(required);
               }
@@ -916,15 +934,15 @@ export function withBuilderExtensions<
               ErrorMessage.MetadataInvariantViolated('conflicts')
             );
 
-            if (fakeArgv.has(conflicter)) {
+            if (pseudoArgv.has(conflicter)) {
               const seenConflictingKeyValues: Entries<typeof conflicteds> = [];
 
               Object.entries(conflicteds).forEach((keyValue) => {
                 const [key, value] = keyValue;
 
                 if (
-                  fakeArgv.has(key) &&
-                  (value === $exists || isEqual(fakeArgv.get(key), value))
+                  pseudoArgv.has(key) &&
+                  (value === $exists || isEqual(pseudoArgv.get(key), value))
                 ) {
                   seenConflictingKeyValues.push(keyValue);
                 }
@@ -945,13 +963,13 @@ export function withBuilderExtensions<
             ErrorMessage.MetadataInvariantViolated('demandThisOptionIf')
           );
 
-          const sawDemanded = fakeArgv.has(demanded);
+          const sawDemanded = pseudoArgv.has(demanded);
 
           Object.entries(demanders).forEach((demander) => {
             const [key, value] = demander;
             const sawADemander =
-              fakeArgv.has(key) &&
-              (value === $exists || isEqual(fakeArgv.get(key), value));
+              pseudoArgv.has(key) &&
+              (value === $exists || isEqual(pseudoArgv.get(key), value));
 
             softAssert(
               !sawADemander || sawDemanded,
@@ -966,8 +984,8 @@ export function withBuilderExtensions<
           const sawAtLeastOne = groupEntries.some((keyValue) => {
             const [key, value] = keyValue;
             return (
-              fakeArgv.has(key) &&
-              (value === $exists || isEqual(fakeArgv.get(key), value))
+              pseudoArgv.has(key) &&
+              (value === $exists || isEqual(pseudoArgv.get(key), value))
             );
           });
 
@@ -983,8 +1001,8 @@ export function withBuilderExtensions<
             const [key, value] = keyValue;
 
             if (
-              fakeArgv.has(key) &&
-              (value === $exists || isEqual(fakeArgv.get(key), value))
+              pseudoArgv.has(key) &&
+              (value === $exists || isEqual(pseudoArgv.get(key), value))
             ) {
               if (sawAtLeastOne !== undefined) {
                 softAssert(
@@ -1016,7 +1034,11 @@ export function withBuilderExtensions<
               ErrorMessage.MetadataInvariantViolated('implies')
             );
 
-            if (fakeArgv.has(implier)) {
+            if (
+              pseudoArgv.has(implier) &&
+              (optionsMetadata!.implyVacuously.includes(implier) ||
+                pseudoArgv.get(implier) !== false)
+            ) {
               Object.assign(impliedKeyValues, expandedImplications);
 
               if (!optionsMetadata!.implyLoosely.includes(implier)) {
@@ -1026,8 +1048,8 @@ export function withBuilderExtensions<
                 Object.entries(canonicalImplications).forEach((keyValue) => {
                   const [key, value] = keyValue;
 
-                  if (fakeArgv.has(key) && !isEqual(fakeArgv.get(key), value)) {
-                    seenConflictingKeyValues.push([key, fakeArgv.get(key)]);
+                  if (pseudoArgv.has(key) && !isEqual(pseudoArgv.get(key), value)) {
+                    seenConflictingKeyValues.push([key, pseudoArgv.get(key)]);
                   }
                 });
 
@@ -1294,6 +1316,7 @@ function analyzeBuilderObject<
     conflicted: [],
     implied: [],
     implyLoosely: [],
+    implyVacuously: [],
     demandedIf: [],
     demanded: [],
     demandedAtLeastOne: [],
@@ -1316,6 +1339,7 @@ function analyzeBuilderObject<
         default: default_,
         implies,
         looseImplications,
+        vacuousImplications,
         demandThisOptionIf,
         demandThisOption,
         demandThisOptionOr,
@@ -1414,6 +1438,10 @@ function analyzeBuilderObject<
 
     if (looseImplications) {
       metadata.implyLoosely.push(option);
+    }
+
+    if (vacuousImplications) {
+      metadata.implyVacuously.push(option);
     }
 
     if (demandThisOption !== undefined) {
@@ -1590,6 +1618,7 @@ function separateExtensionsFromBuilderObjectValue<
     demandThisOptionXor,
     implies,
     looseImplications,
+    vacuousImplications,
     requires,
     subOptionOf,
     ...vanillaYargsConfig
@@ -1604,6 +1633,7 @@ function separateExtensionsFromBuilderObjectValue<
     demandThisOptionXor,
     implies,
     looseImplications,
+    vacuousImplications,
     requires,
     subOptionOf
   };
