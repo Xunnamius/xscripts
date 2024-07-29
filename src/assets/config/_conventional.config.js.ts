@@ -465,6 +465,17 @@ export function moduleExport(
         // ? Badly crafted reverts are all header and no subject
         if (typeKey === 'revert' && !commit.subject) {
           commit.subject = commit.header?.replace(revertPrefixPattern, '');
+
+          // ? Attempt to fix them up
+          if (commit.subject) {
+            if (!commit.subject.startsWith('"')) {
+              commit.subject = `"${commit.subject}`;
+            }
+
+            if (!commit.subject.endsWith('"')) {
+              commit.subject += '"';
+            }
+          }
         }
 
         const { host, owner, repository } = context;
@@ -472,7 +483,7 @@ export function moduleExport(
         // ? Linkify issues (e.g. #123) and usernames (e.g. @Xunnamius) in
         // ? commit subjects and in breaking change notes
         if (host && owner && repository) {
-          const { issueUrlFormat, userUrlFormat } = intermediateConfig;
+          const { issueUrlFormat, userUrlFormat } = finalConfig;
 
           const linkificationContext = {
             host,

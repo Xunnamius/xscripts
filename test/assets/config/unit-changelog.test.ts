@@ -729,40 +729,149 @@ it('linkifies issue references as internal even when they are given using extern
 
 it('removes issue refs from superscript that already appear in the subject', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
+
+          expect(changelog).toInclude(
+            '[#88](https://github.com/fake-user/fake-repo/issues/88)'
+          );
+
+          expect(changelog.toLowerCase()).not.toInclude(
+            'see [#88](https://github.com/fake-user/fake-repo/issues/88)'
+          );
+        }
+      }
+    },
+    generatePatchesForEnvironment3()
+  );
 });
 
 it('linkifies @user with configured userUrlFormat', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        {
+          const config = moduleExport((config) => ({
+            ...config,
+            userUrlFormat: 'https://foo/{{user}}'
+          }));
+
+          const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
+
+          expect(changelog).toInclude('[@bcoe](https://foo/bcoe)');
+          expect(changelog).toInclude('[@dlmr](https://foo/dlmr)');
+          expect(changelog).toInclude('[@username](https://foo/username)');
+          expect(changelog).toInclude('[@Xunnamius](https://foo/Xunnamius)');
+          expect(changelog).toInclude('[@suimannux](https://foo/suimannux)');
+          expect(changelog).toInclude('[@user1](https://foo/user1)');
+          expect(changelog).toInclude('[@user2](https://foo/user2)');
+          expect(changelog).toInclude('[@user3](https://foo/user3)');
+          expect(changelog).toInclude('[@merchanz039f9](https://foo/merchanz039f9)');
+          expect(changelog).not.toInclude('@hutson');
+          expect(changelog).not.toInclude('[@aol');
+        }
+      }
+    },
+    generatePatchesForEnvironment9()
+  );
 });
 
-it('does not linkify @user if it is a scoped package (including with hyphens)', async () => {
+it('does not linkify @string if it is a scoped package (including with hyphens)', async () => {
   expect.hasAssertions();
-  // TODO: @user1/@user2 should get linkified; @package/scoped, @pkg/scoped@beta
-  // TODO: and npm@5 should not
-});
 
-it('works with unknown host', async () => {
-  expect.hasAssertions();
-});
+  await withMockedFixtureWrapper(
+    {
+      async test(context) {
+        {
+          const config = moduleExport();
 
-it('supports non public GitHub repository locations', async () => {
-  expect.hasAssertions();
+          await createBasicCommit(
+            'fix: update @typescript-eslint/some-pkg and @-xun/scripts and @eslint/js@5 and npm@beta',
+            context
+          );
+
+          const changelog = await runConventionalChangelog(config, {
+            releaseCount: 0,
+            outputUnreleased: true
+          });
+
+          expect(changelog).toInclude(
+            '* Update @typescript-eslint/some-pkg and @-xun/scripts and @eslint/js@5 and npm@beta'
+          );
+
+          expect(changelog).not.toInclude('(https://github.com/5');
+          expect(changelog).toInclude('bump @dummy/package from');
+        }
+      }
+    },
+    generatePatchesForEnvironment9()
+  );
 });
 
 it('parses default, customized, and malformed revert commits', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
+
+          expect(changelog).toInclude('*"feat: default revert format"*');
+          expect(changelog).toInclude('*"feat: default revert format"*');
+          expect(changelog).toInclude('*Feat: custom revert format*');
+          expect(changelog).toInclude('*"Feat(two): custom revert format 2"*');
+          expect(changelog).toInclude('*"feat(X): broken-but-still-supported revert"*');
+        }
+      }
+    },
+    generatePatchesForEnvironment10()
+  );
+});
+
+it('does not take the type/scope case into consideration (always lowercased)', async () => {
+  expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
+          expect(changelog).toInclude('* **foo:** incredible new flag');
+        }
+      }
+    },
+    generatePatchesForEnvironment9()
+  );
 });
 
 it('supports multiple lines of footer information', async () => {
   expect.hasAssertions();
-});
 
-it('works specifying where to find a package.json using conventional-changelog-core', async () => {
-  expect.hasAssertions();
-});
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
 
-it('falls back to the closest package.json when not providing a location for a package.json', async () => {
-  expect.hasAssertions();
+          expect(changelog).toInclude('see [#99]');
+          expect(changelog).toInclude('[#100]');
+          expect(changelog).toInclude('* This completely changes the API');
+        }
+      }
+    },
+    generatePatchesForEnvironment9()
+  );
 });
 
 it('removes xpipeline command suffixes from commit subjects', async () => {
@@ -1068,6 +1177,7 @@ function generatePatchesForEnvironment10(): TestEnvironmentPatch[] {
     {
       messages: [
         'Revert feat: default revert format"\nThis reverts commit 1234.',
+        'Revert "feat: default revert format\nThis reverts commit 1234.',
         'revert: feat: custom revert format\n\nThis reverts commit 5678.',
         'revert: "Feat(two): custom revert format 2"\nThis reverts commit 9101112.',
         'revert: "feat(X): broken-but-still-supported revert"'

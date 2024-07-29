@@ -75,10 +75,11 @@ exports[`matches changelog snapshot when there are semver tags in the repo 1`] =
 
 ### 🔥 Reverted
 
+* *"feat: default revert format"* ([X](https://github.com/fake-user/fake-repo/commit/X))
+* *"feat: default revert format"* ([X](https://github.com/fake-user/fake-repo/commit/X))
 * *"Feat(two): custom revert format 2"* ([X](https://github.com/fake-user/fake-repo/commit/X))
 * *"feat(X): broken-but-still-supported revert"* ([X](https://github.com/fake-user/fake-repo/commit/X))
 * *Feat: custom revert format* ([X](https://github.com/fake-user/fake-repo/commit/X))
-* *Feat: default revert format"* ([X](https://github.com/fake-user/fake-repo/commit/X))
 
 ## [1.0.0](https://github.com/fake-user/fake-repo/compare/v0.2.1...v1.0.0) (date)
 
