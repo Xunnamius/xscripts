@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this auto-generated
 file. The format is based on [Conventional Commits][1];
 this project adheres to [Semantic Versioning][2].
 
+<br />
+
 ## [1.19.0][3] (2024-07-29)
 
 ### ✨ Features
@@ -17,13 +19,15 @@ this project adheres to [Semantic Versioning][2].
 - **commitlint.config:** expand to include several useful rules ([909949d][7])
 - **release:** take advantage of new `--output-sort` functionality ([59dd752][8])
 
----
+<sup><br />٠ —– ٠ —— ٠ –— ٠  —– ٠ —— ٠ –—  —– ٠ —— ٠ –— ٠</sup><br />
 
 ### 🏗️ Patch [1.19.1][9] (2024-07-29)
 
 #### 🪄 Fixes
 
 - **package:** fix asset config import configuration ([d201164][10])
+
+<br />
 
 ## [1.18.0][11] (2024-07-27)
 
@@ -50,6 +54,8 @@ this project adheres to [Semantic Versioning][2].
 - **vscode:** take advantage of new `--run-to-completion` flag ([d9b4b80][22])
 - **vscode:** update example with latest best practices ([64b7309][23])
 
+<br />
+
 ## [1.17.0][24] (2024-07-23)
 
 ### ✨ Features
@@ -65,6 +71,8 @@ this project adheres to [Semantic Versioning][2].
 - **package:** update exports, dependencies, and scripts ([323579d][30])
 - **tsconfig:** ensure files from root dot folders are picked up by linters ([8609db7][31])
 - Update to eslint\@9; begin transition to eslint.config.js flat ([52763c5][32])
+
+<br />
 
 ## [1.16.0][33] (2024-07-14)
 
@@ -91,13 +99,15 @@ this project adheres to [Semantic Versioning][2].
 - **package:** update lint scripts to use xscripts ([7c1e7f1][46])
 - **tsconfig:** remove packages glob from includes ([d3301ca][47])
 
----
+<sup><br />٠ —– ٠ —— ٠ –— ٠  —– ٠ —— ٠ –—  —– ٠ —— ٠ –— ٠</sup><br />
 
 ### 🏗️ Patch [1.16.1][48] (2024-07-14)
 
 #### 🪄 Fixes
 
 - **src:** place --copy-files argument in proper order in babel build sub-command ([8f1d25d][49])
+
+<br />
 
 ## [1.15.0][50] (2024-07-07)
 
@@ -108,6 +118,8 @@ this project adheres to [Semantic Versioning][2].
 ### ⚙️ Build System
 
 - **release:** add --renumber-references to CHANGELOG format sub-step in release flow ([49a3453][53])
+
+<br />
 
 ## [1.14.0][54] (2024-07-07)
 
@@ -128,6 +140,8 @@ this project adheres to [Semantic Versioning][2].
 
 - **maintaining:** note that resetting the working tree before publishing is optional ([f08250c][62])
 
+<br />
+
 ## [1.13.0][63] (2024-07-02)
 
 ### ✨ Features
@@ -139,6 +153,8 @@ this project adheres to [Semantic Versioning][2].
 
 - Ensure local ecosystem ignores only relevant files ([e4a1e0b][66])
 - **tsconfig:** update includes ([c721fed][67])
+
+<br />
 
 ## [1.12.0][68] (2024-07-01)
 
@@ -169,6 +185,8 @@ this project adheres to [Semantic Versioning][2].
 
 - _"build(prettierignore): no longer ignore CHANGELOG.md when formatting"_ ([ddd9192][83])
 
+<br />
+
 ## [1.11.0][84] (2024-06-30)
 
 ### ✨ Features
@@ -189,6 +207,8 @@ this project adheres to [Semantic Versioning][2].
 - **lint-staged.config:** update to use xscripts ([d290ba5][92])
 - Reorganize deps/devdeps and re-enable commit-spell ([4ea8aa4][93])
 
+<br />
+
 ## [1.10.0][94] (2024-06-29)
 
 ### ✨ Features
@@ -204,13 +224,15 @@ this project adheres to [Semantic Versioning][2].
 - **src:** actually implement --skip-docs functionality in "format" command ([d535b78][100])
 - **src:** restrict root/sub-root check to certain commands ([1b65f46][101])
 
----
+<sup><br />٠ —– ٠ —— ٠ –— ٠  —– ٠ —— ٠ –—  —– ٠ —— ٠ –— ٠</sup><br />
 
 ### 🏗️ Patch [1.10.1][102] (2024-06-29)
 
 #### 🪄 Fixes
 
 - **src:** ensure --files is respected by prettier in "format" command ([483f036][103])
+
+<br />
 
 ## [1.9.0][104] (2024-06-28)
 
@@ -228,6 +250,8 @@ this project adheres to [Semantic Versioning][2].
 - **babel:** update core-js usage to 3.37 ([506bf2d][108])
 - **tsconfig:** ensure unnecessary types are excluded from distributables ([f7e65c3][109])
 
+<br />
+
 ## [1.8.0][110] (2024-06-27)
 
 ### ✨ Features
@@ -238,6 +262,8 @@ this project adheres to [Semantic Versioning][2].
 
 - **eslintrc:** do not ignore src/build ([847cc63][112])
 - **gitignore:** do not ignore src files anymore ([fd210c5][113])
+
+<br />
 
 ## [1.7.0][114] (2024-06-26)
 
@@ -254,11 +280,15 @@ this project adheres to [Semantic Versioning][2].
 - **package:** replace format script with "format" command ([005e378][117])
 - **package:** use --hush over --quiet for "format" command ([9e4ae59][118])
 
+<br />
+
 ## [1.6.0][119] (2024-06-24)
 
 ### ✨ Features
 
 - **src:** implement "deploy" script ([62e673b][120])
+
+<br />
 
 ## [1.5.0][121] (2024-06-23)
 
@@ -282,6 +312,8 @@ this project adheres to [Semantic Versioning][2].
 - **package:** disable tty in debug when running tests ([b57a6be][131])
 - **package:** fix bad overwrite of ignore patterns ([8d03799][132])
 
+<br />
+
 ## [1.4.0][133] (2024-06-01)
 
 ### ✨ Features
@@ -292,7 +324,7 @@ this project adheres to [Semantic Versioning][2].
 
 - **package:** use real path to devdep version of xscripts ([99d5786][135])
 
----
+<sup><br />٠ —– ٠ —— ٠ –— ٠  —– ٠ —— ٠ –—  —– ٠ —— ٠ –— ٠</sup><br />
 
 ### 🏗️ Patch [1.4.1][136] (2024-06-02)
 
@@ -303,6 +335,8 @@ this project adheres to [Semantic Versioning][2].
 #### ⚙️ Build System
 
 - **package:** update "start" script to ensure arbitrary args are not erroneously parsed ([a8ddaa5][138])
+
+<br />
 
 ## [1.3.0][139] (2024-06-01)
 
@@ -317,17 +351,23 @@ this project adheres to [Semantic Versioning][2].
 - **src:** do not inherit IO when executing "clean" script ([380c055][143])
 - **src:** execute husky post-checkout hook if available ([f0b3b8c][144])
 
+<br />
+
 ## [1.2.0][145] (2024-05-31)
 
 ### ✨ Features
 
 - Implement "prepare" script ([6426d70][146])
 
+<br />
+
 ## [1.1.0][147] (2024-05-31)
 
 ### ✨ Features
 
 - Implement "list-tasks" script ([ac5a9ba][148])
+
+<br />
 
 ## [1.0.0][149] (2024-05-31)
 
