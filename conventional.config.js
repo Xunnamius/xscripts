@@ -1,5 +1,7 @@
 'use strict';
-module.exports =
-  require('@-xun/scripts/assets/config/conventional.config.js').moduleExport({
-    // * Your customizations here
-  });
+
+const { moduleExport } = require('@-xun/scripts/assets/config/conventional.config.js');
+
+module.exports = moduleExport({
+  // * Your customizations here
+});
