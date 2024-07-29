@@ -621,7 +621,9 @@ export function moduleExport(
   const finalConfig =
     typeof configOverrides === 'function'
       ? configOverrides(intermediateConfig)
-      : deepMerge(intermediateConfig, configOverrides, mergeCustomizer);
+      : // ? We do a custom merge instead of relying on asset merge because our
+        // ? objects have getters and setters that won't copy over properly
+        deepMerge(intermediateConfig, configOverrides, mergeCustomizer);
 
   const commitSectionOrder = Array.from(
     new Set(finalConfig.types?.map(({ section }) => section) ?? [])
