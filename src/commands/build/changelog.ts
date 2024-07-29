@@ -204,6 +204,7 @@ export default function command(
             const debug_ = debug.extend('tap');
             debug_('initialized tap on changelog section stream');
 
+            let isFirst = true;
             source.setEncoding('utf8');
 
             for await (const chunk of source as unknown as string[]) {
@@ -217,6 +218,12 @@ export default function command(
 
                 if (!isPatchChunk) {
                   debug_('storybook sort order: non-patch chunk passed through');
+
+                  if (!skipTopmatter || !isFirst) {
+                    yield '<br />\n\n';
+                  }
+
+                  isFirst = false;
                   yield chunk;
 
                   debug_(
@@ -225,14 +232,14 @@ export default function command(
                   );
 
                   if (withheldChangelogPatchSections.length) {
-                    yield '---\n\n';
+                    yield '<sup><br />٠ —– ٠ —— ٠ –— ٠  —– ٠ —— ٠ –—  —– ٠ —— ٠ –— ٠</sup><br />\n\n';
 
                     for (const section of withheldChangelogPatchSections) {
                       yield '### 🏗️ Patch ' + section.slice(4);
                     }
-                  }
 
-                  withheldChangelogPatchSections.length = 0;
+                    withheldChangelogPatchSections.length = 0;
+                  }
                 } else {
                   debug_('storybook sort order: patch chunk held');
                   withheldChangelogPatchSections.push(chunk);
