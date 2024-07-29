@@ -1,0 +1,200 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`matches changelog snapshot when there are no semver tags in the repo 1`] = `
+"## 0.0.0 (date)
+
+### 💥 BREAKING CHANGES 💥
+
+* Changes [#55](https://github.com/fake-user/fake-repo/issues/55) [#66](https://github.com/fake-user/fake-repo/issues/66), and [#77](https://github.com/fake-user/fake-repo/issues/77) are huge.
+
+* CHANGES: Not backwards compatible (GH-2) (GH-3).
+
+* Continuously integrated.
+
+* New build system.
+
+### ✨ Features
+
+* Amazing new module ([X](https://github.com/fake-user/fake-repo/commit/X)) <sup>see [#1234<img alt="external reference" title="(this issue is from a different repository)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==" />](https://github.com/other-fake-user/other-fake-repo/issues/1234)</sup>
+* **awesome:** address EXAMPLE-1 EXAMPLE-2 ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### 🪄 Fixes
+
+* **changelog:** proper issue links 1 ([X](https://github.com/fake-user/fake-repo/commit/X)) <sup>see [#1](https://github.com/fake-user/fake-repo/issues/1), [#358<img alt="external reference" title="(this issue is from a different repository)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==" />](https://github.com/other-fake-user/other-fake-repo/issues/358), [#853<img alt="external reference" title="(this issue is from a different repository)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==" />](https://github.com/other-fake-user/other-fake-repo/issues/853)</sup>
+* **changelog:** proper issue links 2 ([X](https://github.com/fake-user/fake-repo/commit/X))
+* **compile:** avoid a bug ([X](https://github.com/fake-user/fake-repo/commit/X))
+* Oops ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### ⚡️ Optimizations
+
+* **ngoptions:** make it faster ([X](https://github.com/fake-user/fake-repo/commit/X)) <sup>see [#1](https://github.com/fake-user/fake-repo/issues/1), [#2](https://github.com/fake-user/fake-repo/issues/2)</sup>
+
+### ⚙️ Build system
+
+* First build setup ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### 🏭 CI/CD
+
+* **travis:** add TravisCI pipeline ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### 🔥 Reverted
+
+* **ngoptions:** *"feat(headstrong): bad commit"* ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+"
+`;
+
+exports[`matches changelog snapshot when there are semver tags in the repo 1`] = `
+"### [1.1.1](https://github.com/fake-user/fake-repo/compare/v1.1.0...v1.1.1) (date)
+
+#### 💥 BREAKING CHANGES 💥
+
+* Something else skip1
+
+* The change is bigly luxurious 5-stars everybody is saying
+
+#### ✨ Features
+
+* **scope:** something else skip1 ([X](https://github.com/fake-user/fake-repo/commit/X))
+* Something else skip2 ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+#### 🪄 Fixes
+
+* Something other skip3 [CI SKIP][skip ci][sKiP cd][cd skip] ([X](https://github.com/fake-user/fake-repo/commit/X))
+* Something other skip4 ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+#### 🧙🏿 Refactored
+
+* **code:** big bigly big change skip1! ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+#### 🔥 Reverted
+
+* *"build(bore): include1 [skip cd]"* ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+## [1.1.0](https://github.com/fake-user/fake-repo/compare/v1.0.0...v1.1.0) (date)
+
+### 🔥 Reverted
+
+* *"Feat(two): custom revert format 2"* ([X](https://github.com/fake-user/fake-repo/commit/X))
+* *"feat(X): broken-but-still-supported revert"* ([X](https://github.com/fake-user/fake-repo/commit/X))
+* *Feat: custom revert format* ([X](https://github.com/fake-user/fake-repo/commit/X))
+* *Feat: default revert format"* ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+## [1.0.0](https://github.com/fake-user/fake-repo/compare/v0.2.1...v1.0.0) (date)
+
+### 💥 BREAKING CHANGES 💥
+
+* Incredible new flag FIXES: [#33](https://github.com/fake-user/fake-repo/issues/33)-[#22](https://github.com/fake-user/fake-repo/issues/22)
+
+* The Change is huge. Big. Really big.
+
+Really. Like super big. Wow!
+
+Here are some extra details!
+
+* This completely changes the API
+
+### ✨ Features
+
+* Complex new feature ([X](https://github.com/fake-user/fake-repo/commit/X)) <sup>see [#99](https://github.com/fake-user/fake-repo/issues/99), [#100](https://github.com/fake-user/fake-repo/issues/100)</sup>
+* **foo:** incredible new flag FIXES: [#33](https://github.com/fake-user/fake-repo/issues/33)-[#22](https://github.com/fake-user/fake-repo/issues/22) ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### 🪄 Fixes
+
+* Use npm@5 ([@username](https://github.com/username)) ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### ⚙️ Build system
+
+* **deps:** bump @dummy/package from 7.1.2 to 8.0.0 (thanks [@Xunnamius](https://github.com/Xunnamius), [@suimannux](https://github.com/suimannux) [@user1](https://github.com/user1)/[@user2](https://github.com/user2), [@user3](https://github.com/user3)/@+u%+(#bad email@aol.com with help from [@merchanz039f9](https://github.com/merchanz039f9)) ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### [0.2.1](https://github.com/fake-user/fake-repo/compare/v0.2.0...v0.2.1) (date)
+
+#### ✨ Features
+
+* Implementing [#5](https://github.com/fake-user/fake-repo/issues/5) by [@dlmr](https://github.com/dlmr) ([X](https://github.com/fake-user/fake-repo/commit/X)) <sup>see [#10](https://github.com/fake-user/fake-repo/issues/10)</sup>
+
+## [0.2.0](https://github.com/fake-user/fake-repo/compare/v0.1.0...v0.2.0) (date)
+
+### ✨ Features
+
+* **another:** more features ([X](https://github.com/fake-user/fake-repo/commit/X))
+* Even more features ([X](https://github.com/fake-user/fake-repo/commit/X))
+* Some more features ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+## [0.1.0](https://github.com/fake-user/fake-repo/compare/X...v0.1.0) (date)
+
+### 💥 BREAKING CHANGES 💥
+
+* Changes [#55](https://github.com/fake-user/fake-repo/issues/55) [#66](https://github.com/fake-user/fake-repo/issues/66), and [#77](https://github.com/fake-user/fake-repo/issues/77) are huge.
+
+* CHANGES: Not backwards compatible (GH-2) (GH-3).
+
+* Continuously integrated.
+
+* New build system.
+
+* The Change is huge.
+
+* The Change is huge.
+
+* The Change is huge.
+
+* The Change is huge.
+
+* The Change is huge.
+
+* The Change is huge.
+
+### ✨ Features
+
+* Amazing new module ([X](https://github.com/fake-user/fake-repo/commit/X)) <sup>see [#1234<img alt="external reference" title="(this issue is from a different repository)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==" />](https://github.com/other-fake-user/other-fake-repo/issues/1234)</sup>
+* **awesome1:** addresses the issue brought up in [#133](https://github.com/fake-user/fake-repo/issues/133), [#233](https://github.com/fake-user/fake-repo/issues/233) ([X](https://github.com/fake-user/fake-repo/commit/X))
+* **awesome2:** [#331<img alt="external reference" title="(this issue is from a different repository)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==" />](https://github.com/owner/repo/issues/331), [#441<img alt="external reference" title="(this issue is from a different repository)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==" />](https://github.com/owner/repo/issues/441), and [#551](https://github.com/fake-user/fake-repo/issues/551) ([X](https://github.com/fake-user/fake-repo/commit/X))
+* **awesome:** address EXAMPLE-1 EXAMPLE-2 ([X](https://github.com/fake-user/fake-repo/commit/X))
+* **awesome:** fix [#88](https://github.com/fake-user/fake-repo/issues/88) ([X](https://github.com/fake-user/fake-repo/commit/X))
+* **awesome:** issue brought up by [@bcoe](https://github.com/bcoe)! on Friday ([X](https://github.com/fake-user/fake-repo/commit/X))
+* Some more feats ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### 🪄 Fixes
+
+* **changelog:** proper issue links 1 ([X](https://github.com/fake-user/fake-repo/commit/X)) <sup>see [#1](https://github.com/fake-user/fake-repo/issues/1), [#358<img alt="external reference" title="(this issue is from a different repository)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==" />](https://github.com/other-fake-user/other-fake-repo/issues/358), [#853<img alt="external reference" title="(this issue is from a different repository)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==" />](https://github.com/other-fake-user/other-fake-repo/issues/853)</sup>
+* **changelog:** proper issue links 2 ([X](https://github.com/fake-user/fake-repo/commit/X))
+* **compile:** avoid a bug ([X](https://github.com/fake-user/fake-repo/commit/X))
+* Oops ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### ⚡️ Optimizations
+
+* **ngoptions:** make it faster ([X](https://github.com/fake-user/fake-repo/commit/X)) <sup>see [#1](https://github.com/fake-user/fake-repo/issues/1), [#2](https://github.com/fake-user/fake-repo/issues/2)</sup>
+
+### ⚙️ Build system
+
+* First build setup ([X](https://github.com/fake-user/fake-repo/commit/X))
+* **npm:** edit build script ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### 📚 Documentation
+
+* **readme:** make it clear ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### 💎 Aesthetics
+
+* **whitespace:** make it easier to read ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### 🏭 CI/CD
+
+* **travis:** add TravisCI pipeline ([X](https://github.com/fake-user/fake-repo/commit/X))
+* **travis:** setup travis ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### 🧙🏿 Refactored
+
+* **code:** change a lot of code ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### ⚗️ Test system
+
+* More tests ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+### 🔥 Reverted
+
+* **ngoptions:** *"feat(headstrong): bad commit"* ([X](https://github.com/fake-user/fake-repo/commit/X))
+
+"
+`;

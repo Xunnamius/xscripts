@@ -1,4 +1,6 @@
 /* eslint-disable no-await-in-loop */
+// * These tests ensure the asset config exports function as expected
+
 import assert from 'node:assert';
 
 import conventionalChangelogCore, {
@@ -38,21 +40,6 @@ const commitTypeSections: Record<
 
 // TODO: need to do monorepo tests too
 
-it('matches changelog snapshot when there are semver tags in the repo', async () => {
-  expect.hasAssertions();
-
-  await withMockedFixtureWrapper(
-    {
-      async test() {
-        const config = moduleExport();
-        const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
-        expect(changelog).toMatchSnapshot();
-      }
-    },
-    generatePatchesForEnvironment11()
-  );
-});
-
 it('matches changelog snapshot when there are no semver tags in the repo', async () => {
   expect.hasAssertions();
 
@@ -65,6 +52,21 @@ it('matches changelog snapshot when there are no semver tags in the repo', async
       }
     },
     generatePatchesForEnvironment1()
+  );
+});
+
+it('matches changelog snapshot when there are semver tags in the repo', async () => {
+  expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        const config = moduleExport();
+        const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
+        expect(changelog).toMatchSnapshot();
+      }
+    },
+    generatePatchesForEnvironment11()
   );
 });
 
@@ -82,12 +84,12 @@ it('appends commit short-hash and repo link to the end of commits of non-hidden 
 
         const commits = await git.log({ multiLine: true });
 
-        commits.all.forEach(({ hash, body }) => {
-          const isBreaking = body.includes('BREAKING');
+        commits.all.forEach(({ hash, body: bodyAndFooter }) => {
+          const isBreaking = bodyAndFooter.includes('BREAKING');
           const urlStart = ` ([${hash.slice(0, 7)}`;
           const urlEnd = `/commit/${hash}))`;
 
-          const messageSplit = body.split(':');
+          const messageSplit = bodyAndFooter.split(':');
           const messageSplit_ = messageSplit[0].split('(');
 
           const [type, scope] = [
@@ -265,7 +267,8 @@ it('handles aliased types with the same section name', async () => {
 
         expect(changelog).toMatch(
           new RegExp(
-            `# ${wellKnownCommitTypes[0].section!}\n+[^#]+\\* Amazing new module[^#]+\\* New type from Xunnamius[^#]+\\* \\*\\*some-scope:\\*\\* new type from Xunnamius`
+            `### ${wellKnownCommitTypes[0].section!}\n+.+\\* New type from Xunnamius[^#]+\\* \\*\\*some-scope:\\*\\* new type from Xunnamius[^#]+### ${wellKnownCommitTypes[1].section!}\n`,
+            'vs'
           )
         );
       }
@@ -541,7 +544,7 @@ it('populates breaking change notes if "!" is present', async () => {
       async test() {
         const config = moduleExport();
         const changelog = await runConventionalChangelog(config, { releaseCount: 2 });
-        expect(changelog).toInclude('* Incredible new flag FIXES: #33');
+        expect(changelog).toInclude('* Incredible new flag FIXES: [#33](');
       }
     },
     generatePatchesForEnvironment9()
@@ -581,7 +584,7 @@ it('outputs as one line all lines of multi-line breaking change notes with each 
   );
 });
 
-it('adds a data image, proper owner/repo, and format to external repository issues by default', async () => {
+it('linkifies all external issue references in and adds a data image to subjects and breaking notes', async () => {
   expect.hasAssertions();
 
   await withMockedFixtureWrapper(
@@ -590,20 +593,72 @@ it('adds a data image, proper owner/repo, and format to external repository issu
         const config = moduleExport();
         const changelog = await runConventionalChangelog(config);
 
-        expect(changelog).toInclude(
-          '[#1](https://github.com/fake-user/fake-repo/issues/1)'
-        );
-
         expect(changelog).toMatch(
           /\[#358<img .*? \/>]\(https:\/\/github\.com\/other-fake-user\/other-fake-repo\/issues\/358\)/
         );
+
+        expect(changelog).toMatch(
+          /\[#853<img .*? \/>]\(https:\/\/github\.com\/other-fake-user\/other-fake-repo\/issues\/853\)/
+        );
+
+        expect(changelog).toMatch(
+          /\[#331<img .*? \/>]\(https:\/\/github\.com\/owner\/repo\/issues\/331\)/
+        );
+
+        expect(changelog).toMatch(
+          /\[#441<img .*? \/>]\(https:\/\/github\.com\/owner\/repo\/issues\/441\)/
+        );
       }
     },
-    generatePatchesForEnvironment1()
+    generatePatchesForEnvironment2()
   );
 });
 
-it('properly formats repository issues given an issueUrlFormat and prefix', async () => {
+it('linkifies all internal issue references in subjects and breaking notes', async () => {
+  expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
+
+          expect(changelog).toInclude(
+            '[#133](https://github.com/fake-user/fake-repo/issues/133)'
+          );
+
+          expect(changelog).toInclude(
+            '[#233](https://github.com/fake-user/fake-repo/issues/233)'
+          );
+
+          expect(changelog).toInclude(
+            '[#55](https://github.com/fake-user/fake-repo/issues/55)'
+          );
+
+          expect(changelog).toInclude(
+            '[#66](https://github.com/fake-user/fake-repo/issues/66)'
+          );
+
+          expect(changelog).toInclude(
+            '[#77](https://github.com/fake-user/fake-repo/issues/77)'
+          );
+
+          expect(changelog).toInclude(
+            '[#33](https://github.com/fake-user/fake-repo/issues/33)'
+          );
+
+          expect(changelog).toInclude(
+            '[#22](https://github.com/fake-user/fake-repo/issues/22)'
+          );
+        }
+      }
+    },
+    generatePatchesForEnvironment9()
+  );
+});
+
+it('linkifies all internal and external issues in subjects and breaking notes given custom issueUrlFormat and prefix', async () => {
   expect.hasAssertions();
 
   await withMockedFixtureWrapper(
@@ -619,9 +674,15 @@ it('properly formats repository issues given an issueUrlFormat and prefix', asyn
 
           expect(changelog).toInclude('[#1](issues://fake-repo/issues/1)');
           expect(changelog).toInclude('[GH-1](issues://fake-repo/issues/1)');
+          expect(changelog).toInclude('[GH-2](issues://fake-repo/issues/2)');
+          expect(changelog).toInclude('[GH-3](issues://fake-repo/issues/3)');
 
           expect(changelog).toMatch(
-            /\[#358<img .*? \/>]\(issues:\/\/fake-repo\/issues\/358\)/
+            /\[#358<img .*? \/>]\(issues:\/\/other-fake-repo\/issues\/358\)/
+          );
+
+          expect(changelog).toMatch(
+            /\[#853<img .*? \/>]\(issues:\/\/other-fake-repo\/issues\/853\)/
           );
         }
 
@@ -636,6 +697,10 @@ it('properly formats repository issues given an issueUrlFormat and prefix', asyn
           expect(changelog).toInclude(
             '[EXAMPLE-1](https://example.com/browse/EXAMPLE-1)'
           );
+
+          expect(changelog).toInclude(
+            '[EXAMPLE-2](https://example.com/browse/EXAMPLE-2)'
+          );
         }
       }
     },
@@ -643,20 +708,37 @@ it('properly formats repository issues given an issueUrlFormat and prefix', asyn
   );
 });
 
-it('replaces issues text with GitHub format issue URL by default', async () => {
+it('linkifies issue references as internal even when they are given using external syntax in subjects and breaking notes', async () => {
+  expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
+          expect(changelog).toInclude(
+            '[#551](https://github.com/fake-user/fake-repo/issues/551)'
+          );
+        }
+      }
+    },
+    generatePatchesForEnvironment9()
+  );
+});
+
+it('removes issue refs from superscript that already appear in the subject', async () => {
   expect.hasAssertions();
 });
 
-it('removes issues that already appear in the subject', async () => {
+it('linkifies @user with configured userUrlFormat', async () => {
   expect.hasAssertions();
 });
 
-it('replaces @user with configured userUrlFormat', async () => {
+it('does not linkify @user if it is a scoped package (including with hyphens)', async () => {
   expect.hasAssertions();
-});
-
-it('only replaces @user string if it is a username', async () => {
-  expect.hasAssertions();
+  // TODO: @user1/@user2 should get linkified; @package/scoped, @pkg/scoped@beta
+  // TODO: and npm@5 should not
 });
 
 it('works with unknown host', async () => {
@@ -685,6 +767,27 @@ it('falls back to the closest package.json when not providing a location for a p
 
 it('removes xpipeline command suffixes from commit subjects', async () => {
   expect.hasAssertions();
+
+  await withMockedFixtureWrapper(
+    {
+      async test() {
+        {
+          const config = moduleExport();
+          const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
+
+          expect(changelog).toInclude('* Something else skip1\n');
+          expect(changelog).toInclude('* **scope:** something else skip1 ([X]');
+          expect(changelog).toInclude('* Something else skip2 ([X]');
+          expect(changelog).toInclude(
+            '* Something other skip3 [CI SKIP][skip ci][sKiP cd][cd skip] ([X]'
+          );
+          expect(changelog).toInclude('* Something other skip4 ([X]');
+          expect(changelog).toInclude('*"build(bore): include1 [skip cd]"*');
+        }
+      }
+    },
+    generatePatchesForEnvironment11()
+  );
 });
 
 function getBaseEnvironmentConfig({
@@ -818,14 +921,14 @@ function generatePatchesForEnvironment1(): TestEnvironmentPatch[] {
       messages: [
         'build!: first build setup\n\nBREAKING: New build system.',
         'ci(travis): add TravisCI pipeline\n\nBREAKING CHANGE: Continuously integrated.',
-        'Feat: amazing new module\n\nBREAKING CHANGES: Not backward compatible.',
-        'Fix(compile): avoid a bug\nBREAKING CHANGE: The Change is huge.',
+        'Feat: amazing new module\n\nBREAKING CHANGES: Not backwards compatible (GH-2) (GH-3).\n\nthis is due to other-fake-user/other-fake-repo#1234.',
+        'Fix(compile): avoid a bug\nBREAKING CHANGE: changes #55 #66, and #77 are huge.',
         'perf(ngOptions): make it faster\n closes #1, #2',
-        'fix(changelog): proper issue links\n\nsee #1, other-fake-user/other-fake-repo#358',
+        'fix(changelog): proper issue links 1\n\nsee #1, other-fake-user/other-fake-repo#358, other-fake-user/other-fake-repo#853',
         'revert(ngOptions): "feat(headstrong): bad commit"',
         'fix(*): oops',
-        'fix(changelog): proper issue links\n\nsee GH-1',
-        'feat(awesome): address EXAMPLE-1',
+        'fix(changelog): proper issue links 2\n\nsee GH-1',
+        'feat(awesome): address EXAMPLE-1 EXAMPLE-2',
         'chore(deps): upgrade example from 1 to 2',
         'chore(release): release 0.0.0'
       ]
@@ -836,7 +939,10 @@ function generatePatchesForEnvironment1(): TestEnvironmentPatch[] {
 function generatePatchesForEnvironment2(): TestEnvironmentPatch[] {
   return generatePatchesForEnvironment1().concat([
     {
-      messages: ['feat(awesome): addresses the issue brought up in #133']
+      messages: [
+        'feat(awesome1): addresses the issue brought up in #133, #233',
+        'feat(awesome2): owner/repo#331, owner/repo#441, and fake-user/fake-repo#551'
+      ]
     }
   ]);
 }
@@ -844,7 +950,7 @@ function generatePatchesForEnvironment2(): TestEnvironmentPatch[] {
 function generatePatchesForEnvironment3(): TestEnvironmentPatch[] {
   return generatePatchesForEnvironment2().concat([
     {
-      messages: ['feat(awesome): fix #88']
+      messages: ['feat(awesome): fix #88\n\ncloses #88']
     }
   ]);
 }
@@ -940,7 +1046,7 @@ function generatePatchesForEnvironment9(): TestEnvironmentPatch[] {
         'fix: use npm@5 (@username)',
         'build(deps): bump @dummy/package from 7.1.2 to 8.0.0 (thanks @Xunnamius, @suimannux @user1/@user2, @user3/@+u%+(#bad email@aol.com with help from @merchanz039f9)\n\nBREAKING CHANGE: The Change is huge. Big. Really big.\n\nReally. Like super big.\nWow!\n\nHere\nare\nsome\nextra details!',
         'feat: complex new feature\n\nThis is a complex new feature with many reviewers\nReviewer: @hutson\nFixes: #99\nRefs: #100\n\nBREAKING CHANGE: this completely changes the API',
-        'FEAT(FOO)!: incredible new flag FIXES: #33'
+        'FEAT(FOO)!: incredible new flag FIXES: #33-#22'
       ],
       async callback({ context: { git, fs } }) {
         await fs.writeFile({
@@ -986,9 +1092,11 @@ function generatePatchesForEnvironment11(): TestEnvironmentPatch[] {
     {
       messages: [
         'refactor(code): big bigly big change skip1! [skip ci]\n\nBREAKING CHANGE: the change is bigly luxurious 5-stars everybody is saying',
+        'feat(scope)!: something else skip1 [cd skip]',
         'feat: something else skip2 [cd skip]',
         'fix: something other skip3 [CI SKIP][skip ci][sKiP cd][cd skip]',
-        'revert: "build(bore): include1 [skipcd]'
+        'fix: something other skip4 [CI SKIP, skip ci, sKiP cd, cd skip]',
+        'revert: "build(bore): include1 [skip cd]"'
       ],
       async callback({ context: { git, fs } }) {
         await fs.writeFile({
