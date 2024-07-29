@@ -48,6 +48,7 @@ module.exports = {
       }
     ],
     // TODO: augment this so that the latest section gets put in here properly
+    // TODO: (write new section out, then read it in via scripts build changelog)
     ...(updateChangelog
       ? [
           [
