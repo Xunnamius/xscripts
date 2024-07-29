@@ -181,17 +181,11 @@ export function assertIsExpectedTransformerContext<
 /**
  * A thin wrapper around lodash's {@link mergeWith} that does not mutate
  * `originalConfiguration`.
- *
- * Note that this function returns an object that prototypically inherits the
- * properties of `originalConfiguration`. This avoids mutating
- * `originalConfiguration` directly, which may not be desirable. This also
- * preserves `originalConfiguration`'s getters, setters, and other descriptors.
  */
-export function deepMergeConfig<ConfigurationType extends object>(
+export function deepMergeConfig<ConfigurationType>(
   originalConfiguration: ConfigurationType,
   overwrites: ConfigurationType | EmptyObject = {},
   customReplacer?: MergeWithCustomizer
 ): ConfigurationType {
-  const derivedConfiguration = Object.create(originalConfiguration);
-  return mergeWith(derivedConfiguration, overwrites, customReplacer);
+  return mergeWith({}, originalConfiguration, overwrites, customReplacer);
 }
