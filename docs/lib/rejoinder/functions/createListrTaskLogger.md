@@ -34,4 +34,4 @@ The task to which logging output will be sent.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:202](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/lib/rejoinder/index.ts#L202)
+[lib/rejoinder/index.ts:202](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/lib/rejoinder/index.ts#L202)

@@ -14,7 +14,7 @@
 
 #### Defined in
 
-[src/commands/deploy.ts:27](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/src/commands/deploy.ts#L27)
+[src/commands/deploy.ts:27](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/src/commands/deploy.ts#L27)
 
 ***
 
@@ -24,4 +24,4 @@
 
 #### Defined in
 
-[src/commands/deploy.ts:26](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/src/commands/deploy.ts#L26)
+[src/commands/deploy.ts:26](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/src/commands/deploy.ts#L26)

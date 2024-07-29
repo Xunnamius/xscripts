@@ -13,4 +13,4 @@ directly to each transformer. Will be wrapped with Partial.
 
 ## Defined in
 
-[src/assets/index.ts:72](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/src/assets/index.ts#L72)
+[src/assets/index.ts:72](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/src/assets/index.ts#L72)
