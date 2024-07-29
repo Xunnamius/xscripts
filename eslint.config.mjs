@@ -187,6 +187,8 @@ const genericRules = {
       ignoreStatic: true
     }
   ],
+  // ? I don't want to have to ask "what happens if I change the global flag".
+  '@typescript-eslint/prefer-regexp-exec': 'off',
 
   // * unicorn
   'unicorn/no-keyword-prefix': 'warn',
