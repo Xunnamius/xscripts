@@ -20,16 +20,16 @@
       "default": "./dist/src/cli.js"
     },
     "./commands/*": {
-      "types": "./dist/src/commands/*",
-      "default": "./dist/src/commands/*"
+      "types": "./dist/src/commands/*.d.ts",
+      "default": "./dist/src/commands/*.js"
     },
     "./assets": {
       "types": "./dist/src/assets/index.d.ts",
       "default": "./dist/src/assets/index.js"
     },
     "./assets/config/*": {
-      "types": "./dist/src/assets/config/_*",
-      "default": "./dist/src/assets/config/_*"
+      "types": "./dist/src/assets/config/_*.d.ts",
+      "default": "./dist/src/assets/config/_*.js"
     },
     "./configure": {
       "types": "./dist/src/configure.d.ts",
@@ -44,10 +44,13 @@
         "dist/src/cli.d.ts"
       ],
       "commands/*": [
-        "dist/src/commands/*"
+        "dist/src/commands/*.d.ts"
       ],
       "assets": [
         "dist/src/assets/index.d.ts"
+      ],
+      "assets/config/*": [
+        "dist/src/assets/config/_*.d.ts"
       ],
       "configure": [
         "dist/src/configure.d.ts"
