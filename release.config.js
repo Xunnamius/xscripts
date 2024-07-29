@@ -47,7 +47,7 @@ module.exports = {
         writerOpts
       }
     ],
-    ['@semantic-release/npm'],
+    // TODO: augment this so that the latest section gets put in here properly
     ...(updateChangelog
       ? [
           [
@@ -71,6 +71,7 @@ module.exports = {
         message: 'release: ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}'
       }
     ],
+    ['@semantic-release/npm'],
     ['@semantic-release/github']
   ]
 };

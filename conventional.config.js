@@ -1,4 +1,5 @@
 'use strict';
-module.exports = require('@xunnamius/conventional-changelog-projector')({
-  // * Your customizations here
-});
+module.exports =
+  require('@-xun/scripts/assets/config/conventional.config.js').moduleExport({
+    // * Your customizations here
+  });
