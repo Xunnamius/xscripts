@@ -79,5 +79,11 @@ export const ErrorMessage = {
   },
   IssuePrefixContainsIllegalCharacters() {
     return 'issue prefixes cannot contain characters recognized by the RegExp constructor';
+  },
+  CannotImportConventionalConfig(path: string) {
+    return `failed to import conventional configuration file: ${path}`;
+  },
+  DefaultImportFalsy() {
+    return 'default import was falsy';
   }
 };

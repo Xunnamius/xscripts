@@ -1,4 +1,8 @@
+import { createWriteStream } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
+
 import { CliError, type ChildConfiguration } from '@black-flag/core';
+import conventionalChangelogCore from 'conventional-changelog-core';
 
 import {
   getInvocableExtendedHandler,
@@ -17,19 +21,29 @@ import {
 } from 'multiverse/@-xun/cli-utils/extensions';
 
 import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { run } from 'multiverse/run';
 
 import {
   default as format,
   type CustomCliArguments as FormatCliArguments
 } from 'universe/commands/format';
 
-import { defaultChangelogTopmatter } from 'universe/assets/config/_conventional.config.js';
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
 import { globalPreChecks, readFile, writeFile } from 'universe/util';
 
+import {
+  type ConventionalChangelogCliConfig,
+  defaultChangelogTopmatter
+} from 'universe/assets/config/_conventional.config.js';
+
 import type { Promisable } from 'type-fest';
+
+export enum OutputOrder {
+  Storybook = 'storybook',
+  Descending = 'descending'
+}
+
+export const availableOutputOrders = Object.values(OutputOrder);
 
 export type CustomCliArguments = GlobalCliArguments & {
   skipTopmatter: boolean;
@@ -37,6 +51,7 @@ export type CustomCliArguments = GlobalCliArguments & {
   formatChangelog: boolean;
   onlyPatchChangelog: boolean;
   outputUnreleased: boolean;
+  outputOrder: OutputOrder;
 };
 
 export default function command(
@@ -77,6 +92,11 @@ export default function command(
       boolean: true,
       description: 'Add all commits, including unreleased commits, to the changelog',
       default: false
+    },
+    'output-order': {
+      choices: availableOutputOrders,
+      description: 'Set the order in which sections are written to the changelog',
+      default: 'storybook'
     }
   });
 
@@ -84,7 +104,7 @@ export default function command(
     builder,
     description: 'Compile a changelog from conventional commits',
     usage: withStandardUsage(
-      '$1.\n\nUse --patch-changelog and --no-patch-changelog (or --only-patch-changelog) to control CHANGELOG.md patching via the changelog.patch.js (or changelog.patch.[cm]js) file. Searching for this file will begin at the current working directory and, if not found, continue up to the project root.\n\nSee the xscripts documentation for details.'
+      '$1.\n\nUse --output-order to control the order in which major, minor, and patch version sections will be output to CHANGELOG.md. The default order is "storybook," which places patch versions below the nearest major/minor version section. The other choice is "descending," which will output sections in the more familiar chronological descending order.\n\nUse --patch-changelog and --no-patch-changelog (or --only-patch-changelog) to control CHANGELOG.md patching via the changelog.patch.js (or changelog.patch.[cm]js) file. Searching for this file will begin at the current working directory and, if not found, continue up to the project root.\n\nSee the xscripts documentation for details.'
     ),
     handler: withStandardHandler(async function (argv) {
       const {
@@ -93,7 +113,8 @@ export default function command(
         formatChangelog,
         patchChangelog,
         onlyPatchChangelog,
-        outputUnreleased
+        outputUnreleased,
+        outputOrder
       } = argv;
 
       const genericLogger = log.extend(scriptBasename(scriptFullName));
@@ -117,37 +138,127 @@ export default function command(
       debug('patchChangelog: %O', patchChangelog);
       debug('onlyPatchChangelog: %O', onlyPatchChangelog);
       debug('outputUnreleased: %O', outputUnreleased);
-
-      const conventionalConfigPath = `${root}/conventional.config.js`;
-      debug('conventionalConfigPath: %O', conventionalConfigPath);
+      debug('outputOrder: %O', outputOrder);
 
       if (onlyPatchChangelog) {
         debug('skipped regenerating CHANGELOG.md');
       } else {
-        await run('npx', [
-          'conventional-changelog',
-          '--outfile',
-          'CHANGELOG.md',
-          '--config',
-          conventionalConfigPath,
-          '--release-count',
-          '0',
-          '--skip-unstable',
-          ...(outputUnreleased ? ['--output-unreleased'] : [])
-        ]);
+        const conventionalConfigPath = `${root}/conventional.config.js`;
+        const changelogOutputPath = 'CHANGELOG.md';
+
+        debug('conventionalConfigPath: %O', conventionalConfigPath);
+        debug('outputting changelog to path: %O', changelogOutputPath);
+
+        const conventionalConfig = await (async () => {
+          try {
+            const { default: config } = await import(conventionalConfigPath);
+
+            if (!config) {
+              throw new Error(ErrorMessage.DefaultImportFalsy());
+            }
+
+            return config as ConventionalChangelogCliConfig;
+          } catch (error) {
+            throw new CliError(
+              ErrorMessage.CannotImportConventionalConfig(conventionalConfigPath),
+              { cause: error }
+            );
+          }
+        })();
+
+        debug.extend('cc')('conventionalConfig: %O', conventionalConfig);
+
+        const { gitRawCommitsOpts, parserOpts, writerOpts } = conventionalConfig;
+        // TODO: perhaps this can be of use later...
+        const handlebarsTemplateGlobalContext = undefined;
+
+        const changelogSectionStream = conventionalChangelogCore(
+          {
+            config: conventionalConfig,
+            releaseCount: 0,
+            skipUnstable: true,
+            outputUnreleased,
+            warn: genericLogger.extend('cc-core').warn
+          },
+          handlebarsTemplateGlobalContext,
+          gitRawCommitsOpts,
+          parserOpts,
+          writerOpts
+        );
+
+        const changelogOutputStream = createWriteStream(changelogOutputPath);
 
         if (skipTopmatter) {
           debug('skipped prepending topmatter to CHANGELOG.md');
         } else {
           debug('prepending topmatter to CHANGELOG.md');
-
           debug('defaultChangelogTopmatter: %O', defaultChangelogTopmatter);
-
-          const contents = await readFile('CHANGELOG.md');
-          debug(`prepending changelog topmatter to file at path: %O`, 'CHANGELOG.md');
-
-          await writeFile('CHANGELOG.md', `${defaultChangelogTopmatter}\n\n${contents}`);
+          changelogOutputStream.write(`${defaultChangelogTopmatter}\n\n`);
         }
+
+        const withheldChangelogPatchSections: string[] = [];
+
+        await pipeline(
+          changelogSectionStream,
+          async function* (source) {
+            const debug_ = debug.extend('tap');
+            debug_('initialized tap on changelog section stream');
+
+            source.setEncoding('utf8');
+
+            for await (const chunk of source as unknown as string[]) {
+              debug_('saw chunk: %O', chunk.slice(0, 20), '...');
+
+              if (outputOrder === OutputOrder.Descending) {
+                debug_('descending sort order: chunk passed through as-is');
+                yield chunk;
+              } else {
+                const isPatchChunk = chunk.startsWith('### ');
+
+                if (!isPatchChunk) {
+                  debug_('storybook sort order: non-patch chunk passed through');
+                  yield chunk;
+
+                  debug_(
+                    'storybook sort order: %O patch chunks released',
+                    withheldChangelogPatchSections.length
+                  );
+
+                  if (withheldChangelogPatchSections.length) {
+                    yield '---\n\n';
+
+                    for (const section of withheldChangelogPatchSections) {
+                      yield '### 🏗️ Patch ' + section.slice(4);
+                    }
+                  }
+
+                  withheldChangelogPatchSections.length = 0;
+                } else {
+                  debug_('storybook sort order: patch chunk held');
+                  withheldChangelogPatchSections.push(chunk);
+                  yield '';
+                }
+              }
+            }
+
+            if (withheldChangelogPatchSections.length) {
+              debug_(
+                'storybook sort order: %O patch chunks released (no non-patch available)',
+                withheldChangelogPatchSections.length
+              );
+
+              for (const section of withheldChangelogPatchSections) {
+                // ? These are probably pre-1.0.0 sections. Give each of this
+                // ? patches-only changelog's sections -1 heading level (i.e.
+                // ? promote them)
+                yield section.slice(1);
+              }
+
+              withheldChangelogPatchSections.length = 0;
+            }
+          },
+          changelogOutputStream
+        );
       }
 
       if (formatChangelog) {
