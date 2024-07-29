@@ -61,9 +61,10 @@ module.exports = {
         // ? We don't care about minification
       ],
       plugins: [
+        // TODO: investigate why this is causing a strange error with coverage
         // ? Only active when testing, the plugin solves the following problem:
         // ? https://stackoverflow.com/q/40771520/1367414
-        'explicit-exports-references'
+        //'explicit-exports-references'
       ]
     },
     // * Used by `npm run build` for compiling CJS to code output in ./dist
