@@ -10,7 +10,7 @@ const updateChangelog = process.env.UPDATE_CHANGELOG !== 'false';
 
 debug(`will update changelog: ${updateChangelog ? 'yes' : 'no'}`);
 
-const { changelogTopmatter, parserOpts, writerOpts } = require('./conventional.config');
+const { parserOpts, writerOpts } = require('./conventional.config');
 
 module.exports = {
   branches: [
@@ -47,33 +47,17 @@ module.exports = {
         writerOpts
       }
     ],
+    ['@semantic-release/npm'],
     ...(updateChangelog
       ? [
           [
             '@semantic-release/exec',
             {
-              prepareCmd:
-                'NODE_NO_WARNINGS=1 npx xscripts build changelog --skip-topmatter --no-format-changelog'
-            }
-          ],
-          ['@semantic-release/changelog', { changelogTitle: changelogTopmatter }],
-          [
-            '@semantic-release/exec',
-            {
-              prepareCmd:
-                'NODE_NO_WARNINGS=1 npx xscripts build changelog --only-patch-changelog --no-format-changelog'
-            }
-          ],
-          [
-            '@semantic-release/exec',
-            {
-              prepareCmd:
-                'NODE_NO_WARNINGS=1 npx xscripts format --hush --no-skip-ignored --renumber-references --files CHANGELOG.md'
+              prepareCmd: 'NODE_NO_WARNINGS=1 npx xscripts build changelog'
             }
           ]
         ]
       : []),
-    ['@semantic-release/npm'],
     [
       '@semantic-release/git',
       {
