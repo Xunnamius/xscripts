@@ -18,18 +18,30 @@
 
 > **rules**: `object`
 
+### rules.body-case
+
+> **body-case**: (`string` \| [`Disabled`](../enumerations/ErrorLevel.md#disabled) \| [`Warn`](../enumerations/ErrorLevel.md#warn) \| [`Error`](../enumerations/ErrorLevel.md#error))[]
+
+### rules.body-full-stop
+
+> **body-full-stop**: ([`ErrorLevel`](../enumerations/ErrorLevel.md) \| [`Applicable`](../enumerations/Applicable.md))[]
+
 ### rules.body-leading-blank
 
-> **body-leading-blank**: (`string` \| `number`)[]
+> **body-leading-blank**: ([`ErrorLevel`](../enumerations/ErrorLevel.md) \| [`Applicable`](../enumerations/Applicable.md))[]
 
 ### rules.footer-leading-blank
 
-> **footer-leading-blank**: (`string` \| `number`)[]
+> **footer-leading-blank**: ([`ErrorLevel`](../enumerations/ErrorLevel.md) \| [`Applicable`](../enumerations/Applicable.md))[]
+
+### rules.header-trim
+
+> **header-trim**: ([`ErrorLevel`](../enumerations/ErrorLevel.md) \| [`Applicable`](../enumerations/Applicable.md))[]
 
 ### rules.type-enum
 
-> **type-enum**: (`string` \| `number` \| `string`[])[]
+> **type-enum**: (`string`[] \| [`ErrorLevel`](../enumerations/ErrorLevel.md) \| [`Applicable`](../enumerations/Applicable.md))[]
 
 ## Defined in
 
-[src/assets/config/\_commitlint.config.js.ts:7](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/assets/config/_commitlint.config.js.ts#L7)
+[src/assets/config/\_commitlint.config.js.ts:24](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/src/assets/config/_commitlint.config.js.ts#L24)

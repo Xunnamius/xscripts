@@ -25,7 +25,7 @@ Send an optionally-formatted message to output.
 
 ### Defined in
 
-[lib/debug-extended/index.ts:141](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/debug-extended/index.ts#L141)
+[lib/debug-extended/index.ts:141](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/lib/debug-extended/index.ts#L141)
 
 ## debugFactory(args)
 
@@ -43,7 +43,7 @@ Send an optionally-formatted message to output.
 
 ### Defined in
 
-[lib/debug-extended/index.ts:141](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/debug-extended/index.ts#L141)
+[lib/debug-extended/index.ts:141](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/lib/debug-extended/index.ts#L141)
 
 ## debugFactory(namespace)
 
@@ -62,4 +62,4 @@ via [extendDebugger](extendDebugger.md).
 
 ### Defined in
 
-[lib/debug-extended/index.ts:141](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/debug-extended/index.ts#L141)
+[lib/debug-extended/index.ts:141](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/lib/debug-extended/index.ts#L141)

@@ -51,6 +51,7 @@
 - [src/assets/config/\_tsconfig.json](src/assets/config/_tsconfig.json/README.md)
 - [src/assets/config/\_tsconfig.lint.json](src/assets/config/_tsconfig.lint.json/README.md)
 - [src/assets/config/\_tsconfig.types.json](src/assets/config/_tsconfig.types.json/README.md)
+- [src/assets/config/\_turbo.config.js](src/assets/config/_turbo.config.js/README.md)
 - [src/cli](src/cli/README.md)
 - [src/commands](src/commands/README.md)
 - [src/commands/build](src/commands/build/README.md)

@@ -360,6 +360,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### CannotImportConventionalConfig()
+
+#### Parameters
+
+• **path**: `string`
+
+#### Returns
+
+`string`
+
 ### CannotReadFile()
 
 #### Parameters
@@ -447,6 +457,12 @@ A collection of possible error and warning messages.
 • **conflicter**: `string`
 
 • **seenConflictingKeyValues**: `ObjectEntries`\<`object`\>
+
+#### Returns
+
+`string`
+
+### DefaultImportFalsy()
 
 #### Returns
 
@@ -738,4 +754,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/error.ts#L11)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/src/error.ts#L11)

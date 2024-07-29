@@ -34,4 +34,4 @@ Expects an xscripts project init-time (or renovate-time) context object (i.e.
 
 ## Defined in
 
-[src/assets/index.ts:100](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/assets/index.ts#L100)
+[src/assets/index.ts:100](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/src/assets/index.ts#L100)

@@ -8,6 +8,11 @@
 
 ## Index
 
+### Enumerations
+
+- [Applicable](enumerations/Applicable.md)
+- [ErrorLevel](enumerations/ErrorLevel.md)
+
 ### Type Aliases
 
 - [Context](type-aliases/Context.md)

@@ -13,4 +13,4 @@ The default text that headlines the "breaking changes" section in
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.js.ts:90](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/assets/config/_conventional.config.js.ts#L90)
+[src/assets/config/\_conventional.config.js.ts:77](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/src/assets/config/_conventional.config.js.ts#L77)

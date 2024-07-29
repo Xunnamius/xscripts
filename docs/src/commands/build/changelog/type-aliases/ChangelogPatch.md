@@ -18,4 +18,4 @@ Note that replacements are made in-place, meaning order does matter.
 
 ## Defined in
 
-[src/commands/build/changelog.ts:255](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/src/commands/build/changelog.ts#L255)
+[src/commands/build/changelog.ts:374](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/src/commands/build/changelog.ts#L374)

@@ -15,10 +15,11 @@
 
 ### Variables
 
+- [commandHeaderPattern](variables/commandHeaderPattern.md)
 - [defaultChangelogTopmatter](variables/defaultChangelogTopmatter.md)
 - [defaultIssuePrefixes](variables/defaultIssuePrefixes.md)
-- [defaultSkipCommands](variables/defaultSkipCommands.md)
 - [defaultTemplates](variables/defaultTemplates.md)
+- [inlineExternalImageElement](variables/inlineExternalImageElement.md)
 - [noteTitleForBreakingChange](variables/noteTitleForBreakingChange.md)
 - [wellKnownCommitTypes](variables/wellKnownCommitTypes.md)
 

@@ -8,6 +8,10 @@
 
 ## Index
 
+### Enumerations
+
+- [OutputOrder](enumerations/OutputOrder.md)
+
 ### Type Aliases
 
 - [ChangelogPatch](type-aliases/ChangelogPatch.md)
@@ -15,6 +19,10 @@
 - [ChangelogPatches](type-aliases/ChangelogPatches.md)
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
 - [ImportedChangelogPatcher](type-aliases/ImportedChangelogPatcher.md)
+
+### Variables
+
+- [availableOutputOrders](variables/availableOutputOrders.md)
 
 ### Functions
 

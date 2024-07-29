@@ -556,4 +556,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[lib/@-xun/cli-utils/error.ts:20](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/@-xun/cli-utils/error.ts#L20)
+[lib/@-xun/cli-utils/error.ts:20](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/lib/@-xun/cli-utils/error.ts#L20)

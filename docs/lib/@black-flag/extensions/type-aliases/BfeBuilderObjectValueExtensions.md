@@ -159,7 +159,10 @@ strings. For example:
 }
 ```
 
-For describing more complex implications, see `subOptionOf`.
+#### See
+
+ - BfeBuilderObjectValueExtensions.looseImplications
+ - BfeBuilderObjectValueExtensions.vacuousImplications
 
 ### looseImplications?
 
@@ -208,6 +211,26 @@ for details.
 
 For describing simpler implicative relations, see `implies`.
 
+### vacuousImplications?
+
+> `optional` **vacuousImplications**: `boolean`
+
+When `vacuousImplications` is set to `true` and the option is also
+configured as a "boolean" type, the implications configured via `implies`
+will still be applied to `argv` even if said option has a `false` value in
+`argv`. In the same scenario except with `vacuousImplications` set to
+`false`, the implications configured via `implies` are instead ignored.
+
+#### Default
+
+```ts
+false
+```
+
+#### See
+
+BfeBuilderObjectValueExtensions.implies
+
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:200](https://github.com/Xunnamius/xscripts/blob/57333eb95500d47b37fb5be30901f27ce55d7211/lib/@black-flag/extensions/index.ts#L200)
+[lib/@black-flag/extensions/index.ts:206](https://github.com/Xunnamius/xscripts/blob/4fd96d6123f1ac889c89848efd750e2454f43e43/lib/@black-flag/extensions/index.ts#L206)
