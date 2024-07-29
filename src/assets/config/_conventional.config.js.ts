@@ -143,9 +143,10 @@ export const defaultChangelogTopmatter =
  * #### Xpipeline footers
  *
  * Xpipeline also acknowledges well-known command strings via "xpipeline
- * footers", which are simply [spec-compliant footers]([conventional commits
- * specification]) of the form `xpipeline: command string` or `xpipeline:
- * command string 1, command string 2, etc`.
+ * footers", which are simply [spec-compliant
+ * footers](https://www.conventionalcommits.org/en/v1.0.0/#specification) of the
+ * form `xpipeline: command string` or `xpipeline: command string 1, command
+ * string 2, etc`.
  *
  * Both commands and footers can be used simultaneously.
  *
