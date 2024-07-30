@@ -232,7 +232,7 @@ export default function command(
                   );
 
                   if (withheldChangelogPatchSections.length) {
-                    yield '<sup><br />٠ —– ٠ —— ٠ –— ٠  —– ٠ —— ٠ –—  —– ٠ —— ٠ –— ٠</sup><br />\n\n';
+                    yield '٠ —– ٠ —— ٠ –— ٠  —– ٠<br />\n\n';
 
                     for (const section of withheldChangelogPatchSections) {
                       yield '### 🏗️ Patch ' + section.slice(4);
