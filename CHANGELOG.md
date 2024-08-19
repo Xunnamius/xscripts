@@ -19,7 +19,7 @@ this project adheres to [Semantic Versioning][2].
 - **commitlint.config:** expand to include several useful rules ([909949d][7])
 - **release:** take advantage of new `--output-sort` functionality ([59dd752][8])
 
-٠ —– ٠ —— ٠ –— ٠  —– ٠<br />
+٠ –— ٠ —— ٠ —— ٠  —– ٠<br />
 
 ### 🏗️ Patch [1.19.1][9] (2024-07-29)
 
@@ -99,7 +99,7 @@ this project adheres to [Semantic Versioning][2].
 - **package:** update lint scripts to use xscripts ([7c1e7f1][46])
 - **tsconfig:** remove packages glob from includes ([d3301ca][47])
 
-٠ —– ٠ —— ٠ –— ٠  —– ٠<br />
+٠ –— ٠ —— ٠ —— ٠  —– ٠<br />
 
 ### 🏗️ Patch [1.16.1][48] (2024-07-14)
 
@@ -224,7 +224,7 @@ this project adheres to [Semantic Versioning][2].
 - **src:** actually implement --skip-docs functionality in "format" command ([d535b78][100])
 - **src:** restrict root/sub-root check to certain commands ([1b65f46][101])
 
-٠ —– ٠ —— ٠ –— ٠  —– ٠<br />
+٠ –— ٠ —— ٠ —— ٠  —– ٠<br />
 
 ### 🏗️ Patch [1.10.1][102] (2024-06-29)
 
@@ -324,7 +324,7 @@ this project adheres to [Semantic Versioning][2].
 
 - **package:** use real path to devdep version of xscripts ([99d5786][135])
 
-٠ —– ٠ —— ٠ –— ٠  —– ٠<br />
+٠ –— ٠ —— ٠ —— ٠  —– ٠<br />
 
 ### 🏗️ Patch [1.4.1][136] (2024-06-02)
 
