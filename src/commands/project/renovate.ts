@@ -51,12 +51,9 @@ export default function command({
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Renovating project...');
 
-      // TODO: like init, can generate missing configs and doesn't overwrite
-      // TODO: existing configs
-      //
-      // TODO: is idempotent
-      //
-      // TODO: auto-fix anything from project lint that is auto-fixable (unless --no-auto-fix)
+      // TODO (like init, can generate missing configs and doesn't overwrite existing configs)
+      // TODO (is idempotent)
+      // TODO (auto-fix anything from project lint that is auto-fixable (unless --no-auto-fix))
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

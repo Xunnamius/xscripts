@@ -55,6 +55,10 @@ export default function command({
       // TODO (use changelog.patch.?(cm)js if available)
       // TODO (do codecov upload last)
       // TODO (tests run WITHOUT --no-warnings !!!)
+      // TODO (releases use npm provenance attestation features if --with-provenance flag is given; see https://docs.npmjs.com/generating-provenance-statements)
+      // TODO (create as an issue to note for later: simultaneously publish to GitHub Packages and NPM)
+      // TODO (check early that all required environment variables are defined and valid)
+      // TODO (ensure simultaneous releases are supported)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
