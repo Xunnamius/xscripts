@@ -17,7 +17,13 @@ export const ErrorMessage = {
     return `assertion failed: asset context value at expected key "${key}" is either not a string, is empty, or is undefined`;
   },
   BadChangelogPatcher(path: string) {
-    return `unable to import "${path}" as a JavaScript module. Please ensure it is syntactically sound and contains the expected exports (see documentation).`;
+    return `unable to import "${path}" as a JavaScript module. Please ensure it is syntactically sound and contains the expected exports (see documentation)`;
+  },
+  BadAdditionalChangelogSection(path: string) {
+    return `unable to extract valid semver version from changelog section file at path: ${path}`;
+  },
+  BadGeneratedChangelogSection() {
+    return `failed to extract valid semver version from generated changelog section`;
   },
   CannotAccessDirectory(path: string) {
     return `failed to access directory at path: ${path}`;
@@ -61,6 +67,9 @@ export const ErrorMessage = {
   },
   ArgumentMustBeNonNegative(name: string) {
     return `argument "${name}" must have a non-negative value`;
+  },
+  ArgumentMustNotBeFalsy(name: string) {
+    return `argument "${name}" must have a non-empty (non-falsy) value`;
   },
   MarkdownNoUndefinedReferences() {
     return 'cannot continue with undefined references present in one or more Markdown files';
