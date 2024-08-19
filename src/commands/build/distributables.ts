@@ -29,6 +29,7 @@ import { ErrorMessage } from 'universe/error';
 
 import {
   ProjectMetaAttribute,
+  checkIsNotNil,
   findMainBinFile,
   findProjectFiles,
   getImportSpecifierEntriesFromFiles,
@@ -115,6 +116,7 @@ export default async function command({
       string: true,
       description:
         'Override automatic extension selection for transpiled JavaScript output',
+      check: checkIsNotNil,
       coerce(argument: string) {
         argument = String(argument);
         return argument.startsWith('.') ? argument : `.${argument}`;

@@ -19,7 +19,7 @@ import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/c
 import {
   checkAllChoiceIfGivenIsByItself,
   checkChoicesNotEmpty,
-  checkIsNonNegative,
+  checkIsNotNegative,
   globalPreChecks
 } from 'universe/util';
 
@@ -124,7 +124,7 @@ export default function command({
         number: true,
         description: 'Repeat entire test suite --repeat times after initial run',
         default: 0,
-        check: checkIsNonNegative('repeat')
+        check: checkIsNotNegative('repeat')
       },
       'collect-coverage': {
         alias: 'coverage',

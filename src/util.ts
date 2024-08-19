@@ -427,6 +427,9 @@ export async function getImportSpecifierEntriesFromFiles(
   return importSpecifierEntries;
 }
 
+// TODO: also consider a package of @-xun/black-flag-common-option-checks that
+// TODO: includes the generic checks implemented below:
+
 export function checkAllChoiceIfGivenIsByItself(allChoice: string, noun: string) {
   return function (currentArg: unknown[]) {
     const includesAll = currentArg.includes(allChoice);
@@ -439,9 +442,18 @@ export function checkAllChoiceIfGivenIsByItself(allChoice: string, noun: string)
   };
 }
 
-export function checkIsNonNegative(argName: string) {
-  return function (currentArg: number) {
-    return currentArg >= 0 || ErrorMessage.ArgumentMustBeNonNegative(argName);
+export function checkIsNotNegative(argName: string) {
+  return function (currentArg: unknown) {
+    return (
+      (typeof currentArg === 'number' && currentArg >= 0) ||
+      ErrorMessage.ArgumentMustBeNonNegative(argName)
+    );
+  };
+}
+
+export function checkIsNotNil(argName: string) {
+  return function (currentArg: unknown) {
+    return !!currentArg || ErrorMessage.ArgumentMustNotBeFalsy(argName);
   };
 }
 

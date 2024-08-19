@@ -20,7 +20,12 @@ import { run } from 'multiverse/run';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { ProjectMetaAttribute, getProjectMetadata, globalPreChecks } from 'universe/util';
+import {
+  ProjectMetaAttribute,
+  checkIsNotNil,
+  getProjectMetadata,
+  globalPreChecks
+} from 'universe/util';
 
 export enum DeployTarget {
   Vercel = 'vercel',
@@ -120,6 +125,7 @@ export default function command({
       string: true,
       description: 'The vercel preview deployment custom URL (alias) ',
       requires: { target: DeployTarget.Vercel },
+      check: checkIsNotNil,
       subOptionOf: {
         target: {
           when: (target) => target !== DeployTarget.Vercel,
@@ -136,6 +142,7 @@ export default function command({
       string: true,
       description: 'The ssh deploy host',
       requires: { target: DeployTarget.Ssh },
+      check: checkIsNotNil,
       subOptionOf: {
         target: [
           {
