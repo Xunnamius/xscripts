@@ -62,7 +62,8 @@ export type ConventionalChangelogCliConfig = ConventionalChangelogConfigSpecOpti
   };
 
 /**
- * The inline image HTML element appended to links leading to external repositories. This value is also duplicated in
+ * The inline image HTML element appended to links leading to external
+ * repositories. This value is also duplicated in the commit.hbs template file.
  */
 export const inlineExternalImageElement = /*html*/ `
   <img alt="external reference" title="(this issue is from a different repository)" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==" />
@@ -72,12 +73,12 @@ export const inlineExternalImageElement = /*html*/ `
 
 /**
  * The default text that headlines the "breaking changes" section in
- * `CHANGELOG.md`.
+ * the changelog file.
  */
 export const noteTitleForBreakingChange = 'BREAKING CHANGES';
 
 /**
- * The preamble prefixed to any generated `CHANGELOG.md` file.
+ * The preamble prefixed to any generated the changelog file.
  */
 export const defaultChangelogTopmatter =
   `# Changelog\n\n` +
@@ -175,9 +176,9 @@ export const defaultIssuePrefixes = ['#'];
  * pipelines and are therefore considered "well known".
  *
  * Commit types corresponding to entries with `{ hidden: false }` will appear in
- * the generated `CHANGELOG.md` file. Commit types with `{ hidden: true }` will
- * not appear in `CHANGELOG.md` _unless the commit is marked "BREAKING" in some
- * way_.
+ * the generated the changelog file. Commit types with `{ hidden: true }` will
+ * not appear in the changelog file _unless the commit is marked "BREAKING" in
+ * some way_.
  *
  * Multiple commit types can have the same `section`, which means commits of
  * that type will be combined together under said section.
