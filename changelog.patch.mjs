@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @type {import('@-xun/scripts/commands/build/changelog.js').ChangelogPatches}
+ * @type {import('@-xun/scripts/commands/build/changelog').ChangelogPatches}
  */
 export default [
   // ? Oops
