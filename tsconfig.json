@@ -8,7 +8,7 @@
     "checkJs": false,
     // ? Only for Next.js
     // "jsx": "preserve",
-    "declaration": true,
+    "declaration": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
