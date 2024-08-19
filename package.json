@@ -6,10 +6,7 @@
     "Xunnamius"
   ],
   "homepage": "https://github.com/Xunnamius/xscripts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Xunnamius/xscripts.git"
-  },
+  "repository": "https://github.com/Xunnamius/xscripts",
   "license": "MIT",
   "author": "Xunnamius",
   "sideEffects": false,
