@@ -126,7 +126,7 @@ module.exports = {
       {
         assets: ['package.json', 'package-lock.json', 'CHANGELOG.md', 'docs'],
         // ? Make sure semantic-release uses a patched release (changelog) body.
-        message: `release: <% nextRelease.version %> [skip ci]\n\n<% ${releaseBodyTemplateEsm} %>`
+        message: `release: <%= nextRelease.version %> [skip ci]\n\n<% ${releaseBodyTemplateEsm} %>`
       }
     ],
     [
