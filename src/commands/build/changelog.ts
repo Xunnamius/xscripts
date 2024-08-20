@@ -57,7 +57,7 @@ export type CustomCliArguments = GlobalCliArguments & {
   outputUnreleased: boolean;
   outputOrder: OutputOrder;
   importSectionFile: string;
-  outputFile: string;
+  changelogFile: string;
 };
 
 export default function command(
@@ -110,7 +110,7 @@ export default function command(
       conflicts: 'only-patch-changelog',
       check: checkIsNotNil
     },
-    'output-file': {
+    'changelog-file': {
       string: true,
       description: 'The path to the changelog file to generate/update',
       default: 'CHANGELOG.md',
@@ -134,7 +134,7 @@ export default function command(
         outputUnreleased,
         outputOrder,
         importSectionFile,
-        outputFile: changelogFile
+        changelogFile
       } = argv;
 
       const genericLogger = log.extend(scriptBasename(scriptFullName));
