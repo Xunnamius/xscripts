@@ -1,6 +1,7 @@
+/// @ts-check
 'use strict';
 
-const assert = require('node:assert');
+const { readFile, rm: rmFile } = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -24,42 +25,6 @@ const tmpChangelogReleaseSectionPath = path.join(
 
 debug(`tmpChangelogReleaseSectionPath: ${tmpChangelogReleaseSectionPath}`);
 
-const releaseBodyTemplate = /* js */ `
-try {
-  throw new Error('globalThis: ' + JSON.stringify(globalThis));
-  const data = require('node:fs')
-  .readFileSync('${tmpChangelogReleaseSectionPath}', 'utf8')
-  .trim();
-
-  if(!data) {
-    throw new Error('unexpectedly empty file: ${tmpChangelogReleaseSectionPath}');
-  }
-
-  print(data);
-} catch (error) {
-  print('Failed to generate changelog: ' + String(error));
-  throw error;
-}
-`.trim();
-
-debug(`releaseBodyTemplate: ${releaseBodyTemplate}`);
-
-// ! Cannot contain the single-quote character (')
-const cleanupTmpFilesTemplate = /* js */ `
-try {
-  require("node:fs").rmSync("${tmpChangelogReleaseSectionPath}", {
-    force: true
-  });
-} catch {}
-`.trim();
-
-debug(`cleanupTmpFilesTemplate: ${cleanupTmpFilesTemplate}`);
-
-assert(
-  !cleanupTmpFilesTemplate.includes("'"),
-  'release.config.js assertion failed: invalid cleanupTmpFilesTemplate value (hard-coded)'
-);
-
 module.exports = {
   branches: [
     '+([0-9])?(.{+([0-9]),x}).x',
@@ -71,6 +36,8 @@ module.exports = {
     }
   ],
   plugins: [
+    // * Prepare
+
     [
       '@semantic-release/commit-analyzer',
       {
@@ -95,20 +62,21 @@ module.exports = {
         writerOpts
       }
     ],
+    // ? We need this for patching the release body even when not updating
+    // ? the changelog.
     ['@semantic-release/changelog', { changelogFile: tmpChangelogReleaseSectionPath }],
-    ...(updateChangelog
+    // ? Optionally update the changelog file
+    updateChangelog
       ? [
-          [
-            '@semantic-release/exec',
-            {
-              prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --import-section-file ${tmpChangelogReleaseSectionPath}`
-            }
-          ]
+          '@semantic-release/exec',
+          {
+            prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --import-section-file ${tmpChangelogReleaseSectionPath}`
+          }
         ]
-      : []),
-    // ? We run this before @semantic-release/github so the GitHub release is
-    // ? patched. We run this after the updateChangelog section so that we
-    // ? don't run the patcher over the same file twice, which would be bad.
+      : [],
+    // ? We run this block now so the release body is patched when referenced
+    // ? in the blocks below. We run this after the updateChangelog section so
+    // ? we don't run the patcher over the same content twice, which is a no-no.
     // * Note how we patch tmpChangelogReleaseSectionPath and not CHANGELOG.md.
     [
       '@semantic-release/exec',
@@ -116,38 +84,61 @@ module.exports = {
         prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --only-patch-changelog --no-format-changelog --changelog-file ${tmpChangelogReleaseSectionPath}`
       }
     ],
+    // ? This executes module.exports.prepare() (exported by this file) within
+    // ? semantic-release's runtime realm, allowing us to mutate `nextRelease`
+    // ? as we see fit.
+    [__filename],
+
+    // * Publish
 
     // ! This ordering is important to ensure errors stop the process safely
-    // ! and that broken builds are not published. The proper and eternal order
-    // ! is: NPM (bump package.json only) > Git > NPM (publish) > GitHub.
+    // ! and that broken builds are not published. The proper order is:
+    // ! NPM (+ attestations) > Git > GitHub.
 
-    ['@semantic-release/npm', { npmPublish: false }],
+    // TODO: add support for GitHub Actions build provenance attestations here
+    ['@semantic-release/npm'],
     [
       '@semantic-release/git',
       {
         assets: ['package.json', 'package-lock.json', 'CHANGELOG.md', 'docs'],
         // ? Make sure semantic-release uses a patched release (changelog) body.
-        message: `release: <%= nextRelease.version %> [skip ci]\n\n<% ${releaseBodyTemplate} %>`
+        message: `release: <%= nextRelease.version %> [skip ci]\n\n<%= nextRelease.notes %>`
       }
     ],
-    // TODO: add support for GitHub Actions build provenance attestations here
-    ['@semantic-release/npm', { npmPublish: true }],
     [
       '@semantic-release/github',
       {
         // ? Make sure semantic-release uses a patched release (changelog) body.
-        releaseBodyTemplate: `<% ${releaseBodyTemplate} %>`
-      }
-    ],
-
-    // * Cleanup
-    [
-      '@semantic-release/exec',
-      {
-        prepareCmd: `node --input-type commonjs --eval '${cleanupTmpFilesTemplate}'`
+        releaseBodyTemplate: `<%= nextRelease.notes %>`
       }
     ]
   ]
+};
+
+/**
+ * This is a custom semantic-release plugin that replaces `nextRelease.notes`
+ * with the version patched by xscripts.
+ */
+module.exports.prepare = async function prepare(_pluginConfig, context) {
+  debug('entered custom plugin prepare function');
+  /*try {*/
+  const updatedNotes = (await readFile(tmpChangelogReleaseSectionPath, 'utf8')).trim();
+
+  if (!updatedNotes) {
+    throw new Error(
+      `unexpectedly empty temporary changelog file: ${tmpChangelogReleaseSectionPath}`
+    );
+  }
+
+  context.nextRelease.notes = updatedNotes;
+  debug('updated nextRelease.notes: %O', context.nextRelease.notes);
+
+  // ? We don't really care if this succeeds or fails
+  void rmFile(tmpChangelogReleaseSectionPath, { force: true }).catch();
+  /*} catch (error) {
+    // TODO: add a call out to debug.error here once we start using rejoinder
+    throw error;
+  }*/
 };
 
 debug('exports: %O', module.exports);
