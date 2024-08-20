@@ -46,4 +46,4 @@
 
 ## Defined in
 
-[src/commands/build/externals.ts:29](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/src/commands/build/externals.ts#L29)
+[src/commands/build/externals.ts:29](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/src/commands/build/externals.ts#L29)

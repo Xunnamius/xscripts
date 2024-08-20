@@ -12,9 +12,9 @@ These are the only conventional commit types supported by xscripts-based
 pipelines and are therefore considered "well known".
 
 Commit types corresponding to entries with `{ hidden: false }` will appear in
-the generated `CHANGELOG.md` file. Commit types with `{ hidden: true }` will
-not appear in `CHANGELOG.md` _unless the commit is marked "BREAKING" in some
-way_.
+the generated the changelog file. Commit types with `{ hidden: true }` will
+not appear in the changelog file _unless the commit is marked "BREAKING" in
+some way_.
 
 Multiple commit types can have the same `section`, which means commits of
 that type will be combined together under said section.
@@ -36,4 +36,4 @@ Valid commit types are alphanumeric and may contain an underscore (_) or dash
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.js.ts:200](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/src/assets/config/_conventional.config.js.ts#L200)
+[src/assets/config/\_conventional.config.js.ts:201](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/src/assets/config/_conventional.config.js.ts#L201)

@@ -32,7 +32,7 @@ An `Error` class where the first letter of the message is capitalized.
 
 #### Defined in
 
-[lib/@-xun/cli-utils/error.ts:11](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/lib/@-xun/cli-utils/error.ts#L11)
+[lib/@-xun/cli-utils/error.ts:11](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/lib/@-xun/cli-utils/error.ts#L11)
 
 ## Properties
 
@@ -118,7 +118,7 @@ https://v8.dev/docs/stack-trace-api#customizing-stack-traces
 
 #### Defined in
 
-node\_modules/@types/node/globals.d.ts:28
+node\_modules/@types/node/globals.d.ts:31
 
 ***
 
@@ -132,7 +132,7 @@ node\_modules/@types/node/globals.d.ts:28
 
 #### Defined in
 
-node\_modules/@types/node/globals.d.ts:30
+node\_modules/@types/node/globals.d.ts:33
 
 ## Methods
 
@@ -158,4 +158,4 @@ Create .stack property on a target object
 
 #### Defined in
 
-node\_modules/@types/node/globals.d.ts:21
+node\_modules/@types/node/globals.d.ts:24

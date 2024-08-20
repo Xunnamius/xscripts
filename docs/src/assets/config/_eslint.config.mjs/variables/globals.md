@@ -548,4 +548,4 @@
 
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:310](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/src/assets/config/_eslint.config.mjs.ts#L310)
+[src/assets/config/\_eslint.config.mjs.ts:313](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/src/assets/config/_eslint.config.mjs.ts#L313)

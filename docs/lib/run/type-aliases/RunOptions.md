@@ -27,4 +27,4 @@ execa's ResultPromise, via this callback function.
 
 ## Defined in
 
-[lib/run/index.ts:15](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/lib/run/index.ts#L15)
+[lib/run/index.ts:15](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/lib/run/index.ts#L15)

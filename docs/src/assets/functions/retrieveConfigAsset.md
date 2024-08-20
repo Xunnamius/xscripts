@@ -2,11 +2,11 @@
 
 ***
 
-[@-xun/scripts](../../../README.md) / [src/assets](../README.md) / retrieveAsset
+[@-xun/scripts](../../../README.md) / [src/assets](../README.md) / retrieveConfigAsset
 
-# Function: retrieveAsset()
+# Function: retrieveConfigAsset()
 
-> **retrieveAsset**(`__namedParameters`): `Promise`\<[`TransformerResult`](../type-aliases/TransformerResult.md)\>
+> **retrieveConfigAsset**(`__namedParameters`): `Promise`\<[`TransformerResult`](../type-aliases/TransformerResult.md)\>
 
 Retrieve an asset via its filename. For example, to retrieve an
 `eslint.config.js` file (the transformer source for which exists in
@@ -34,4 +34,4 @@ Expects an xscripts project init-time (or renovate-time) context object (i.e.
 
 ## Defined in
 
-[src/assets/index.ts:100](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/src/assets/index.ts#L100)
+[src/assets/index.ts:100](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/src/assets/index.ts#L100)

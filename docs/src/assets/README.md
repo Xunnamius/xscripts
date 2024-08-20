@@ -26,4 +26,4 @@
 - [assertIsExpectedTransformerContext](functions/assertIsExpectedTransformerContext.md)
 - [deepMergeConfig](functions/deepMergeConfig.md)
 - [makeTransformer](functions/makeTransformer.md)
-- [retrieveAsset](functions/retrieveAsset.md)
+- [retrieveConfigAsset](functions/retrieveConfigAsset.md)

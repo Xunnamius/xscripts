@@ -8,8 +8,9 @@
 
 > `const` **inlineExternalImageElement**: `string`
 
-The inline image HTML element appended to links leading to external repositories. This value is also duplicated in
+The inline image HTML element appended to links leading to external
+repositories. This value is also duplicated in the commit.hbs template file.
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.js.ts:67](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/src/assets/config/_conventional.config.js.ts#L67)
+[src/assets/config/\_conventional.config.js.ts:68](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/src/assets/config/_conventional.config.js.ts#L68)

@@ -218,6 +218,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### ArgumentMustNotBeFalsy()
+
+#### Parameters
+
+• **name**: `string`
+
+#### Returns
+
+`string`
+
 ### AssertionFailureBadConfigurationPath()
 
 #### Parameters
@@ -306,6 +316,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### BadAdditionalChangelogSection()
+
+#### Parameters
+
+• **path**: `string`
+
+#### Returns
+
+`string`
+
 ### BadAssetContextKey()
 
 #### Parameters
@@ -321,6 +341,12 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **path**: `string`
+
+#### Returns
+
+`string`
+
+### BadGeneratedChangelogSection()
 
 #### Returns
 
@@ -754,4 +780,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/184c8e10da5407b40476129ff0f6e538d7df3af0/src/error.ts#L11)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/src/error.ts#L11)
