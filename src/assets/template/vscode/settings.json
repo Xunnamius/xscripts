@@ -7,26 +7,7 @@
     //"skipFiles": ["<node_internals>/**", "**/node_modules/**"]
     "skipFiles": []
   },
-  "cSpell.words": [
-    "arg-vals",
-    "BFE's",
-    "conflicteds",
-    "conflicter",
-    "entr",
-    "gwav",
-    "implier",
-    "iodef",
-    "isequal",
-    "JMES",
-    "odata",
-    "Punycode",
-    "requireds",
-    "rootcmd",
-    "subcmd",
-    "subsubcmd",
-    "trycatch",
-    "USERPROFILE"
-  ],
+  "cSpell.words": [],
   // ? Use the version of TypeScript that is installed alongside the project
   "typescript.tsdk": "node_modules/typescript/lib"
 }
