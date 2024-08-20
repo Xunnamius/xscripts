@@ -91,7 +91,7 @@ export default function command({
     builder,
     description: 'Run linters (e.g. eslint, remark) across all relevant files',
     usage: withStandardUsage(
-      `$1.\n\nPassing --scope=limited will exclude from linting (by eslint) all files that are not under the following directories: ${limitedScopeDirectories.join(', ')}. For tsc, the scope of linted files is always determined by the "includes" and "excludes" directives in the relevant tsconfig file.`
+      `$1.\n\nPassing --scope=limited will exclude from linting (by eslint) all files that are not under the following directories: ${limitedScopeDirectories.join(', ')}. For tsc, the scope of linted files is always determined by the "includes" and "excludes" directives in the relevant tsconfig file.\n\nNote that remark is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format", .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by "xscripts format".`
     ),
     handler: withStandardHandler(async function ({
       $0: scriptFullName,
@@ -180,6 +180,7 @@ export default function command({
               '--color',
               ...(ignoreWarnings ? [] : ['--frail']),
               '--no-stdout',
+              '--ignore',
               '--silently-ignore',
               ...mdFiles
             ],

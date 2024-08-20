@@ -99,7 +99,7 @@ export default function command({
     builder,
     description: 'Run formatters (e.g. prettier, remark) across all relevant files',
     usage: withStandardUsage(
-      '$1.\n\nNote that .prettierignore is used as the basis for which Markdown files are considered when formatters are run. To work around this, use --no-skip-ignored.'
+      '$1.\n\nNote that .prettierignore is used as the single source of truth for which Markdown files are and are not ignored when formatters are run. To prevent a file from being formatted by any formatter (including remark), add it to .prettierignore. To disregard .prettierignore when formatters are run, use --no-skip-ignored.\n\nWith respect to .prettierignore being the single source of truth for formatters: note that remark is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format", .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by "xscripts format".'
     ),
     handler: withStandardHandler(async function ({
       $0: scriptFullName,
@@ -199,6 +199,7 @@ export default function command({
               '--use',
               'lint-no-undefined-references',
               '--silently-ignore',
+              '--no-ignore',
               '--ignore-pattern',
               'docs',
               ...mdFiles
@@ -298,6 +299,7 @@ export default function command({
               ...(isHushed ? ['--quiet'] : []),
               '--output',
               '--frail',
+              '--no-ignore',
               '--silently-ignore',
               ...mdFiles
             ],
