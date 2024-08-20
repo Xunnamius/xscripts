@@ -141,6 +141,7 @@ export const { transformer } = makeTransformer<Context>({
     return {
       [name]: /*js*/ `
 // @ts-check
+// @ts-check
 'use strict';
 
 /*const { createDebugLogger } = require('debug-extended');

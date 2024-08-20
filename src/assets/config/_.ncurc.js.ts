@@ -11,6 +11,7 @@ export const { transformer } = makeTransformer<Context>({
 
     return {
       [name]: /*js*/ `
+// @ts-check
 // * https://www.npmjs.com/package/npm-check-updates#configuration-files
 'use strict';
 

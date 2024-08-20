@@ -45,6 +45,7 @@ export const { transformer } = makeTransformer<Context>({
 
     return {
       [name]: /*js*/ `
+// @ts-check
 'use strict';
 
 // TODO: publish latest rejoinder package first, then update configs to use it

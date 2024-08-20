@@ -108,6 +108,7 @@ export const { transformer } = makeTransformer<Context>({
     return {
       [name]: /*js*/ `
 // @ts-check
+// @ts-check
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 /*const { createDebugLogger } = require('debug-extended');
