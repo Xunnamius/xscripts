@@ -77,7 +77,7 @@ module.exports = {
             modules: 'cjs',
             targets: NODE_LTS,
             useBuiltIns: 'usage',
-            corejs: '3.37',
+            corejs: '3.38',
             shippedProposals: true,
             exclude: ['transform-dynamic-import']
           }
