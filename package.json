@@ -147,7 +147,7 @@
     "babel-plugin-transform-rewrite-imports": "^1.2.0",
     "confusing-browser-globals": "^1.0.11",
     "conventional-changelog-core": "https://xunn.at/conventional-changelog-core@master",
-    "core-js": "3.38.0",
+    "core-js": "3.38.1",
     "debug": "^4.3.6",
     "doctoc": "^2.2.1",
     "dotenv": "^16.4.5",
