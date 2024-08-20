@@ -253,52 +253,18 @@ export default function command(
             const debug_ = debug.extend('tap1');
             debug_('initialized tap1 on changelog section stream');
 
+            source.setEncoding('utf8');
+
             if (additionalSection) {
-              let previousChunkVersion: string | undefined = undefined;
-              let didOutputAdditionalSectionChunk = false;
-              const { version: additionalChunkVersion, notes: additionalChunk } =
-                additionalSection;
+              const { notes: additionalChunk } = additionalSection;
 
-              source.setEncoding('utf8');
+              debug_('flushing additional section as first chunk');
+              yield additionalChunk;
+            }
 
-              for await (const currentChunk of source as unknown as string[]) {
-                debug_('saw chunk: %O', currentChunk.slice(0, 20), '...');
-
-                const currentChunkVersion = currentChunk
-                  .match(extractVersionRegExp)
-                  ?.at(1);
-
-                softAssert(
-                  currentChunkVersion && isValidSemver(currentChunkVersion),
-                  ErrorMessage.BadGeneratedChangelogSection()
-                );
-
-                debug_('current chunk version: %O', currentChunkVersion);
-                debug_('previous chunk version: %O', previousChunkVersion);
-
-                if (
-                  previousChunkVersion &&
-                  satisfiesSemver(
-                    additionalChunkVersion,
-                    `>${previousChunkVersion} <${currentChunkVersion}`
-                  )
-                ) {
-                  debug_(
-                    `saw "${previousChunkVersion}" < "${additionalChunkVersion}" < "${currentChunkVersion}": flushing additional section before current chunk`
-                  );
-
-                  yield additionalChunk;
-                  didOutputAdditionalSectionChunk = true;
-                }
-
-                yield currentChunk;
-                previousChunkVersion = currentChunkVersion;
-              }
-
-              if (!didOutputAdditionalSectionChunk) {
-                debug_('finally flushing additional section as final chunk');
-                yield additionalChunk;
-              }
+            for await (const currentChunk of source as unknown as string[]) {
+              debug_('passing through chunk: %O', currentChunk.slice(0, 20), '...');
+              yield currentChunk;
             }
           },
 
@@ -335,7 +301,7 @@ export default function command(
                   if (withheldChangelogPatchSections.length) {
                     yield '٠ –— ٠ —— ٠ —— ٠  —– ٠<br />\n\n';
 
-                    for (const section of withheldChangelogPatchSections) {
+                    for (const section of withheldChangelogPatchSections.reverse()) {
                       yield '### 🏗️ Patch ' + section.slice(4);
                     }
 
