@@ -3,7 +3,7 @@ import { pipeline } from 'node:stream/promises';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import conventionalChangelogCore from 'conventional-changelog-core';
-import { valid as isValidSemver, satisfies as satisfiesSemver } from 'semver';
+import { valid as isValidSemver } from 'semver';
 
 import {
   getInvocableExtendedHandler,
