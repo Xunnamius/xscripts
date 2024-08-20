@@ -65,7 +65,7 @@ module.exports = {
     // ? We need this for patching the release body even when not updating
     // ? the changelog.
     ['@semantic-release/changelog', { changelogFile: tmpChangelogReleaseSectionPath }],
-    // ? Optionally update the changelog file
+    // ? Optionally update the changelog file.
     updateChangelog
       ? [
           '@semantic-release/exec',
