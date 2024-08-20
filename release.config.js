@@ -108,7 +108,7 @@ module.exports = {
     [
       '@semantic-release/exec',
       {
-        prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --only-patch-changelog --no-format-changelog --output-file ${tmpChangelogReleaseSectionPath}`
+        prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --only-patch-changelog --no-format-changelog --changelog-file ${tmpChangelogReleaseSectionPath}`
       }
     ],
     [
