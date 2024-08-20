@@ -24,23 +24,27 @@ const tmpChangelogReleaseSectionPath = path.join(
 
 debug(`tmpChangelogReleaseSectionPath: ${tmpChangelogReleaseSectionPath}`);
 
-const releaseBodyTemplate = /* js */ `
+const releaseBodyTemplateEsm = /* js */ `
 try {
-  print(
-    require('node:fs')
+  const data = require('node:fs')
       .readFileSync('${tmpChangelogReleaseSectionPath}', 'utf8')
-      .trim() ||
-      'Failed to generate changelog: unexpectedly empty file: ${tmpChangelogReleaseSectionPath}'
-  );
+  .trim();
+
+  if(!data) {
+    throw new Error('unexpectedly empty file: ${tmpChangelogReleaseSectionPath}');
+  }
+
+  print(data);
 } catch (error) {
   print('Failed to generate changelog: ' + String(error));
+  throw error;
 }
 `.trim();
 
-debug(`releaseBodyTemplate: ${releaseBodyTemplate}`);
+debug(`releaseBodyTemplate: ${releaseBodyTemplateEsm}`);
 
 // ! Cannot contain the single-quote character (')
-const cleanupTmpFilesTemplate = /* js */ `
+const cleanupTmpFilesTemplateCjs = /* js */ `
 try {
   require("node:fs").rmSync("${tmpChangelogReleaseSectionPath}", {
     force: true
@@ -48,10 +52,10 @@ try {
 } catch {}
 `.trim();
 
-debug(`cleanupTmpFilesTemplate: ${cleanupTmpFilesTemplate}`);
+debug(`cleanupTmpFilesTemplate: ${cleanupTmpFilesTemplateCjs}`);
 
 assert(
-  !cleanupTmpFilesTemplate.includes("'"),
+  !cleanupTmpFilesTemplateCjs.includes("'"),
   'release.config.js assertion failed: invalid cleanupTmpFilesTemplate value (hard-coded)'
 );
 
@@ -115,7 +119,8 @@ module.exports = {
       '@semantic-release/git',
       {
         assets: ['package.json', 'package-lock.json', 'CHANGELOG.md', 'docs'],
-        message: 'release: ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}'
+        // ? Make sure semantic-release uses a patched release (changelog) body.
+        message: `release: <% nextRelease.version %> [skip ci]\n\n<% ${releaseBodyTemplateEsm} %>`
       }
     ],
     // ! NPM and GitHub steps must be last just in case any other steps fail !
@@ -125,13 +130,13 @@ module.exports = {
       '@semantic-release/github',
       {
         // ? Make sure semantic-release uses a patched release (changelog) body.
-        releaseBodyTemplate: `<% ${releaseBodyTemplate} %>`
+        releaseBodyTemplate: `<% ${releaseBodyTemplateEsm} %>`
       }
     ],
     [
       '@semantic-release/exec',
       {
-        prepareCmd: `node --input-type commonjs --eval '${cleanupTmpFilesTemplate}'`
+        prepareCmd: `node --input-type commonjs --eval '${cleanupTmpFilesTemplateCjs}'`
       }
     ]
   ]
