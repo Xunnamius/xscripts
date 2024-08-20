@@ -20,7 +20,7 @@ export type MergeWithCustomizer = Parameters<typeof mergeWith<unknown, unknown>>
  */
 export type RequiredTransformerContext = {
   /**
-   * The value of the `name` parameter passed to {@link retrieveAsset}.
+   * The value of the `name` parameter passed to {@link retrieveConfigAsset}.
    */
   name: string;
 };
@@ -97,7 +97,7 @@ export type TransformerResult = Promisable<{
  * Expects an xscripts project init-time (or renovate-time) context object (i.e.
  * {@link TransformerContext} + {@link RequiredTransformerContext}).
  */
-export async function retrieveAsset({
+export async function retrieveConfigAsset({
   name,
   context,
   options = {}
@@ -107,7 +107,7 @@ export async function retrieveAsset({
   options?: TransformerOptions;
 }): Promise<TransformerResult> {
   const debug = createDebugLogger({
-    namespace: `${globalDebuggerNamespace}:retrieveAsset`
+    namespace: `${globalDebuggerNamespace}:retrieveConfigAsset`
   });
 
   const transformerPath = `./config/_${name}.js`;
