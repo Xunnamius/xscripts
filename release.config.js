@@ -106,8 +106,6 @@ module.exports = {
       }
     ],
     ['@semantic-release/github']
-
-    // * Cleanup
   ]
 };
 
