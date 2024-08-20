@@ -27,7 +27,7 @@ debug(`tmpChangelogReleaseSectionPath: ${tmpChangelogReleaseSectionPath}`);
 const releaseBodyTemplateEsm = /* js */ `
 try {
   const data = require('node:fs')
-      .readFileSync('${tmpChangelogReleaseSectionPath}', 'utf8')
+  .readFileSync('${tmpChangelogReleaseSectionPath}', 'utf8')
   .trim();
 
   if(!data) {
@@ -115,6 +115,12 @@ module.exports = {
         prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --only-patch-changelog --no-format-changelog --changelog-file ${tmpChangelogReleaseSectionPath}`
       }
     ],
+    // ! NPM, Git, and GitHub steps must be last just in case any other steps
+    // ! fail. Further, NPM must happen before Git must happen before GitHub or
+    // ! the release commit will not be properly synchronized with its
+    // ! respective published releases. This order is important!
+    // TODO: add support for GitHub Actions build provenance attestations here
+    ['@semantic-release/npm'],
     [
       '@semantic-release/git',
       {
@@ -123,9 +129,6 @@ module.exports = {
         message: `release: <% nextRelease.version %> [skip ci]\n\n<% ${releaseBodyTemplateEsm} %>`
       }
     ],
-    // ! NPM and GitHub steps must be last just in case any other steps fail !
-    // TODO: add support for GitHub Actions build provenance attestations here
-    ['@semantic-release/npm'],
     [
       '@semantic-release/github',
       {
