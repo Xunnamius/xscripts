@@ -301,6 +301,9 @@ export const jestRules: NonNullable<EslintConfig['rules']> = {
   'jest/prefer-each': 'off',
   'jest/prefer-snapshot-hint': 'off',
   'jest/prefer-importing-jest-globals': 'off',
+  'jest/padding-around-all': 'off',
+  'jest/padding-around-expect-groups': 'off',
+  'jest/padding-around-test-blocks': 'off',
 
   // * typescript-eslint
   '@typescript-eslint/require-await': 'off',

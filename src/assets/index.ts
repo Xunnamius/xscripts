@@ -162,10 +162,10 @@ export function makeTransformer<
  * string> & RequiredTransformerContext` that contains each string in
  * `expectedKeys` as a property with a non-empty string value.
  */
-export function assertIsExpectedTransformerContext<
-  T extends Record<string, unknown>,
-  const U extends string[] = never[]
->(record: T, expectedKeys?: U) {
+export function assertIsExpectedTransformerContext<const U extends string[] = never[]>(
+  record: Record<string, unknown>,
+  expectedKeys?: U
+) {
   [...(expectedKeys ?? []), ...requiredTransformerContextKeys].forEach((key) => {
     const value = record[key];
     if (!isNonEmptyString(value)) {

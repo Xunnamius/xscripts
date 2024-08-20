@@ -333,6 +333,7 @@ export function mockEnvFactory(
  * "app-wide" connection that would not actually be closed and could cause your
  * test to hang unexpectedly, even when all tests pass.
  */
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 export function isolatedImport<T = unknown>(args: {
   /**
    * Path to the module to import. Module resolution is handled by `require`.
@@ -368,6 +369,7 @@ export function isolatedImport<T = unknown>(args: {
 }
 
 // TODO: XXX: make this into a separate package (along with the above)
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 export function isolatedImportFactory<T = unknown>(args: {
   path: string;
   useDefault?: boolean;
