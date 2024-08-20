@@ -105,13 +105,9 @@ module.exports = {
         message: `release: <%= nextRelease.version %> [skip ci]\n\n<%= nextRelease.notes %>`
       }
     ],
-    [
-      '@semantic-release/github',
-      {
-        // ? Make sure semantic-release uses a patched release (changelog) body.
-        releaseBodyTemplate: `<%= nextRelease.notes %>`
-      }
-    ]
+    ['@semantic-release/github']
+
+    // * Cleanup
   ]
 };
 
@@ -121,6 +117,7 @@ module.exports = {
  */
 module.exports.prepare = async function prepare(_pluginConfig, context) {
   debug('entered custom plugin prepare function');
+
   /*try {*/
   const updatedNotes = (await readFile(tmpChangelogReleaseSectionPath, 'utf8')).trim();
 
@@ -140,5 +137,15 @@ module.exports.prepare = async function prepare(_pluginConfig, context) {
     throw error;
   }*/
 };
+
+// TODO: warn if the release pipeline ends with the repository in an unclean
+// TODO: state (git).
+/**
+ * This is a custom semantic-release plugin that logs a GitHub Actions warning
+ * if the release pipeline ends with the repository in an unclean state.
+ */
+/* module.exports.prepare = async function success(_pluginConfig, context) {
+  // TODO
+}; */
 
 debug('exports: %O', module.exports);
