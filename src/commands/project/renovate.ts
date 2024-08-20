@@ -53,7 +53,8 @@ export default function command({
 
       // TODO (like init, can generate missing configs and doesn't overwrite existing configs)
       // TODO (is idempotent)
-      // TODO (auto-fix anything from project lint that is auto-fixable (unless --no-auto-fix))
+      // TODO (--interactive to trigger an interactive fix of anything from project lint that is fixable (also offer to overwrite/replace, merge, etc; similar to apt))
+      // TODO: (needs to delete the remark-link ignore comment from all Markdown files coming from src/assets/template)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

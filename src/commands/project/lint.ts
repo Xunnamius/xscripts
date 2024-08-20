@@ -73,6 +73,7 @@ export default function command({
       // TODO: (check to ensure all breaking commits in the repository are in `type(scope)!: subject` form (specifically focusing on the "!" since our changelog generator needs to know if a commit is breaking just by looking at the subject alone))
       // TODO (must verify that "repository" url in package.json is correct (see current package.json for an example of it being correct) for provenance reasons)
       // TODO (diff generated config files versus on-disk config files and warn (but don't error) when different)
+      // TODO: (warn if a remark-link ignore comment exists at the beginning of a Markdown file's references section (means a template was copied incorrectly))
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
