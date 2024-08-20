@@ -24,8 +24,9 @@ const tmpChangelogReleaseSectionPath = path.join(
 
 debug(`tmpChangelogReleaseSectionPath: ${tmpChangelogReleaseSectionPath}`);
 
-const releaseBodyTemplateEsm = /* js */ `
+const releaseBodyTemplate = /* js */ `
 try {
+  throw new Error('globalThis: ' + JSON.stringify(globalThis));
   const data = require('node:fs')
   .readFileSync('${tmpChangelogReleaseSectionPath}', 'utf8')
   .trim();
@@ -41,10 +42,10 @@ try {
 }
 `.trim();
 
-debug(`releaseBodyTemplate: ${releaseBodyTemplateEsm}`);
+debug(`releaseBodyTemplate: ${releaseBodyTemplate}`);
 
 // ! Cannot contain the single-quote character (')
-const cleanupTmpFilesTemplateCjs = /* js */ `
+const cleanupTmpFilesTemplate = /* js */ `
 try {
   require("node:fs").rmSync("${tmpChangelogReleaseSectionPath}", {
     force: true
@@ -52,10 +53,10 @@ try {
 } catch {}
 `.trim();
 
-debug(`cleanupTmpFilesTemplate: ${cleanupTmpFilesTemplateCjs}`);
+debug(`cleanupTmpFilesTemplate: ${cleanupTmpFilesTemplate}`);
 
 assert(
-  !cleanupTmpFilesTemplateCjs.includes("'"),
+  !cleanupTmpFilesTemplate.includes("'"),
   'release.config.js assertion failed: invalid cleanupTmpFilesTemplate value (hard-coded)'
 );
 
@@ -115,31 +116,35 @@ module.exports = {
         prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --only-patch-changelog --no-format-changelog --changelog-file ${tmpChangelogReleaseSectionPath}`
       }
     ],
-    // ! NPM, Git, and GitHub steps must be last just in case any other steps
-    // ! fail. Further, NPM must happen before Git must happen before GitHub or
-    // ! the release commit will not be properly synchronized with its
-    // ! respective published releases. This order is important!
-    // TODO: add support for GitHub Actions build provenance attestations here
-    ['@semantic-release/npm'],
+
+    // ! This ordering is important to ensure errors stop the process safely
+    // ! and that broken builds are not published. The proper and eternal order
+    // ! is: NPM (bump package.json only) > Git > NPM (publish) > GitHub.
+
+    ['@semantic-release/npm', { npmPublish: false }],
     [
       '@semantic-release/git',
       {
         assets: ['package.json', 'package-lock.json', 'CHANGELOG.md', 'docs'],
         // ? Make sure semantic-release uses a patched release (changelog) body.
-        message: `release: <%= nextRelease.version %> [skip ci]\n\n<% ${releaseBodyTemplateEsm} %>`
+        message: `release: <%= nextRelease.version %> [skip ci]\n\n<% ${releaseBodyTemplate} %>`
       }
     ],
+    // TODO: add support for GitHub Actions build provenance attestations here
+    ['@semantic-release/npm', { npmPublish: true }],
     [
       '@semantic-release/github',
       {
         // ? Make sure semantic-release uses a patched release (changelog) body.
-        releaseBodyTemplate: `<% ${releaseBodyTemplateEsm} %>`
+        releaseBodyTemplate: `<% ${releaseBodyTemplate} %>`
       }
     ],
+
+    // * Cleanup
     [
       '@semantic-release/exec',
       {
-        prepareCmd: `node --input-type commonjs --eval '${cleanupTmpFilesTemplateCjs}'`
+        prepareCmd: `node --input-type commonjs --eval '${cleanupTmpFilesTemplate}'`
       }
     ]
   ]
