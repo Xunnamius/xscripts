@@ -147,7 +147,7 @@
     "babel-plugin-transform-rewrite-imports": "^1.2.0",
     "confusing-browser-globals": "^1.0.11",
     "conventional-changelog-core": "https://xunn.at/conventional-changelog-core@master",
-    "core-js": "3.38.0",
+    "core-js": "3.38.1",
     "debug": "^4.3.6",
     "doctoc": "^2.2.1",
     "dotenv": "^16.4.5",
@@ -164,7 +164,7 @@
     "glob": "^11.0.0",
     "glob-gitignore": "^1.0.14",
     "globals": "^15.9.0",
-    "husky": "^9.1.4",
+    "husky": "^9.1.5",
     "jest": "^29.7.0",
     "jest-circus": "^29.7.0",
     "jest-extended": "^4.0.2",
@@ -244,7 +244,7 @@
     "unique-filename": "^3.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.19.1",
+    "@-xun/scripts": "^1.20.1",
     "@types/eslint": "^9.6.0",
     "@types/through2": "^2.0.41"
   },
