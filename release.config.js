@@ -7,12 +7,6 @@ const crypto = require('node:crypto');
 
 const debug = require('debug')('xscripts:semantic-release-config');
 
-// TODO: replace this with @xunnamius/semantic-release-projector-config
-
-const updateChangelog = process.env.UPDATE_CHANGELOG !== 'false';
-
-debug(`will update changelog: ${updateChangelog ? 'yes' : 'no'}`);
-
 const { parserOpts, writerOpts } = require('./conventional.config');
 
 const releaseSectionPath = path.join(
@@ -21,6 +15,8 @@ const releaseSectionPath = path.join(
 );
 
 debug(`releaseSectionPath: ${releaseSectionPath}`);
+
+// TODO: replace this with @xunnamius/semantic-release-projector-config
 
 module.exports = {
   branches: [
@@ -52,42 +48,19 @@ module.exports = {
         ]
       }
     ],
+    // ? This block pulls in a custom semantic-release plugin that mutates
+    // ? internal state as required.
+    // TODO: in assets/config/_release.config.js, this should be:
+    //['@-xun/scripts/assets/config/release.config.js'],
     [
-      '@semantic-release/release-notes-generator',
+      './dist/src/assets/config/_release.config.js.js',
       {
+        releaseSectionPath,
         parserOpts,
         writerOpts
       }
     ],
-    // ? We need this for patching the release body even when not updating
-    // ? the changelog.
-    // * This generates the changelog during semantic-release's "prepare" step.
-    ['@semantic-release/changelog', { changelogFile: releaseSectionPath }],
-    // ? Optionally update the changelog file.
-    updateChangelog
-      ? [
-          '@semantic-release/exec',
-          {
-            prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --import-section-file ${releaseSectionPath}`
-          }
-        ]
-      : [],
-    // ? We run this block now so the release body is patched and formatted when
-    // ? referenced in the blocks below. We run this after the updateChangelog
-    // ? section so we don't run the patcher over the same content twice.
-    [
-      '@semantic-release/exec',
-      {
-        // * Note how we patch and format releaseSectionPath and not the
-        // * changelog file itself.
-        prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --only-patch-changelog --changelog-file ${releaseSectionPath}`
-      }
-    ],
-    // ? This block pulls in a custom semantic-release plugin that mutates
-    // ? nextRelease.notes among other context values.
-    // TODO: in assets/config/_release.config.js, this should be:
-    //['@-xun/scripts/assets/config/release.config.js'],
-    ['./dist/src/assets/config/_release.config.js.js', { releaseSectionPath }]
+    ['/tmp/tmp.0YPAFy9Vx5/faker.js']
 
     // * Publish
 
