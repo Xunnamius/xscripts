@@ -208,6 +208,8 @@ export const genericRules: NonNullable<EslintConfig['rules']> = {
   ],
   // ? I don't want to have to ask "what happens if I change the global flag".
   '@typescript-eslint/prefer-regexp-exec': 'off',
+  // ? Sometimes useful, sometimes annoying, but not an error.
+  '@typescript-eslint/require-await': 'warn',
 
   // * unicorn
   'unicorn/no-keyword-prefix': 'warn',
