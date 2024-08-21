@@ -38,11 +38,6 @@ import type {
 // * - @semantic-release/changelog
 // * - @-xun/scripts (build changelog)
 
-type GenerateNotesFromSemanticReleasePlugin = (
-  pluginConfig: { parserOpts: unknown; writerOpts: unknown },
-  context: GenerateNotesContext
-) => Promise<string>;
-
 const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:release`
 });
@@ -146,13 +141,9 @@ export async function generateNotes(
     GlobalExecutionContext
   >(buildChangelog, pseudoBfGlobalExecutionContext);
 
-  const generateRawNotes: GenerateNotesFromSemanticReleasePlugin = (
-    await import(
-      // TODO: fix this
-      // @ts-expect-error: a necessary evil until we fix semantic-release-atam
-      'universe/../../node_modules/@semantic-release/release-notes-generator/index.js'
-    )
-  ).generateNotes;
+  const { generateNotes: generateRawNotes } = await import(
+    '@semantic-release/release-notes-generator'
+  );
 
   pluginDebug('generating release notes with @semantic-release/release-notes-generator');
 
