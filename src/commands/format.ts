@@ -150,7 +150,17 @@ export default function command({
 
           debug('virtual .prettierignore lines: %O', ignore);
 
-          files = await glob(files, { ignore, dot: true, absolute: true, nodir: true });
+          files = await glob(files, {
+            dot: true,
+            absolute: true,
+            nodir: true,
+            // ? This addresses a strange bug with the ignores package as seen
+            // ? here: https://github.com/prettier/prettier-atom/issues/490
+            // TODO: warn invokers that pass absolute files paths that ignores
+            // TODO: doesn't work like that, and then drop the ignore key like
+            // TODO: below to prevent everything from blowing up.
+            ...(ignore.length ? { ignore } : {})
+          });
 
           debug('files (post-glob): %O', files);
 
