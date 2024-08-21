@@ -17,7 +17,7 @@ const { parserOpts, writerOpts } = require('./conventional.config');
 
 const releaseSectionPath = path.join(
   os.tmpdir(),
-  'xscripts-release-changelog-' + crypto.randomBytes(4).readUInt32LE(0).toString(16)
+  `xscripts-release-changelog-${crypto.randomBytes(4).readUInt32LE(0).toString(16)}.md`
 );
 
 debug(`releaseSectionPath: ${releaseSectionPath}`);
@@ -87,7 +87,7 @@ module.exports = {
     // ? nextRelease.notes among other context values.
     // TODO: in assets/config/_release.config.js, this should be:
     //['@-xun/scripts/assets/config/release.config.js'],
-    ['./dist/src/assets/config/_release.config.js.js', { releaseSectionPath }],
+    ['./dist/src/assets/config/_release.config.js.js', { releaseSectionPath }]
 
     // * Publish
 
@@ -96,7 +96,7 @@ module.exports = {
     // ! NPM (+ attestations) > Git > GitHub.
 
     // TODO: add support for GitHub Actions build provenance attestations here
-    ['@semantic-release/npm'],
+    /* ['@semantic-release/npm'],
     [
       '@semantic-release/git',
       {
@@ -105,7 +105,7 @@ module.exports = {
         message: `release: <%= nextRelease.version %> [skip ci]\n\n<%= nextRelease.notes %>`
       }
     ],
-    ['@semantic-release/github']
+    ['@semantic-release/github'] */
   ]
 };
 
