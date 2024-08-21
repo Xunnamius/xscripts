@@ -3,6 +3,8 @@
 module.exports = {
   reject: [
     // ? Pin the CJS version
-    'supports-color'
+    'supports-color',
+    // ? Until upstream semantic-release-atam updates, this needs to be frozen
+    '@semantic-release/release-notes-generator'
   ]
 };
