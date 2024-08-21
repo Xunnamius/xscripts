@@ -24,17 +24,35 @@ Returns an array of various different absolute file paths (strings):
 
 • **\_\_namedParameters.skipIgnored?**: `boolean` = `true`
 
-If `true`, do not consider `.prettierignore` when sifting through and
+If falsy, do not consider `.prettierignore` when sifting through and
 returning project files.
+
+**Default**
+
+```ts
+true
+```
 
 • **\_\_namedParameters.skipUnknown?**: `boolean` = `false`
 
 Skip files unknown to git (even if already ignored by
 `.gitignore`/`.prettierignore`).
 
+**Default**
+
+```ts
+false
+```
+
 • **\_\_namedParameters.useCached?**: `boolean` = `true`
 
 Use the internal cached result from a previous run, if available.
+
+**Default**
+
+```ts
+true
+```
 
 ## Returns
 
@@ -91,4 +109,4 @@ the current working directory.
 
 ## Defined in
 
-[src/util.ts:160](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/src/util.ts#L160)
+[src/util.ts:160](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/src/util.ts#L160)

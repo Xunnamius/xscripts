@@ -11,7 +11,15 @@
 ### Type Aliases
 
 - [Context](type-aliases/Context.md)
+- [PluginConfig](type-aliases/PluginConfig.md)
+
+### Variables
+
+- [moduleExport](variables/moduleExport.md)
 
 ### Functions
 
+- [generateNotes](functions/generateNotes.md)
+- [success](functions/success.md)
 - [transformer](functions/transformer.md)
+- [verifyConditions](functions/verifyConditions.md)

@@ -10,9 +10,9 @@
 
 ## Type declaration
 
-### ignore
+### ignore?
 
-> **ignore**: `string` \| `string`[]
+> `optional` **ignore**: `string` \| `string`[]
 
 A string or array of strings used to determine which globbed paths are
 ignored. Typically this is the result of parsing a .gitignore file (or file
@@ -20,4 +20,4 @@ with compatible format) split by `"\n"`.
 
 ## Defined in
 
-[types/glob-gitignore.d.ts:4](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/types/glob-gitignore.d.ts#L4)
+[types/glob-gitignore.d.ts:4](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/types/glob-gitignore.d.ts#L4)

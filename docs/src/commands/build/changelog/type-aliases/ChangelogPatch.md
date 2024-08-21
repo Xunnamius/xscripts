@@ -8,14 +8,14 @@
 
 > **ChangelogPatch**: [`string` \| `RegExp`, `string`]
 
-A changelog patch that will be applied to the contents of `CHANGELOG.md`.
+A changelog patch that will be applied to the changelog file.
 
 It mirrors the parameters of String.prototype.replace in form and
 function. That is: each `ChangelogPatch` `searchValue` will be replaced by
-`replaceValue` in the contents of `CHANGELOG.md`.
+`replaceValue` in the changelog file.
 
 Note that replacements are made in-place, meaning order does matter.
 
 ## Defined in
 
-[src/commands/build/changelog.ts:449](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/src/commands/build/changelog.ts#L449)
+[src/commands/build/changelog.ts:464](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/src/commands/build/changelog.ts#L464)

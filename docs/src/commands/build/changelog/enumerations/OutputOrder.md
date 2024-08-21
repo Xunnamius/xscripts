@@ -6,15 +6,20 @@
 
 # Enumeration: OutputOrder
 
+Determines the output format of the changelog file.
+
 ## Enumeration Members
 
 ### Descending
 
 > **Descending**: `"descending"`
 
+The default changelog formatting where sections are listed in chronological
+release order.
+
 #### Defined in
 
-[src/commands/build/changelog.ts:47](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/src/commands/build/changelog.ts#L47)
+[src/commands/build/changelog.ts:61](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/src/commands/build/changelog.ts#L61)
 
 ***
 
@@ -22,6 +27,12 @@
 
 > **Storybook**: `"storybook"`
 
+Sections (heading level 2) are comprised of major and minor releases with
+patch changes becoming subsections (heading level 3) of their nearest
+major/minor release section.
+
+Such changelogs read as a "storybook".
+
 #### Defined in
 
-[src/commands/build/changelog.ts:46](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/src/commands/build/changelog.ts#L46)
+[src/commands/build/changelog.ts:56](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/src/commands/build/changelog.ts#L56)

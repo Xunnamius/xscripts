@@ -21,4 +21,4 @@ component.
 
 ## Defined in
 
-[lib/@-xun/cli-utils/util.ts:38](https://github.com/Xunnamius/xscripts/blob/fc291d92ca0fdd07ba7e5cb19471e1a974cabac7/lib/@-xun/cli-utils/util.ts#L38)
+[lib/@-xun/cli-utils/util.ts:38](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/lib/@-xun/cli-utils/util.ts#L38)
