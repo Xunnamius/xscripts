@@ -60,7 +60,6 @@ module.exports = {
         writerOpts
       }
     ],
-    ['/tmp/tmp.0YPAFy9Vx5/faker.js']
 
     // * Publish
 
@@ -69,7 +68,7 @@ module.exports = {
     // ! NPM (+ attestations) > Git > GitHub.
 
     // TODO: add support for GitHub Actions build provenance attestations here
-    /* ['@semantic-release/npm'],
+    ['@semantic-release/npm'],
     [
       '@semantic-release/git',
       {
@@ -78,7 +77,7 @@ module.exports = {
         message: `release: <%= nextRelease.version %> [skip ci]\n\n<%= nextRelease.notes %>`
       }
     ],
-    ['@semantic-release/github'] */
+    ['@semantic-release/github']
   ]
 };
 
