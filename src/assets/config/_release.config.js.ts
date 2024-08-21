@@ -234,6 +234,9 @@ export async function success(_pluginConfig: PluginConfig, _context: SuccessCont
   const { stdout } = await run('git', ['status', '--porcelain']);
 
   if (stdout) {
+    pluginDebug.warn('repository was left in an unclean state! Git status output:');
+    pluginDebug.message('%O', stdout);
+
     process.stdout.write(
       '::warning title=Repository left in unclean state::The release pipeline has terminated but the repository remains in an unclean state. This is typically evident of a broken build process.'
     );
