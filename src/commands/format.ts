@@ -229,7 +229,7 @@ export default function command({
       const status: Record<
         'sort' | 'doctoc' | 'allContrib' | 'remark' | 'prettier',
         boolean | null | undefined
-      > & { failed: boolean } = {
+      > & { failed: unknown } = {
         failed: false,
         sort: undefined,
         doctoc: undefined,
@@ -367,8 +367,8 @@ export default function command({
             debug('prettierTargetFiles was empty, so prettier run was skipped');
           }
         }
-      } catch {
-        status.failed = true;
+      } catch (error) {
+        status.failed = error;
       }
 
       // TODO: replace with listr2 tasks
@@ -388,7 +388,9 @@ export default function command({
       genericLogger.newline([LogTag.IF_NOT_SILENCED]);
 
       if (status.failed) {
-        throw new CliError(ErrorMessage.CommandDidNotComplete('format'));
+        throw new CliError(ErrorMessage.CommandDidNotComplete('format'), {
+          cause: status.failed
+        });
       }
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
