@@ -1,6 +1,8 @@
 /// @ts-check
 'use strict';
 
+// TODO: replace this with @xunnamius/semantic-release-projector-config
+
 const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -15,8 +17,6 @@ const releaseSectionPath = path.join(
 );
 
 debug(`releaseSectionPath: ${releaseSectionPath}`);
-
-// TODO: replace this with @xunnamius/semantic-release-projector-config
 
 module.exports = {
   branches: [
