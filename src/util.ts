@@ -166,16 +166,22 @@ export async function findProjectFiles(
   }: {
     /**
      * Use the internal cached result from a previous run, if available.
+     *
+     * @default true
      */
     useCached?: boolean;
     /**
-     * If `true`, do not consider `.prettierignore` when sifting through and
+     * If falsy, do not consider `.prettierignore` when sifting through and
      * returning project files.
+     *
+     * @default true
      */
     skipIgnored?: boolean;
     /**
      * Skip files unknown to git (even if already ignored by
      * `.gitignore`/`.prettierignore`).
+     *
+     * @default false
      */
     skipUnknown?: boolean;
   } = {}
