@@ -42,11 +42,28 @@ import type { Promisable } from 'type-fest';
 
 const extractVersionRegExp = /^#+\s\[?([^\s\]]+)/;
 
+/**
+ * Determines the output format of the changelog file.
+ */
 export enum OutputOrder {
+  /**
+   * Sections (heading level 2) are comprised of major and minor releases with
+   * patch changes becoming subsections (heading level 3) of their nearest
+   * major/minor release section.
+   *
+   * Such changelogs read as a "storybook".
+   */
   Storybook = 'storybook',
+  /**
+   * The default changelog formatting where sections are listed in chronological
+   * release order.
+   */
   Descending = 'descending'
 }
 
+/**
+ * @see {@link OutputOrder}.
+ */
 export const availableOutputOrders = Object.values(OutputOrder);
 
 export type CustomCliArguments = GlobalCliArguments & {
@@ -407,11 +424,9 @@ export default function command(
           const contents = await readFile(changelogFile);
           const patcher = (changelog: string, patches: ChangelogPatches) => {
             // eslint-disable-next-line unicorn/no-array-reduce
-            return patches.reduce(
-              (str, [searchValue, replaceValue]) =>
-                str.replace(searchValue, replaceValue),
-              changelog
-            );
+            return patches.reduce(function (str, [searchValue, replaceValue]) {
+              return str.replace(searchValue, replaceValue);
+            }, changelog);
           };
 
           if (typeof changelogPatcher === 'function') {
@@ -438,11 +453,11 @@ export default function command(
 }
 
 /**
- * A changelog patch that will be applied to the contents of `CHANGELOG.md`.
+ * A changelog patch that will be applied to the changelog file.
  *
  * It mirrors the parameters of {@link String.prototype.replace} in form and
  * function. That is: each `ChangelogPatch` `searchValue` will be replaced by
- * `replaceValue` in the contents of `CHANGELOG.md`.
+ * `replaceValue` in the changelog file.
  *
  * Note that replacements are made in-place, meaning order does matter.
  */
@@ -457,9 +472,9 @@ export type ChangelogPatch = [searchValue: string | RegExp, replaceValue: string
 export type ChangelogPatches = ChangelogPatch[];
 
 /**
- * A function that receives the current contents of `CHANGELOG.md` and a
+ * A function that receives the current contents of the changelog file and a
  * `patcher` function. `ChangelogPatcherFunction` must return a string that will
- * become the new contents of `CHANGELOG.md`.
+ * become the new contents of the changelog file.
  *
  * `patcher` is the optional second parameter of `ChangelogPatcherFunction` that
  * accepts a `changelog` string and `patches`, which is an array of
