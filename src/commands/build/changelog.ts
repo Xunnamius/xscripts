@@ -73,7 +73,7 @@ export type CustomCliArguments = GlobalCliArguments & {
   onlyPatchChangelog: boolean;
   outputUnreleased: boolean;
   outputOrder: OutputOrder;
-  importSectionFile: string;
+  importSectionFile?: string;
   changelogFile: string;
 };
 
