@@ -150,7 +150,7 @@ export async function generateNotes(
     await import(
       // TODO: fix this
       // @ts-expect-error: a necessary evil until we fix semantic-release-atam
-      'universe/../../node_modules/semantic-release/node_modules/@semantic-release/release-notes-generator/index.js'
+      'universe/../../node_modules/@semantic-release/release-notes-generator/index.js'
     )
   ).generateNotes;
 
