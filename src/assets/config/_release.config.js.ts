@@ -31,6 +31,7 @@ import type {
   SuccessContext,
   GenerateNotesContext
 } from 'semantic-release';
+import { run } from 'multiverse/run';
 
 // * This plugin wraps the following plugins/functionality:
 // *
@@ -91,8 +92,8 @@ export function verifyConditions(
   _context: VerifyConditionsContext
 ) {
   const pluginDebug = debug.extend('verifyConditions');
+  pluginDebug('entered step function');
 
-  pluginDebug('entered verifyConditions function');
   pluginDebug('releaseSectionPath: %O', pluginConfig.releaseSectionPath);
   pluginDebug('parserOpts: %O', pluginConfig.parserOpts);
   pluginDebug('writerOpts: %O', pluginConfig.writerOpts);
@@ -122,6 +123,7 @@ export async function generateNotes(
   context: GenerateNotesContext
 ): Promise<string> {
   const pluginDebug = debug.extend('generateNotes');
+  pluginDebug('entered step function');
 
   const {
     env: { UPDATE_CHANGELOG }
@@ -225,14 +227,15 @@ export async function generateNotes(
  * other) warning if the release pipeline ends with the repository in an unclean
  * state.
  */
-export function success({ releaseSectionPath }: PluginConfig, context: SuccessContext) {
+export async function success(_pluginConfig: PluginConfig, _context: SuccessContext) {
   const pluginDebug = debug.extend('generateNotes');
+  pluginDebug('entered step function');
 
-  // TODO: warn if the release pipeline ends with the repository in an unclean
-  // TODO: state (git).
+  const { stdout } = await run('git', ['status', '--porcelain']);
 
-  void releaseSectionPath;
-
-  pluginDebug.message('(release.config.js success step is unfinished)');
-  context.logger.warn('(release.config.js success step is unfinished)');
+  if (stdout) {
+    process.stdout.write(
+      '::warning title=Repository left in unclean state::The release pipeline has terminated but the repository remains in an unclean state. This is typically evident of a broken build process.'
+    );
+  }
 }
