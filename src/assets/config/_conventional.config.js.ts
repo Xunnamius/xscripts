@@ -56,7 +56,7 @@ export type ConventionalChangelogCliConfig = ConventionalChangelogConfigSpecOpti
      * Conventional Changelog Core options.
      */
     // TODO: Last time I scanned its source, it seemed this key was required, so
-    // TODO: it is included here for now.Verify that this key is still
+    // TODO: it is included here for now. Verify that this key is still
     // TODO: necessary.
     conventionalChangelog: ConventionalChangelogCoreOptions.Config.Object;
   };
@@ -320,6 +320,7 @@ export function moduleExport(
 
           if (context === 'monorepo') {
             debug_('monorepo context detected');
+            // TODO: consider replacing softAssert and throw new Error instead
             softAssert(pkg, ErrorMessage.CannotRunOutsideRoot());
 
             const {

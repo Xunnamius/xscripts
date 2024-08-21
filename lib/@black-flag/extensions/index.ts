@@ -1148,7 +1148,7 @@ export function withUsageExtensions(altDescription = '$1.') {
 }
 
 /**
- *
+ * TODO: a decent comment
  */
 export async function getInvocableExtendedHandler<
   CustomCliArguments extends Record<string, unknown>,
