@@ -1,14 +1,11 @@
 /// @ts-check
 'use strict';
 
-const { readFile, rm: rmFile } = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
 
-const debug = require('debug')(
-  `${require('./package.json').name}:semantic-release-config`
-);
+const debug = require('debug')('xscripts:semantic-release-config');
 
 // TODO: replace this with @xunnamius/semantic-release-projector-config
 
@@ -18,12 +15,12 @@ debug(`will update changelog: ${updateChangelog ? 'yes' : 'no'}`);
 
 const { parserOpts, writerOpts } = require('./conventional.config');
 
-const tmpChangelogReleaseSectionPath = path.join(
+const releaseSectionPath = path.join(
   os.tmpdir(),
   'xscripts-release-changelog-' + crypto.randomBytes(4).readUInt32LE(0).toString(16)
 );
 
-debug(`tmpChangelogReleaseSectionPath: ${tmpChangelogReleaseSectionPath}`);
+debug(`releaseSectionPath: ${releaseSectionPath}`);
 
 module.exports = {
   branches: [
@@ -64,30 +61,33 @@ module.exports = {
     ],
     // ? We need this for patching the release body even when not updating
     // ? the changelog.
-    ['@semantic-release/changelog', { changelogFile: tmpChangelogReleaseSectionPath }],
+    // * This generates the changelog during semantic-release's "prepare" step.
+    ['@semantic-release/changelog', { changelogFile: releaseSectionPath }],
     // ? Optionally update the changelog file.
     updateChangelog
       ? [
           '@semantic-release/exec',
           {
-            prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --import-section-file ${tmpChangelogReleaseSectionPath}`
+            prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --import-section-file ${releaseSectionPath}`
           }
         ]
       : [],
-    // ? We run this block now so the release body is patched when referenced
-    // ? in the blocks below. We run this after the updateChangelog section so
-    // ? we don't run the patcher over the same content twice, which is a no-no.
-    // * Note how we patch tmpChangelogReleaseSectionPath and not CHANGELOG.md.
+    // ? We run this block now so the release body is patched and formatted when
+    // ? referenced in the blocks below. We run this after the updateChangelog
+    // ? section so we don't run the patcher over the same content twice.
     [
       '@semantic-release/exec',
       {
-        prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --only-patch-changelog --no-format-changelog --changelog-file ${tmpChangelogReleaseSectionPath}`
+        // * Note how we patch and format releaseSectionPath and not the
+        // * changelog file itself.
+        prepareCmd: `NODE_NO_WARNINGS=1 npx xscripts build changelog --only-patch-changelog --changelog-file ${releaseSectionPath}`
       }
     ],
-    // ? This executes module.exports.prepare() (exported by this file) within
-    // ? semantic-release's runtime realm, allowing us to mutate `nextRelease`
-    // ? as we see fit.
-    [__filename],
+    // ? This block pulls in a custom semantic-release plugin that mutates
+    // ? nextRelease.notes among other context values.
+    // TODO: in assets/config/_release.config.js, this should be:
+    //['@-xun/scripts/assets/config/release.config.js'],
+    ['./dist/src/assets/config/_release.config.js.js', { releaseSectionPath }],
 
     // * Publish
 
@@ -108,42 +108,5 @@ module.exports = {
     ['@semantic-release/github']
   ]
 };
-
-/**
- * This is a custom semantic-release plugin that replaces `nextRelease.notes`
- * with the version patched by xscripts.
- */
-module.exports.prepare = async function prepare(_pluginConfig, context) {
-  debug('entered custom plugin prepare function');
-
-  /*try {*/
-  const updatedNotes = (await readFile(tmpChangelogReleaseSectionPath, 'utf8')).trim();
-
-  if (!updatedNotes) {
-    throw new Error(
-      `unexpectedly empty temporary changelog file: ${tmpChangelogReleaseSectionPath}`
-    );
-  }
-
-  context.nextRelease.notes = updatedNotes;
-  debug('updated nextRelease.notes: %O', context.nextRelease.notes);
-
-  // ? We don't really care if this succeeds or fails
-  void rmFile(tmpChangelogReleaseSectionPath, { force: true }).catch();
-  /*} catch (error) {
-    // TODO: add a call out to debug.error here once we start using rejoinder
-    throw error;
-  }*/
-};
-
-// TODO: warn if the release pipeline ends with the repository in an unclean
-// TODO: state (git).
-/**
- * This is a custom semantic-release plugin that logs a GitHub Actions warning
- * if the release pipeline ends with the repository in an unclean state.
- */
-/* module.exports.prepare = async function success(_pluginConfig, context) {
-  // TODO
-}; */
 
 debug('exports: %O', module.exports);
