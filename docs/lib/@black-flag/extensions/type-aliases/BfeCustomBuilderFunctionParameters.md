@@ -25,4 +25,4 @@ methods that are not supported by BFE.
 
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:552](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/lib/@black-flag/extensions/index.ts#L552)
+[lib/@black-flag/extensions/index.ts:552](https://github.com/Xunnamius/xscripts/blob/0bf89cad7426062a1d0f1ed6b9e69c1e60c734aa/lib/@black-flag/extensions/index.ts#L552)

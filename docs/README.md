@@ -86,4 +86,5 @@
 - [types/eslint-plugin-unicorn](types/eslint-plugin-unicorn/README.md)
 - [types/glob-gitignore](types/glob-gitignore/README.md)
 - [types/global](types/global/README.md)
+- [types/release-notes-generator](types/release-notes-generator/README.md)
 - [types/unique-filename](types/unique-filename/README.md)

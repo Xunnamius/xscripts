@@ -13,4 +13,4 @@ repositories. This value is also duplicated in the commit.hbs template file.
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.js.ts:68](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/src/assets/config/_conventional.config.js.ts#L68)
+[src/assets/config/\_conventional.config.js.ts:68](https://github.com/Xunnamius/xscripts/blob/0bf89cad7426062a1d0f1ed6b9e69c1e60c734aa/src/assets/config/_conventional.config.js.ts#L68)

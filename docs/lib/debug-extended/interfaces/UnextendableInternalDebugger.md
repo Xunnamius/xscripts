@@ -32,7 +32,7 @@ An instance of InternalDebugger that cannot be extended via
 
 ## Defined in
 
-[lib/debug-extended/index.ts:56](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/lib/debug-extended/index.ts#L56)
+[lib/debug-extended/index.ts:56](https://github.com/Xunnamius/xscripts/blob/0bf89cad7426062a1d0f1ed6b9e69c1e60c734aa/lib/debug-extended/index.ts#L56)
 
 ## Properties
 
@@ -114,7 +114,7 @@ node\_modules/@types/debug/index.d.ts:44
 
 #### Defined in
 
-[lib/debug-extended/index.ts:57](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/lib/debug-extended/index.ts#L57)
+[lib/debug-extended/index.ts:57](https://github.com/Xunnamius/xscripts/blob/0bf89cad7426062a1d0f1ed6b9e69c1e60c734aa/lib/debug-extended/index.ts#L57)
 
 ***
 
@@ -136,7 +136,7 @@ node\_modules/@types/debug/index.d.ts:44
 
 #### Defined in
 
-[lib/debug-extended/index.ts:50](https://github.com/Xunnamius/xscripts/blob/ea7b98342d9aa37d18f7398603d7c15f580a5312/lib/debug-extended/index.ts#L50)
+[lib/debug-extended/index.ts:50](https://github.com/Xunnamius/xscripts/blob/0bf89cad7426062a1d0f1ed6b9e69c1e60c734aa/lib/debug-extended/index.ts#L50)
 
 ***
 
