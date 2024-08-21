@@ -7,7 +7,7 @@ declare module 'glob-gitignore' {
      * ignored. Typically this is the result of parsing a .gitignore file (or file
      * with compatible format) split by `"\n"`.
      */
-    ignore: string | string[];
+    ignore?: string | string[];
   };
 
   export async function glob(
