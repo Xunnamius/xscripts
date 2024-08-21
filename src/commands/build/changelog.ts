@@ -316,9 +316,8 @@ export default function command(
                   );
 
                   if (withheldChangelogPatchSections.length) {
-                    yield '٠ –— ٠ —— ٠ —— ٠  —– ٠<br />\n\n';
-
                     for (const section of withheldChangelogPatchSections.reverse()) {
+                      yield '<br />\n\n';
                       yield '### 🏗️ Patch ' + section.slice(4);
                     }
 
