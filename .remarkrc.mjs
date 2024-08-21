@@ -72,6 +72,8 @@ const formatConfig = {
   ]
 };
 
+debug('saw process.env.NODE_ENV: %O', process.env.NODE_ENV);
+
 if (!['lint', 'format'].includes(process.env.NODE_ENV)) {
   throw new Error('remark expects NODE_ENV to be one of either: lint, format');
 }
