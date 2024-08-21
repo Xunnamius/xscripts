@@ -70,8 +70,8 @@ export function verifyConditions(
   pluginDebug('releaseSectionPath: %O', pluginConfig.releaseSectionPath);
 
   assert(
-    pluginConfig.releaseSectionPath,
-    'the @-xun/scripts semantic-release plugin requires the "releaseSectionPath" option be defined'
+    pluginConfig.releaseSectionPath?.endsWith('.md'),
+    'the @-xun/scripts semantic-release plugin requires the "releaseSectionPath" option be a non-empty string ending with ".md"'
   );
 }
 
