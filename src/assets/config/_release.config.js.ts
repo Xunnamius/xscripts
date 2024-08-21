@@ -2,7 +2,6 @@ import { readFile, writeFile, rm as rmFile } from 'node:fs/promises';
 import assert from 'node:assert';
 
 import { type ExecutionContext } from '@black-flag/core/util';
-import { generateNotes as generateNotesFromSemanticReleasePlugin } from '@semantic-release/release-notes-generator';
 
 import { createDebugLogger } from 'multiverse/rejoinder';
 import { getInvocableExtendedHandler } from 'multiverse/@black-flag/extensions/index.js';
@@ -33,13 +32,16 @@ import type {
   GenerateNotesContext
 } from 'semantic-release';
 
-/**
- * * This plugin wraps the following plugins/functionality:
- *
- * * - @semantic-release/release-notes-generator
- * * - @semantic-release/changelog
- * * - @-xun/scripts (build changelog)
- */
+// * This plugin wraps the following plugins/functionality:
+// *
+// * - @semantic-release/release-notes-generator
+// * - @semantic-release/changelog
+// * - @-xun/scripts (build changelog)
+
+type GenerateNotesFromSemanticReleasePlugin = (
+  pluginConfig: { parserOpts: unknown; writerOpts: unknown },
+  context: GenerateNotesContext
+) => Promise<string>;
 
 const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:release`
@@ -144,15 +146,20 @@ export async function generateNotes(
     GlobalExecutionContext
   >(buildChangelog, pseudoBfGlobalExecutionContext);
 
+  const generateRawNotes: GenerateNotesFromSemanticReleasePlugin = (
+    await import(
+      // TODO: fix this
+      // @ts-expect-error: a necessary evil until we fix semantic-release-atam
+      'universe/../../node_modules/semantic-release/node_modules/@semantic-release/release-notes-generator/index.js'
+    )
+  ).generateNotes;
+
   pluginDebug('generating release notes with @semantic-release/release-notes-generator');
 
-  const rawNotes = await generateNotesFromSemanticReleasePlugin(
-    { parserOpts, writerOpts },
-    context
-  );
+  const rawNotes = await generateRawNotes({ parserOpts, writerOpts }, context);
 
   pluginDebug('rawNotes: %O', rawNotes);
-  pluginDebug('writing generated notes out to @semantic-release/release-notes-generator');
+  pluginDebug('writing generated notes out to: %O', releaseSectionPath);
 
   await writeFile(releaseSectionPath, rawNotes);
 
