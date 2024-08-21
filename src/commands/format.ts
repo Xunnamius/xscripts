@@ -311,6 +311,7 @@ export default function command({
               '--frail',
               '--no-ignore',
               '--silently-ignore',
+              `--rc-path="${rootDir}/.remarkrc.mjs"`,
               ...mdFiles
             ],
             {

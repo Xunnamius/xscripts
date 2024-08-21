@@ -182,6 +182,7 @@ export default function command({
               '--no-stdout',
               '--ignore',
               '--silently-ignore',
+              `--rc-path="${rootDir}/.remarkrc.mjs"`,
               ...mdFiles
             ],
             {
