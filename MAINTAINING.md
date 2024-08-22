@@ -194,7 +194,7 @@ What follows is an example outcome of the above steps:
 
 # ⛔️ DEPRECATED/UNMAINTAINED
 
-> \[!CAUTION]
+> [!CAUTION]
 >
 > This project has been superseded (and all of its useful bits subsumed) by
 > [something-else](https://github.com/something/else).
