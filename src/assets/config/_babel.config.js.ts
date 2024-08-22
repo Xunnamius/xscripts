@@ -141,7 +141,6 @@ export const { transformer } = makeTransformer<Context>({
     return {
       [name]: /*js*/ `
 // @ts-check
-// @ts-check
 'use strict';
 
 /*const { createDebugLogger } = require('debug-extended');
@@ -167,7 +166,7 @@ if (!babelExpectedEnvironment.includes(nodeEnv)) {
 }
 
 module.exports = deepMergeConfig(moduleExport(), {
-  // Any custom configs here will be deep merged with moduleExport
+  // Any custom configs here will be deep merged with moduleExport's result
 });
 
 /*debug('exported config: %O', module.exports);*/

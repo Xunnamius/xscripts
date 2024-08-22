@@ -147,7 +147,7 @@ export const defaultChangelogTopmatter =
  * footers", which are simply [spec-compliant
  * footers](https://www.conventionalcommits.org/en/v1.0.0/#specification) of the
  * form `xpipeline: command string` or `xpipeline: command string 1, command
- * string 2, etc`.
+ * string 2, etc`, or the `xpipe: ...`/`x: ...`.
  *
  * Both commands and footers can be used simultaneously.
  *
@@ -159,8 +159,8 @@ export const defaultChangelogTopmatter =
  * This is a really detailed commit message body.
  *
  * xpipeline: skip ci
- * xpipeline: skip cd
- * xpipeline: some-other-command, yet-another-command, a-5th-command
+ * xpipe: skip cd
+ * x: some-other-command, yet-another-command, a-5th-command
  * ```
  */
 // TODO: import these from @-xun/pipeline instead
