@@ -67,7 +67,7 @@ Xpipeline also acknowledges well-known command strings via "xpipeline
 footers", which are simply [spec-compliant
 footers](https://www.conventionalcommits.org/en/v1.0.0/#specification) of the
 form `xpipeline: command string` or `xpipeline: command string 1, command
-string 2, etc`.
+string 2, etc`, or the `xpipe: ...`/`x: ...`.
 
 Both commands and footers can be used simultaneously.
 
@@ -79,10 +79,10 @@ type(scope): description
 This is a really detailed commit message body.
 
 xpipeline: skip ci
-xpipeline: skip cd
-xpipeline: some-other-command, yet-another-command, a-5th-command
+xpipe: skip cd
+x: some-other-command, yet-another-command, a-5th-command
 ```
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.js.ts:167](https://github.com/Xunnamius/xscripts/blob/0bf89cad7426062a1d0f1ed6b9e69c1e60c734aa/src/assets/config/_conventional.config.js.ts#L167)
+[src/assets/config/\_conventional.config.js.ts:167](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/src/assets/config/_conventional.config.js.ts#L167)

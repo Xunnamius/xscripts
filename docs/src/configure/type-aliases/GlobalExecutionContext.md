@@ -12,8 +12,8 @@
 
 ### runtimeContext
 
-> **runtimeContext**: `ReturnType`\<*typeof* `getRunContext`\>
+> **runtimeContext**: `ReturnType`\<*typeof* `getRunContext`\> \| `undefined`
 
 ## Defined in
 
-[src/configure.ts:24](https://github.com/Xunnamius/xscripts/blob/0bf89cad7426062a1d0f1ed6b9e69c1e60c734aa/src/configure.ts#L24)
+[src/configure.ts:31](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/src/configure.ts#L31)

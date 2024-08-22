@@ -18,7 +18,7 @@ Returns an array of various different absolute file paths (strings):
 
 ## Parameters
 
-• **runtimeContext**: `MonorepoRunContext` \| `PolyrepoRunContext`
+• **runtimeContext**: `NonNullable`\<`undefined` \| `MonorepoRunContext` \| `PolyrepoRunContext`\>
 
 • **\_\_namedParameters** = `{}`
 
@@ -109,4 +109,4 @@ the current working directory.
 
 ## Defined in
 
-[src/util.ts:160](https://github.com/Xunnamius/xscripts/blob/0bf89cad7426062a1d0f1ed6b9e69c1e60c734aa/src/util.ts#L160)
+[src/util.ts:181](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/src/util.ts#L181)

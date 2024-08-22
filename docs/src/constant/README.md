@@ -10,6 +10,7 @@
 
 ### Variables
 
+- [globalCliName](variables/globalCliName.md)
 - [globalDebuggerNamespace](variables/globalDebuggerNamespace.md)
 - [globalLoggerNamespace](variables/globalLoggerNamespace.md)
 - [standardNodeShebang](variables/standardNodeShebang.md)

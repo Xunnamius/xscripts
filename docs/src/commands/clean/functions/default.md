@@ -42,4 +42,4 @@
 
 ## Defined in
 
-[src/commands/clean.ts:44](https://github.com/Xunnamius/xscripts/blob/0bf89cad7426062a1d0f1ed6b9e69c1e60c734aa/src/commands/clean.ts#L44)
+[src/commands/clean.ts:44](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/src/commands/clean.ts#L44)
