@@ -1,3 +1,9 @@
+// * The semantic-release plugin exports wrap the following functionality:
+// *
+// * - @semantic-release/release-notes-generator
+// * - @semantic-release/changelog
+// * - @-xun/scripts (build changelog)
+
 import { readFile, writeFile, rm as rmFile } from 'node:fs/promises';
 import assert from 'node:assert';
 
@@ -34,12 +40,6 @@ import type {
   SuccessContext,
   GenerateNotesContext
 } from 'semantic-release';
-
-// * This plugin wraps the following plugins/functionality:
-// *
-// * - @semantic-release/release-notes-generator
-// * - @semantic-release/changelog
-// * - @-xun/scripts (build changelog)
 
 const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:release`
