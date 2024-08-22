@@ -9,6 +9,7 @@ import {
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
+import { globalCliName } from 'universe/constant';
 
 export type CustomCliArguments = GlobalCliArguments;
 
@@ -21,7 +22,7 @@ export default function command({
   >(undefined, { additionalCommonOptions: ['version'] });
 
   return {
-    name: 'xscripts',
+    name: globalCliName,
     builder,
     description:
       "A collection of commands for interacting with Xunnamius's NPM-based projects",
