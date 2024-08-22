@@ -15,20 +15,39 @@ import { ErrorMessage } from 'universe/error';
 
 import type { GlobalExecutionContext } from 'universe/configure';
 
-// ? Might want to do something async in the future, so we reserve the right
-// ? now.
+/**
+ * This function runs common checks against the runtime to ensure the
+ * environment is suitable for running xscripts.
+ *
+ * This function should be called at the top of just about every command
+ * handler.
+ *
+ * This command also asserts that the `runtimeContext` property is defined by
+ * returning it (or throwing a {@link CliError} if undefined).
+ */
+// ? Might want to do something async in the future, so we reserve the right.
 // eslint-disable-next-line @typescript-eslint/require-await
-export async function globalPreChecks({
+export async function runGlobalPreChecks({
   debug_,
-  runtimeContext
-}: Pick<GlobalExecutionContext, 'debug_' | 'runtimeContext'>) {
+  runtimeContext_
+}: {
+  debug_: GlobalExecutionContext['debug_'];
+  runtimeContext_: GlobalExecutionContext['runtimeContext'];
+}): Promise<{
+  runtimeContext: NonNullable<GlobalExecutionContext['runtimeContext']>;
+}> {
   const debug = debug_.extend('globalPreChecks');
+
+  if (!runtimeContext_) {
+    throw new CliError(ErrorMessage.CannotRunOutsideRoot());
+  }
+
   const cwd = process.cwd();
 
   const {
     project: { root },
     package: pkg
-  } = runtimeContext;
+  } = runtimeContext_;
 
   debug('project root: %O', root);
   debug('pkg root: %O', pkg?.root);
@@ -37,6 +56,8 @@ export async function globalPreChecks({
   if (root !== cwd && (!pkg || pkg.root !== cwd)) {
     throw new CliError(ErrorMessage.CannotRunOutsideRoot());
   }
+
+  return { runtimeContext: runtimeContext_ };
 }
 
 export async function readFile(path: string) {
@@ -128,7 +149,7 @@ const projectFileCache = {
  * Return the first defined value in `package.json`'s `bin`, if there is one.
  */
 export function findMainBinFile(
-  runtimeContext: GlobalExecutionContext['runtimeContext']
+  runtimeContext: NonNullable<GlobalExecutionContext['runtimeContext']>
 ) {
   const debug = createDebugLogger({
     namespace: `${globalLoggerNamespace}:findMainBinFile`
@@ -158,7 +179,7 @@ export function findMainBinFile(
  *   directory or under the root `lib/` directory
  */
 export async function findProjectFiles(
-  runtimeContext: GlobalExecutionContext['runtimeContext'],
+  runtimeContext: NonNullable<GlobalExecutionContext['runtimeContext']>,
   {
     useCached = true,
     skipIgnored = true,
@@ -300,7 +321,7 @@ export const fsConstants = fs.constants;
  * Return metadata about the current project.
  */
 export async function getProjectMetadata(
-  runtimeContext: GlobalExecutionContext['runtimeContext']
+  runtimeContext: NonNullable<GlobalExecutionContext['runtimeContext']>
 ): Promise<ProjectMetadata> {
   const debug = createDebugLogger({
     namespace: `${globalLoggerNamespace}:getProjectMetadata`
