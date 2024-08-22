@@ -49,7 +49,7 @@ squashing commits will likely damage the [generated][6] [CHANGELOG.md][7],
 hinder [bisection][8], and result in [non-atomic commits][9], so use it
 sparingly.
 
-## Release
+## Releases
 
 Our releases are automatic. They happen whenever code lands into `master`. A
 GitHub Actions build gets kicked off and, if it's successful, a tool called
@@ -123,6 +123,126 @@ CODECOV_TOKEN=$(npx --yes dotenv-cli -p CODECOV_TOKEN) npx codecov
 
 <!-- lint ignore -->
 
+## Deprecation and End of Life
+
+> "Everything that has a beginning has an end, Neo."
+>
+> — Agent Smith, The Matrix Revolutions (2003)
+
+Sometimes, for a variety of reasons, the maintenance window on a project may
+close for good. It happens. And when it does, there is a need to make clear to
+all current and future users that the project and its assets (repository,
+published packages, etc) are to be considered deprecated and that no further
+maintenance is intended.
+
+With somber focus, the following steps should be taken:
+
+> If you're using [xscripts][12], all of this can be done automatically via
+> `xscripts project renovate --deprecate`.
+
+> These steps were inspired by [Richard Litt's checklist][13].
+
+### Deprecate the Remote (GitHub) repository
+
+> If the deprecated project is using [xscripts][12]/[xpipeline][14], at least
+> one of the commits created as a result of following these instructions must be
+> of the [`build` type][15]. If operating on a monorepo, said commit must touch
+> every package.
+
+<br />
+
+- [ ] **Update Metadata**
+
+GitHub repositories have metadata settings that can be configured via the [gear
+icon][16]. Once the modal is revealed, the following settings should be updated:
+
+- `⛔️ [DEPRECATED]` should be prepended to the description.
+
+- If the website is pointing to NPM, the input box should be emptied.
+
+- All three checkboxes under "Include in the home page" (i.e. "Releases,"
+  "Packages," and "Deployments) should be unchecked.
+
+Be sure to save the changes by pressing "Save changes"!
+
+<br />
+
+- [ ] **Update `README.md`**
+
+The project root `README.md` file and any README files at `packages/*/README.md`
+(if applicable) should be updated as follows:
+
+- The level one heading at the top of the file should be updated to "# ⛔️
+  DEPRECATED/UNMAINTAINED" (no quotes).
+
+- All badges except badge-blm should be removed; badge-unmaintained should be
+  added.
+
+- Under the updated level one heading, a [caution alert][17] should be included
+  that details the reason why this project is being deprecated. Any
+  alternatives, forks, see-also's, and/or future projects should be linked here.
+
+What follows is an example outcome of the above steps:
+
+```markdown
+<!-- badges-start -->
+
+[![Black Lives Matter!][badge-blm]][link-blm]
+[![!!UNMAINTAINED!!][badge-unmaintained]][link-unmaintained]
+
+<!-- badges-end -->
+
+# ⛔️ DEPRECATED/UNMAINTAINED
+
+> \[!CAUTION]
+>
+> This project has been superseded (and all of its useful bits subsumed) by
+> [something-else](https://github.com/something/else).
+
+...
+
+[badge-blm]: https://xunn.at/badge-blm 'Join the movement!'
+[link-blm]: https://xunn.at/donate-blm
+[badge-unmaintained]:
+  https://xunn.at/badge-unmaintained
+  'Unfortunately, this project is unmaintained (forks welcome!)'
+[link-unmaintained]: https://xunn.at/link-unmaintained
+```
+
+<br />
+
+- [ ] **Update `package.json` (if applicable)**
+
+If the project has a `package.json` file at its root and/or at
+`packages/*/package.json` (if applicable), they should be updated as follows:
+
+- The [`description` string][18] should be prefixed with `⛔️ [DEPRECATED]`.
+
+- The strings `"deprecated", "obsolete", "archived"` should be added to the
+  [`keywords` array][19] if this file defines a published package.
+
+### Deprecate the Published Packages
+
+- [ ] **Update `package.json` (if applicable)**
+
+[See above][20].
+
+- [ ] **Publish Final Version**
+
+Any updates to [source repository][21] assets (including `package.json` files
+and adding deprecation language to `README.md` files) should be published as a
+single patch release in a polyrepo, or one release per package in a monorepo.
+
+- [ ] **Issue Package-Wide Deprecation Command**
+
+Use [`npm deprecate`][22] to [officially deprecate][23] each package after their
+final patch releases are published.
+
+### Deprecate the Local Repository
+
+Consider moving the repository to a place where it is accessible but otherwise
+out of the way, e.g. `/repos/.deprecated/<deprecated-repo-here>`.
+
 ## Thanks!
 
 Thank you so much for helping to maintain this project!
@@ -144,3 +264,18 @@ Thank you so much for helping to maintain this project!
 [10]: https://github.com/semantic-release/semantic-release
 [11]:
   https://github.com/Xunnamius/black-flag/blob/eec78609146a92cab29caa9d1fa05a0581e5bd3f/release.config.js#L27
+[12]: https://github.com/Xunnamius/xscripts
+[13]:
+  https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
+[14]: https://github.com/Xunnamius/pipeline
+[15]:
+  https://github.com/Xunnamius/xscripts/blob/2da3d8abed3de3d2ebc33d3cd54da3190dc2c63c/src/assets/config/_conventional.config.js.ts#L201-L214
+[16]: https://github.com/orgs/community/discussions/54372
+[17]: https://github.com/orgs/community/discussions/16925
+[18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
+[19]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#keywords
+[20]: #deprecate-the-remote-github-repository
+[21]: #deprecate-the-github-repository
+[22]: https://docs.npmjs.com/cli/v8/commands/npm-deprecate
+[23]:
+  https://docs.npmjs.com/deprecating-and-undeprecating-packages-or-package-versions
