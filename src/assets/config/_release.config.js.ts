@@ -90,10 +90,8 @@ export function moduleExport({
       ],
       // ? This block pulls in a custom semantic-release plugin that mutates
       // ? internal state as required.
-      // TODO: in assets/config/_release.config.js, this should be:
-      //['@-xun/scripts/assets/config/release.config.js'],
       [
-        './dist/src/assets/config/_release.config.js.js',
+        '@-xun/scripts/assets/config/release.config.js',
         {
           releaseSectionPath,
           parserOpts,
