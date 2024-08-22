@@ -23,7 +23,6 @@ const debug = createDebugLogger({
 // TODO
 
 /*debug('exported config: %O', module.exports);*/
-
 `.trimStart()
     };
   }
