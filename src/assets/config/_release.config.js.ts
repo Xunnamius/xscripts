@@ -24,6 +24,8 @@ import {
 
 import type { ConventionalChangelogCliConfig } from 'universe/assets/config/_conventional.config.js';
 
+import { ErrorMessage } from 'universe/error';
+
 import type { EmptyObject } from 'type-fest';
 
 import type {
@@ -49,10 +51,13 @@ export function moduleExport({
   releaseSectionPath,
   parserOpts,
   writerOpts
-}: Pick<
-  PluginConfig,
-  'releaseSectionPath' | 'parserOpts' | 'writerOpts'
+}: Partial<
+  Pick<PluginConfig, 'releaseSectionPath' | 'parserOpts' | 'writerOpts'>
 >): ReleaseConfig {
+  assert(releaseSectionPath, ErrorMessage.BadParameter('releaseSectionPath'));
+  assert(parserOpts, ErrorMessage.BadParameter('parserOpts'));
+  assert(writerOpts, ErrorMessage.BadParameter('writerOpts'));
+
   return {
     branches: [
       '+([0-9])?(.{+([0-9]),x}).x',

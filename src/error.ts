@@ -97,5 +97,8 @@ export const ErrorMessage = {
   },
   DefaultImportFalsy() {
     return 'default import was falsy';
+  },
+  BadParameter(name: string) {
+    return `invalid value for parameter "${name}"`;
   }
 };
