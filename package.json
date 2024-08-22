@@ -132,7 +132,7 @@
     "@types/lodash.isequal": "^4.5.8",
     "@types/lodash.merge": "^4.6.9",
     "@types/lodash.mergewith": "^4.6.9",
-    "@types/node": "^22.4.2",
+    "@types/node": "^22.5.0",
     "@types/semver": "^7.5.8",
     "@types/spellchecker": "^3.5.2",
     "@typescript-eslint/utils": "^8.2.0",
@@ -244,7 +244,7 @@
     "unique-filename": "^3.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.20.2",
+    "@-xun/scripts": "^1.20.5",
     "@types/eslint": "^9.6.0",
     "@types/through2": "^2.0.41"
   },
