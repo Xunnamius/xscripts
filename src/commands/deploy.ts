@@ -24,7 +24,7 @@ import {
   ProjectMetaAttribute,
   checkIsNotNil,
   getProjectMetadata,
-  globalPreChecks
+  runGlobalPreChecks
 } from 'universe/util';
 
 export enum DeployTarget {
@@ -55,7 +55,7 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext
+  runtimeContext: runtimeContext_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
@@ -215,8 +215,7 @@ export default function command({
 
       debug('entered handler');
 
-      await globalPreChecks({ debug_, runtimeContext });
-
+      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });

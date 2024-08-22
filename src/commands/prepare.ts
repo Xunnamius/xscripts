@@ -16,7 +16,7 @@ import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions
 import { runWithInheritedIo } from 'multiverse/run';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { fsConstants, globalPreChecks, isAccessible } from 'universe/util';
+import { fsConstants, runGlobalPreChecks, isAccessible } from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments;
 
@@ -24,7 +24,7 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext
+  runtimeContext: runtimeContext_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
@@ -41,8 +41,7 @@ export default function command({
 
       debug('entered handler');
 
-      await globalPreChecks({ debug_, runtimeContext });
-
+      await runGlobalPreChecks({ debug_, runtimeContext_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });

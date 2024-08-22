@@ -19,7 +19,7 @@ import { run } from 'multiverse/run';
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { standardNodeShebang } from 'universe/constant';
 import { ErrorMessage } from 'universe/error';
-import { globalPreChecks, isAccessible, readFile, writeFile } from 'universe/util';
+import { runGlobalPreChecks, isAccessible, readFile, writeFile } from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments & {
   prependShebang: boolean;
@@ -30,7 +30,7 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext
+  runtimeContext: runtimeContext_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
@@ -66,8 +66,7 @@ export default function command({
 
       debug('entered handler');
 
-      await globalPreChecks({ debug_, runtimeContext });
-
+      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });

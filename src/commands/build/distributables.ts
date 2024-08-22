@@ -34,7 +34,7 @@ import {
   findProjectFiles,
   getImportSpecifierEntriesFromFiles,
   getProjectMetadata,
-  globalPreChecks,
+  runGlobalPreChecks,
   readFile,
   writeFile
 } from 'universe/util';
@@ -69,9 +69,11 @@ export default async function command({
   log,
   debug_,
   state,
-  runtimeContext
+  runtimeContext: runtimeContext_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const { attributes } = await getProjectMetadata(runtimeContext);
+  const { attributes = [] } = runtimeContext_
+    ? await getProjectMetadata(runtimeContext_)
+    : {};
 
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
@@ -100,7 +102,9 @@ export default async function command({
     'clean-output-dir': {
       boolean: true,
       description: 'Force-delete the output directory before transpilation',
-      default: !attributes.includes(ProjectMetaAttribute.Next)
+      default: runtimeContext_
+        ? !attributes.includes(ProjectMetaAttribute.Next)
+        : '(project-dependent)'
     },
     'generate-intermediates-for': {
       choices: intermediateTranspilationEnvironment,
@@ -148,8 +152,7 @@ export default async function command({
 
       debug('entered handler');
 
-      await globalPreChecks({ debug_, runtimeContext });
-
+      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });

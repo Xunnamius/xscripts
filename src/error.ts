@@ -37,6 +37,9 @@ export const ErrorMessage = {
   CannotBeCliAndNextJs() {
     return 'project must either provide a CLI or be a Next.js project';
   },
+  CannotUseIgnoresWithPathsOutsideProjectRoot() {
+    return 'cannot use ignore functionality (like --skip-ignored) when one or more --files paths are outside of the project root';
+  },
   CliProjectHasBadBinConfig() {
     return 'this project appears to be a CLI project but has one or more poorly configured "bin" entries in package.json';
   },

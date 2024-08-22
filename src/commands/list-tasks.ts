@@ -15,7 +15,7 @@ import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { globalPreChecks } from 'universe/util';
+import { runGlobalPreChecks } from 'universe/util';
 
 const frontmatter = `\n⮞  `;
 
@@ -27,7 +27,7 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext
+  runtimeContext: runtimeContext_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
@@ -50,8 +50,7 @@ export default function command({
 
       debug('entered handler');
 
-      await globalPreChecks({ debug_, runtimeContext });
-
+      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });

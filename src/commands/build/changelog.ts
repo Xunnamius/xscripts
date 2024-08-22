@@ -31,7 +31,7 @@ import {
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { checkIsNotNil, globalPreChecks, readFile, writeFile } from 'universe/util';
+import { checkIsNotNil, runGlobalPreChecks, readFile, writeFile } from 'universe/util';
 
 import {
   type ConventionalChangelogCliConfig,
@@ -80,7 +80,7 @@ export type CustomCliArguments = GlobalCliArguments & {
 export default function command(
   globalExecutionContext: AsStrictExecutionContext<GlobalExecutionContext>
 ) {
-  const { log, debug_, state, runtimeContext } = globalExecutionContext;
+  const { log, debug_, state, runtimeContext: runtimeContext_ } = globalExecutionContext;
 
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
@@ -159,8 +159,7 @@ export default function command(
 
       debug('entered handler');
 
-      await globalPreChecks({ debug_, runtimeContext });
-
+      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });

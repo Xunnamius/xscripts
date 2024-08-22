@@ -16,7 +16,7 @@ import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions
 import { run } from 'multiverse/run';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { checkChoicesNotEmpty, globalPreChecks } from 'universe/util';
+import { checkChoicesNotEmpty, runGlobalPreChecks } from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments & {
   entries: string[];
@@ -26,7 +26,7 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext
+  runtimeContext: runtimeContext_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
@@ -64,8 +64,7 @@ export default function command({
 
       debug('entered handler');
 
-      await globalPreChecks({ debug_, runtimeContext });
-
+      await runGlobalPreChecks({ debug_, runtimeContext_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });

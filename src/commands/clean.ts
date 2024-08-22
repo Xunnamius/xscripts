@@ -18,7 +18,7 @@ import { run } from 'multiverse/run';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
-import { globalPreChecks } from 'universe/util';
+import { runGlobalPreChecks } from 'universe/util';
 
 const matchNothing = '(?!)';
 
@@ -45,7 +45,7 @@ export default function command({
   log,
   debug_,
   state: { startTime },
-  runtimeContext
+  runtimeContext: runtimeContext_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
@@ -80,7 +80,7 @@ export default function command({
 
       debug('entered handler');
 
-      await globalPreChecks({ debug_, runtimeContext });
+      await runGlobalPreChecks({ debug_, runtimeContext_ });
 
       const excludeRegExps = excludePaths.map(
         (path) => new RegExp(path || matchNothing, 'iu')

@@ -1,4 +1,4 @@
-import { basename } from 'node:path';
+import { basename, resolve } from 'node:path';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { glob } from 'glob-gitignore';
@@ -19,6 +19,8 @@ import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
 import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
 import { SHORT_TAB } from 'multiverse/rejoinder';
 import { run } from 'multiverse/run';
+import { softAssert } from 'multiverse/@-xun/cli-utils/error';
+import { $artificiallyInvoked } from 'multiverse/@black-flag/extensions/symbols';
 
 import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
 import { ErrorMessage } from 'universe/error';
@@ -27,7 +29,7 @@ import {
   checkChoicesNotEmpty,
   deriveVirtualPrettierIgnoreLines,
   findProjectFiles,
-  globalPreChecks
+  runGlobalPreChecks
 } from 'universe/util';
 
 export type CustomCliArguments = GlobalCliArguments & {
@@ -44,7 +46,7 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext
+  runtimeContext: runtimeContext_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withStandardHandler] = withStandardBuilder<
     CustomCliArguments,
@@ -102,6 +104,7 @@ export default function command({
       '$1.\n\nNote that .prettierignore is used as the single source of truth for which Markdown files are and are not ignored when formatters are run. To prevent a file from being formatted by any formatter (including remark), add it to .prettierignore. To disregard .prettierignore when formatters are run, use --no-skip-ignored.\n\nWith respect to .prettierignore being the single source of truth for formatters: note that remark is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format", .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by "xscripts format".'
     ),
     handler: withStandardHandler(async function ({
+      [$artificiallyInvoked]: wasArtificiallyInvoked,
       $0: scriptFullName,
       renumberReferences,
       skipIgnored,
@@ -118,8 +121,7 @@ export default function command({
 
       debug('entered handler');
 
-      await globalPreChecks({ debug_, runtimeContext });
-
+      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
@@ -132,6 +134,8 @@ export default function command({
       debug('onlyPackageJson: %O', onlyPackageJson);
       debug('onlyMarkdown: %O', onlyMarkdown);
       debug('onlyPrettier: %O', onlyPrettier);
+
+      let sawMdFilesOutsideProjectRoot = false as boolean;
 
       const {
         project: { root: rootDir }
@@ -150,16 +154,24 @@ export default function command({
 
           debug('virtual .prettierignore lines: %O', ignore);
 
+          const sawFilesOutsideProjectRoot = files.some(
+            (path) => !resolve(rootDir, path).startsWith(rootDir)
+          );
+
+          debug('sawFilesOutsideProjectRoot: %O', sawFilesOutsideProjectRoot);
+
+          softAssert(
+            !sawFilesOutsideProjectRoot || ignore.length === 0,
+            ErrorMessage.CannotUseIgnoresWithPathsOutsideProjectRoot()
+          );
+
           files = await glob(files, {
             dot: true,
             absolute: true,
             nodir: true,
             // ? This addresses a strange bug with the ignores package as seen
             // ? here: https://github.com/prettier/prettier-atom/issues/490
-            // TODO: warn invokers that pass absolute files paths that ignores
-            // TODO: doesn't work like that, and then drop the ignore key like
-            // TODO: below to prevent everything from blowing up.
-            ...(ignore.length ? { ignore } : {})
+            ...(sawFilesOutsideProjectRoot ? {} : { ignore })
           });
 
           debug('files (post-glob): %O', files);
@@ -168,6 +180,14 @@ export default function command({
             files.filter((path) => path.endsWith('.md')),
             files.filter((path) => path.endsWith('/package.json'))
           ]);
+
+          if (sawFilesOutsideProjectRoot) {
+            sawMdFilesOutsideProjectRoot = mdFiles.some(
+              (mdPath) => !mdPath.startsWith(rootDir)
+            );
+          }
+
+          debug('sawMdFilesOutsideProjectRoot: %O', sawMdFilesOutsideProjectRoot);
 
           return {
             mdFiles,
@@ -302,6 +322,17 @@ export default function command({
 
           status.remark = null;
 
+          if (sawMdFilesOutsideProjectRoot && !wasArtificiallyInvoked) {
+            log.newline([LogTag.IF_NOT_SILENCED]);
+
+            log.warn(
+              [LogTag.IF_NOT_SILENCED],
+              `one or more markdown files given via "--files" are outside of the project root. Therefore, remark will be invoked with "--rc-path" pointing to this project's root .remarkrc config file. A side effect of this is that non-root .remarkrc config files in subdirectories or elsewhere will be ignored`
+            );
+
+            log.newline([LogTag.IF_NOT_SILENCED]);
+          }
+
           await run(
             'npx',
             [
@@ -311,7 +342,11 @@ export default function command({
               '--frail',
               '--no-ignore',
               '--silently-ignore',
-              `--rc-path=${rootDir}/.remarkrc.mjs`,
+              // ? This allows us to rely on remark's config search which the
+              // ? --rc-path parameter seems to disable
+              ...(sawMdFilesOutsideProjectRoot
+                ? [`--rc-path=${rootDir}/.remarkrc.mjs`]
+                : []),
               ...mdFiles
             ],
             {
