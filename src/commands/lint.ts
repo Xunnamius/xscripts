@@ -121,6 +121,8 @@ export default function command({
       debug('runToCompletion: %O', runToCompletion);
 
       let aborted = false;
+      let firstOutput = true;
+      let hadOutput = false as boolean;
 
       const {
         project: {
@@ -139,7 +141,6 @@ export default function command({
         scope === 'all' ? `tsconfig.eslint.json` : `tsconfig.lint.json`;
 
       debug('tsconfigFilePath: %O', tsconfigFilePath);
-      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
       const promisedLinters: Promise<unknown>[] = [];
       const linterSubprocesses: Subprocess[] = [];
@@ -181,7 +182,6 @@ export default function command({
               '--no-stdout',
               '--ignore',
               '--silently-ignore',
-              `--rc-path=${rootDir}/.remarkrc.mjs`,
               ...mdFiles
             ],
             {
@@ -209,7 +209,10 @@ export default function command({
         await Promise.all(promisedLinters);
       }
 
-      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+      if (hadOutput) {
+        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+      }
+
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
 
       async function runLinter(
@@ -230,11 +233,18 @@ export default function command({
         });
 
         if (!aborted) {
+          if ((stdout || stderr) && firstOutput) {
+            firstOutput = false;
+            genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+          }
+
           if (stdout) {
+            hadOutput = true;
             process.stdout.write(stdout + (stdout.endsWith('\n') ? '' : '\n'));
           }
 
           if (stderr) {
+            hadOutput = true;
             process.stderr.write(stderr + (stderr.endsWith('\n') ? '' : '\n'));
           }
 
