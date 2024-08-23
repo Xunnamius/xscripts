@@ -312,7 +312,15 @@ export async function generateNotes(
     throw new Error(`unexpectedly empty temporary changelog file: ${releaseSectionPath}`);
   }
 
-  return prettyTrimmedNotes.split('\n').slice(1).join('\n').trimStart();
+  return (
+    prettyTrimmedNotes
+      // ? Make it pretty for the GitHub Releases page :)
+      .split('\n')
+      .slice(1)
+      .join('\n')
+      .trimStart()
+      .replaceAll(/^#+/gm, '##')
+  );
 }
 
 /**
