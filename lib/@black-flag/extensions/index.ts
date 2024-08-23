@@ -1148,7 +1148,13 @@ export function withUsageExtensions(altDescription = '$1.') {
 }
 
 /**
- * TODO: a decent comment
+ * This function returns a version of `maybeCommand`'s handler function that is
+ * ready to invoke immediately. It can be used with both BFE and normal Black
+ * Flag command exports.
+ *
+ * See [the BFE
+ * documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#getinvocableextendedhandler)
+ * for more details.
  */
 export async function getInvocableExtendedHandler<
   CustomCliArguments extends Record<string, unknown>,

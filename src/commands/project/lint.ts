@@ -50,9 +50,7 @@ export default function command({
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Verifying structural compliance...');
 
-      // TODO: ensure all test files have the proper naming convention and are
-      // TODO: located in the correct place.
-      //
+      // TODO (ensure all test files have the proper naming convention and are located in the correct place.)
       // TODO (bring in lint code from projector)
       // TODO (add depcheck package (maybe), browserslist (update caniuse first), attw, and others into the mix)
       // TODO (test dir cannot appear under src, directly under lib, or under external-scripts)
@@ -63,17 +61,19 @@ export default function command({
       // TODO (npx update-browserslist-db@latest (non-match doesn't cause error only warning))
       // TODO (monorepo packages need their own local versions of some of the config files (such as the tsconfig.x.json files))
       // TODO (no dot imports outside lib directory; all dot imports inside packages within lib directory must not reach outside those packages)
-      //
       // TODO (error when ./dist dir is not available for scanning (prompt to build dist first))
       // TODO (warn when using --experimental-vm-modules and jest's `transformIgnorePatterns: []` together!)
       // TODO (warn when copyright dates, like with LICENSE, are out of date)
       // TODO (warn when launch.example and task.example diverge from expected launch and task files in .vscode)
-      // TODO: (new flag: --run-to-completion for finishing all linting then error/success; also update the task and example task to use this new flag)
-      // TODO: (check to ensure all breaking commits in the repository are in `type(scope)!: subject` form (specifically focusing on the "!" since our changelog generator needs to know if a commit is breaking just by looking at the subject alone))
+      // TODO (new flag: --run-to-completion for finishing all linting then error/success; also update the task and example task to use this new flag)
+      // TODO (check to ensure all breaking commits in the repository are in `type(scope)!: subject` form (specifically focusing on the "!" since our changelog generator needs to know if a commit is breaking just by looking at the subject alone))
       // TODO (must verify that "repository" url in package.json is correct (see current package.json for an example of it being correct) for provenance reasons)
       // TODO (diff generated config files versus on-disk config files and warn (but don't error) when different)
       // TODO (warn if a remark-link ignore comment exists at the beginning of a Markdown file's references section (means a template was copied incorrectly))
       // TODO (ensure package.json core-js version matches version in babel.config.js and elsewhere)
+      // TODO (also lint the GitHub repository itself, including all its settings (branch protection on main and canary, adding xunn-bot/ergo-bot/nhscc-bot as collabs, disabling wiki/etc, adding sponsorship, etc) and everything else (check past notes))
+      // TODO (allow linting of all github repositories (via GitHub api) to check for various things (ensure repo metadata is correct including correct checkmarks marked and that the repo description does not have any of those :emoji: things in them and instead uses real unicode emojis); see MAINTAINING.md for the details of what is expected)
+      // TODO (similar to the above, allow linting all known owned npm packages (via GitHub and NPM api) to check for various things; see MAINTAINING.md for the details of what is expected)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

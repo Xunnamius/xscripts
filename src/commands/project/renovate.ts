@@ -54,6 +54,7 @@ export default function command({
       // TODO (is idempotent)
       // TODO (--interactive to trigger an interactive fix of anything from project lint that is fixable (also offer to overwrite/replace, merge, etc; similar to apt))
       // TODO: (needs to delete the remark-link ignore comment from all Markdown files coming from src/assets/template)
+      // TODO (--deprecate and --undeprecate to automate deprecation and undeprecation process described in "project lint")
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

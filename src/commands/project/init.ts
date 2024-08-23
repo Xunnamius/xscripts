@@ -57,6 +57,7 @@ export default function command({
       // TODO: (launch and task examples in vscode are materialized)
       // TODO: (can init new monorepo packages with proper setup including tsconfig files and what not)
       // TODO: (needs to delete the remark-link ignore comment from all Markdown files coming from src/assets/template)
+      // TODO ("xscripts project init --template next" et al)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
