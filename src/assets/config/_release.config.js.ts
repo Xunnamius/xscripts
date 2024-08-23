@@ -312,7 +312,7 @@ export async function generateNotes(
     throw new Error(`unexpectedly empty temporary changelog file: ${releaseSectionPath}`);
   }
 
-  return prettyTrimmedNotes;
+  return prettyTrimmedNotes.split('\n').slice(1).join('\n').trim();
 }
 
 /**
