@@ -24,4 +24,4 @@
 
 ## Defined in
 
-[types/release-notes-generator.d.ts:5](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/types/release-notes-generator.d.ts#L5)
+[types/release-notes-generator.d.ts:5](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/types/release-notes-generator.d.ts#L5)

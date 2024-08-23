@@ -40,7 +40,7 @@ Represents encountering a workspace package.json file with the same
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:133](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L133)
+[lib/@-xun/project-utils/src/errors.ts:133](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L133)
 
 ### new DuplicatePackageNameError()
 
@@ -69,7 +69,7 @@ via `super`.
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:138](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L138)
+[lib/@-xun/project-utils/src/errors.ts:138](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L138)
 
 ## Properties
 
@@ -93,7 +93,7 @@ node\_modules/typescript/lib/lib.es2022.error.d.ts:24
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:141](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L141)
+[lib/@-xun/project-utils/src/errors.ts:141](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L141)
 
 ***
 
@@ -131,7 +131,7 @@ node\_modules/typescript/lib/lib.es5.d.ts:1076
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:140](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L140)
+[lib/@-xun/project-utils/src/errors.ts:140](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L140)
 
 ***
 
@@ -141,7 +141,7 @@ node\_modules/typescript/lib/lib.es5.d.ts:1076
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:142](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L142)
+[lib/@-xun/project-utils/src/errors.ts:142](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L142)
 
 ***
 

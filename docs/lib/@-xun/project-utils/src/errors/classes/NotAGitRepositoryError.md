@@ -30,7 +30,7 @@ Represents encountering a project that is not a git repository.
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:38](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L38)
+[lib/@-xun/project-utils/src/errors.ts:38](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L38)
 
 ### new NotAGitRepositoryError()
 
@@ -53,7 +53,7 @@ via `super`.
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:43](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L43)
+[lib/@-xun/project-utils/src/errors.ts:43](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L43)
 
 ## Properties
 

@@ -16,4 +16,4 @@ A pre-customized Listr Manager instance.
 
 ## Defined in
 
-[lib/rejoinder/index.ts:45](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/rejoinder/index.ts#L45)
+[lib/rejoinder/index.ts:45](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/rejoinder/index.ts#L45)

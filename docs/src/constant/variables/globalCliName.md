@@ -12,4 +12,4 @@ The name of the command line interface.
 
 ## Defined in
 
-[src/constant.ts:4](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/src/constant.ts#L4)
+[src/constant.ts:4](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/constant.ts#L4)

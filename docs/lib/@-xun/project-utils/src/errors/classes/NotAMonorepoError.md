@@ -30,7 +30,7 @@ Represents unexpectedly encountering a project that is not a monorepo.
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:57](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L57)
+[lib/@-xun/project-utils/src/errors.ts:57](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L57)
 
 ### new NotAMonorepoError()
 
@@ -53,7 +53,7 @@ via `super`.
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:62](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L62)
+[lib/@-xun/project-utils/src/errors.ts:62](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L62)
 
 ## Properties
 

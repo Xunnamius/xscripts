@@ -796,4 +796,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/src/error.ts#L11)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/error.ts#L11)

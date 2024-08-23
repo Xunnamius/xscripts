@@ -23,4 +23,4 @@ or more targets that `entryPoint` is guaranteed to resolve to when the exact
 
 ## Defined in
 
-[lib/@-xun/project-utils/src/resolvers.ts:232](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/resolvers.ts#L232)
+[lib/@-xun/project-utils/src/resolvers.ts:232](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/resolvers.ts#L232)

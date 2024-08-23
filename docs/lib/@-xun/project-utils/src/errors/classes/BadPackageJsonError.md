@@ -36,7 +36,7 @@ Represents encountering an unparsable package.json file.
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:101](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L101)
+[lib/@-xun/project-utils/src/errors.ts:101](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L101)
 
 ### new BadPackageJsonError()
 
@@ -63,7 +63,7 @@ via `super`.
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:106](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L106)
+[lib/@-xun/project-utils/src/errors.ts:106](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L106)
 
 ## Properties
 
@@ -115,7 +115,7 @@ node\_modules/typescript/lib/lib.es5.d.ts:1076
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:108](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L108)
+[lib/@-xun/project-utils/src/errors.ts:108](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L108)
 
 ***
 
@@ -125,7 +125,7 @@ node\_modules/typescript/lib/lib.es5.d.ts:1076
 
 #### Defined in
 
-[lib/@-xun/project-utils/src/errors.ts:109](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/src/errors.ts#L109)
+[lib/@-xun/project-utils/src/errors.ts:109](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/src/errors.ts#L109)
 
 ***
 

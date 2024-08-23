@@ -12,4 +12,4 @@ A type represents a single entry of a packages map.
 
 ## Defined in
 
-[lib/@-xun/project-utils/test/helpers/dummy-repo.ts:102](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/project-utils/test/helpers/dummy-repo.ts#L102)
+[lib/@-xun/project-utils/test/helpers/dummy-repo.ts:102](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/lib/@-xun/project-utils/test/helpers/dummy-repo.ts#L102)

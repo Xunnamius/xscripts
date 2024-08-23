@@ -19,7 +19,7 @@ release order.
 
 #### Defined in
 
-[src/commands/build/changelog.ts:61](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/src/commands/build/changelog.ts#L61)
+[src/commands/build/changelog.ts:61](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/commands/build/changelog.ts#L61)
 
 ***
 
@@ -35,4 +35,4 @@ Such changelogs read as a "storybook".
 
 #### Defined in
 
-[src/commands/build/changelog.ts:56](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/src/commands/build/changelog.ts#L56)
+[src/commands/build/changelog.ts:56](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/commands/build/changelog.ts#L56)
