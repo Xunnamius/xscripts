@@ -8,7 +8,13 @@
 
 > **getInvocableExtendedHandler**\<`CustomCliArguments`, `CustomExecutionContext`\>(`maybeCommand`, `context`): `Promise`\<(`argv_`) => `Promise`\<`void`\>\>
 
-TODO: a decent comment
+This function returns a version of `maybeCommand`'s handler function that is
+ready to invoke immediately. It can be used with both BFE and normal Black
+Flag command exports.
+
+See [the BFE
+documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#getinvocableextendedhandler)
+for more details.
 
 ## Type Parameters
 
@@ -28,4 +34,4 @@ TODO: a decent comment
 
 ## Defined in
 
-[lib/@black-flag/extensions/index.ts:1153](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/lib/@black-flag/extensions/index.ts#L1153)
+[lib/@black-flag/extensions/index.ts:1159](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@black-flag/extensions/index.ts#L1159)

@@ -17,7 +17,7 @@ depending on program state.
 
 #### Defined in
 
-[lib/@-xun/cli-utils/logging.ts:22](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/lib/@-xun/cli-utils/logging.ts#L22)
+[lib/@-xun/cli-utils/logging.ts:22](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/cli-utils/logging.ts#L22)
 
 ***
 
@@ -27,7 +27,7 @@ depending on program state.
 
 #### Defined in
 
-[lib/@-xun/cli-utils/logging.ts:21](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/lib/@-xun/cli-utils/logging.ts#L21)
+[lib/@-xun/cli-utils/logging.ts:21](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/cli-utils/logging.ts#L21)
 
 ***
 
@@ -37,4 +37,4 @@ depending on program state.
 
 #### Defined in
 
-[lib/@-xun/cli-utils/logging.ts:20](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/lib/@-xun/cli-utils/logging.ts#L20)
+[lib/@-xun/cli-utils/logging.ts:20](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/cli-utils/logging.ts#L20)

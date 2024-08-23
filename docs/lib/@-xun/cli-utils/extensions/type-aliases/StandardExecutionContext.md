@@ -58,4 +58,4 @@ A `Date` object representing the start time of execution.
 
 ## Defined in
 
-[lib/@-xun/cli-utils/extensions.ts:39](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/lib/@-xun/cli-utils/extensions.ts#L39)
+[lib/@-xun/cli-utils/extensions.ts:39](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/@-xun/cli-utils/extensions.ts#L39)

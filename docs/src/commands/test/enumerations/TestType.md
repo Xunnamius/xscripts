@@ -20,7 +20,7 @@ Will also include code coverage results by default.
 
 #### Defined in
 
-[src/commands/test.ts:47](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/src/commands/test.ts#L47)
+[src/commands/test.ts:47](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/src/commands/test.ts#L47)
 
 ***
 
@@ -32,7 +32,7 @@ Include end-to-end tests from the chosen scope
 
 #### Defined in
 
-[src/commands/test.ts:41](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/src/commands/test.ts#L41)
+[src/commands/test.ts:41](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/src/commands/test.ts#L41)
 
 ***
 
@@ -44,7 +44,7 @@ Include integration tests from the chosen scope
 
 #### Defined in
 
-[src/commands/test.ts:37](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/src/commands/test.ts#L37)
+[src/commands/test.ts:37](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/src/commands/test.ts#L37)
 
 ***
 
@@ -56,4 +56,4 @@ Include unit tests from the chosen scope
 
 #### Defined in
 
-[src/commands/test.ts:33](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/src/commands/test.ts#L33)
+[src/commands/test.ts:33](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/src/commands/test.ts#L33)

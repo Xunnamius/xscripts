@@ -37,4 +37,4 @@ The type of logging to enable. Valid values are one of:
 
 ## Defined in
 
-[lib/rejoinder/index.ts:372](https://github.com/Xunnamius/xscripts/blob/d6d7a7ba960d4afbaeb1cb7202a4cb4c1a4e6c33/lib/rejoinder/index.ts#L372)
+[lib/rejoinder/index.ts:372](https://github.com/Xunnamius/xscripts/blob/154567d6fca3f6cf244137e710b029af872e1d9e/lib/rejoinder/index.ts#L372)
