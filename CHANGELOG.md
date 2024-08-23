@@ -91,378 +91,386 @@ this project adheres to [Semantic Versioning][2].
 
 <br />
 
-## [1.19.0][38] (2024-07-29)
-
-### ✨ Features
-
-- **@black-flag/extensions:** add support for `vacuousImplications` option configuration key ([0c199f6][39])
-- **src:** implement `--output-sort` for "build changelog"; integrate conventional core and drop cli ([587a354][40])
-
-### ⚙️ Build System
-
-- **babel:** disable explicit-exports-references for now ([92bb25f][41])
-- **commitlint.config:** expand to include several useful rules ([909949d][42])
-- **release:** take advantage of new `--output-sort` functionality ([59dd752][43])
-
-<br />
-
-### 🏗️ Patch [1.19.1][44] (2024-07-29)
+### 🏗️ Patch [1.20.7][38] (2024-08-23)
 
 #### 🪄 Fixes
 
-- **package:** fix asset config import configuration ([d201164][45])
+- **src:** ensure only the start of the release notes are trimmed ([3c48ae1][39])
 
 <br />
 
-## [1.18.0][46] (2024-07-27)
+## [1.19.0][40] (2024-07-29)
 
 ### ✨ Features
 
-- **src:** "build changelog" now accepts `--only-patch-changelog` and `--output-unreleased` ([6c7ae27][47])
-- **src:** "lint" now accepts `--run-to-completion` and `--ignore-warnings` ([e833523][48])
+- **@black-flag/extensions:** add support for `vacuousImplications` option configuration key ([0c199f6][41])
+- **src:** implement `--output-sort` for "build changelog"; integrate conventional core and drop cli ([587a354][42])
+
+### ⚙️ Build System
+
+- **babel:** disable explicit-exports-references for now ([92bb25f][43])
+- **commitlint.config:** expand to include several useful rules ([909949d][44])
+- **release:** take advantage of new `--output-sort` functionality ([59dd752][45])
+
+<br />
+
+### 🏗️ Patch [1.19.1][46] (2024-07-29)
+
+#### 🪄 Fixes
+
+- **package:** fix asset config import configuration ([d201164][47])
+
+<br />
+
+## [1.18.0][48] (2024-07-27)
+
+### ✨ Features
+
+- **src:** "build changelog" now accepts `--only-patch-changelog` and `--output-unreleased` ([6c7ae27][49])
+- **src:** "lint" now accepts `--run-to-completion` and `--ignore-warnings` ([e833523][50])
 
 ### 🪄 Fixes
 
-- **package:** downgrade @arethetypeswrong/cli to ^0.15.0 ([0383586][49])
-- **src:** ensure node options are concatenated properly ([3a3489c][50])
+- **package:** downgrade @arethetypeswrong/cli to ^0.15.0 ([0383586][51])
+- **src:** ensure node options are concatenated properly ([3a3489c][52])
 
 ### ⚡️ Optimizations
 
-- **src:** take advantage of [tsc@5.6-beta][51] `--noCheck` argument in "build distributables" ([4e75096][52])
+- **src:** take advantage of [tsc@5.6-beta][53] `--noCheck` argument in "build distributables" ([4e75096][54])
 
 ### ⚙️ Build System
 
-- **eslint.config:** update @typescript-eslint/unbound-method linting config ([f6515ea][53])
-- **release:** take advantage of new `--only-patch-changelog` flag ([01375f7][54])
-- **tsconfig:** exclude test/ dir from "lint" command limited scope, include dotfiles under lib ([df6116b][55])
-- Update source aliases to latest ([8d71521][56])
-- **vscode:** take advantage of new `--run-to-completion` flag ([d9b4b80][57])
-- **vscode:** update example with latest best practices ([64b7309][58])
+- **eslint.config:** update @typescript-eslint/unbound-method linting config ([f6515ea][55])
+- **release:** take advantage of new `--only-patch-changelog` flag ([01375f7][56])
+- **tsconfig:** exclude test/ dir from "lint" command limited scope, include dotfiles under lib ([df6116b][57])
+- Update source aliases to latest ([8d71521][58])
+- **vscode:** take advantage of new `--run-to-completion` flag ([d9b4b80][59])
+- **vscode:** update example with latest best practices ([64b7309][60])
 
 <br />
 
-## [1.17.0][59] (2024-07-23)
+## [1.17.0][61] (2024-07-23)
 
 ### ✨ Features
 
-- **@-xun/cli-utils:** add `interpolateTemplate` ([63354c7][60])
-- **@-xun/cli-utils:** add `softAssert` and `hardAssert` ([369d969][61])
+- **@-xun/cli-utils:** add `interpolateTemplate` ([63354c7][62])
+- **@-xun/cli-utils:** add `softAssert` and `hardAssert` ([369d969][63])
 
 ### ⚙️ Build System
 
-- **eslint.config:** update to eslint flat config (eslint.config.mjs) ([609fca8][62])
-- **husky:** update husky scripts ([e55a88e][63])
-- **package:** add semver; force install alpha versions of typescript-eslint et al ([b56fd66][64])
-- **package:** update exports, dependencies, and scripts ([323579d][65])
-- **tsconfig:** ensure files from root dot folders are picked up by linters ([8609db7][66])
-- Update to eslint\@9; begin transition to eslint.config.js flat ([52763c5][67])
+- **eslint.config:** update to eslint flat config (eslint.config.mjs) ([609fca8][64])
+- **husky:** update husky scripts ([e55a88e][65])
+- **package:** add semver; force install alpha versions of typescript-eslint et al ([b56fd66][66])
+- **package:** update exports, dependencies, and scripts ([323579d][67])
+- **tsconfig:** ensure files from root dot folders are picked up by linters ([8609db7][68])
+- Update to eslint\@9; begin transition to eslint.config.js flat ([52763c5][69])
 
 <br />
 
-## [1.16.0][68] (2024-07-14)
+## [1.16.0][70] (2024-07-14)
 
 ### ✨ Features
 
-- **@-xun/run:** make intermediate result available ([1153f42][69])
-- **@-xun/run:** update to work with latest execa ([12ee54a][70])
-- **@black-flag/extensions:** allow check property to accept an array of check functions ([0543cff][71])
-- **src:** implement "lint" command ([346b4ac][72])
+- **@-xun/run:** make intermediate result available ([1153f42][71])
+- **@-xun/run:** update to work with latest execa ([12ee54a][72])
+- **@black-flag/extensions:** allow check property to accept an array of check functions ([0543cff][73])
+- **src:** implement "lint" command ([346b4ac][74])
 
 ### 🪄 Fixes
 
-- **package:** include missing listr2 dependency ([f42f4ab][73])
-- **src:** ensure "build distributables" copies non-compiled files into ./dist ([e596e5b][74])
-- **src:** ensure "lint" command linter subprocesses don't write to stdout or hang after error ([d96ae1d][75])
-- **src:** ensure proper checks with various arguments ([c9e254a][76])
+- **package:** include missing listr2 dependency ([f42f4ab][75])
+- **src:** ensure "build distributables" copies non-compiled files into ./dist ([e596e5b][76])
+- **src:** ensure "lint" command linter subprocesses don't write to stdout or hang after error ([d96ae1d][77])
+- **src:** ensure proper checks with various arguments ([c9e254a][78])
 
 ### ⚙️ Build System
 
-- **babel:** allow babel to parse syntax attributes and ignore dynamic import transforms ([060ef01][77])
-- **husky:** update lint script to use latest name ([ea6aaff][78])
-- **package:** add final npm scripts ([eb5631b][79])
-- **package:** replace typescript babel preset dependency with syntax plugin ([b72401a][80])
-- **package:** update lint scripts to use xscripts ([7c1e7f1][81])
-- **tsconfig:** remove packages glob from includes ([d3301ca][82])
+- **babel:** allow babel to parse syntax attributes and ignore dynamic import transforms ([060ef01][79])
+- **husky:** update lint script to use latest name ([ea6aaff][80])
+- **package:** add final npm scripts ([eb5631b][81])
+- **package:** replace typescript babel preset dependency with syntax plugin ([b72401a][82])
+- **package:** update lint scripts to use xscripts ([7c1e7f1][83])
+- **tsconfig:** remove packages glob from includes ([d3301ca][84])
 
 <br />
 
-### 🏗️ Patch [1.16.1][83] (2024-07-14)
+### 🏗️ Patch [1.16.1][85] (2024-07-14)
 
 #### 🪄 Fixes
 
-- **src:** place --copy-files argument in proper order in babel build sub-command ([8f1d25d][84])
+- **src:** place --copy-files argument in proper order in babel build sub-command ([8f1d25d][86])
 
 <br />
 
-## [1.15.0][85] (2024-07-07)
+## [1.15.0][87] (2024-07-07)
 
 ### ✨ Features
 
-- **src:** implement "test" script/command ([b665723][87])
+- **src:** implement "test" script/command ([b665723][89])
 
 ### ⚙️ Build System
 
-- **release:** add --renumber-references to CHANGELOG format sub-step in release flow ([49a3453][88])
+- **release:** add --renumber-references to CHANGELOG format sub-step in release flow ([49a3453][90])
 
 <br />
 
-## [1.14.0][89] (2024-07-07)
+## [1.14.0][91] (2024-07-07)
 
 ### ✨ Features
 
-- **src:** add --clean-output-dir option to "build distributables" command ([a507530][90])
-- **src:** add struts for projector-js replacement "project" commands ([489e75a][91])
-- **src:** merge "build distributables" and "build transpiled" commands ([1b6c72a][92])
+- **src:** add --clean-output-dir option to "build distributables" command ([a507530][92])
+- **src:** add struts for projector-js replacement "project" commands ([489e75a][93])
+- **src:** merge "build distributables" and "build transpiled" commands ([1b6c72a][94])
 
 ### 🪄 Fixes
 
-- **@black-flag/extensions:** support deep option aliasing & name expansion; fix several other issues ([82c2b0f][93])
-- **src:** add .tsx to babel --extensions arg ([68c5582][94])
-- **src:** ensure "build distributables" --generate-intermediates-for includes tests ([2ed4344][95])
-- **src:** remove bad options references from "format" command ([cafeb73][96])
+- **@black-flag/extensions:** support deep option aliasing & name expansion; fix several other issues ([82c2b0f][95])
+- **src:** add .tsx to babel --extensions arg ([68c5582][96])
+- **src:** ensure "build distributables" --generate-intermediates-for includes tests ([2ed4344][97])
+- **src:** remove bad options references from "format" command ([cafeb73][98])
 
 ### ⚙️ Build System
 
-- **maintaining:** note that resetting the working tree before publishing is optional ([f08250c][97])
+- **maintaining:** note that resetting the working tree before publishing is optional ([f08250c][99])
 
 <br />
 
-## [1.13.0][98] (2024-07-02)
+## [1.13.0][100] (2024-07-02)
 
 ### ✨ Features
 
-- **src:** implement "build documentation" script ([05e56e7][99])
-- **src:** implement "build externals" script ([1336341][100])
+- **src:** implement "build documentation" script ([05e56e7][101])
+- **src:** implement "build externals" script ([1336341][102])
 
 ### ⚙️ Build System
 
-- Ensure local ecosystem ignores only relevant files ([e4a1e0b][101])
-- **tsconfig:** update includes ([c721fed][102])
+- Ensure local ecosystem ignores only relevant files ([e4a1e0b][103])
+- **tsconfig:** update includes ([c721fed][104])
 
 <br />
 
-## [1.12.0][103] (2024-07-01)
+## [1.12.0][105] (2024-07-01)
 
 ### ✨ Features
 
-- **@black-flag/extensions:** add `$artificiallyInvoked` argv support ([b64412c][104])
-- **@black-flag/extensions:** add `getInvocableExtendedHandler` export ([feabe67][105])
-- **rejoinder:** add `getDisabledTags` function export ([534f398][106])
-- **src:** implement "build changelog" script ([8d4bb6d][107])
-- Transmute "format" command's --skip-docs into the more versatile --skip-ignored ([7364616][108])
+- **@black-flag/extensions:** add `$artificiallyInvoked` argv support ([b64412c][106])
+- **@black-flag/extensions:** add `getInvocableExtendedHandler` export ([feabe67][107])
+- **rejoinder:** add `getDisabledTags` function export ([534f398][108])
+- **src:** implement "build changelog" script ([8d4bb6d][109])
+- Transmute "format" command's --skip-docs into the more versatile --skip-ignored ([7364616][110])
 
 ### 🪄 Fixes
 
-- **@-xun/cli-utils:** do not lowercase 1st char in error message if 2nd char isn't already lowercase ([2f11281][109])
-- **@-xun/cli-utils:** take advantage of `$artificiallyInvoked` to preserve output state ([9348ebb][110])
-- **@black-flag/extensions:** implement better error handling on import failure ([626ee5a][111])
-- Ensure correct use of debug logger namespace in various places ([65e4330][112])
+- **@-xun/cli-utils:** do not lowercase 1st char in error message if 2nd char isn't already lowercase ([2f11281][111])
+- **@-xun/cli-utils:** take advantage of `$artificiallyInvoked` to preserve output state ([9348ebb][112])
+- **@black-flag/extensions:** implement better error handling on import failure ([626ee5a][113])
+- Ensure correct use of debug logger namespace in various places ([65e4330][114])
 
 ### ⚙️ Build System
 
-- **babel:** generalize import rewrites ([ee5cf10][113])
-- **changelog:** add new CHANGELOG.md typo patches ([b9b106a][114])
-- Hide all warnings from nodejs ([c1a4b9c][115])
-- **package:** update scripts (and release.config.js) to use "build changelog" command ([5b11c68][116])
-- **remarkrc:** always translate normal links into reference links ([99c7b33][117])
+- **babel:** generalize import rewrites ([ee5cf10][115])
+- **changelog:** add new CHANGELOG.md typo patches ([b9b106a][116])
+- Hide all warnings from nodejs ([c1a4b9c][117])
+- **package:** update scripts (and release.config.js) to use "build changelog" command ([5b11c68][118])
+- **remarkrc:** always translate normal links into reference links ([99c7b33][119])
 
 ### 🔥 Reverted
 
-- _"build(prettierignore): no longer ignore CHANGELOG.md when formatting"_ ([ddd9192][118])
+- _"build(prettierignore): no longer ignore CHANGELOG.md when formatting"_ ([ddd9192][120])
 
 <br />
 
-## [1.11.0][119] (2024-06-30)
+## [1.11.0][121] (2024-06-30)
 
 ### ✨ Features
 
-- **@-xun/cli-utils:** add `ErrorMessage.RequiresMinArgs` ([618ce1a][120])
-- **src:** add all-contributors regeneration to "format" command ([d74f099][121])
+- **@-xun/cli-utils:** add `ErrorMessage.RequiresMinArgs` ([618ce1a][122])
+- **src:** add all-contributors regeneration to "format" command ([d74f099][123])
 
 ### 🪄 Fixes
 
-- **src:** ensure --files never hands prettier paths it can't handle when running "format" command ([0f4dd16][122])
-- **src:** ensure "format" command all-contributors regeneration only targets root README.md ([2cd56d1][123])
-- **src:** ensure all glob relevant glob calls never return directories ([9764967][124])
-- **src:** ensure, when --files is given, at least one option given for "format" command ([fd86f3f][125])
-- **src:** fix fix fd86f3f ([e295a02][126])
+- **src:** ensure --files never hands prettier paths it can't handle when running "format" command ([0f4dd16][124])
+- **src:** ensure "format" command all-contributors regeneration only targets root README.md ([2cd56d1][125])
+- **src:** ensure all glob relevant glob calls never return directories ([9764967][126])
+- **src:** ensure, when --files is given, at least one option given for "format" command ([fd86f3f][127])
+- **src:** fix fix fd86f3f ([e295a02][128])
 
 ### ⚙️ Build System
 
-- **lint-staged.config:** update to use xscripts ([d290ba5][127])
-- Reorganize deps/devdeps and re-enable commit-spell ([4ea8aa4][128])
+- **lint-staged.config:** update to use xscripts ([d290ba5][129])
+- Reorganize deps/devdeps and re-enable commit-spell ([4ea8aa4][130])
 
 <br />
 
-## [1.10.0][129] (2024-06-29)
+## [1.10.0][131] (2024-06-29)
 
 ### ✨ Features
 
-- **@-xun/cli-utils:** add `AsStrictExecutionContext` intellisense type guard ([813b758][130])
-- **@black-flag/extensions:** add and use `BfeStrictArguments` intellisense type guard ([42af69e][131])
-- **lib:** move `AsStrictExecutionContext` into @black-flag/extensions ([ae46adf][132])
-- **src:** add --prepend-shebang, Next.js support to "build distributables" command ([6575d49][133])
-- **src:** improve capabilities of "format" command ([7d33dfe][134])
+- **@-xun/cli-utils:** add `AsStrictExecutionContext` intellisense type guard ([813b758][132])
+- **@black-flag/extensions:** add and use `BfeStrictArguments` intellisense type guard ([42af69e][133])
+- **lib:** move `AsStrictExecutionContext` into @black-flag/extensions ([ae46adf][134])
+- **src:** add --prepend-shebang, Next.js support to "build distributables" command ([6575d49][135])
+- **src:** improve capabilities of "format" command ([7d33dfe][136])
 
 ### 🪄 Fixes
 
-- **src:** actually implement --skip-docs functionality in "format" command ([d535b78][135])
-- **src:** restrict root/sub-root check to certain commands ([1b65f46][136])
+- **src:** actually implement --skip-docs functionality in "format" command ([d535b78][137])
+- **src:** restrict root/sub-root check to certain commands ([1b65f46][138])
 
 <br />
 
-### 🏗️ Patch [1.10.1][137] (2024-06-29)
+### 🏗️ Patch [1.10.1][139] (2024-06-29)
 
 #### 🪄 Fixes
 
-- **src:** ensure --files is respected by prettier in "format" command ([483f036][138])
+- **src:** ensure --files is respected by prettier in "format" command ([483f036][140])
 
 <br />
 
-## [1.9.0][139] (2024-06-28)
+## [1.9.0][141] (2024-06-28)
 
 ### ✨ Features
 
-- **src:** add `--full` argument to "list-tasks" command ([f47742b][140])
-- **src:** prevent cli from running if not in root or sub-root ([4f280dc][141])
+- **src:** add `--full` argument to "list-tasks" command ([f47742b][142])
+- **src:** prevent cli from running if not in root or sub-root ([4f280dc][143])
 
 ### 🪄 Fixes
 
-- **src:** fix lib output and improve other aspects of the "build distributables" command ([159d771][142])
+- **src:** fix lib output and improve other aspects of the "build distributables" command ([159d771][144])
 
 ### ⚙️ Build System
 
-- **babel:** update core-js usage to 3.37 ([506bf2d][143])
-- **tsconfig:** ensure unnecessary types are excluded from distributables ([f7e65c3][144])
+- **babel:** update core-js usage to 3.37 ([506bf2d][145])
+- **tsconfig:** ensure unnecessary types are excluded from distributables ([f7e65c3][146])
 
 <br />
 
-## [1.8.0][145] (2024-06-27)
+## [1.8.0][147] (2024-06-27)
 
 ### ✨ Features
 
-- **src:** commit initial version of "build" command ([c7b7623][146])
+- **src:** commit initial version of "build" command ([c7b7623][148])
 
 ### ⚙️ Build System
 
-- **eslintrc:** do not ignore src/build ([847cc63][147])
-- **gitignore:** do not ignore src files anymore ([fd210c5][148])
+- **eslintrc:** do not ignore src/build ([847cc63][149])
+- **gitignore:** do not ignore src files anymore ([fd210c5][150])
 
 <br />
 
-## [1.7.0][149] (2024-06-26)
+## [1.7.0][151] (2024-06-26)
 
 ### ✨ Features
 
-- **src:** implement "format" script ([7824c25][150])
+- **src:** implement "format" script ([7824c25][152])
 
 ### 🪄 Fixes
 
-- **remarkrc:** improve output of "format" command" ([b4c296e][151])
+- **remarkrc:** improve output of "format" command" ([b4c296e][153])
 
 ### ⚙️ Build System
 
-- **package:** replace format script with "format" command ([005e378][152])
-- **package:** use --hush over --quiet for "format" command ([9e4ae59][153])
+- **package:** replace format script with "format" command ([005e378][154])
+- **package:** use --hush over --quiet for "format" command ([9e4ae59][155])
 
 <br />
 
-## [1.6.0][154] (2024-06-24)
+## [1.6.0][156] (2024-06-24)
 
 ### ✨ Features
 
-- **src:** implement "deploy" script ([62e673b][155])
+- **src:** implement "deploy" script ([62e673b][157])
 
 <br />
 
-## [1.5.0][156] (2024-06-23)
+## [1.5.0][158] (2024-06-23)
 
 ### ✨ Features
 
-- **lib:** add `scriptBasename` ([f15a14d][157])
-- **lib:** commit @black-flag/extensions\@1.0.0 and @-xun/cli-utils\@1.0.0 ([c775d6e][158])
+- **lib:** add `scriptBasename` ([f15a14d][159])
+- **lib:** commit @black-flag/extensions\@1.0.0 and @-xun/cli-utils\@1.0.0 ([c775d6e][160])
 
 ### 🪄 Fixes
 
-- **@-xun/cli-utils:** extend error message deduplication to nested cause strings ([8181e74][159])
-- **@black-flag/extensions:** add missing symbols ([17d53c3][160])
-- **@black-flag/extensions:** allow subOptionOf sub-object to be given directly ([537df70][161])
-- **clean.ts:** add .vercel to list of ignored directories ([fd903a4][162])
-- **lib:** move `ansiRedColorCodes` into rejoinder ([4eabfb5][163])
-- **src:** use loose implications with deploy command ([8e11d66][164])
+- **@-xun/cli-utils:** extend error message deduplication to nested cause strings ([8181e74][161])
+- **@black-flag/extensions:** add missing symbols ([17d53c3][162])
+- **@black-flag/extensions:** allow subOptionOf sub-object to be given directly ([537df70][163])
+- **clean.ts:** add .vercel to list of ignored directories ([fd903a4][164])
+- **lib:** move `ansiRedColorCodes` into rejoinder ([4eabfb5][165])
+- **src:** use loose implications with deploy command ([8e11d66][166])
 
 ### ⚙️ Build System
 
-- **babel:** manually fix index import rewrites ([2f5e8e9][165])
-- **package:** disable tty in debug when running tests ([b57a6be][166])
-- **package:** fix bad overwrite of ignore patterns ([8d03799][167])
+- **babel:** manually fix index import rewrites ([2f5e8e9][167])
+- **package:** disable tty in debug when running tests ([b57a6be][168])
+- **package:** fix bad overwrite of ignore patterns ([8d03799][169])
 
 <br />
 
-## [1.4.0][168] (2024-06-01)
+## [1.4.0][170] (2024-06-01)
 
 ### ✨ Features
 
-- **src:** implement "dev" script ([4eeba00][169])
+- **src:** implement "dev" script ([4eeba00][171])
 
 ### ⚙️ Build System
 
-- **package:** use real path to devdep version of xscripts ([99d5786][170])
+- **package:** use real path to devdep version of xscripts ([99d5786][172])
 
 <br />
 
-### 🏗️ Patch [1.4.1][171] (2024-06-02)
+### 🏗️ Patch [1.4.1][173] (2024-06-02)
 
 #### 🪄 Fixes
 
-- **src:** pass arbitrary args to downstream executable ([4b94a07][172])
+- **src:** pass arbitrary args to downstream executable ([4b94a07][174])
 
 #### ⚙️ Build System
 
-- **package:** update "start" script to ensure arbitrary args are not erroneously parsed ([a8ddaa5][173])
+- **package:** update "start" script to ensure arbitrary args are not erroneously parsed ([a8ddaa5][175])
 
 <br />
 
-## [1.3.0][174] (2024-06-01)
+## [1.3.0][176] (2024-06-01)
 
 ### ✨ Features
 
-- **src:** implement "start" script ([cf66045][175])
+- **src:** implement "start" script ([cf66045][177])
 
 ### 🪄 Fixes
 
-- **lib:** add type safe guards for output properties when using runWithInheritedIo ([b26a175][176])
-- **package:** add workaround for npx being unable to deal with this type of recursion ([b999593][177])
-- **src:** do not inherit IO when executing "clean" script ([380c055][178])
-- **src:** execute husky post-checkout hook if available ([f0b3b8c][179])
+- **lib:** add type safe guards for output properties when using runWithInheritedIo ([b26a175][178])
+- **package:** add workaround for npx being unable to deal with this type of recursion ([b999593][179])
+- **src:** do not inherit IO when executing "clean" script ([380c055][180])
+- **src:** execute husky post-checkout hook if available ([f0b3b8c][181])
 
 <br />
 
-## [1.2.0][180] (2024-05-31)
+## [1.2.0][182] (2024-05-31)
 
 ### ✨ Features
 
-- Implement "prepare" script ([6426d70][181])
+- Implement "prepare" script ([6426d70][183])
 
 <br />
 
-## [1.1.0][182] (2024-05-31)
+## [1.1.0][184] (2024-05-31)
 
 ### ✨ Features
 
-- Implement "list-tasks" script ([ac5a9ba][183])
+- Implement "list-tasks" script ([ac5a9ba][185])
 
 <br />
 
-## [1.0.0][184] (2024-05-31)
+## [1.0.0][186] (2024-05-31)
 
 ### ✨ Features
 
-- **src:** implement "clean" script ([89d81a3][185])
+- **src:** implement "clean" script ([89d81a3][187])
 
 ### ⚙️ Build System
 
-- **package:** update build scripts ([589fcb0][186])
+- **package:** update build scripts ([589fcb0][188])
 
 [1]: https://conventionalcommits.org
 [2]: https://semver.org
@@ -501,152 +509,154 @@ this project adheres to [Semantic Versioning][2].
 [35]: https://github.com/Xunnamius/xscripts/commit/ff3853fa7835e9b2f89e2a9a846db76d6b2dd4a5
 [36]: https://github.com/Xunnamius/xscripts/compare/v1.20.5...v1.20.6
 [37]: https://github.com/Xunnamius/xscripts/commit/76992d930b92919b8ab95f195cec98ddb91fb390
-[38]: https://github.com/Xunnamius/xscripts/compare/v1.18.0...v1.19.0
-[39]: https://github.com/Xunnamius/xscripts/commit/0c199f69971688205b1ee027dce36c2bc6ab8a04
-[40]: https://github.com/Xunnamius/xscripts/commit/587a354329e46ca03f056ca1414915145928736c
-[41]: https://github.com/Xunnamius/xscripts/commit/92bb25fe5f8022271ae03ee56e18377ad02e392b
-[42]: https://github.com/Xunnamius/xscripts/commit/909949d58e2ddecf4ad606fe0dd9525ec540a8fb
-[43]: https://github.com/Xunnamius/xscripts/commit/59dd7523276ab48868124e8f76f06784bc59f794
-[44]: https://github.com/Xunnamius/xscripts/compare/v1.19.0...v1.19.1
-[45]: https://github.com/Xunnamius/xscripts/commit/d2011645a568e76bdf61dde14dd0e15dbce243dc
-[46]: https://github.com/Xunnamius/xscripts/compare/v1.17.0...v1.18.0
-[47]: https://github.com/Xunnamius/xscripts/commit/6c7ae27d3d93d36e7cbcae873b8717d252cf6670
-[48]: https://github.com/Xunnamius/xscripts/commit/e833523e6085950c3477ca6e44ae92ef7b1fad46
-[49]: https://github.com/Xunnamius/xscripts/commit/0383586f6ccbb0bc503df636f515d19618548f92
-[50]: https://github.com/Xunnamius/xscripts/commit/3a3489c43d2ce10ac752d70ab23066bd3477a675
-[51]: mailto:tsc@5.6-beta
-[52]: https://github.com/Xunnamius/xscripts/commit/4e7509611f72d2c953572dbc67bb51aabf2304d6
-[53]: https://github.com/Xunnamius/xscripts/commit/f6515ea793a72cfd42cb6d3f74675b2ae3a9b2e1
-[54]: https://github.com/Xunnamius/xscripts/commit/01375f77f74bfaf0b38de5bdd30d162461aa6106
-[55]: https://github.com/Xunnamius/xscripts/commit/df6116b1c5ad4c0f7c3152cc254d943a7b9e67e7
-[56]: https://github.com/Xunnamius/xscripts/commit/8d7152112e4927f566e048c6b0be7dfce4a6c430
-[57]: https://github.com/Xunnamius/xscripts/commit/d9b4b80db15e6104a2a3ab7325996a08a350ea6d
-[58]: https://github.com/Xunnamius/xscripts/commit/64b7309fcb28c1214f1edcc8319960c1c94f72b0
-[59]: https://github.com/Xunnamius/xscripts/compare/v1.16.1...v1.17.0
-[60]: https://github.com/Xunnamius/xscripts/commit/63354c710f8cfe21d274c7083eecd28da66c57c9
-[61]: https://github.com/Xunnamius/xscripts/commit/369d9690614b09b8a2a9efe4321a2786a60e2f20
-[62]: https://github.com/Xunnamius/xscripts/commit/609fca8cde508ecdb6c74ff8d1884821afdd5eb3
-[63]: https://github.com/Xunnamius/xscripts/commit/e55a88e728a9c4ccbd38648e85328ab563add014
-[64]: https://github.com/Xunnamius/xscripts/commit/b56fd666cfcccbc7d941df7afb6fcfc74ec0ae56
-[65]: https://github.com/Xunnamius/xscripts/commit/323579d026f46d2d0f70aa44440543eecbc7b4e2
-[66]: https://github.com/Xunnamius/xscripts/commit/8609db712c80439ee26966b638b8d6a9cb6e0d59
-[67]: https://github.com/Xunnamius/xscripts/commit/52763c5b795e9ee0485e9a20a4cb5264eae0ef3c
-[68]: https://github.com/Xunnamius/xscripts/compare/v1.15.0...v1.16.0
-[69]: https://github.com/Xunnamius/xscripts/commit/1153f424ae97b339f1ae345269663ddc5d3458d7
-[70]: https://github.com/Xunnamius/xscripts/commit/12ee54a21f0004eb568763507540157371aa06be
-[71]: https://github.com/Xunnamius/xscripts/commit/0543cff5d6e50a688365bf314837b54342106327
-[72]: https://github.com/Xunnamius/xscripts/commit/346b4ac5d27ea045cd037c4987401786f7fa572b
-[73]: https://github.com/Xunnamius/xscripts/commit/f42f4ab7c83a05fed253475de7bf2df4ce53d48f
-[74]: https://github.com/Xunnamius/xscripts/commit/e596e5bc36b9ed024f8c524cd6d55f15b813bcfc
-[75]: https://github.com/Xunnamius/xscripts/commit/d96ae1df1940941fbdf491e0b36c200574179bea
-[76]: https://github.com/Xunnamius/xscripts/commit/c9e254a5eece3c3ed51348d28897ed354725643f
-[77]: https://github.com/Xunnamius/xscripts/commit/060ef01a19f9a5022dcc855291e04ea6f8013c09
-[78]: https://github.com/Xunnamius/xscripts/commit/ea6aafff5d49f6acd8cac65b3c92e6cfd940e4b5
-[79]: https://github.com/Xunnamius/xscripts/commit/eb5631b6a316d808bb88928e27fe88ee818d230b
-[80]: https://github.com/Xunnamius/xscripts/commit/b72401ad18cead8a6d8571d8e35a6235c23b5381
-[81]: https://github.com/Xunnamius/xscripts/commit/7c1e7f14e28518285bc554c730f7eaea933a2e52
-[82]: https://github.com/Xunnamius/xscripts/commit/d3301ca5284ba96b750be48f12ecd3c821d27654
-[83]: https://github.com/Xunnamius/xscripts/compare/v1.16.0...v1.16.1
-[84]: https://github.com/Xunnamius/xscripts/commit/8f1d25d7356419160a65f4a4dd764a6192df2f26
-[85]: https://github.com/Xunnamius/xscripts/compare/v1.14.0...v1.15.0
-[86]: https://github.com/Xunnamius/xscripts/commit/8554e1a4fd20b72d6b917f92cdb9e084b4086b25
-[87]: https://github.com/Xunnamius/xscripts/commit/b66572376dd63858df091755bb1eb184b56f2c7b
-[88]: https://github.com/Xunnamius/xscripts/commit/49a3453b25941eecf6a498aa1462aed83f71eaa1
-[89]: https://github.com/Xunnamius/xscripts/compare/v1.13.0...v1.14.0
-[90]: https://github.com/Xunnamius/xscripts/commit/a5075305e5d9a3cf5451ca5c156c3ffe307f7018
-[91]: https://github.com/Xunnamius/xscripts/commit/489e75a7916d4b77b6a37f6b557cbbd4b7c15e5e
-[92]: https://github.com/Xunnamius/xscripts/commit/1b6c72ae8007c801207547a74de598d38b769968
-[93]: https://github.com/Xunnamius/xscripts/commit/82c2b0fd8a9bc35bda01c3f48001032bd3ba66e2
-[94]: https://github.com/Xunnamius/xscripts/commit/68c55821991d1eaf821dfe603cfee1a9aca83d4f
-[95]: https://github.com/Xunnamius/xscripts/commit/2ed43444661b4fba89c20bb5f2a0341faf535a9b
-[96]: https://github.com/Xunnamius/xscripts/commit/cafeb73773b2e08137d9c6d7f7432802cc9d3b88
-[97]: https://github.com/Xunnamius/xscripts/commit/f08250c17077cff70cdf722d2e9c3b16d3841ebf
-[98]: https://github.com/Xunnamius/xscripts/compare/v1.12.0...v1.13.0
-[99]: https://github.com/Xunnamius/xscripts/commit/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7
-[100]: https://github.com/Xunnamius/xscripts/commit/133634118118c7cff04eaaf7a65ead7c80329234
-[101]: https://github.com/Xunnamius/xscripts/commit/e4a1e0b3d6a20ae598f5a6feb2cf2b7ba077b6a7
-[102]: https://github.com/Xunnamius/xscripts/commit/c721fed5363109fddbf7c8e5e7dc98c33e023e38
-[103]: https://github.com/Xunnamius/xscripts/compare/v1.11.0...v1.12.0
-[104]: https://github.com/Xunnamius/xscripts/commit/b64412cd043877da93fa252bad0325bda73ea60c
-[105]: https://github.com/Xunnamius/xscripts/commit/feabe67a00aa2c970c3591110ec871f56626998f
-[106]: https://github.com/Xunnamius/xscripts/commit/534f3988d4d436fb8136bf60d56498c7b02941ea
-[107]: https://github.com/Xunnamius/xscripts/commit/8d4bb6d52de509c2ad8c5c82c8953d51e17c2d85
-[108]: https://github.com/Xunnamius/xscripts/commit/7364616ea349761591231a3547bd697ec67ed34b
-[109]: https://github.com/Xunnamius/xscripts/commit/2f11281f9d3c07b1a37440cbdbad51deeea7d503
-[110]: https://github.com/Xunnamius/xscripts/commit/9348ebba5102d85115a9e443c38032661a9fc0ed
-[111]: https://github.com/Xunnamius/xscripts/commit/626ee5aadb360db6d521683dff0f35269a736fc0
-[112]: https://github.com/Xunnamius/xscripts/commit/65e433056c8e6800d00202fe709d868d7c4713fb
-[113]: https://github.com/Xunnamius/xscripts/commit/ee5cf1030a76a5f0b2793d58a9db52d1ebc8a791
-[114]: https://github.com/Xunnamius/xscripts/commit/b9b106aff4ff729fb1f8e70efe295ba058a50cfb
-[115]: https://github.com/Xunnamius/xscripts/commit/c1a4b9cb21d1c3e6941d6fbd6108edc694c2d4ed
-[116]: https://github.com/Xunnamius/xscripts/commit/5b11c68aebc8099007ffcf50444707165939e061
-[117]: https://github.com/Xunnamius/xscripts/commit/99c7b3396ff73868208060410f7430538f6d48d6
-[118]: https://github.com/Xunnamius/xscripts/commit/ddd9192c05110fca3ae0d93bac276426932269ef
-[119]: https://github.com/Xunnamius/xscripts/compare/v1.10.1...v1.11.0
-[120]: https://github.com/Xunnamius/xscripts/commit/618ce1a1ae9132dbb54dc52c60c96aea17897b82
-[121]: https://github.com/Xunnamius/xscripts/commit/d74f099ac798fd0c925ea4aad0b1860b8a8a741f
-[122]: https://github.com/Xunnamius/xscripts/commit/0f4dd160eb1181306899031186b4a3c7e64d936c
-[123]: https://github.com/Xunnamius/xscripts/commit/2cd56d132e3cd7318744839cbf119b126cc35c98
-[124]: https://github.com/Xunnamius/xscripts/commit/9764967b4ca5aab46b32317ddb14bc4e843d8674
-[125]: https://github.com/Xunnamius/xscripts/commit/fd86f3f321889f759eda02880982117b5a0aba16
-[126]: https://github.com/Xunnamius/xscripts/commit/e295a0270f8ae743771d79966cccb3fdb14f19fd
-[127]: https://github.com/Xunnamius/xscripts/commit/d290ba57054479eb873d3cdc785db602432fca09
-[128]: https://github.com/Xunnamius/xscripts/commit/4ea8aa453186568651849102a2ade4df2f6c5cee
-[129]: https://github.com/Xunnamius/xscripts/compare/v1.9.0...v1.10.0
-[130]: https://github.com/Xunnamius/xscripts/commit/813b7580971553cde14b4f278f31af7353384e85
-[131]: https://github.com/Xunnamius/xscripts/commit/42af69ecc8f70e6c55eceeda802bce1752f81bfb
-[132]: https://github.com/Xunnamius/xscripts/commit/ae46adf477f55440bb18e627ca1674d6d80be7fd
-[133]: https://github.com/Xunnamius/xscripts/commit/6575d493c2c0ff291a3bd7bf4b595198c46c0c70
-[134]: https://github.com/Xunnamius/xscripts/commit/7d33dfe2ea50a0fbf45641ef997ce2b7d0265aca
-[135]: https://github.com/Xunnamius/xscripts/commit/d535b785c9d45c87b29a5fbe5698c6021067570b
-[136]: https://github.com/Xunnamius/xscripts/commit/1b65f4667e138907ac8a1b90f06937f5fa4eb1b9
-[137]: https://github.com/Xunnamius/xscripts/compare/v1.10.0...v1.10.1
-[138]: https://github.com/Xunnamius/xscripts/commit/483f03697f1cf01847759fa5c1cf61f5af578a3f
-[139]: https://github.com/Xunnamius/xscripts/compare/v1.8.0...v1.9.0
-[140]: https://github.com/Xunnamius/xscripts/commit/f47742b0bca31b054ec83d5b01089715e9925e39
-[141]: https://github.com/Xunnamius/xscripts/commit/4f280dc3af5bf633259d80cc8733fae31c903e04
-[142]: https://github.com/Xunnamius/xscripts/commit/159d771c90a65e05194cde9b8aec2478be7b97ff
-[143]: https://github.com/Xunnamius/xscripts/commit/506bf2dc5317ec891efa5e8eb9ed91235794c9f7
-[144]: https://github.com/Xunnamius/xscripts/commit/f7e65c34cd7088fa866530b60de4db3d1f77453c
-[145]: https://github.com/Xunnamius/xscripts/compare/v1.7.0...v1.8.0
-[146]: https://github.com/Xunnamius/xscripts/commit/c7b7623d68bde02438cbd8cbc80302079356914d
-[147]: https://github.com/Xunnamius/xscripts/commit/847cc63e9965c6c970e63d351fe8388ef666a1b6
-[148]: https://github.com/Xunnamius/xscripts/commit/fd210c55c4aff0ad663381a67b8b591dffc2a49c
-[149]: https://github.com/Xunnamius/xscripts/compare/v1.6.0...v1.7.0
-[150]: https://github.com/Xunnamius/xscripts/commit/7824c25d1d5db8ab824960b502c41e54a1f9ee03
-[151]: https://github.com/Xunnamius/xscripts/commit/b4c296eb75a142ede16da32a997e9999dd8074f3
-[152]: https://github.com/Xunnamius/xscripts/commit/005e378059ba0b3181031ff938854f54898e0437
-[153]: https://github.com/Xunnamius/xscripts/commit/9e4ae592d211ae39bacdc3f665b3078e69c73062
-[154]: https://github.com/Xunnamius/xscripts/compare/v1.5.0...v1.6.0
-[155]: https://github.com/Xunnamius/xscripts/commit/62e673b1ab8679e586b1b4337fe20c537c408fff
-[156]: https://github.com/Xunnamius/xscripts/compare/v1.4.1...v1.5.0
-[157]: https://github.com/Xunnamius/xscripts/commit/f15a14d33b9ccaf514a7f6ed0417cb9f5a42c99d
-[158]: https://github.com/Xunnamius/xscripts/commit/c775d6e3564c8772dde082d6ef243a56da79c586
-[159]: https://github.com/Xunnamius/xscripts/commit/8181e74d4a9020b45fa0182f3f7136b48e4a6721
-[160]: https://github.com/Xunnamius/xscripts/commit/17d53c3b83fc6ed799b5b2ab1da5feefe4e37018
-[161]: https://github.com/Xunnamius/xscripts/commit/537df70bd21a7b18b1ccc64e83ff6db63440a322
-[162]: https://github.com/Xunnamius/xscripts/commit/fd903a41ad88342ebd1896ffe3e46a6b81583711
-[163]: https://github.com/Xunnamius/xscripts/commit/4eabfb57d1addf0a2e8994c11b59bc122138b8ce
-[164]: https://github.com/Xunnamius/xscripts/commit/8e11d6670bec0c605d781ecec695de4d6af1edd2
-[165]: https://github.com/Xunnamius/xscripts/commit/2f5e8e9fc2a1983f0b259c70f7be957f80c8c3c1
-[166]: https://github.com/Xunnamius/xscripts/commit/b57a6be3f30c8c0a2692b256135acbd661d0e92b
-[167]: https://github.com/Xunnamius/xscripts/commit/8d03799cbd574e0eed0667f1d91827116da6ff15
-[168]: https://github.com/Xunnamius/xscripts/compare/v1.3.0...v1.4.0
-[169]: https://github.com/Xunnamius/xscripts/commit/4eeba0093c58c5ae075542203854b4a3add2907a
-[170]: https://github.com/Xunnamius/xscripts/commit/99d57864cb024e23115bc3b9c4b1529d2f3d9bf5
-[171]: https://github.com/Xunnamius/xscripts/compare/v1.4.0...v1.4.1
-[172]: https://github.com/Xunnamius/xscripts/commit/4b94a07feff53f35ff23d5c0456edd00b2e9f180
-[173]: https://github.com/Xunnamius/xscripts/commit/a8ddaa595b00d4730cdce60f5340175b3e9afbcc
-[174]: https://github.com/Xunnamius/xscripts/compare/v1.2.0...v1.3.0
-[175]: https://github.com/Xunnamius/xscripts/commit/cf660452df6ac9781bd9b61d4cc225e926cd4e15
-[176]: https://github.com/Xunnamius/xscripts/commit/b26a175f616e9c1fa333a0b8858507439449a32e
-[177]: https://github.com/Xunnamius/xscripts/commit/b999593e14846c8f87949286cd995e7ef92177a1
-[178]: https://github.com/Xunnamius/xscripts/commit/380c055b2920c8b96b65dc89b97b6497f996c452
-[179]: https://github.com/Xunnamius/xscripts/commit/f0b3b8ce97a389c4656d37f4745eaedb7d684f42
-[180]: https://github.com/Xunnamius/xscripts/compare/v1.1.0...v1.2.0
-[181]: https://github.com/Xunnamius/xscripts/commit/6426d70a844a1c3242d719bd648b2a5caf61a12c
-[182]: https://github.com/Xunnamius/xscripts/compare/v1.0.0...v1.1.0
-[183]: https://github.com/Xunnamius/xscripts/commit/ac5a9ba2ac77873619069cecc5a364cd09a74d43
-[184]: https://github.com/Xunnamius/xscripts/compare/589fcb01d65182c25a9604c55909b2667bd1b1e0...v1.0.0
-[185]: https://github.com/Xunnamius/xscripts/commit/89d81a3e405096de202bc1f6be61ab5d58fc3e1e
-[186]: https://github.com/Xunnamius/xscripts/commit/589fcb01d65182c25a9604c55909b2667bd1b1e0
+[38]: https://github.com/Xunnamius/xscripts/compare/v1.20.6...v1.20.7
+[39]: https://github.com/Xunnamius/xscripts/commit/3c48ae1560cd1d689340739f550f4feb18754e81
+[40]: https://github.com/Xunnamius/xscripts/compare/v1.18.0...v1.19.0
+[41]: https://github.com/Xunnamius/xscripts/commit/0c199f69971688205b1ee027dce36c2bc6ab8a04
+[42]: https://github.com/Xunnamius/xscripts/commit/587a354329e46ca03f056ca1414915145928736c
+[43]: https://github.com/Xunnamius/xscripts/commit/92bb25fe5f8022271ae03ee56e18377ad02e392b
+[44]: https://github.com/Xunnamius/xscripts/commit/909949d58e2ddecf4ad606fe0dd9525ec540a8fb
+[45]: https://github.com/Xunnamius/xscripts/commit/59dd7523276ab48868124e8f76f06784bc59f794
+[46]: https://github.com/Xunnamius/xscripts/compare/v1.19.0...v1.19.1
+[47]: https://github.com/Xunnamius/xscripts/commit/d2011645a568e76bdf61dde14dd0e15dbce243dc
+[48]: https://github.com/Xunnamius/xscripts/compare/v1.17.0...v1.18.0
+[49]: https://github.com/Xunnamius/xscripts/commit/6c7ae27d3d93d36e7cbcae873b8717d252cf6670
+[50]: https://github.com/Xunnamius/xscripts/commit/e833523e6085950c3477ca6e44ae92ef7b1fad46
+[51]: https://github.com/Xunnamius/xscripts/commit/0383586f6ccbb0bc503df636f515d19618548f92
+[52]: https://github.com/Xunnamius/xscripts/commit/3a3489c43d2ce10ac752d70ab23066bd3477a675
+[53]: mailto:tsc@5.6-beta
+[54]: https://github.com/Xunnamius/xscripts/commit/4e7509611f72d2c953572dbc67bb51aabf2304d6
+[55]: https://github.com/Xunnamius/xscripts/commit/f6515ea793a72cfd42cb6d3f74675b2ae3a9b2e1
+[56]: https://github.com/Xunnamius/xscripts/commit/01375f77f74bfaf0b38de5bdd30d162461aa6106
+[57]: https://github.com/Xunnamius/xscripts/commit/df6116b1c5ad4c0f7c3152cc254d943a7b9e67e7
+[58]: https://github.com/Xunnamius/xscripts/commit/8d7152112e4927f566e048c6b0be7dfce4a6c430
+[59]: https://github.com/Xunnamius/xscripts/commit/d9b4b80db15e6104a2a3ab7325996a08a350ea6d
+[60]: https://github.com/Xunnamius/xscripts/commit/64b7309fcb28c1214f1edcc8319960c1c94f72b0
+[61]: https://github.com/Xunnamius/xscripts/compare/v1.16.1...v1.17.0
+[62]: https://github.com/Xunnamius/xscripts/commit/63354c710f8cfe21d274c7083eecd28da66c57c9
+[63]: https://github.com/Xunnamius/xscripts/commit/369d9690614b09b8a2a9efe4321a2786a60e2f20
+[64]: https://github.com/Xunnamius/xscripts/commit/609fca8cde508ecdb6c74ff8d1884821afdd5eb3
+[65]: https://github.com/Xunnamius/xscripts/commit/e55a88e728a9c4ccbd38648e85328ab563add014
+[66]: https://github.com/Xunnamius/xscripts/commit/b56fd666cfcccbc7d941df7afb6fcfc74ec0ae56
+[67]: https://github.com/Xunnamius/xscripts/commit/323579d026f46d2d0f70aa44440543eecbc7b4e2
+[68]: https://github.com/Xunnamius/xscripts/commit/8609db712c80439ee26966b638b8d6a9cb6e0d59
+[69]: https://github.com/Xunnamius/xscripts/commit/52763c5b795e9ee0485e9a20a4cb5264eae0ef3c
+[70]: https://github.com/Xunnamius/xscripts/compare/v1.15.0...v1.16.0
+[71]: https://github.com/Xunnamius/xscripts/commit/1153f424ae97b339f1ae345269663ddc5d3458d7
+[72]: https://github.com/Xunnamius/xscripts/commit/12ee54a21f0004eb568763507540157371aa06be
+[73]: https://github.com/Xunnamius/xscripts/commit/0543cff5d6e50a688365bf314837b54342106327
+[74]: https://github.com/Xunnamius/xscripts/commit/346b4ac5d27ea045cd037c4987401786f7fa572b
+[75]: https://github.com/Xunnamius/xscripts/commit/f42f4ab7c83a05fed253475de7bf2df4ce53d48f
+[76]: https://github.com/Xunnamius/xscripts/commit/e596e5bc36b9ed024f8c524cd6d55f15b813bcfc
+[77]: https://github.com/Xunnamius/xscripts/commit/d96ae1df1940941fbdf491e0b36c200574179bea
+[78]: https://github.com/Xunnamius/xscripts/commit/c9e254a5eece3c3ed51348d28897ed354725643f
+[79]: https://github.com/Xunnamius/xscripts/commit/060ef01a19f9a5022dcc855291e04ea6f8013c09
+[80]: https://github.com/Xunnamius/xscripts/commit/ea6aafff5d49f6acd8cac65b3c92e6cfd940e4b5
+[81]: https://github.com/Xunnamius/xscripts/commit/eb5631b6a316d808bb88928e27fe88ee818d230b
+[82]: https://github.com/Xunnamius/xscripts/commit/b72401ad18cead8a6d8571d8e35a6235c23b5381
+[83]: https://github.com/Xunnamius/xscripts/commit/7c1e7f14e28518285bc554c730f7eaea933a2e52
+[84]: https://github.com/Xunnamius/xscripts/commit/d3301ca5284ba96b750be48f12ecd3c821d27654
+[85]: https://github.com/Xunnamius/xscripts/compare/v1.16.0...v1.16.1
+[86]: https://github.com/Xunnamius/xscripts/commit/8f1d25d7356419160a65f4a4dd764a6192df2f26
+[87]: https://github.com/Xunnamius/xscripts/compare/v1.14.0...v1.15.0
+[88]: https://github.com/Xunnamius/xscripts/commit/8554e1a4fd20b72d6b917f92cdb9e084b4086b25
+[89]: https://github.com/Xunnamius/xscripts/commit/b66572376dd63858df091755bb1eb184b56f2c7b
+[90]: https://github.com/Xunnamius/xscripts/commit/49a3453b25941eecf6a498aa1462aed83f71eaa1
+[91]: https://github.com/Xunnamius/xscripts/compare/v1.13.0...v1.14.0
+[92]: https://github.com/Xunnamius/xscripts/commit/a5075305e5d9a3cf5451ca5c156c3ffe307f7018
+[93]: https://github.com/Xunnamius/xscripts/commit/489e75a7916d4b77b6a37f6b557cbbd4b7c15e5e
+[94]: https://github.com/Xunnamius/xscripts/commit/1b6c72ae8007c801207547a74de598d38b769968
+[95]: https://github.com/Xunnamius/xscripts/commit/82c2b0fd8a9bc35bda01c3f48001032bd3ba66e2
+[96]: https://github.com/Xunnamius/xscripts/commit/68c55821991d1eaf821dfe603cfee1a9aca83d4f
+[97]: https://github.com/Xunnamius/xscripts/commit/2ed43444661b4fba89c20bb5f2a0341faf535a9b
+[98]: https://github.com/Xunnamius/xscripts/commit/cafeb73773b2e08137d9c6d7f7432802cc9d3b88
+[99]: https://github.com/Xunnamius/xscripts/commit/f08250c17077cff70cdf722d2e9c3b16d3841ebf
+[100]: https://github.com/Xunnamius/xscripts/compare/v1.12.0...v1.13.0
+[101]: https://github.com/Xunnamius/xscripts/commit/05e56e787e73d42855fcd3ce10aff7f8f6e6c4c7
+[102]: https://github.com/Xunnamius/xscripts/commit/133634118118c7cff04eaaf7a65ead7c80329234
+[103]: https://github.com/Xunnamius/xscripts/commit/e4a1e0b3d6a20ae598f5a6feb2cf2b7ba077b6a7
+[104]: https://github.com/Xunnamius/xscripts/commit/c721fed5363109fddbf7c8e5e7dc98c33e023e38
+[105]: https://github.com/Xunnamius/xscripts/compare/v1.11.0...v1.12.0
+[106]: https://github.com/Xunnamius/xscripts/commit/b64412cd043877da93fa252bad0325bda73ea60c
+[107]: https://github.com/Xunnamius/xscripts/commit/feabe67a00aa2c970c3591110ec871f56626998f
+[108]: https://github.com/Xunnamius/xscripts/commit/534f3988d4d436fb8136bf60d56498c7b02941ea
+[109]: https://github.com/Xunnamius/xscripts/commit/8d4bb6d52de509c2ad8c5c82c8953d51e17c2d85
+[110]: https://github.com/Xunnamius/xscripts/commit/7364616ea349761591231a3547bd697ec67ed34b
+[111]: https://github.com/Xunnamius/xscripts/commit/2f11281f9d3c07b1a37440cbdbad51deeea7d503
+[112]: https://github.com/Xunnamius/xscripts/commit/9348ebba5102d85115a9e443c38032661a9fc0ed
+[113]: https://github.com/Xunnamius/xscripts/commit/626ee5aadb360db6d521683dff0f35269a736fc0
+[114]: https://github.com/Xunnamius/xscripts/commit/65e433056c8e6800d00202fe709d868d7c4713fb
+[115]: https://github.com/Xunnamius/xscripts/commit/ee5cf1030a76a5f0b2793d58a9db52d1ebc8a791
+[116]: https://github.com/Xunnamius/xscripts/commit/b9b106aff4ff729fb1f8e70efe295ba058a50cfb
+[117]: https://github.com/Xunnamius/xscripts/commit/c1a4b9cb21d1c3e6941d6fbd6108edc694c2d4ed
+[118]: https://github.com/Xunnamius/xscripts/commit/5b11c68aebc8099007ffcf50444707165939e061
+[119]: https://github.com/Xunnamius/xscripts/commit/99c7b3396ff73868208060410f7430538f6d48d6
+[120]: https://github.com/Xunnamius/xscripts/commit/ddd9192c05110fca3ae0d93bac276426932269ef
+[121]: https://github.com/Xunnamius/xscripts/compare/v1.10.1...v1.11.0
+[122]: https://github.com/Xunnamius/xscripts/commit/618ce1a1ae9132dbb54dc52c60c96aea17897b82
+[123]: https://github.com/Xunnamius/xscripts/commit/d74f099ac798fd0c925ea4aad0b1860b8a8a741f
+[124]: https://github.com/Xunnamius/xscripts/commit/0f4dd160eb1181306899031186b4a3c7e64d936c
+[125]: https://github.com/Xunnamius/xscripts/commit/2cd56d132e3cd7318744839cbf119b126cc35c98
+[126]: https://github.com/Xunnamius/xscripts/commit/9764967b4ca5aab46b32317ddb14bc4e843d8674
+[127]: https://github.com/Xunnamius/xscripts/commit/fd86f3f321889f759eda02880982117b5a0aba16
+[128]: https://github.com/Xunnamius/xscripts/commit/e295a0270f8ae743771d79966cccb3fdb14f19fd
+[129]: https://github.com/Xunnamius/xscripts/commit/d290ba57054479eb873d3cdc785db602432fca09
+[130]: https://github.com/Xunnamius/xscripts/commit/4ea8aa453186568651849102a2ade4df2f6c5cee
+[131]: https://github.com/Xunnamius/xscripts/compare/v1.9.0...v1.10.0
+[132]: https://github.com/Xunnamius/xscripts/commit/813b7580971553cde14b4f278f31af7353384e85
+[133]: https://github.com/Xunnamius/xscripts/commit/42af69ecc8f70e6c55eceeda802bce1752f81bfb
+[134]: https://github.com/Xunnamius/xscripts/commit/ae46adf477f55440bb18e627ca1674d6d80be7fd
+[135]: https://github.com/Xunnamius/xscripts/commit/6575d493c2c0ff291a3bd7bf4b595198c46c0c70
+[136]: https://github.com/Xunnamius/xscripts/commit/7d33dfe2ea50a0fbf45641ef997ce2b7d0265aca
+[137]: https://github.com/Xunnamius/xscripts/commit/d535b785c9d45c87b29a5fbe5698c6021067570b
+[138]: https://github.com/Xunnamius/xscripts/commit/1b65f4667e138907ac8a1b90f06937f5fa4eb1b9
+[139]: https://github.com/Xunnamius/xscripts/compare/v1.10.0...v1.10.1
+[140]: https://github.com/Xunnamius/xscripts/commit/483f03697f1cf01847759fa5c1cf61f5af578a3f
+[141]: https://github.com/Xunnamius/xscripts/compare/v1.8.0...v1.9.0
+[142]: https://github.com/Xunnamius/xscripts/commit/f47742b0bca31b054ec83d5b01089715e9925e39
+[143]: https://github.com/Xunnamius/xscripts/commit/4f280dc3af5bf633259d80cc8733fae31c903e04
+[144]: https://github.com/Xunnamius/xscripts/commit/159d771c90a65e05194cde9b8aec2478be7b97ff
+[145]: https://github.com/Xunnamius/xscripts/commit/506bf2dc5317ec891efa5e8eb9ed91235794c9f7
+[146]: https://github.com/Xunnamius/xscripts/commit/f7e65c34cd7088fa866530b60de4db3d1f77453c
+[147]: https://github.com/Xunnamius/xscripts/compare/v1.7.0...v1.8.0
+[148]: https://github.com/Xunnamius/xscripts/commit/c7b7623d68bde02438cbd8cbc80302079356914d
+[149]: https://github.com/Xunnamius/xscripts/commit/847cc63e9965c6c970e63d351fe8388ef666a1b6
+[150]: https://github.com/Xunnamius/xscripts/commit/fd210c55c4aff0ad663381a67b8b591dffc2a49c
+[151]: https://github.com/Xunnamius/xscripts/compare/v1.6.0...v1.7.0
+[152]: https://github.com/Xunnamius/xscripts/commit/7824c25d1d5db8ab824960b502c41e54a1f9ee03
+[153]: https://github.com/Xunnamius/xscripts/commit/b4c296eb75a142ede16da32a997e9999dd8074f3
+[154]: https://github.com/Xunnamius/xscripts/commit/005e378059ba0b3181031ff938854f54898e0437
+[155]: https://github.com/Xunnamius/xscripts/commit/9e4ae592d211ae39bacdc3f665b3078e69c73062
+[156]: https://github.com/Xunnamius/xscripts/compare/v1.5.0...v1.6.0
+[157]: https://github.com/Xunnamius/xscripts/commit/62e673b1ab8679e586b1b4337fe20c537c408fff
+[158]: https://github.com/Xunnamius/xscripts/compare/v1.4.1...v1.5.0
+[159]: https://github.com/Xunnamius/xscripts/commit/f15a14d33b9ccaf514a7f6ed0417cb9f5a42c99d
+[160]: https://github.com/Xunnamius/xscripts/commit/c775d6e3564c8772dde082d6ef243a56da79c586
+[161]: https://github.com/Xunnamius/xscripts/commit/8181e74d4a9020b45fa0182f3f7136b48e4a6721
+[162]: https://github.com/Xunnamius/xscripts/commit/17d53c3b83fc6ed799b5b2ab1da5feefe4e37018
+[163]: https://github.com/Xunnamius/xscripts/commit/537df70bd21a7b18b1ccc64e83ff6db63440a322
+[164]: https://github.com/Xunnamius/xscripts/commit/fd903a41ad88342ebd1896ffe3e46a6b81583711
+[165]: https://github.com/Xunnamius/xscripts/commit/4eabfb57d1addf0a2e8994c11b59bc122138b8ce
+[166]: https://github.com/Xunnamius/xscripts/commit/8e11d6670bec0c605d781ecec695de4d6af1edd2
+[167]: https://github.com/Xunnamius/xscripts/commit/2f5e8e9fc2a1983f0b259c70f7be957f80c8c3c1
+[168]: https://github.com/Xunnamius/xscripts/commit/b57a6be3f30c8c0a2692b256135acbd661d0e92b
+[169]: https://github.com/Xunnamius/xscripts/commit/8d03799cbd574e0eed0667f1d91827116da6ff15
+[170]: https://github.com/Xunnamius/xscripts/compare/v1.3.0...v1.4.0
+[171]: https://github.com/Xunnamius/xscripts/commit/4eeba0093c58c5ae075542203854b4a3add2907a
+[172]: https://github.com/Xunnamius/xscripts/commit/99d57864cb024e23115bc3b9c4b1529d2f3d9bf5
+[173]: https://github.com/Xunnamius/xscripts/compare/v1.4.0...v1.4.1
+[174]: https://github.com/Xunnamius/xscripts/commit/4b94a07feff53f35ff23d5c0456edd00b2e9f180
+[175]: https://github.com/Xunnamius/xscripts/commit/a8ddaa595b00d4730cdce60f5340175b3e9afbcc
+[176]: https://github.com/Xunnamius/xscripts/compare/v1.2.0...v1.3.0
+[177]: https://github.com/Xunnamius/xscripts/commit/cf660452df6ac9781bd9b61d4cc225e926cd4e15
+[178]: https://github.com/Xunnamius/xscripts/commit/b26a175f616e9c1fa333a0b8858507439449a32e
+[179]: https://github.com/Xunnamius/xscripts/commit/b999593e14846c8f87949286cd995e7ef92177a1
+[180]: https://github.com/Xunnamius/xscripts/commit/380c055b2920c8b96b65dc89b97b6497f996c452
+[181]: https://github.com/Xunnamius/xscripts/commit/f0b3b8ce97a389c4656d37f4745eaedb7d684f42
+[182]: https://github.com/Xunnamius/xscripts/compare/v1.1.0...v1.2.0
+[183]: https://github.com/Xunnamius/xscripts/commit/6426d70a844a1c3242d719bd648b2a5caf61a12c
+[184]: https://github.com/Xunnamius/xscripts/compare/v1.0.0...v1.1.0
+[185]: https://github.com/Xunnamius/xscripts/commit/ac5a9ba2ac77873619069cecc5a364cd09a74d43
+[186]: https://github.com/Xunnamius/xscripts/compare/589fcb01d65182c25a9604c55909b2667bd1b1e0...v1.0.0
+[187]: https://github.com/Xunnamius/xscripts/commit/89d81a3e405096de202bc1f6be61ab5d58fc3e1e
+[188]: https://github.com/Xunnamius/xscripts/commit/589fcb01d65182c25a9604c55909b2667bd1b1e0
