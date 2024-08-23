@@ -151,7 +151,7 @@ With somber focus, the following steps should be taken:
 
 <br />
 
-- [ ] **Update Metadata**
+- [ ] **Update Metadata**.
 
 GitHub repositories have metadata settings that can be configured via the [gear
 icon][16]. Once the modal is revealed, the following settings should be updated:
@@ -167,7 +167,7 @@ Be sure to save the changes by pressing "Save changes"!
 
 <br />
 
-- [ ] **Update `README.md`**
+- [ ] **Update `README.md`**.
 
 The project root `README.md` file and any README files at `packages/*/README.md`
 (if applicable) should be updated as follows:
@@ -211,7 +211,7 @@ What follows is an example outcome of the above steps:
 
 <br />
 
-- [ ] **Update `package.json` (if applicable)**
+- [ ] **Update `package.json` (if applicable)**.
 
 If the project has a `package.json` file at its root and/or at
 `packages/*/package.json` (if applicable), they should be updated as follows:
@@ -223,17 +223,17 @@ If the project has a `package.json` file at its root and/or at
 
 ### Deprecate the Published Packages
 
-- [ ] **Update `package.json` (if applicable)**
+- [ ] **Update `package.json` (if applicable)**.
 
 [See above][20].
 
-- [ ] **Publish Final Version**
+- [ ] **Publish Final Version**.
 
-Any updates to [source repository][21] assets (including `package.json` files
+Any updates to [source repository][20] assets (including `package.json` files
 and adding deprecation language to `README.md` files) should be published as a
 single patch release in a polyrepo, or one release per package in a monorepo.
 
-- [ ] **Issue Package-Wide Deprecation Command**
+- [ ] **Issue Package-Wide Deprecation Command**.
 
 Use [`npm deprecate`][22] to [officially deprecate][23] each package after their
 final patch releases are published.
@@ -243,7 +243,7 @@ final patch releases are published.
 Consider moving the repository to a place where it is accessible but otherwise
 out of the way, e.g. `/repos/.deprecated/<deprecated-repo-here>`.
 
-## Thanks!
+## A Huge Thank You
 
 Thank you so much for helping to maintain this project!
 
@@ -275,7 +275,6 @@ Thank you so much for helping to maintain this project!
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
 [19]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#keywords
 [20]: #deprecate-the-remote-github-repository
-[21]: #deprecate-the-github-repository
 [22]: https://docs.npmjs.com/cli/v8/commands/npm-deprecate
 [23]:
   https://docs.npmjs.com/deprecating-and-undeprecating-packages-or-package-versions
