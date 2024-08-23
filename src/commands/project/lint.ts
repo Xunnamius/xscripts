@@ -73,7 +73,7 @@ export default function command({
       // TODO (ensure package.json core-js version matches version in babel.config.js and elsewhere)
       // TODO (also lint the GitHub repository itself, including all its settings (branch protection on main and canary, adding xunn-bot/ergo-bot/nhscc-bot as collabs, disabling wiki/etc, adding sponsorship, etc) and everything else (check past notes))
       // TODO (allow linting of all github repositories (via GitHub api) to check for various things (ensure repo metadata is correct including correct checkmarks marked and that the repo description does not have any of those :emoji: things in them and instead uses real unicode emojis); see MAINTAINING.md for the details of what is expected)
-      // TODO (similar to the above, allow linting all known owned npm packages (via GitHub and NPM api) to check for various things; see MAINTAINING.md for the details of what is expected)
+      // TODO (similar to the above, allow linting all known owned npm packages (via GitHub and NPM api) to check for various things (ensure published package.json does not contain old-style projector configs, etc); see MAINTAINING.md for the details of what is expected)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
