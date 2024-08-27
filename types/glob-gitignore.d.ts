@@ -1,7 +1,7 @@
 declare module 'glob-gitignore' {
   import type { GlobOptions } from 'glob';
 
-  export type GlobGitignoreOptions = GlobOptions & {
+  export type GlobGitignoreOptions = Omit<GlobOptions, 'ignore'> & {
     /**
      * A string or array of strings used to determine which globbed paths are
      * ignored. Typically this is the result of parsing a .gitignore file (or file
