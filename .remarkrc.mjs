@@ -50,6 +50,11 @@ const lintConfig = {
   ]
 };
 
+if (process.env.XSCRIPTS_ALLOW_WARNING_COMMENTS === 'true') {
+  // TODO: add no-warning-comments to unified-utils and add pub to dependencies
+  //lintConfig.plugins.push('no-warning-comments');
+}
+
 /**
  * Remark configuration loaded when `NODE_ENV === 'format'`. The goal here is to
  * correct things that will not be taken care of by prettier.
