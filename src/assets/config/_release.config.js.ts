@@ -140,7 +140,7 @@ const { deepMergeConfig } = require('@-xun/scripts/assets');
 const { moduleExport } = require('@-xun/scripts/assets/config/release.config.js');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
-/*const { createDebugLogger } = require('debug-extended');
+/*const { createDebugLogger } = require('debug');
 const debug = createDebugLogger({
   namespace: '${globalDebuggerNamespace}:config:release'
 });*/

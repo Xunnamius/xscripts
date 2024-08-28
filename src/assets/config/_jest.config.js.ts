@@ -15,7 +15,7 @@ export const { transformer } = makeTransformer<Context>({
 'use strict';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
-/*const { createDebugLogger } = require('debug-extended');
+/*const { createDebugLogger } = require('debug');
 const debug = createDebugLogger({
   namespace: '${globalDebuggerNamespace}:config:conventional'
 });*/

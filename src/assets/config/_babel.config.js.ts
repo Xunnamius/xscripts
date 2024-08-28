@@ -143,7 +143,7 @@ export const { transformer } = makeTransformer<Context>({
 // @ts-check
 'use strict';
 
-/*const { createDebugLogger } = require('debug-extended');
+/*const { createDebugLogger } = require('debug');
 const debug = createDebugLogger({
   namespace: '${globalDebuggerNamespace}:config:babel'
 });*/

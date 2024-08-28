@@ -482,7 +482,7 @@ export const { transformer } = makeTransformer<Context>({
     return {
       [name]: /*js*/ `
 // @ts-check
-/*import { createDebugLogger } from 'debug-extended';*/
+/*import { createDebugLogger } from 'debug';*/
 import { deepMergeConfig } from '@-xun/scripts/assets';
 import { moduleExport } from '@-xun/scripts/assets/config/eslint.config.js';
 
