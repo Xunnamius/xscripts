@@ -37,6 +37,9 @@ coverage
 .next
 next-env.d.ts
 
+# Ignore cloned GitHub wiki (do not regard it as a so-called "submodule")
+.wiki
+
 # Ignore local configuration
 .vscode
 !.vscode/launch.example.json
