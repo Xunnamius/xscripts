@@ -10,10 +10,13 @@
 
 <!-- badges-end -->
 
-# xscripts
+# Xscripts
 
-This is a highly-opinionated personal tool for building, linting, and deploying
-my NPM-based projects. Similar in intent to kcd-scripts, react-scripts, etc.
+> AKA: xscripts, Xscripts
+
+Xscripts is a highly-opinionated personal tool for building, linting, and
+deploying my NPM-based projects. Similar in intent to kcd-scripts,
+react-scripts, etc.
 
 ---
 
