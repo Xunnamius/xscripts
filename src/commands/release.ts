@@ -50,7 +50,7 @@ export default function command({
 
       // TODO (skip reinstalling node_modules if dir exists unless --force-reinstall)
       // TODO (run "early lint" first, then "late lint" (that checks all prod deps resolvable, no extraneous deps or dev deps, no missing deps) after build completes)
-      // TODO (need flag for updating changelog or not updating changelog that also is compat with UPDATE_CHANGELOG)
+      // TODO (need flag for updating changelog or not updating changelog that also is compat with XSCRIPTS_RELEASE_UPDATE_CHANGELOG)
       // TODO (use changelog.patch.?(cm)js if available)
       // TODO (do codecov upload last)
       // TODO (tests run WITHOUT --no-warnings !!!)
@@ -58,6 +58,9 @@ export default function command({
       // TODO (create as an issue to note for later: simultaneously publish to GitHub Packages and NPM)
       // TODO (check early that all required environment variables are defined and valid)
       // TODO (ensure simultaneous releases are supported)
+      // TODO (--codecov-flags to determine which flags to send to codecov when uploading test results)
+      // TODO (configure this command by configuring the appropriate npm scripts at the expected "well-known" names)
+      // TODO (do not allow packages below version 1.0.0 to be published (semantic-release incompatibility))
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

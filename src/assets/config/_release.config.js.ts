@@ -165,6 +165,12 @@ module.exports = deepMergeConfig(
   }
 });
 
+// TODO: separate out the following as a plugin package in the Xrelease monorepo
+// TODO: along with a second plugin that potentially regenerates the GPG key
+// TODO: using xscripts project renovate --regenerate--gpg-key if the release is
+// TODO: major. Every major release should result in the GPG key being
+// TODO: regenerated!
+
 /**
  * The custom configuration object expected by the custom semantic-release
  * plugin steps defined below.
@@ -205,6 +211,10 @@ export function verifyConditions(
     pluginConfig.writerOpts,
     'the @-xun/scripts semantic-release plugin requires the "writerOpts" option to be defined'
   );
+
+  // TODO: assert that there is the ability to update GitHub GPG keys via API
+  // TODO: and that new GPG keys are capable of being created on this system and
+  // TODO: that the GitHub repo secrets API is authed and working
 }
 
 /**

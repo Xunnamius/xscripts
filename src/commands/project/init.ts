@@ -51,13 +51,19 @@ export default function command({
       genericLogger([LogTag.IF_NOT_QUIETED], 'Initializing new project...');
 
       // TODO: (select either: create a new directory at custom path OR use cwd)
-      // TODO: is idempotent
+      // ! v
+      // TODO: is idempotent and NEVER overwrites things that already exist
+      // ! ^
       // TODO: if handlebar notation suffixed by \n\n, replace suffix with \n (or is this handled via prettier already?)
       // TODO: (includes the lenses: cli, next.js, react, library)
       // TODO: (launch and task examples in vscode are materialized)
       // TODO: (can init new monorepo packages with proper setup including tsconfig files and what not)
       // TODO: (needs to delete the remark-link ignore comment from all Markdown files coming from src/assets/template)
-      // TODO ("xscripts project init --template next" et al)
+      // TODO ("xscripts project init --from-template next" et al)
+      // TODO ("xscripts project init --with-lib newLibA" which regenerates aliases)
+      // TODO ("xscripts project init --with-package newMonorepoPackage" which has the ability to turn a polyrepo into a monorepo if it isn't already (also regenerates aliases))
+      // TODO (enable private vulnerability reporting and secret scanning for GitHub repositories)
+      // TODO (each project gets its own personal GPG key added to the appropriate account automatically upon creation)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

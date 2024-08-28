@@ -236,6 +236,7 @@ export default function command({
         env.JEST_TRANSPILED = 'true';
       }
 
+      // TODO: externals are gone now; this needs to be reworked/removed
       if (scopes.includes(TestScope.External)) {
         env.JEST_EXTERNALS = 'true';
       }
