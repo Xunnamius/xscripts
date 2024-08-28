@@ -56,6 +56,8 @@ const genericRules = {
   // ? Ever since v4, we will rely on TypeScript to catch these
   'no-undef': 'off',
   'no-unused-vars': 'off',
+  'no-warning-comments': 'warn',
+  eqeqeq: 'warn',
 
   // * import
   'import/no-unresolved': ['error', { commonjs: true }],
@@ -191,9 +193,14 @@ const genericRules = {
   '@typescript-eslint/prefer-regexp-exec': 'off',
   // ? Sometimes useful, sometimes annoying, but not an error.
   '@typescript-eslint/require-await': 'warn',
+  // ? If I'm doing this, it's probably for intellisense reasons.
+  '@typescript-eslint/unified-signatures': 'off',
+  // ? If I'm doing this, it's probably for intellisense reasons.
+  '@typescript-eslint/no-useless-constructor': 'off',
 
   // * unicorn
   'unicorn/no-keyword-prefix': 'warn',
+  'unicorn/no-instanceof-array': 'warn',
   'unicorn/prefer-string-replace-all': 'warn',
   // ? Handled by integration tests
   'unicorn/prefer-module': 'off',
@@ -260,7 +267,9 @@ const genericRules = {
   // ? This rule is broken as of 05/30/2024
   'unicorn/throw-new-error': 'off',
   // ? I know what I'm doing, but thanks though
-  'unicorn/no-negation-in-equality-check': 'off'
+  'unicorn/no-negation-in-equality-check': 'off',
+  // ? test() and exec() are stateful, match() is not. So this is a bad check.
+  'unicorn/prefer-regexp-test': 'off'
 };
 
 const jestRules = {
