@@ -1,6 +1,6 @@
-import { debugFactory as debug } from 'multiverse/debug-extended';
+import { debugFactory as debug } from 'multiverse#debug';
 
-// * This test ensures that debug-extended maintains feature parity with debug.
+// * This test ensures that debug maintains feature parity with debug.
 // * To this end, this test suite is taken straight from
 // * https://github.com/debug-js/debug/blob/master/test.js
 

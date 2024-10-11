@@ -5,10 +5,12 @@ import {
   debugFactory,
   extendDebugger,
   finalizeDebugger
-} from 'multiverse/debug-extended/index';
+} from 'multiverse#debug';
 
-// TODO: update paths to use proper alias names
-import { expectExtendedDebugger, expectUnextendableDebugger } from './helpers';
+import {
+  expectExtendedDebugger,
+  expectUnextendableDebugger
+} from '#debug test/helpers.ts';
 
 const factoryLogFn = jest.fn();
 debugFactory.log = factoryLogFn;
