@@ -10,7 +10,7 @@ const { moduleExport } = require('@-xun/scripts/assets/config/release.config.js'
 
 const debug = require('debug')('xscripts:semantic-release-config');
 
-const { parserOpts, writerOpts } = require('./conventional.config');
+const { parserOpts, writerOpts } = require('./conventional.config.js');
 
 const releaseSectionPath = path.join(
   os.tmpdir(),
