@@ -1,8 +1,6 @@
 {
   "name": "@-xun/cli",
-  "dependencies": {
-    "@black-flag/extensions": "^1.0.0"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "listr2": "^8.2.3"
   },
