@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
-// * These tests ensure the asset config exports function as expected
+// * These tests ensure changelog-related asset config exports function as
+// * expected.
 
 import assert from 'node:assert';
 
@@ -7,23 +8,26 @@ import conventionalChangelogCore, {
   type Options as ConventionalChangelogOptions
 } from 'conventional-changelog-core';
 
-import { toSentenceCase } from 'multiverse/@-xun/cli-utils/util';
+import { toSentenceCase } from 'multiverse#cli-utils util.ts';
 
 import {
   moduleExport,
   noteTitleForBreakingChange,
   wellKnownCommitTypes
-} from 'universe/assets/config/_conventional.config.js';
+} from 'universe assets/config/_conventional.config.js.ts';
 
 import {
   dummyNpmPackageFixture,
   gitRepositoryFixture,
+  reconfigureJestGlobalsToSkipTestsInThisFileIfRequested,
   withMockedFixture,
   type FixtureContext,
   type WithMockedFixtureOptions
-} from 'testverse/setup';
+} from 'testverse setup';
 
 import type { Merge, Promisable, SetParameterType } from 'type-fest';
+
+reconfigureJestGlobalsToSkipTestsInThisFileIfRequested({ it: true });
 
 const TEST_IDENTIFIER = 'unit-changelog';
 
