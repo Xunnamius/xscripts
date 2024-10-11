@@ -1,9 +1,7 @@
-'use strict';
-
 /**
  * @type {import('prettier').Options}
  */
-module.exports = {
+export default {
   endOfLine: 'lf',
   printWidth: 80,
   proseWrap: 'always',
