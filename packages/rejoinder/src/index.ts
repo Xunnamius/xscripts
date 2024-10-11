@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable unicorn/prefer-regexp-test */
 // TODO: replace this with the actual rejoinder and vice-versa!
 
 // ! SPLIT OFF LISTR2 FEATURES AS SEPARATE PACKAGE
@@ -27,7 +26,7 @@ import {
   type ExtendedDebugger,
   type InternalDebugger,
   type UnextendableInternalDebugger
-} from 'multiverse/debug-extended';
+} from 'multiverse#debug';
 
 import type { Entry } from 'type-fest';
 

@@ -1,7 +1,6 @@
 import { Manager } from '@listr2/manager';
 
-import { type ExtendedDebugger } from 'multiverse/debug-extended';
-import { withMockedEnv, withMockedOutput } from 'testverse/setup';
+import { type ExtendedDebugger } from 'multiverse#debug';
 
 import {
   TAB,
@@ -17,7 +16,9 @@ import {
   resetInternalState,
   type ExtendedLogger,
   type GenericListrTask
-} from 'multiverse/rejoinder';
+} from 'multiverse#rejoinder';
+
+import { withMockedEnv, withMockedOutput } from 'testverse setup.ts';
 
 const namespace = 'namespace';
 
