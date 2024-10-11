@@ -1,8 +1,8 @@
-import { ErrorMessage as UpstreamErrorMessage } from 'multiverse/@-xun/cli-utils/error';
+import { ErrorMessage as UpstreamErrorMessage } from 'multiverse#cli-utils error.ts';
 
-import type { ProjectMetaAttribute } from 'universe/util';
+import type { ProjectAttribute, RootPackage } from 'multiverse#project-utils';
 
-export { TaskError } from 'multiverse/@-xun/cli-utils/error';
+export { TaskError } from 'multiverse#cli-utils error.ts';
 
 /**
  * A collection of possible error and warning messages.
@@ -12,6 +12,9 @@ export const ErrorMessage = {
   ...UpstreamErrorMessage,
   EslintPluginReturnedSomethingUnexpected(identifier: string) {
     return `assertion failed: the eslint plugin "${identifier}" returned something unexpected`;
+  },
+  BadSkipArgs() {
+    return 'impossible combination of skipIgnored and skipUnknown was encountered';
   },
   BadAssetContextKey(key: string) {
     return `assertion failed: asset context value at expected key "${key}" is either not a string, is empty, or is undefined`;
@@ -34,17 +37,17 @@ export const ErrorMessage = {
   CannotWriteFile(path: string) {
     return `failed to write to file at path: ${path}`;
   },
-  CannotBeCliAndNextJs() {
-    return 'project must either provide a CLI or be a Next.js project';
+  CannotCopyFile(from: string, to: string) {
+    return `failed to copy file: ${from} => ${to}`;
+  },
+  CannotMakeDirectory(path: string) {
+    return `failed to make directory: ${path}`;
   },
   CannotUseIgnoresWithPathsOutsideProjectRoot() {
     return 'cannot use ignore functionality (like --skip-ignored) when one or more --files paths are outside of the project root';
   },
   CliProjectHasBadBinConfig() {
     return 'this project appears to be a CLI project but has one or more poorly configured "bin" entries in package.json';
-  },
-  CannotBuildIntermediatesForNextJs() {
-    return 'intermediates cannot be generated for a Next.js project';
   },
   CannotRunOutsideRoot() {
     return 'the current working directory must be the project root or a workspace (package) sub-root';
@@ -53,14 +56,11 @@ export const ErrorMessage = {
     return 'no deletions were performed (try again with --force)';
   },
   WrongProjectAttributes(
-    expected: ProjectMetaAttribute[],
-    actual: ProjectMetaAttribute[],
+    expected: ProjectAttribute[],
+    actual: RootPackage['attributes'],
     preposition = 'with'
   ) {
-    return `expected a project ${preposition} the following attributes: ${expected.join(', ')}; saw ${actual.join(', ')} instead`;
-  },
-  BadProjectTypeInPackageJson() {
-    return `a package.json file must contain a "type" field with a value of either "module" or "commonjs", otherwise the "type" field must be omitted`;
+    return `expected a project ${preposition} the following attributes: ${expected.join(', ')}; saw ${Object.keys(actual).join(', ')} instead`;
   },
   BadProjectNameInPackageJson() {
     return `a package.json file must contain a valid "name" field`;
@@ -100,5 +100,8 @@ export const ErrorMessage = {
   },
   BadParameter(name: string) {
     return `invalid value for parameter "${name}"`;
+  },
+  TranspilationReturnedNothing(sourcePath: string, outputPath: string) {
+    return `transpilation of the following file returned an empty result: ${sourcePath} => ${outputPath}`;
   }
 };
