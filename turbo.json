@@ -1,0 +1,40 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build:dist": {
+      "outputs": ["dist/**", "!dist/types/**"]
+    },
+    // TODO: update this whole file for xscripts et al
+    // "build:types": {
+    //   "outputs": ["dist/types/**"]
+    // }
+    "deploy:production": {
+      "dependsOn": ["lint:tsc", "lint:eslint", "build:dist"],
+      "cache": false
+    },
+
+    // ? We list these here even though they're empty so turbo will cache them
+    "lint:tsc": {
+      "inputs": [
+        "src/**/*.js",
+        "src/**/*.mjs",
+        "src/**/*.cjs",
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.cts",
+        "src/**/*.mts",
+        "src/**/*.json"
+      ]
+    },
+    "lint:eslint": {
+      "inputs": [
+        "src/**",
+        "types/**",
+        "lib/**",
+        "packages/**/src/**",
+        "packages/**/types/**",
+        "packages/**/lib/**"
+      ]
+    }
+  }
+}
