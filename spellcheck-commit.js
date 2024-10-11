@@ -1,4 +1,5 @@
 // @ts-check
+'use strict';
 
 /* eslint-disable no-console */
 const read = require('node:fs/promises').readFile;
