@@ -11,7 +11,7 @@ started, [take a look at this quick and easy guide][how-to-contribute]. 💜
 
 This repository uses a [fully automated][github-actions] [continuous
 linting][husky-cl] (CL), integration testing (CI), and deployment (CD)
-[projector][projector]-based pipeline for integrating PRs and publishing
+[xpipeline][xpipeline]-based pipeline for integrating PRs and publishing
 releases. The neat thing about a fully automated pipeline is that anyone
 anywhere can make a contribution quickly and with minimal tedium.
 
@@ -95,4 +95,4 @@ At this point, you're ready to create your PR and ✨ contribute ✨!
 [pkg-debug]: https://www.npmjs.com/package/debug
 [pkg-debug-wildcards]: https://www.npmjs.com/package/debug#wildcards
 [pr-compare]: {{repoUrl}}/compare
-[projector]: {{repoUrl}}#readme
+[xpipeline]: https://github.com/Xunnamius/xpipeline#readme

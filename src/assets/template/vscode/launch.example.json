@@ -68,7 +68,7 @@
       "env": {
         "NODE_ENV": "test",
         "NODE_OPTIONS": "--no-warnings --experimental-vm-modules",
-        "JEST_TRANSPILED": "true"
+        "XSCRIPTS_TEST_JEST_TRANSPILED": "true"
       },
       // ? Selectively comment out entries for deeper debugging
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
