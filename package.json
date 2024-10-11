@@ -5,6 +5,9 @@
   "keywords": [
     "Xunnamius"
   ],
+  "workspaces": [
+    "packages/*"
+  ],
   "homepage": "https://github.com/Xunnamius/xscripts",
   "repository": "https://github.com/Xunnamius/xscripts",
   "license": "MIT",
