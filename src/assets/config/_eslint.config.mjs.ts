@@ -2,7 +2,7 @@ import assert from 'node:assert';
 
 import { fixupConfigRules } from '@eslint/compat';
 import eslintJs from '@eslint/js';
-import { getRunContext } from '@projector-js/core/project';
+
 import restrictedGlobals from 'confusing-browser-globals';
 import eslintPluginJest from 'eslint-plugin-jest';
 import eslintPluginNode from 'eslint-plugin-n';
@@ -16,32 +16,43 @@ import {
   type Config
 } from 'typescript-eslint';
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
-import { globalDebuggerNamespace } from 'universe/constant';
-import { ErrorMessage } from 'universe/error';
+import {
+  deriveAliasesForEslint,
+  generateRawAliasMap
+} from 'multiverse#project-utils alias.ts';
+
+import { Tsconfig } from 'multiverse#project-utils fs/exports/well-known-constants.ts';
+import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse#project-utils';
+
+import {
+  assertIsExpectedTransformerContext,
+  makeTransformer
+} from 'universe assets/index.ts';
+
+import { globalDebuggerNamespace } from 'universe constant.ts';
+import { ErrorMessage } from 'universe error.ts';
 
 import type { EmptyObject } from 'type-fest';
 
-// TODO: replace this with the @projector-js/core unified alias configuration
-const wellKnownPackageAliases = [
-  // ! If changed, also update these aliases in tsconfig.json,
-  // ! webpack.config.js, next.config.ts, babel.config.js, and
-  // ! jest.config.js
-  ['package', './package.json'],
-  ['multiverse', './lib'],
-  ['extverse', './external-scripts'],
-  ['universe', './src'],
-  ['pkgverse', 'packages/*'],
-  ['testverse', './test'],
-  ['typeverse', './types']
-];
+// TODO: update with latest changes from project root eslint.config.mjs
+
+// TODO: interpolate this into runtime (transformer) since aliases are generated
+// const wellKnownPackageAliases = [
+//   ['package', './package.json'],
+//   ['multiverse', './lib'],
+//   ['extverse', './external-scripts'],
+//   ['universe', './src'],
+//   ['pkgverse', 'packages/*'],
+//   ['testverse', './test'],
+//   ['typeverse', './types']
+// ];
 
 export type EslintConfig = Extract<Config, unknown[]>[number];
 
 /**
  * The name of the tsconfig JSON file used by the linter.
  */
-export const tsconfigProject = 'tsconfig.eslint.json';
+export const tsconfigProject = Tsconfig.ProjectLintUnlimited;
 
 /**
  * All file extensions recognized as JavaScript or TypeScript.
@@ -79,6 +90,7 @@ export const genericRules: NonNullable<EslintConfig['rules']> = {
   eqeqeq: 'warn',
 
   // * import
+  'import/extensions': ['error', 'always', { ignorePackages: false }],
   'import/no-unresolved': ['error', { commonjs: true }],
   'import/no-empty-named-blocks': 'warn',
   'import/first': 'warn',
@@ -97,11 +109,9 @@ export const genericRules: NonNullable<EslintConfig['rules']> = {
         ['parent', 'sibling', 'index'],
         ['object', 'type']
       ],
-      pathGroups: wellKnownPackageAliases.map(([alias]) => ({
-        pattern: alias === 'package' ? alias : `${alias}/**`,
-        group: alias === 'package' ? 'builtin' : 'external',
-        position: 'after'
-      })),
+      // TODO: move this into runtime (moduleExport) due to generated aliases
+      pathGroups: [],
+      // TODO: ^^^
       'newlines-between': 'always-and-inside-groups',
       distinctGroup: true
     }
@@ -328,16 +338,25 @@ export const globals = {
   ...jsGlobals.node
 };
 
+// TODO: do we need to take any special considerations for projects with
+// TODO: assetverse-type imports? Solution is likely monorepo packages and a
+// TODO: dummy "index"-type file that wraps all the asset imports
+
+// TODO: needs proper typings (are "any" warnings working properly?!)
 export async function moduleExport(
   /**
-   * An optional `runContext` that, if given, will be used instead of calling
-   * {@link getRunContext}.
+   * An optional {@link ProjectMetadata} instance that, if given, will be used
+   * instead of calling {@link analyzeProjectStructure}.
    */
-  runContext = getRunContext()
+  projectMetadata?: ProjectMetadata
 ) {
+  projectMetadata ||= await analyzeProjectStructure();
+
   const {
     project: { root: projectRootDir }
-  } = runContext;
+  } = projectMetadata;
+
+  const eslintAliasMap = deriveAliasesForEslint(generateRawAliasMap(projectMetadata));
 
   const { FlatCompat } = await import('@eslint/eslintrc');
 
@@ -409,7 +428,7 @@ export async function moduleExport(
         },
         'import/resolver': {
           alias: {
-            map: wellKnownPackageAliases,
+            map: eslintAliasMap,
             extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
           },
           typescript: {
@@ -435,7 +454,6 @@ export async function moduleExport(
         '**/dist/**/*',
         '**/bin/**/*',
         '**/build/**/*',
-        'next.config.js',
         '!**/src/**/*'
       ]
     },
@@ -484,7 +502,7 @@ export const { transformer } = makeTransformer<Context>({
 // @ts-check
 /*import { createDebugLogger } from 'debug';*/
 import { deepMergeConfig } from '@-xun/scripts/assets';
-import { moduleExport } from '@-xun/scripts/assets/config/eslint.config.js';
+import { moduleExport } from '@-xun/scripts/assets/config/${name}';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 /*const debug = createDebugLogger({

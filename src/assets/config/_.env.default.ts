@@ -1,4 +1,7 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
+import {
+  assertIsExpectedTransformerContext,
+  makeTransformer
+} from 'universe assets/index.ts';
 
 import type { EmptyObject } from 'type-fest';
 
@@ -10,8 +13,7 @@ export const { transformer } = makeTransformer<Context>({
 
     return {
       [name]: `
-# When running a pipeline via GHA/Vercel, all required env vars must be defined
-# as repo secrets. With projector, the sync command handles this.
+# shellcheck disable=all
 
 # Codecov test analysis token
 #

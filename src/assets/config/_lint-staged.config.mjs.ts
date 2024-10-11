@@ -1,5 +1,8 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
-import { globalDebuggerNamespace } from 'universe/constant';
+import {
+  assertIsExpectedTransformerContext,
+  makeTransformer
+} from 'universe assets/index.ts';
+import { globalDebuggerNamespace } from 'universe constant.ts';
 
 import type { EmptyObject } from 'type-fest';
 
@@ -17,7 +20,7 @@ export const { transformer } = makeTransformer<Context>({
 // TODO: publish latest rejoinder package first, then update configs to use it
 /*const { createDebugLogger } = require('debug');
 const debug = createDebugLogger({
-  namespace: '${globalDebuggerNamespace}:config:conventional'
+  namespace: '${globalDebuggerNamespace}:config:lint-staged'
 });*/
 
 // TODO

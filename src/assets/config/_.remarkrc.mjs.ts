@@ -1,5 +1,8 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
-import { globalDebuggerNamespace } from 'universe/constant';
+import {
+  assertIsExpectedTransformerContext,
+  makeTransformer
+} from 'universe assets/index.ts';
+import { globalDebuggerNamespace } from 'universe constant.ts';
 
 import type { Options as MdastUtilToMarkdownOptions } from 'mdast-util-to-markdown';
 import type { EmptyObject } from 'type-fest';
@@ -116,11 +119,11 @@ const debug = createDebugLogger({
 });*/
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-import { moduleExport } from '@-xun/scripts/assets/config/.remarkrc.mjs';
+import { moduleExport } from '@-xun/scripts/assets/config/${name}';
 
 const mode = process.env.NODE_ENV;
 const shouldRenumberReferences =
-  process.env.SHOULD_RENUMBER_REFERENCES === 'true';
+  process.env.XSCRIPTS_FORMAT_RENUMBER_REFERENCES === 'true';
 
 if (!['lint', 'format'].includes(mode)) {
   throw new Error('remark expects NODE_ENV to be one of either: lint, format');

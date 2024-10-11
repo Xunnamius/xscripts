@@ -1,13 +1,63 @@
 // * Every now and then, we adopt best practices from CRA
 // * https://tinyurl.com/yakv4ggx
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
-import { globalDebuggerNamespace } from 'universe/constant';
+import {
+  assertIsExpectedTransformerContext,
+  makeTransformer
+} from 'universe assets/index.ts';
+
+import { globalDebuggerNamespace } from 'universe constant.ts';
 
 import type { EmptyObject } from 'type-fest';
 
 // ? https://nodejs.org/en/about/releases
 export const NODE_LTS = 'maintained node versions';
+
+/**
+ * All known TypeScript file extensions supported by Babel.
+ */
+export const extensionsTypescript = ['.ts', '.cts', '.mts', '.tsx'] as const;
+
+/**
+ * All known JavaScript file extensions supported by Babel.
+ */
+export const extensionsJavascript = ['.js', '.mjs', '.cjs', '.jsx'] as const;
+
+/**
+ * All possible extensions accepted by Babel using standard xscripts configs.
+ */
+export const extensionsAcceptedByBabel = [
+  ...extensionsTypescript,
+  ...extensionsJavascript
+] as const;
+
+/**
+ * Returns `true` if `path` points to a file with an extension accepted by
+ * Babel.
+ *
+ * @see {@link extensionsAcceptedByBabel}
+ */
+export function hasExtensionAcceptedByBabel(path: string) {
+  return extensionsAcceptedByBabel.some((extension) => path.endsWith(extension));
+}
+
+/**
+ * Returns `true` if `path` points to a file with a TypeScript extension.
+ *
+ * @see {@link extensionsTypescript}
+ */
+export function hasTypescriptExtension(path: string) {
+  return extensionsTypescript.some((extension) => path.endsWith(extension));
+}
+
+/**
+ * Returns `true` if `path` points to a file with a JavaScript extension.
+ *
+ * @see {@link extensionsJavascript}
+ */
+export function hasJavascriptExtension(path: string) {
+  return extensionsTypescript.some((extension) => path.endsWith(extension));
+}
 
 export const babelExpectedEnvironment = [
   'development',
@@ -34,14 +84,16 @@ export function moduleExport() {
         {
           root: '.',
           extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+          // TODO: update this with latest changes
           // ! If changed, also update these aliases in tsconfig.json,
-          // ! webpack.config.js, next.config.ts, eslint.config.js, and jest.config.js
+          // ! webpack.config.mjs, next.config.ts, eslint.config.mjs, and jest.config.mjs
           alias: {
-            '^universe/(.*)$': String.raw`./src/\1`,
-            '^multiverse/(.*)$': String.raw`./lib/\1`,
-            '^testverse/(.*)$': String.raw`./test/\1`,
-            '^externals/(.*)$': String.raw`./external-scripts/\1`,
-            '^types/(.*)$': String.raw`./types/\1`,
+            '^universe/(.+)$': String.raw`./src/\1`,
+            '^multiverse/(.+)$': String.raw`./lib/\1`,
+            '^pkgverse/(.+)$': String.raw`./packages/\1`,
+            '^extverse/(.+)$': String.raw`./external-scripts/\1`,
+            '^testverse/(.+)$': String.raw`./test/\1`,
+            '^typeverse/(.+)$': String.raw`./types/\1`,
             '^package$': `./package.json`
           }
         }
@@ -97,7 +149,7 @@ export function moduleExport() {
                 // TODO: implement these as functions as well that check each path
                 // TODO: for existence and if they don't exist try to switch them
                 // TODO: such as below and if they still don't exist then throw
-                '^(.+)/debug-extended.js$': '$1/debug-extended/index.js',
+                '^(.+)/debug.js$': '$1/debug/index.js',
                 '^(.+)/rejoinder.js$': '$1/rejoinder/index.js',
                 '^(.+)/@black-flag/extensions.js$': '$1/@black-flag/extensions/index.js',
                 '^(([^/]*/)*lib/[^/]+)$': '$1/index'
@@ -107,7 +159,6 @@ export function moduleExport() {
         ]
       },
       // TODO: add production-esm too
-      // TODO: add production-externals too (renamed from production-external)
       // * Used by `npm run build` for fixing declaration file imports in ./dist
       'production-types': {
         comments: true,
@@ -122,7 +173,7 @@ export function moduleExport() {
                 // ? Ensure deep package.json imports resolve properly
                 '^../../../package.json$': '../../package.json',
                 // ? Ensure deep imports resolve properly
-                '^../../../(.*)$': '../$1'
+                '^../../../(.+)$': '../$1'
               }
             }
           ]
@@ -153,7 +204,7 @@ const { deepMergeConfig } = require('@-xun/scripts/assets');
 const {
   moduleExport,
   babelExpectedEnvironment
-} = require('@-xun/scripts/assets/config/babel.config.js');
+} = require('@-xun/scripts/assets/config/${name}');
 
 const nodeEnv = process.env.NODE_ENV;
 

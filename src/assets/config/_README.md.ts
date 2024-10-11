@@ -1,5 +1,8 @@
 /* eslint-disable unicorn/filename-case */
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
+import {
+  assertIsExpectedTransformerContext,
+  makeTransformer
+} from 'universe assets/index.ts';
 
 import type { EmptyObject } from 'type-fest';
 

@@ -1,6 +1,10 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
-import { wellKnownCommitTypes } from 'universe/assets/config/_conventional.config.js';
-import { globalDebuggerNamespace } from 'universe/constant';
+import {
+  assertIsExpectedTransformerContext,
+  makeTransformer
+} from 'universe assets/index.ts';
+
+import { wellKnownCommitTypes } from 'universe assets/config/_conventional.config.js.ts';
+import { globalDebuggerNamespace } from 'universe constant.ts';
 
 import type { EmptyObject } from 'type-fest';
 
@@ -54,7 +58,7 @@ const debug = createDebugLogger({
   namespace: '${globalDebuggerNamespace}:config:commitlint'
 });*/
 
-const { moduleExport } = require('@-xun/scripts/assets/config/commitlint.config.js');
+const { moduleExport } = require('@-xun/scripts/assets/config/${name}');
 module.exports = moduleExport;
 
 /*debug('exported config: %O', module.exports);*/

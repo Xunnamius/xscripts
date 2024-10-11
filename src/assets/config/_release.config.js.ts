@@ -9,37 +9,46 @@ import assert from 'node:assert';
 
 import { type ExecutionContext } from '@black-flag/core/util';
 
-import { createDebugLogger } from 'multiverse/rejoinder';
-import { getInvocableExtendedHandler } from 'multiverse/@black-flag/extensions/index.js';
-import { run } from 'multiverse/run';
+import {
+  type Options as ReleaseConfig,
+  type VerifyConditionsContext,
+  type SuccessContext,
+  type GenerateNotesContext
+} from 'semantic-release';
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
-import { globalDebuggerNamespace } from 'universe/constant';
+import { createDebugLogger } from 'multiverse#rejoinder';
+import { getInvocableExtendedHandler } from 'multiverse#bfe';
+import { run } from 'multiverse#run';
+
+import {
+  conventionalChangelogConfigProjectBase,
+  releaseConfigProjectBase
+} from 'multiverse#project-utils fs/index.ts';
+
+import {
+  assertIsExpectedTransformerContext,
+  makeTransformer
+} from 'universe assets/index.ts';
 
 import {
   $executionContext,
   configureExecutionContext,
   type GlobalExecutionContext
-} from 'universe/configure';
+} from 'universe configure.ts';
 
 import {
   default as buildChangelog,
   OutputOrder,
   type CustomCliArguments as BuildChangelogCliArguments
-} from 'universe/commands/build/changelog';
+} from 'universe commands/build/changelog.ts';
 
-import type { ConventionalChangelogCliConfig } from 'universe/assets/config/_conventional.config.js';
+import { globalDebuggerNamespace } from 'universe constant.ts';
 
-import { ErrorMessage } from 'universe/error';
+import type { ConventionalChangelogCliConfig } from 'universe assets/config/_conventional.config.js';
+
+import { ErrorMessage } from 'universe error.ts';
 
 import type { EmptyObject } from 'type-fest';
-
-import type {
-  Options as ReleaseConfig,
-  VerifyConditionsContext,
-  SuccessContext,
-  GenerateNotesContext
-} from 'semantic-release';
 
 const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:release`
@@ -91,7 +100,7 @@ export function moduleExport({
       // ? This block pulls in a custom semantic-release plugin that mutates
       // ? internal state as required.
       [
-        '@-xun/scripts/assets/config/release.config.js',
+        `@-xun/scripts/assets/config/${releaseConfigProjectBase}`,
         {
           releaseSectionPath,
           parserOpts,
@@ -137,7 +146,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/config/release.config.js');
+const { moduleExport } = require('@-xun/scripts/assets/config/${name}');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 /*const { createDebugLogger } = require('debug');
@@ -145,7 +154,7 @@ const debug = createDebugLogger({
   namespace: '${globalDebuggerNamespace}:config:release'
 });*/
 
-const { parserOpts, writerOpts } = require('./conventional.config');
+const { parserOpts, writerOpts } = require('./${conventionalChangelogConfigProjectBase}');
 
 const releaseSectionPath = path.join(
   os.tmpdir(),
@@ -229,10 +238,10 @@ export async function generateNotes(
   pluginDebug('entered step function');
 
   const {
-    env: { UPDATE_CHANGELOG }
+    env: { XSCRIPTS_RELEASE_UPDATE_CHANGELOG }
   } = context;
 
-  const shouldUpdateChangelog = UPDATE_CHANGELOG !== 'false';
+  const shouldUpdateChangelog = XSCRIPTS_RELEASE_UPDATE_CHANGELOG !== 'false';
   pluginDebug('shouldUpdateChangelog: %O', shouldUpdateChangelog);
 
   const pseudoBfGlobalExecutionContext = await configureExecutionContext({

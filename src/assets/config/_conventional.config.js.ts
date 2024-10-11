@@ -1,15 +1,19 @@
-import { getRunContext } from '@projector-js/core/project';
+import escapeStringRegexp from 'escape-string-regexp~4';
 import deepMerge from 'lodash.mergewith';
 import semver from 'semver';
 
-import { softAssert } from 'multiverse/@-xun/cli-utils/error';
-import { interpolateTemplate, toSentenceCase } from 'multiverse/@-xun/cli-utils/util';
-import { createDebugLogger } from 'multiverse/rejoinder';
+import { softAssert } from 'multiverse#cli-utils error.ts';
+import { interpolateTemplate, toSentenceCase } from 'multiverse#cli-utils util.ts';
+import { analyzeProjectStructure, ProjectAttribute } from 'multiverse#project-utils';
+import { createDebugLogger } from 'multiverse#rejoinder';
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe/assets';
-import { globalDebuggerNamespace } from 'universe/constant';
-import { ErrorMessage } from 'universe/error';
-import { __read_file_sync } from 'universe/util';
+import {
+  assertIsExpectedTransformerContext,
+  makeTransformer
+} from 'universe assets/index.ts';
+import { globalDebuggerNamespace } from 'universe constant.ts';
+import { ErrorMessage } from 'universe error.ts';
+import { __read_file_sync } from 'universe util.ts';
 
 import type { Config as ConventionalChangelogConfigSpecOptions } from 'conventional-changelog-config-spec';
 import type { Options as ConventionalChangelogCoreOptions } from 'conventional-changelog-core';
@@ -316,9 +320,9 @@ export function moduleExport(
         debug_(`saw version: ${commit.version!}`);
 
         if (commit.version) {
-          const { context, package: pkg } = getRunContext();
+          const { type, package: pkg } = analyzeProjectStructure.sync();
 
-          if (context === 'monorepo') {
+          if (type === ProjectAttribute.Monorepo) {
             debug_('monorepo context detected');
             // TODO: consider replacing softAssert and throw new Error instead
             softAssert(pkg, ErrorMessage.CannotRunOutsideRoot());
@@ -634,7 +638,7 @@ export function moduleExport(
 
   const nonHiddenKnownTypesPartialPattern = finalConfig.types
     ?.filter(({ hidden }) => !hidden)
-    .map(({ type }) => escapeRegExp(type))
+    .map(({ type }) => escapeStringRegexp(type))
     .join('|');
 
   // TODO: should probably just reuse breakingHeaderPattern, no?
@@ -645,7 +649,7 @@ export function moduleExport(
 
   const issuePattern = finalConfig.issuePrefixes
     ? new RegExp(
-        `(?:\\b([a-z0-9_.-]+)\\/([a-z0-9_.-]+))?(${finalConfig.issuePrefixes.map((str) => escapeRegExp(str)).join('|')})([0-9]+)`,
+        `(?:\\b([a-z0-9_.-]+)\\/([a-z0-9_.-]+))?(${finalConfig.issuePrefixes.map((str) => escapeStringRegexp(str)).join('|')})([0-9]+)`,
         'gi'
       )
     : neverMatchAnythingPattern;
@@ -802,7 +806,7 @@ const debug = createDebugLogger({
   namespace: '${globalDebuggerNamespace}:config:conventional'
 });*/
 
-const { moduleExport } = require('@-xun/scripts/assets/config/conventional.config.js');
+const { moduleExport } = require('@-xun/scripts/assets/config/${name}');
 module.exports = moduleExport({
   // * Your customizations here
 });
@@ -838,11 +842,4 @@ function mergeCustomizer(
   }
 
   return undefined;
-}
-
-/**
- * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_expressions#escaping
- */
-function escapeRegExp(regexpString: string) {
-  return regexpString.replaceAll(/[$()*+.?[\\\]^{|}]/g, String.raw`\$&`); // $& means the whole matched string
 }
