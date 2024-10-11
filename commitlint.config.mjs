@@ -1,6 +1,4 @@
-'use strict';
-
-module.exports = {
+export default {
   extends: ['@commitlint/config-conventional'],
   rules: {
     'body-case': [1, 'always', 'sentence-case'],
