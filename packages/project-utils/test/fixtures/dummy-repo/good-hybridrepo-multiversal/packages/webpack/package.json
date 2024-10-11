@@ -1,0 +1,11 @@
+{
+  "name": "@namespaced/webpack-common-config",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo 'it works!'"
+  },
+  "dependencies": {
+    "@namespaced/pkg": "^1.0.0"
+  }
+}

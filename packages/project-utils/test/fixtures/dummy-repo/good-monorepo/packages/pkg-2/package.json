@@ -1,0 +1,16 @@
+{
+  "name": "@namespaced/pkg",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "bin": {
+    "x": "./dist/x.js",
+    "y": "./dist/y.js",
+    "z": "./dist/z.js"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "test": "echo 'it works!'"
+  }
+}

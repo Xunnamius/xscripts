@@ -1,0 +1,27 @@
+{
+  "name": "@-xun/project",
+  "description": "this file needs to be updated wrt /repos/project-utils/package.json",
+  "version": "0.0.0-faker",
+  "private": true,
+  "// TODO": "we need to make sure babel is an OPTIONAL peer dependency",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./alias": {
+      "types": "./dist/src/alias.d.ts",
+      "default": "./dist/src/alias.js"
+    },
+    "./fs": {
+      "types": "./dist/src/fs.d.ts",
+      "default": "./dist/src/fs/index.js"
+    },
+    "./resolver": {
+      "types": "./dist/src/resolver.d.ts",
+      "default": "./dist/src/resolver/index.js"
+    },
+    "./package": "./package.json",
+    "./package.json": "./package.json"
+  }
+}
