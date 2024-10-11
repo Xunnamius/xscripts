@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable unicorn/no-keyword-prefix */
 import assert from 'node:assert';
 import fs from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, join as joinPath, resolve as resolvePath } from 'node:path';
-
-import { name as pkgName, version as pkgVersion } from 'package';
 
 import glob from 'glob';
 import uniqueFilename from 'unique-filename';
@@ -15,11 +12,124 @@ import 'jest-extended';
 import 'jest-extended/all';
 import { type SimpleGit, simpleGit } from 'simple-git';
 
-import { createDebugLogger, type ExtendedDebugger } from 'multiverse/rejoinder';
-import { run, type RunReturnType } from 'multiverse/run';
+import { createDebugLogger, type ExtendedDebugger } from 'multiverse#rejoinder';
+import { run, type RunReturnType } from 'multiverse#run';
+import { webpackConfigProjectBase } from 'multiverse#project-utils fs/exports/well-known-constants.ts';
 
-import type { Options as ExecaOptions } from 'execa' with { 'resolution-mode': 'import' };
+import { name as pkgName, version as pkgVersion } from '# package.json';
+
 import type { LiteralUnion, Promisable } from 'type-fest';
+import type { Options as ExecaOptions } from 'execa' with { 'resolution-mode': 'import' };
+
+const globalDebug = createDebugLogger({ namespace: `${pkgName}:jest-setup` });
+
+globalDebug(`pkgName: "${pkgName}"`);
+globalDebug(`pkgVersion: "${pkgVersion}"`);
+
+// TODO: all of the stuff in this file needs to go into their own packages
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export declare type AnyFunction = (...args: any[]) => unknown;
+
+export function asMockedFunction<T extends AnyFunction = never>(): jest.MockedFunction<T>;
+export function asMockedFunction<T extends AnyFunction>(fn: T): jest.MockedFunction<T>;
+export function asMockedFunction<T extends AnyFunction>(fn?: T): jest.MockedFunction<T> {
+  return (fn ?? jest.fn()) as unknown as jest.MockedFunction<T>;
+}
+
+/**
+ * This function replaces Jest's `describe`, `test`, and `it` functions in the
+ * current file with `describe.skip`, `test.skip`, and `it.skip` if
+ * `process.env.XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS >= 1`. The replaced functions
+ * also have a `noskip` method which are aliases for their respective original
+ * versions.
+ *
+ * Essentially, this function changes Jest's execution semantics such that all
+ * tests in a given file are skipped by default. Use the `noskip` method to opt
+ * a test into always being run.
+ *
+ * To prevent a file from being executed in its entirety (for example, a test
+ * file with hundreds or thousands of tests that still take a noticeable amount
+ * of time to skip), include the string `-slow.` in the file's name, e.g.
+ * `unit-my-slow.test.ts`, and set
+ * `process.env.XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS >= 2`.
+ */
+// TODO: import jest-specific globals from package instead of using global scope
+// TODO:
+// TODO: provide the declaration file that patches noskip into jest globals in
+// TODO: the published package (probably within the .d.ts file itself)
+export function reconfigureJestGlobalsToSkipTestsInThisFileIfRequested(
+  /**
+   * Determines which Jest globals are targeted for reconfiguration.
+   *
+   * By default, only `describe` is reconfigured while `test` and `it` are left
+   * alone. This makes it easier to apply `noskip` to a collection of tests, but
+   * sometimes it's prudent to reconfigure the other globals as well.
+   */
+  targets?: {
+    /**
+     * @default true
+     */
+    describe?: boolean;
+    /**
+     * @default false
+     */
+    test?: boolean;
+    /**
+     * @default false
+     */
+    it?: boolean;
+  }
+) {
+  const debug = globalDebug.extend('slow-skip');
+
+  const {
+    describe: replaceDescribe = true,
+    test: replaceTest = false,
+    it: replaceIt = false
+  } = targets || {};
+
+  const describe_ = globalThis.describe;
+  const test_ = globalThis.test;
+  const it_ = globalThis.it;
+
+  if (Number(process.env.XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS) >= 1) {
+    if (replaceDescribe) {
+      globalThis.describe = globalThis.describe.skip;
+    }
+
+    if (replaceTest) {
+      globalThis.test = globalThis.test.skip;
+    }
+
+    if (replaceIt) {
+      globalThis.it = globalThis.it.skip;
+    }
+
+    debug(
+      'reconfigured jest global targets (%O) to skip all tests by default: process.env.XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS (%O) >= 1',
+      targets,
+      process.env.XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS
+    );
+  } else {
+    debug(
+      'did not reconfigure jest globals: process.env.XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS (%O) is not >=1',
+      process.env.XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS
+    );
+  }
+
+  globalThis.describe.noskip = describe_;
+  globalThis.test.noskip = test_;
+  globalThis.it.noskip = it_;
+
+  debug('patched in noskip alias to all available targets');
+
+  return {
+    describe: describe_,
+    test: test_,
+    it: it_
+  };
+}
 
 // TODO: automated tests against both Windows and Linux (and for all tooling)
 
@@ -34,11 +144,6 @@ import type { LiteralUnion, Promisable } from 'type-fest';
 
 // TODO: ability to copy entire arbitrary directories recursively into fixture
 // TODO: root
-
-const globalDebug = createDebugLogger({ namespace: `${pkgName}:jest-setup` });
-
-globalDebug(`pkgName: "${pkgName}"`);
-globalDebug(`pkgVersion: "${pkgVersion}"`);
 
 // TODO: XXX: make this into a separate (mock-argv) package (along w/ the below)
 export type MockArgvOptions = {
@@ -738,7 +843,7 @@ export function npmCopySelfFixture(): MockFixture {
     setup: async (context) => {
       const root = resolvePath(__dirname, '..');
 
-      const { files: patterns } = (await import('package')).default;
+      const { files: patterns } = (await import('# package.json')).default;
 
       const sourcePaths = patterns.flatMap((p: string) =>
         glob.sync(p, { cwd: root, root })
@@ -843,8 +948,10 @@ export function webpackTestFixture(): MockFixture {
         throw new Error('could not find initial contents for src/index file');
       }
 
-      if (!context.fileContents['webpack.config.js']) {
-        throw new Error('could not find initial contents for webpack.config.js file');
+      if (!context.fileContents[webpackConfigProjectBase]) {
+        throw new Error(
+          `could not find initial contents for ${webpackConfigProjectBase} file`
+        );
       }
 
       await Promise.all([
@@ -854,8 +961,8 @@ export function webpackTestFixture(): MockFixture {
           context
         }),
         writeFile({
-          path: `${context.root}/webpack.config.js`,
-          data: context.fileContents['webpack.config.js'],
+          path: `${context.root}/${webpackConfigProjectBase}`,
+          data: context.fileContents[webpackConfigProjectBase],
           context
         })
       ]);
