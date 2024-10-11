@@ -1,11 +1,10 @@
 import { CliError, FrameworkExitCode } from '@black-flag/core';
 import mergeWith from 'lodash.mergewith';
 
-import { createDebugLogger } from 'multiverse/rejoinder';
+import { createDebugLogger } from 'multiverse#rejoinder';
 
-import { globalDebuggerNamespace } from 'universe/constant';
-import { ErrorMessage } from 'universe/error';
-import { isNonEmptyString } from 'universe/util';
+import { globalDebuggerNamespace } from 'universe constant.ts';
+import { ErrorMessage } from 'universe error.ts';
 
 import type { EmptyObject, Promisable } from 'type-fest';
 
@@ -88,8 +87,8 @@ export type TransformerResult = Promisable<{
 
 /**
  * Retrieve an asset via its filename. For example, to retrieve an
- * `eslint.config.js` file (the transformer source for which exists in
- * `./config/_eslint.config.js.ts`), pass `"eslint.config.js"` as the `name`
+ * `eslint.config.mjs` file (the transformer source for which exists in
+ * `./config/_eslint.config.mjs.ts`), pass `"eslint.config.mjs"` as the `name`
  * parameter.
  *
  * Throws if no corresponding transformer for `name` can be found.
@@ -168,7 +167,7 @@ export function assertIsExpectedTransformerContext<const U extends string[] = ne
 ) {
   [...(expectedKeys ?? []), ...requiredTransformerContextKeys].forEach((key) => {
     const value = record[key];
-    if (!isNonEmptyString(value)) {
+    if (typeof value !== 'string' || value.length > 0) {
       throw new CliError(ErrorMessage.BadAssetContextKey(key), {
         suggestedExitCode: FrameworkExitCode.AssertionFailed
       });
