@@ -4,18 +4,17 @@ import {
   LogTag,
   logStartTime,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
+import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
-
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { runGlobalPreChecks } from 'universe/util';
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
 export type CustomCliArguments = GlobalCliArguments & {
   // TODO
@@ -25,35 +24,32 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >({
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     // TODO
   });
 
   return {
     builder,
     description: 'Verify project-wide structural compliance with latest best practices',
-    usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName }) {
+    usage: withGlobalUsage(),
+    handler: withGlobalHandler(async function ({ $0: scriptFullName }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
       debug('entered handler');
 
-      await runGlobalPreChecks({ debug_, runtimeContext_ });
+      await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Verifying structural compliance...');
 
       // TODO (ensure all test files have the proper naming convention and are located in the correct place.)
-      // TODO (bring in lint code from projector)
+      // TODO (bring in lint code from the old projector project (plugin-lint I think it was called... see the old "lost" commits for project-utils))
       // TODO (add depcheck package (maybe), browserslist (update caniuse first), attw, and others into the mix)
-      // TODO (test dir cannot appear under src, directly under lib, or under external-scripts)
+      // TODO (test dir cannot appear under src)
       // TODO (latest versions of all files being used, including lint-staged et al)
       // TODO (ensure all imported packages in ./dist/ are in deps; all other package imports are in dev deps; no extraneous entries in deps or dev deps; warn if source deps are different than ./dist/ deps; error if any ./dist/ deps are unresolvable)
       // TODO (lint project structure like no more lib/external-scripts and src/assets becomes packages/assets and src/components becomes packages/components)
@@ -70,10 +66,10 @@ export default function command({
       // TODO (must verify that "repository" url in package.json is correct (see current package.json for an example of it being correct) for provenance reasons)
       // TODO (diff generated config files versus on-disk config files and warn (but don't error) when different)
       // TODO (warn if a remark-link ignore comment exists at the beginning of a Markdown file's references section (means a template was copied incorrectly))
-      // TODO (ensure package.json core-js version matches version in babel.config.js and elsewhere)
+      // TODO (ensure package.json core-js version matches version in babelConfigProjectBase and elsewhere)
       // TODO (also lint the GitHub repository itself, including all its settings (branch protection on main and canary, adding xunn-bot/ergo-bot/nhscc-bot as collabs, disabling wiki/etc, adding sponsorship/funding links and all that, etc) and everything else (check past notes))
       // TODO (allow linting of all github repositories (via GitHub api) to check for various things (ensure repo metadata is correct including correct checkmarks marked and that tags are not missing and that the repo description does not have any of those :emoji: things in them and instead uses real unicode emojis; also ensure dependabot has not been deactivated and warn if it is); see MAINTAINING.md for the details of what is expected)
-      // TODO (similar to the above, allow linting all known owned npm packages (via GitHub and NPM api) to check for various things (ensure published package.json does not contain old-style projector configs, etc); see MAINTAINING.md for the details of what is expected)
+      // TODO (similar to the above, allow linting all known owned npm packages (via GitHub and NPM api) to check for various things (ensure published package.json does not contain deprecated old-style projector configs, etc); see MAINTAINING.md for the details of what is expected)
       // TODO (test/setup.ts must exist, and if it does, it should not export anything; test/index.ts must exist, and it is the place where shared test stuff can go)
       // TODO (types/index file not allowed)
       // TODO (package ids should be alphanumeric only (plus hyphens); this should be enforced by project-utils as well; warn if the package id is longer than 20 characters and give a reason why (it's used in imports and should be shorter for better DX))
@@ -88,6 +84,7 @@ export default function command({
       // TODO (warn when GitHub metadata description lacks an emoji prefix)
       // TODO (ensure private vulnerability reporting and secret scanning are enabled for all GitHub repositories)
       // TODO (ensure x-link references all point to proper places in Markdown docs)
+      // TODO (nested workspaces are not supported)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

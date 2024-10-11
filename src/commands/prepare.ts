@@ -4,19 +4,19 @@ import {
   LogTag,
   logStartTime,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { runWithInheritedIo } from 'multiverse#run';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { fsConstants, isAccessible } from 'multiverse#project-utils fs/index.ts';
+
+import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
-
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-import { runWithInheritedIo } from 'multiverse/run';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { fsConstants, runGlobalPreChecks, isAccessible } from 'universe/util';
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
 export type CustomCliArguments = GlobalCliArguments;
 
@@ -24,24 +24,21 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >();
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>();
 
   return {
     builder,
     description: 'Run relevant project initializations upon initial install',
-    usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName }) {
+    usage: withGlobalUsage(),
+    handler: withGlobalHandler(async function ({ $0: scriptFullName }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
       debug('entered handler');
 
-      await runGlobalPreChecks({ debug_, runtimeContext_ });
+      await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
@@ -57,10 +54,10 @@ export default function command({
       if (!isInCiEnvironment && isInDevelopmentEnvironment) {
         await runWithInheritedIo('npx', ['husky']);
 
-        const hasPostCheckout = await isAccessible(
-          '.husky/post-checkout',
-          fsConstants.R_OK | fsConstants.X_OK
-        );
+        const hasPostCheckout = await isAccessible({
+          path: '.husky/post-checkout',
+          fsConstant: fsConstants.R_OK | fsConstants.X_OK
+        });
 
         if (hasPostCheckout) {
           await runWithInheritedIo('.husky/post-checkout');

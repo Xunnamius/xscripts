@@ -1,26 +1,29 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
-import { LogTag, logStartTime } from 'multiverse/@-xun/cli-utils/logging';
+import { LogTag, logStartTime } from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { runWithInheritedIo } from 'multiverse#run';
+import {
+  gatherProjectFiles,
+  ProjectAttribute,
+  WorkspaceAttribute
+} from 'multiverse#project-utils';
+
+import { ErrorMessage } from 'universe error.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
-
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-import { runWithInheritedIo } from 'multiverse/run';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
-
-import {
-  ProjectMetaAttribute,
-  findMainBinFile,
-  getProjectMetadata,
+  withGlobalBuilder,
+  withGlobalUsage,
   runGlobalPreChecks,
   hasExitCode
-} from 'universe/util';
+} from 'universe util.ts';
+
+import {
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
 export type CustomCliArguments = GlobalCliArguments;
 
@@ -28,26 +31,25 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >((blackFlag) => {
-    blackFlag.strict(false);
-  });
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
+    (blackFlag) => {
+      blackFlag.strict(false);
+    }
+  );
 
   return {
     builder,
     description: 'Run a CLI or deploy a local production environment, if applicable',
-    usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName, _: args_ }) {
+    usage: withGlobalUsage(),
+    handler: withGlobalHandler(async function ({ $0: scriptFullName, _: args_ }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
       debug('entered handler');
 
-      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
+      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
@@ -55,19 +57,38 @@ export default function command({
       const args = args_.map((a) => a.toString());
       debug('additional (passthrough) args: %O', args);
 
-      const { attributes } = await getProjectMetadata(runtimeContext);
-      const mainBinFile = findMainBinFile(runtimeContext);
+      const { attributes } = projectMetadata.project;
+      const {
+        mainBinFiles: { atProjectRoot, atWorkspaceRoot }
+      } = await gatherProjectFiles(projectMetadata);
+
       const passControlMessage = (runtime: string) =>
         `--- control passed to ${runtime} runtime ---`;
 
       try {
-        if (attributes.includes(ProjectMetaAttribute.Cli) && mainBinFile) {
-          genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('CLI'));
-          await runWithInheritedIo(mainBinFile, args);
-        } else if (attributes.includes(ProjectMetaAttribute.Next)) {
+        // ? If we're in a package sub-root, let's see if it's a CLI first
+        if (
+          projectMetadata.package?.attributes[WorkspaceAttribute.Cli] &&
+          atWorkspaceRoot.has(projectMetadata.package.id)
+        ) {
+          genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('CLI (package)'));
+          await runWithInheritedIo(
+            atWorkspaceRoot.get(projectMetadata.package.id)!,
+            args
+          );
+        }
+        // ? Otherwise, check if the project root is a CLI
+        else if (attributes[ProjectAttribute.Cli] && atProjectRoot) {
+          genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('CLI (root)'));
+          await runWithInheritedIo(atProjectRoot, args);
+        }
+        // ? Otherwise, if we're not a CLI, check if we're a Next.js project
+        else if (attributes[ProjectAttribute.Next]) {
           genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
           await runWithInheritedIo('next', ['start', ...args]);
-        } else {
+        }
+        // ? Otherwise, invoking this command makes no sense!
+        else {
           throw new CliError(ErrorMessage.UnsupportedCommand());
         }
       } catch (error) {

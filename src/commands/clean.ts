@@ -5,20 +5,19 @@ import {
   LogTag,
   logStartTime,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { run } from 'multiverse#run';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-import { run } from 'multiverse/run';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
-import { runGlobalPreChecks } from 'universe/util';
+import { ErrorMessage } from 'universe error.ts';
+import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 const matchNothing = '(?!)';
 
@@ -45,12 +44,9 @@ export default function command({
   log,
   debug_,
   state: { startTime },
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >({
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     'exclude-paths': {
       array: true,
       default: defaultCleanExcludedPaths,
@@ -67,10 +63,14 @@ export default function command({
     builder,
     description:
       'Permanently delete paths ignored by or unknown to git (with exceptions)',
-    usage: withStandardUsage(
-      '$1. You must pass `--force` for any deletions to actually take place.\n\nNote that the regular expressions provided via --exclude-paths are computed with the "i" and "u" flags. If you want to pass an empty array to --exclude-paths, use `--exclude-paths \'\'`'
+    usage: withGlobalUsage(
+      `$1.
+
+You must pass \`--force\` for any deletions to actually take place.
+
+Note that the regular expressions provided via --exclude-paths are computed with the "i" and "u" flags. If you want to pass an empty array to --exclude-paths (overwriting the defaults), use \`--exclude-paths ''\``
     ),
-    handler: withStandardHandler(async function ({
+    handler: withGlobalHandler(async function ({
       $0: scriptFullName,
       excludePaths,
       force
@@ -80,7 +80,7 @@ export default function command({
 
       debug('entered handler');
 
-      await runGlobalPreChecks({ debug_, runtimeContext_ });
+      await runGlobalPreChecks({ debug_, projectMetadata_ });
 
       const excludeRegExps = excludePaths.map(
         (path) => new RegExp(path || matchNothing, 'iu')

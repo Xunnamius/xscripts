@@ -4,18 +4,17 @@ import {
   LogTag,
   logStartTime,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
+import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
-
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { runGlobalPreChecks } from 'universe/util';
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
 export type CustomCliArguments = GlobalCliArguments & {
   // TODO
@@ -25,26 +24,23 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >({
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     // TODO
   });
 
   return {
     builder,
     description: 'Create a brand new project from one of several templates',
-    usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName }) {
+    usage: withGlobalUsage(),
+    handler: withGlobalHandler(async function ({ $0: scriptFullName }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
       debug('entered handler');
 
-      await runGlobalPreChecks({ debug_, runtimeContext_ });
+      await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
@@ -64,6 +60,7 @@ export default function command({
       // TODO ("xscripts project init --with-package newMonorepoPackage" which has the ability to turn a polyrepo into a monorepo if it isn't already (also regenerates aliases))
       // TODO (enable private vulnerability reporting and secret scanning for GitHub repositories)
       // TODO (each project gets its own personal GPG key added to the appropriate account automatically upon creation)
+      // TODO (need to handle assetverse aliasing concerns (example in quiz-euphoriareign))
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

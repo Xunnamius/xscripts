@@ -4,18 +4,17 @@ import {
   LogTag,
   logStartTime,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
+import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
-
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { runGlobalPreChecks } from 'universe/util';
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
 const frontmatter = `\n⮞  `;
 
@@ -27,12 +26,9 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >({
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     full: {
       boolean: true,
       description: 'List all tasks along with their implementation code',
@@ -43,14 +39,14 @@ export default function command({
   return {
     builder,
     description: 'List all tasks (typically NPM scripts) supported by this project',
-    usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName, full }) {
+    usage: withGlobalUsage(),
+    handler: withGlobalHandler(async function ({ $0: scriptFullName, full }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
       debug('entered handler');
 
-      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
+      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
@@ -58,15 +54,15 @@ export default function command({
       genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
       const {
-        context,
+        type,
         project: { json: rootPkgJson, packages: packages_ }
-      } = runtimeContext;
+      } = projectMetadata;
 
       const workspacePkgsJson = Array.from(packages_?.values() ?? []).map(
         ({ json }) => json
       );
 
-      debug('run context: %O', context);
+      debug('run context: %O', type);
       debug('root package.json contents: %O', rootPkgJson);
       debug('workspaces package json contents: %O', workspacePkgsJson);
 

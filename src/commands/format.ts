@@ -8,29 +8,33 @@ import {
   LogTag,
   logStartTime,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { hardAssert, softAssert } from 'multiverse#cli-utils error.ts';
+import { gatherProjectFiles } from 'multiverse#project-utils';
+import {
+  deriveVirtualPrettierignoreLines,
+  remarkConfigProjectBase
+} from 'multiverse#project-utils fs/index.ts';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { $artificiallyInvoked } from 'multiverse#bfe symbols.ts';
+import { SHORT_TAB } from 'multiverse#rejoinder';
+import { run } from 'multiverse#run';
+
+import { ErrorMessage } from 'universe error.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
-
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-import { SHORT_TAB } from 'multiverse/rejoinder';
-import { run } from 'multiverse/run';
-import { softAssert } from 'multiverse/@-xun/cli-utils/error';
-import { $artificiallyInvoked } from 'multiverse/@black-flag/extensions/symbols';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
-
-import {
-  checkChoicesNotEmpty,
-  deriveVirtualPrettierIgnoreLines,
-  findProjectFiles,
+  checkArrayNotEmpty,
+  withGlobalBuilder,
+  withGlobalUsage,
   runGlobalPreChecks
-} from 'universe/util';
+} from 'universe util.ts';
+
+import {
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
 export type CustomCliArguments = GlobalCliArguments & {
   renumberReferences: boolean;
@@ -46,12 +50,9 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >({
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     'renumber-references': {
       boolean: true,
       description: 'Run the renumber-references plugin when formatting Markdown files',
@@ -65,15 +66,15 @@ export default function command({
     'skip-unknown': {
       boolean: true,
       description: 'Ignore files unknown to git',
+      implies: { 'skip-ignored': true },
       default: false
     },
     files: {
       array: true,
       description:
         'Only consider files (or globs) given via --files instead of scanning the filesystem',
-      check: checkChoicesNotEmpty('--files')
+      check: checkArrayNotEmpty('--files')
     },
-    // TODO: perhaps use the enum based target selection instead of "only" logic
     'only-package-json': {
       boolean: true,
       description: 'Only target package.json files for formatting',
@@ -100,10 +101,14 @@ export default function command({
   return {
     builder,
     description: 'Run formatters (e.g. prettier, remark) across all relevant files',
-    usage: withStandardUsage(
-      '$1.\n\nNote that .prettierignore is used as the single source of truth for which Markdown files are and are not ignored when formatters are run. To prevent a file from being formatted by any formatter (including remark), add it to .prettierignore. To disregard .prettierignore when formatters are run, use --no-skip-ignored.\n\nWith respect to .prettierignore being the single source of truth for formatters: note that remark is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format", .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by "xscripts format".'
+    usage: withGlobalUsage(
+      `$1.
+
+Note that .prettierignore is used as the single source of truth for which Markdown files are and are not ignored when formatters are run. To prevent a file from being formatted by any formatter (including remark), add it to .prettierignore. To disregard .prettierignore when formatters are run, use --no-skip-ignored.
+
+With respect to .prettierignore being the single source of truth for formatters: note that remark is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format", .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by "xscripts format".`
     ),
-    handler: withStandardHandler(async function ({
+    handler: withGlobalHandler(async function ({
       [$artificiallyInvoked]: wasArtificiallyInvoked,
       $0: scriptFullName,
       renumberReferences,
@@ -121,7 +126,7 @@ export default function command({
 
       debug('entered handler');
 
-      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
+      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
@@ -135,21 +140,23 @@ export default function command({
       debug('onlyMarkdown: %O', onlyMarkdown);
       debug('onlyPrettier: %O', onlyPrettier);
 
-      let sawMdFilesOutsideProjectRoot = false as boolean;
+      let sawMarkdownFilesOutsideProjectRoot = false as boolean;
 
       const {
         project: { root: rootDir }
-      } = runtimeContext;
+      } = projectMetadata;
 
-      const {
-        mdFiles,
-        pkgFiles: { root: rootPkgFile, workspaces: workspacePkgFiles }
-      } = await (async () => {
+      const [allMarkdownFiles, allPackageJsonFiles] = await (async (): Promise<
+        [string[], string[]]
+      > => {
         if (files) {
           debug('using --files as targets');
 
           const ignore = skipIgnored
-            ? await deriveVirtualPrettierIgnoreLines(rootDir, skipUnknown)
+            ? await deriveVirtualPrettierignoreLines({
+                projectRoot: rootDir,
+                includeUnknownPaths: skipUnknown
+              })
             : [];
 
           debug('virtual .prettierignore lines: %O', ignore);
@@ -176,38 +183,45 @@ export default function command({
 
           debug('files (post-glob): %O', files);
 
-          const [mdFiles, workspaces] = await Promise.all([
-            files.filter((path) => path.endsWith('.md')),
-            files.filter((path) => path.endsWith('/package.json'))
-          ]);
+          const markdownFiles = files.filter((path) => path.endsWith('.md'));
+          const packageJsonFiles = files.filter((path) => path.endsWith('/package.json'));
 
           if (sawFilesOutsideProjectRoot) {
-            sawMdFilesOutsideProjectRoot = mdFiles.some(
+            sawMarkdownFilesOutsideProjectRoot = markdownFiles.some(
               (mdPath) => !mdPath.startsWith(rootDir)
             );
           }
 
-          debug('sawMdFilesOutsideProjectRoot: %O', sawMdFilesOutsideProjectRoot);
+          debug(
+            'sawMarkdownFilesOutsideProjectRoot: %O',
+            sawMarkdownFilesOutsideProjectRoot
+          );
 
-          return {
-            mdFiles,
-            pkgFiles: { root: '', workspaces }
-          };
+          return [markdownFiles, packageJsonFiles];
         } else {
           debug('running generic project filesystem scan');
-          return findProjectFiles(runtimeContext, { skipIgnored, skipUnknown });
+          hardAssert(skipIgnored || !skipUnknown, ErrorMessage.BadSkipArgs());
+
+          const {
+            markdownFiles: { all: allMarkdownFiles },
+            packageJsonFiles: { atAnyRoot: allPackageJsonFiles }
+          } = await gatherProjectFiles(projectMetadata, {
+            skipIgnored,
+            skipUnknown
+            // ? We can safely cast this thanks to the hard assert above
+          } as Parameters<typeof gatherProjectFiles>[1]);
+
+          return [allMarkdownFiles, allPackageJsonFiles];
         }
       })();
 
-      const allPkgFiles = rootPkgFile
-        ? [rootPkgFile, ...workspacePkgFiles]
-        : workspacePkgFiles;
+      debug('allMarkdownFiles: %O', allMarkdownFiles);
+      debug('allPackageJsonFiles: %O', allPackageJsonFiles);
 
-      debug('mdFiles: %O', mdFiles);
-      debug('allPkgFiles: %O', allPkgFiles);
-
-      const shouldDoPkgJson = !onlyMarkdown && !onlyPrettier && allPkgFiles.length > 0;
-      const shouldDoMarkdown = !onlyPackageJson && !onlyPrettier && mdFiles.length > 0;
+      const shouldDoPkgJson =
+        !onlyMarkdown && !onlyPrettier && allPackageJsonFiles.length > 0;
+      const shouldDoMarkdown =
+        !onlyPackageJson && !onlyPrettier && allMarkdownFiles.length > 0;
       const shouldDoPrettier = !onlyPackageJson && !onlyMarkdown;
 
       debug('shouldDoPkgJson: %O', shouldDoPkgJson);
@@ -232,7 +246,7 @@ export default function command({
               '--no-ignore',
               '--ignore-pattern',
               'docs',
-              ...mdFiles
+              ...allMarkdownFiles
             ],
             {
               stdout: isHushed ? 'ignore' : 'inherit',
@@ -267,10 +281,12 @@ export default function command({
         }
 
         const sortedPkgJsonFiles = shouldDoPkgJson
-          ? run('npx', ['sort-package-json', ...allPkgFiles]).catch((error: unknown) => {
-              status.sort = false;
-              throw error;
-            })
+          ? run('npx', ['sort-package-json', ...allPackageJsonFiles]).catch(
+              (error: unknown) => {
+                status.sort = false;
+                throw error;
+              }
+            )
           : Promise.resolve();
 
         if (shouldDoMarkdown) {
@@ -280,7 +296,14 @@ export default function command({
 
           await run(
             'npx',
-            ['doctoc', '--no-title', '--maxlevel', '3', '--update-only', ...mdFiles],
+            [
+              'doctoc',
+              '--no-title',
+              '--maxlevel',
+              '3',
+              '--update-only',
+              ...allMarkdownFiles
+            ],
             {
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
@@ -295,7 +318,7 @@ export default function command({
           const rootReadmeFile = `${rootDir}/README.md`;
           debug('rootReadmeFile: %O', rootReadmeFile);
 
-          if (mdFiles.includes(rootReadmeFile)) {
+          if (allMarkdownFiles.includes(rootReadmeFile)) {
             status.allContrib = null;
 
             await run(
@@ -316,13 +339,13 @@ export default function command({
             status.allContrib = true;
           } else {
             debug(
-              'skipped regenerating all-contributors table: rootReadmeFile path not in mdFiles'
+              'skipped regenerating all-contributors table: rootReadmeFile path not in markdownFiles'
             );
           }
 
           status.remark = null;
 
-          if (sawMdFilesOutsideProjectRoot && !wasArtificiallyInvoked) {
+          if (sawMarkdownFilesOutsideProjectRoot && !wasArtificiallyInvoked) {
             log.newline([LogTag.IF_NOT_SILENCED]);
 
             log.warn(
@@ -344,15 +367,15 @@ export default function command({
               '--silently-ignore',
               // ? This allows us to rely on remark's config search which the
               // ? --rc-path parameter seems to disable
-              ...(sawMdFilesOutsideProjectRoot
-                ? [`--rc-path=${rootDir}/.remarkrc.mjs`]
+              ...(sawMarkdownFilesOutsideProjectRoot
+                ? [`--rc-path=${rootDir}/${remarkConfigProjectBase}`]
                 : []),
-              ...mdFiles
+              ...allMarkdownFiles
             ],
             {
               env: {
                 NODE_ENV: 'format',
-                SHOULD_RENUMBER_REFERENCES: renumberReferences.toString()
+                XSCRIPTS_FORMAT_RENUMBER_REFERENCES: renumberReferences.toString()
               },
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
@@ -410,9 +433,9 @@ export default function command({
       genericLogger(
         [LogTag.IF_NOT_SILENCED],
         [
-          `${shouldDoPkgJson ? 'Processed' : 'Encountered'} package.json files: ${allPkgFiles.length}`,
+          `${shouldDoPkgJson ? 'Processed' : 'Encountered'} package.json files: ${allPackageJsonFiles.length}`,
           `${SHORT_TAB}Sorted file contents: ${statusToEmoji(status.sort)}`,
-          `${shouldDoMarkdown ? 'Processed' : 'Encountered'} markdown files${skipIgnored ? '' : ' (no files ignored)'}: ${mdFiles.length}`,
+          `${shouldDoMarkdown ? 'Processed' : 'Encountered'} markdown files${skipIgnored ? '' : ' (no files ignored)'}: ${allMarkdownFiles.length}`,
           `${SHORT_TAB}Synchronized TOCs: ${statusToEmoji(status.doctoc)}`,
           `${SHORT_TAB}Regenerated contributor table: ${statusToEmoji(status.allContrib)}`,
           `${SHORT_TAB}Reformatted files: ${statusToEmoji(status.remark)}`,

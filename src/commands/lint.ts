@@ -1,29 +1,41 @@
+import { resolve as toAbsolutePath, join as joinPath } from 'node:path';
+
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import {
   logStartTime,
   LogTag,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
+  type AbsolutePath,
+  isAccessible,
+  readJsonc,
+  Tsconfig
+} from 'multiverse#project-utils fs/index.ts';
 
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-import { runNoRejectOnBadExit, type run, type Subprocess } from 'multiverse/run';
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { hardAssert } from 'multiverse#cli-utils error.ts';
+import { gatherProjectFiles, type ProjectMetadata } from 'multiverse#project-utils';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { runNoRejectOnBadExit, type run, type Subprocess } from 'multiverse#run';
 
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
+import { ErrorMessage } from 'universe error.ts';
+
+import {
+  GlobalScope,
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
 import {
   checkAllChoiceIfGivenIsByItself,
-  checkChoicesNotEmpty,
-  findProjectFiles,
+  checkArrayNotEmpty,
+  withGlobalBuilder,
+  withGlobalUsage,
   runGlobalPreChecks
-} from 'universe/util';
+} from 'universe util.ts';
 
 export enum Linter {
   Tsc = 'tsc',
@@ -32,28 +44,57 @@ export enum Linter {
   All = 'all'
 }
 
+enum LinterScope_ {
+  /**
+   * Limit the command to _source_ files contained within the current package
+   * (as determined by the current working directory), excluding non-source
+   * files and the files of any other (named) workspace packages. "Source files"
+   * includes Markdown files.
+   *
+   * This is the default scope for the `lint` command.
+   */
+  ThisPackageSource = 'this-package-source',
+  /**
+   * Do not limit or exclude any _source_ files by default when running the
+   * command. "Source files" includes Markdown files.
+   *
+   * This is useful, for instance, when attempting to manually lint an entire
+   * monorepo's source files at once; e.g. `npx xscripts lint
+   * --scope=unlimited-source`.
+   */
+  UnlimitedSource = 'unlimited-source'
+}
+
+/**
+ * The context in which to search for files to lint.
+ */
+export type LinterScope = GlobalScope | LinterScope_;
+/**
+ * The context in which to search for files to lint.
+ */
+export const LinterScope = { ...GlobalScope, ...LinterScope_ } as const;
+
 export const linters = Object.values(Linter);
+export const linterScopes = Object.values(LinterScope);
 
-export const limitedScopeDirectories = ['types', 'lib', 'src', 'external-scripts'];
-
-export type CustomCliArguments = GlobalCliArguments & {
+export type CustomCliArguments = Omit<GlobalCliArguments, 'scope'> & {
   linter: Linter[];
-  scope: 'limited' | 'all';
+  scope: LinterScope;
   remarkSkipIgnored: boolean;
   ignoreWarnings: boolean;
+  allowWarningComments: boolean;
   runToCompletion: boolean;
 };
 
-export default function command({
+export default async function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >({
+  const defaultScope = await determineDefaultScope();
+
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     linter: {
       alias: 'linters',
       array: true,
@@ -61,14 +102,15 @@ export default function command({
       description: 'Which linters to run',
       default: [Linter.All],
       check: [
-        checkChoicesNotEmpty('--linter'),
+        checkArrayNotEmpty('--linter'),
         checkAllChoiceIfGivenIsByItself(Linter.All, 'linter value')
       ]
     },
     scope: {
-      choices: ['limited', 'all'],
-      description: 'Limit linting to transpilation targets or include all source files',
-      default: 'limited'
+      string: true,
+      choices: linterScopes,
+      description: 'Which files to lint',
+      default: defaultScope
     },
     'remark-skip-ignored': {
       boolean: true,
@@ -84,21 +126,42 @@ export default function command({
       boolean: true,
       description: 'Ignore linter warnings (and tsc errors) but not errors',
       default: false
+    },
+    'allow-warning-comments': {
+      boolean: true,
+      description: 'Do not trigger linter warnings for "TODO"-style comments',
+      default: true
     }
   });
 
   return {
     builder,
     description: 'Run linters (e.g. eslint, remark) across all relevant files',
-    usage: withStandardUsage(
-      `$1.\n\nPassing --scope=limited will exclude from linting (by eslint) all files that are not under the following directories: ${limitedScopeDirectories.join(', ')}. For tsc, the scope of linted files is always determined by the "includes" and "excludes" directives in the relevant tsconfig file.\n\nNote that remark is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format", .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by "xscripts format".`
+    usage: withGlobalUsage(
+      `$1.
+
+Passing \`--scope=${LinterScope.ThisPackage}\` will lint all files in the package (determined by ./${Tsconfig.PackageLintUnlimited}), including any Markdown files. Passing \`--scope=${LinterScope.ThisPackageSource}\` will lint all _source_ files (determined by ./${Tsconfig.PackageLintSource}) and all Markdown files in the package. Passing \`--scope=${LinterScope.Unlimited}\` will lint all possible files under the package root (determined by ./${Tsconfig.ProjectLintUnlimited} or ./${Tsconfig.PackageLintUnlimited}) even if they belong to another package. Passing \`--scope=${LinterScope.UnlimitedSource}\` will lint all possible _source_ files (determined by ./${Tsconfig.ProjectLintSource} or ./${Tsconfig.PackageLintSource}), including any Markdown files, under the package root even if they belong to another package.
+
+The default value for --scope is determined by the first of the following tsconfig files that exists in the current working directory:
+
+  - ./${scopeToTsconfigFilePath(LinterScope.ThisPackageSource)} (${LinterScope.ThisPackageSource})
+  - ./${scopeToTsconfigFilePath(LinterScope.UnlimitedSource)} (${LinterScope.UnlimitedSource})
+  - ./${scopeToTsconfigFilePath(LinterScope.ThisPackage)} (${LinterScope.ThisPackage})
+  - ./${scopeToTsconfigFilePath(LinterScope.Unlimited)} (${LinterScope.Unlimited})
+
+The default value for --scope in the current project is${defaultScope ? `: ${defaultScope}` : ' not resolvable (xscripts seems not to be running in a project repository)'}.
+
+Note that the remark linter is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format", .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by "xscripts format".
+
+Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS environment variable in the testing environment. This will be picked up by linters, causing them to ignore any warning comments.`
     ),
-    handler: withStandardHandler(async function ({
+    handler: withGlobalHandler(async function ({
       $0: scriptFullName,
       linter: linters,
       scope,
       remarkSkipIgnored: skipIgnored,
       ignoreWarnings,
+      allowWarningComments,
       runToCompletion,
       hush: isHushed,
       quiet: isQuieted
@@ -108,7 +171,7 @@ export default function command({
 
       debug('entered handler');
 
-      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
+      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
@@ -118,27 +181,20 @@ export default function command({
       debug('scope: %O', scope);
       debug('skipIgnored: %O', skipIgnored);
       debug('ignoreWarnings: %O', ignoreWarnings);
+      debug('allowWarningComments: %O', allowWarningComments);
       debug('runToCompletion: %O', runToCompletion);
 
       let aborted = false;
       let firstOutput = true;
       let hadOutput = false as boolean;
 
-      const {
-        project: {
-          // ? This does NOT end in a slash and this must be taken into account!
-          root: rootDir
-        }
-      } = runtimeContext;
-
-      debug('rootDir: %O', rootDir);
-
       const allLinters = linters.includes(Linter.All);
       debug('allLinters: %O', allLinters);
 
-      // ? Widen the aperture to all lintable files if it is demanded
-      const tsconfigFilePath =
-        scope === 'all' ? `tsconfig.eslint.json` : `tsconfig.lint.json`;
+      const tsconfigFilePath = scopeToTsconfigFilePath(
+        scope,
+        projectMetadata
+      ) as AbsolutePath;
 
       debug('tsconfigFilePath: %O', tsconfigFilePath);
 
@@ -146,7 +202,7 @@ export default function command({
       const linterSubprocesses: Subprocess[] = [];
 
       if (allLinters || linters.includes(Linter.Tsc)) {
-        debug(ignoreWarnings ? 'running tsc (ignoring errors)' : 'running tsc');
+        debug(ignoreWarnings ? 'running tsc (ignoring bad exit code)' : 'running tsc');
         promisedLinters.push(
           // ! tsc must always be the first linter in the promisedLinters array
           runLinter('npx', ['tsc', '--pretty', '--project', tsconfigFilePath])
@@ -154,22 +210,65 @@ export default function command({
       }
 
       if (allLinters || linters.includes(Linter.Eslint)) {
-        debug('running eslint');
+        debug(
+          ignoreWarnings ? 'running eslint (ignoring warnings only)' : 'running eslint'
+        );
+
+        const { exclude: excludePatterns = [], include: includePatterns = [] } =
+          await readJsonc<{ include?: string[]; exclude?: string[] }>({
+            path: tsconfigFilePath
+          });
+
+        debug('tsconfig include patterns: %O', includePatterns);
+        debug('tsconfig exclude patterns: %O', excludePatterns);
+
         promisedLinters.push(
-          runLinter('npx', [
-            'eslint',
-            '--color',
-            `--parser-options=project:${tsconfigFilePath}`,
-            '--no-error-on-unmatched-pattern',
-            ...(ignoreWarnings ? [] : ['--max-warnings=0']),
-            ...(scope === 'all' ? ['.'] : limitedScopeDirectories)
-          ])
+          runLinter(
+            'npx',
+            [
+              'eslint',
+              '--color',
+              `--parser-options=project:${tsconfigFilePath}`,
+              '--no-error-on-unmatched-pattern',
+              '--no-warn-ignored',
+              ...(ignoreWarnings ? [] : ['--max-warnings=0']),
+              ...excludePatterns.map((pattern) => `--ignore-pattern=${pattern}`),
+              ...(scope === LinterScope.ThisPackageSource ||
+              scope === LinterScope.UnlimitedSource
+                ? includePatterns
+                : ['.'])
+            ],
+            {
+              env: {
+                XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS: allowWarningComments.toString()
+              }
+            }
+          )
         );
       }
 
       if (allLinters || linters.includes(Linter.Remark)) {
-        debug('running remark');
-        const { mdFiles } = await findProjectFiles(runtimeContext, { skipIgnored });
+        debug(
+          ignoreWarnings ? 'running remark (ignoring warnings only)' : 'running remark'
+        );
+
+        const {
+          markdownFiles: {
+            all: allMarkdownFiles,
+            inRoot: rootMarkdownFiles,
+            inWorkspace: perPackageMarkdownFiles
+          }
+        } = await gatherProjectFiles(projectMetadata, { skipIgnored });
+
+        const isCwdTheProjectRoot = projectMetadata.package === undefined;
+        const targetFiles =
+          scope === LinterScope.Unlimited || scope === LinterScope.UnlimitedSource
+            ? allMarkdownFiles
+            : isCwdTheProjectRoot
+              ? rootMarkdownFiles
+              : perPackageMarkdownFiles.get(projectMetadata.package!.id);
+
+        hardAssert(targetFiles, ErrorMessage.GuruMeditation());
 
         promisedLinters.push(
           runLinter(
@@ -182,10 +281,13 @@ export default function command({
               '--no-stdout',
               '--ignore',
               '--silently-ignore',
-              ...mdFiles
+              ...targetFiles
             ],
             {
-              env: { NODE_ENV: 'lint' }
+              env: {
+                NODE_ENV: 'lint',
+                XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS: allowWarningComments.toString()
+              }
             }
           )
         );
@@ -200,6 +302,7 @@ export default function command({
 
         if (
           results.some((result, index) => {
+            // ? This logic relies on tsc being the first linter in the results!
             return result.status !== 'fulfilled' && (index !== 0 || !ignoreWarnings);
           })
         ) {
@@ -267,4 +370,59 @@ export default function command({
       }
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
+
+  async function determineDefaultScope(): Promise<LinterScope | undefined> {
+    if (projectMetadata_) {
+      const {
+        package: { root: packageRoot } = {},
+        project: { root: projectRoot }
+      } = projectMetadata_;
+
+      const root = packageRoot || projectRoot;
+
+      if (await isAccessible({ path: `${root}/${Tsconfig.PackageLintSource}` })) {
+        return LinterScope.ThisPackageSource;
+      }
+
+      if (await isAccessible({ path: `${root}/${Tsconfig.ProjectLintSource}` })) {
+        return LinterScope.UnlimitedSource;
+      }
+
+      if (await isAccessible({ path: `${root}/${Tsconfig.PackageLintUnlimited}` })) {
+        return LinterScope.ThisPackage;
+      }
+
+      if (await isAccessible({ path: `${root}/${Tsconfig.ProjectLintUnlimited}` })) {
+        return LinterScope.Unlimited;
+      }
+    }
+
+    return undefined;
+  }
+
+  function scopeToTsconfigFilePath(
+    scope: LinterScope | undefined,
+    /**
+     * If undefined, returned paths will be relative instead of absolute!
+     */
+    projectMetadata?: ProjectMetadata
+  ) {
+    return scope === LinterScope.ThisPackageSource
+      ? fromCwdRoot(Tsconfig.PackageLintSource, projectMetadata)
+      : scope === LinterScope.ThisPackage
+        ? fromCwdRoot(Tsconfig.PackageLintUnlimited, projectMetadata)
+        : scope === LinterScope.UnlimitedSource
+          ? fromProjectRoot(Tsconfig.ProjectLintSource, projectMetadata)
+          : scope === LinterScope.Unlimited
+            ? fromProjectRoot(Tsconfig.ProjectLintUnlimited, projectMetadata)
+            : fromProjectRoot(Tsconfig.ProjectBase, projectMetadata);
+  }
+
+  function fromProjectRoot(path: string, projectMetadata: ProjectMetadata | undefined) {
+    return projectMetadata ? joinPath(projectMetadata.project.root, path) : path;
+  }
+
+  function fromCwdRoot(path: string, projectMetadata: ProjectMetadata | undefined) {
+    return projectMetadata ? toAbsolutePath(path) : path;
+  }
 }

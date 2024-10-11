@@ -6,26 +6,27 @@ import {
   LogTag,
   logStartTime,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
+
+import { softAssert } from 'multiverse#cli-utils error.ts';
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { ProjectAttribute } from 'multiverse#project-utils';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { run } from 'multiverse#run';
+
+import { ErrorMessage } from 'universe error.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
-import { softAssert } from 'multiverse/@-xun/cli-utils/error';
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-import { run } from 'multiverse/run';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
 import {
-  ProjectMetaAttribute,
   checkIsNotNil,
-  getProjectMetadata,
+  withGlobalBuilder,
+  withGlobalUsage,
   runGlobalPreChecks
-} from 'universe/util';
+} from 'universe util.ts';
 
 export enum DeployTarget {
   Vercel = 'vercel',
@@ -55,13 +56,11 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >({
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     target: {
+      string: true,
       description: 'Select deployment target and strategy',
       demandThisOption: true,
       choices: deployTargets,
@@ -202,34 +201,33 @@ export default function command({
   return {
     builder,
     description: 'Deploy distributes to the appropriate remote',
-    usage: withStandardUsage(
-      [
-        '$1.\n\nWhen using --target=ssh, it is assumed the key pair necessary to authenticate with',
-        '--host is available in the environment. This command will fail if authenticating to --host requires a password or other user input.'
-      ].join(' ')
+    usage: withGlobalUsage(
+      `$1.
+
+When using --target=ssh, it is assumed the key pair necessary to authenticate with --host is available in the environment. This command will fail if authenticating to --host requires a password or other user input.`
     ),
-    handler: withStandardHandler(async function (argv) {
+    handler: withGlobalHandler(async function (argv) {
       const { $0: scriptFullName, target, bumpVersion } = argv;
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
       debug('entered handler');
 
-      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
+      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Deploying project...');
 
-      const { attributes } = await getProjectMetadata(runtimeContext);
+      const { attributes } = projectMetadata.project;
       const deployMessage = (deployTarget: string) =>
         `Deploying distributables to ${deployTarget} target...`;
 
       switch (target) {
         case DeployTarget.Vercel: {
           softAssert(
-            attributes.includes(ProjectMetaAttribute.Vercel),
-            ErrorMessage.WrongProjectAttributes([ProjectMetaAttribute.Vercel], attributes)
+            attributes[ProjectAttribute.Vercel],
+            ErrorMessage.WrongProjectAttributes([ProjectAttribute.Vercel], attributes)
           );
 
           const { production, preview, previewUrl } = argv;

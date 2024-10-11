@@ -1,25 +1,25 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
-import { LogTag, logStartTime } from 'multiverse/@-xun/cli-utils/logging';
+import { LogTag, logStartTime } from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { ProjectAttribute } from 'multiverse#project-utils';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { run, runWithInheritedIo } from 'multiverse#run';
+
+import { ErrorMessage } from 'universe error.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
-
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-import { run, runWithInheritedIo } from 'multiverse/run';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { ErrorMessage } from 'universe/error';
-
-import {
-  ProjectMetaAttribute,
-  getProjectMetadata,
+  withGlobalBuilder,
+  withGlobalUsage,
   runGlobalPreChecks,
   hasExitCode
-} from 'universe/util';
+} from 'universe util.ts';
+
+import {
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
 export type CustomCliArguments = GlobalCliArguments;
 
@@ -27,30 +27,27 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >();
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>();
 
   return {
     builder,
     description: 'Deploy a local development environment, if applicable',
-    usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName }) {
+    usage: withGlobalUsage(),
+    handler: withGlobalHandler(async function ({ $0: scriptFullName }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
       debug('entered handler');
 
-      const { runtimeContext } = await runGlobalPreChecks({ debug_, runtimeContext_ });
+      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Running project dev tools...');
 
-      const { attributes } = await getProjectMetadata(runtimeContext);
+      const { attributes } = projectMetadata.project;
       const passControlMessage = (runtime: string) =>
         `--- control passed to ${runtime} runtime ---`;
 
@@ -63,11 +60,11 @@ export default function command({
       };
 
       try {
-        if (attributes.includes(ProjectMetaAttribute.Next)) {
+        if (attributes[ProjectAttribute.Next]) {
           const port = await acquirePort();
           genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
-          await runWithInheritedIo(ProjectMetaAttribute.Next, ['-p', port]);
-        } else if (attributes.includes(ProjectMetaAttribute.Webpack)) {
+          await runWithInheritedIo(ProjectAttribute.Next, ['-p', port]);
+        } else if (attributes[ProjectAttribute.Webpack]) {
           const port = await acquirePort();
 
           genericLogger(

@@ -1,15 +1,14 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
 
-import { withStandardUsage } from 'multiverse/@-xun/cli-utils/extensions';
-
-import { type GlobalExecutionContext } from 'universe/configure';
+import { withGlobalUsage } from 'universe util.ts';
+import { type GlobalExecutionContext } from 'universe configure.ts';
 
 import {
   default as projectInfo,
   type CustomCliArguments
-} from 'universe/commands/project/info';
+} from 'universe commands/project/info.ts';
 
 export type { CustomCliArguments };
 
@@ -20,7 +19,7 @@ export default function command(
     ...projectInfo(globalExecutionContext),
     aliases: [],
     description: 'Manage project-wide concerns',
-    usage: withStandardUsage(
+    usage: withGlobalUsage(
       `This command is a direct alias for "xscripts project info". See that command's help text for more information.`
     )
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;

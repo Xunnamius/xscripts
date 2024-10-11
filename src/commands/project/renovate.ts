@@ -4,18 +4,17 @@ import {
   LogTag,
   logStartTime,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
+import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
-
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { runGlobalPreChecks } from 'universe/util';
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
 export type CustomCliArguments = GlobalCliArguments & {
   // TODO
@@ -25,37 +24,34 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >({
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     // TODO
   });
 
   return {
     builder,
     description: 'Bring a project into compliance with latest best practices',
-    usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName }) {
+    usage: withGlobalUsage(),
+    handler: withGlobalHandler(async function ({ $0: scriptFullName }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
       debug('entered handler');
 
-      await runGlobalPreChecks({ debug_, runtimeContext_ });
+      await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Renovating project...');
 
-      // TODO (like init, can generate missing configs and doesn't overwrite existing configs)
       // TODO (is idempotent)
-      // TODO (--interactive to trigger an interactive fix of anything from project lint that is fixable (also offer to overwrite/replace, merge, etc; similar to apt))
-      // TODO: (needs to delete the remark-link ignore comment from all Markdown files coming from src/assets/template)
-      // TODO (--deprecate and --undeprecate to automate deprecation and undeprecation process described in "project lint")
-      // TODO (--regenerate-aliases to (re)generate project aliases)
+      // TODO (like init, can generate missing configs and doesn't overwrite existing configs)
+      // TODO (--interactive (default) to trigger an interactive fix of anything from project lint that is fixable (also offer to overwrite/replace, merge, etc; similar to apt) or --no-interactive to do the same but fail if any problem is not automatically resolvable; can also call --no-interactive --force to do the same but force through any changes and overwrite existing configs without regard for their contents (SUPER DANGEROUS))
+      // TODO (does nothing if called without at least one "Task Options" (make a new black flag grouping) argument; i.e. must specify each thing that you want done, or specify --strategy X)
+      // TODO (--strategy X where X can be one of: modernize (run tasks that bring the repo up to date, , deprecate (automate deprecation described in docs), undeprecate (opposite of "deprecate"))
+      // TODO (--regenerate-aliases to (re)generate project aliases; also has the sub-option --with-alias X:Y which defines a new base alias (aliases cannot contain colons or dollar signs); use custom babel plugin @-xun/scripts/babel-plugin-renovate to apply renovations by looking for statements prefixed with @renovate block comments)
       //
       // TODO: Automatically update project dependencies in an xo-like way
       // TODO: unless --no-dependency-updates passed (--dependency-updates=true
@@ -70,6 +66,7 @@ export default function command({
       //
       // TODO (--clone-remote-wiki to clone the GitHub wiki (if it exists) into .wiki, reconfigure the local branch from master to main)
       // TODO (--regenerate-gpg-key regenerates the project-specific GPG key and automatically find and delete the old one from the appropriate account, all automatically)
+      // TODO (need to handle assetverse aliasing concerns (example in quiz-euphoriareign))
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

@@ -4,18 +4,17 @@ import {
   LogTag,
   logStartTime,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
+import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
-
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { runGlobalPreChecks } from 'universe/util';
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
 export type CustomCliArguments = GlobalCliArguments;
 
@@ -23,31 +22,29 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >({
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     // TODO
   });
 
   return {
     builder,
     description: 'Pack and release existing production-ready distributables',
-    usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({ $0: scriptFullName }) {
+    usage: withGlobalUsage(),
+    handler: withGlobalHandler(async function ({ $0: scriptFullName }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
       debug('entered handler');
 
-      await runGlobalPreChecks({ debug_, runtimeContext_ });
+      await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Releasing project...');
 
+      // TODO (leave turbo's tasks to turbo, only focus on releasing!)
       // TODO (skip reinstalling node_modules if dir exists unless --force-reinstall)
       // TODO (run "early lint" first, then "late lint" (that checks all prod deps resolvable, no extraneous deps or dev deps, no missing deps) after build completes)
       // TODO (need flag for updating changelog or not updating changelog that also is compat with XSCRIPTS_RELEASE_UPDATE_CHANGELOG)
@@ -59,8 +56,10 @@ export default function command({
       // TODO (check early that all required environment variables are defined and valid)
       // TODO (ensure simultaneous releases are supported)
       // TODO (--codecov-flags to determine which flags to send to codecov when uploading test results)
-      // TODO (configure this command by configuring the appropriate npm scripts at the expected "well-known" names)
+      // TODO (configure this command by configuring the appropriate npm scripts at the expected "well-known" names (same with all commands honestly))
       // TODO (do not allow packages below version 1.0.0 to be published (semantic-release incompatibility))
+      // TODO (GPG keys generated during each major must be set to never expire... however previously active keys must be revoked (only if they maintain their "verified" status on GitHub though))
+      // TODO (need to do codecov stuff in here: CODECOV_TOKEN=$(npx --yes dotenv-cli -p CODECOV_TOKEN) npx codecov)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

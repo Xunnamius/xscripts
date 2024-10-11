@@ -4,19 +4,25 @@ import {
   logStartTime,
   LogTag,
   standardSuccessMessage
-} from 'multiverse/@-xun/cli-utils/logging';
+} from 'multiverse#cli-utils logging.ts';
+
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { run } from 'multiverse#run';
+
+import { Tsconfig } from 'multiverse#project-utils fs/index.ts';
 
 import {
-  withStandardBuilder,
-  withStandardUsage
-} from 'multiverse/@-xun/cli-utils/extensions';
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
-import { scriptBasename } from 'multiverse/@-xun/cli-utils/util';
-import { type AsStrictExecutionContext } from 'multiverse/@black-flag/extensions';
-import { run } from 'multiverse/run';
-
-import { type GlobalCliArguments, type GlobalExecutionContext } from 'universe/configure';
-import { checkChoicesNotEmpty, runGlobalPreChecks } from 'universe/util';
+import {
+  withGlobalBuilder,
+  withGlobalUsage,
+  checkArrayNotEmpty,
+  runGlobalPreChecks
+} from 'universe util.ts';
 
 export type CustomCliArguments = GlobalCliArguments & {
   entries: string[];
@@ -26,12 +32,9 @@ export default function command({
   log,
   debug_,
   state,
-  runtimeContext: runtimeContext_
+  projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withStandardHandler] = withStandardBuilder<
-    CustomCliArguments,
-    GlobalExecutionContext
-  >({
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     entries: {
       alias: ['entry'],
       array: true,
@@ -44,7 +47,7 @@ export default function command({
         'external-scripts/*.ts',
         'external-scripts/*/index.ts'
       ],
-      check: checkChoicesNotEmpty('--entries')
+      check: checkArrayNotEmpty('--entries')
     }
   });
 
@@ -52,8 +55,8 @@ export default function command({
     aliases: ['docs'],
     builder,
     description: 'Generate documentation from source and assets',
-    usage: withStandardUsage(),
-    handler: withStandardHandler(async function ({
+    usage: withGlobalUsage(),
+    handler: withGlobalHandler(async function ({
       $0: scriptFullName,
       entries,
       hush: isHushed,
@@ -64,7 +67,7 @@ export default function command({
 
       debug('entered handler');
 
-      await runGlobalPreChecks({ debug_, runtimeContext_ });
+      await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
@@ -84,7 +87,7 @@ export default function command({
           '--excludeInternal',
           '--cleanOutputDir',
           '--tsconfig',
-          'tsconfig.docs.json',
+          Tsconfig.PackageDocumentation,
           '--out',
           'docs',
           '--readme',
