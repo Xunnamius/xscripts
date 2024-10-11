@@ -3,15 +3,16 @@ import { type Arguments } from '@black-flag/core';
 import { type ExecutionContext } from '@black-flag/core/util';
 import { ListrErrorTypes } from 'listr2';
 
-import { createDebugLogger, createGenericLogger } from 'multiverse/rejoinder';
-import { withMockedOutput } from 'testverse/setup';
+import { createDebugLogger, createGenericLogger } from 'multiverse#rejoinder';
 
 import {
   makeStandardConfigureErrorHandlingEpilogue,
   makeStandardConfigureExecutionContext
-} from './configure';
+} from '#cli-utils src/configure.ts';
 
-import { type StandardExecutionContext } from './extensions';
+import { type StandardExecutionContext } from '#cli-utils src/extensions.ts';
+
+import { withMockedOutput } from 'testverse setup.ts';
 
 import type { PartialDeep } from 'type-fest';
 

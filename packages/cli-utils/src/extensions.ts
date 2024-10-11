@@ -1,14 +1,12 @@
 import { $executionContext } from '@black-flag/core';
 import { CommandNotImplementedError, type ExecutionContext } from '@black-flag/core/util';
 
-import { globalLoggerNamespace } from 'universe/constant';
-
 import {
   withBuilderExtensions,
   type BfeBuilderObject,
   type WithBuilderExtensionsConfig,
   type WithBuilderExtensionsReturnType
-} from 'multiverse/@black-flag/extensions/index';
+} from 'multiverse#bfe';
 
 import {
   createDebugLogger,
@@ -18,18 +16,17 @@ import {
   type ExtendedDebugger,
   type ExtendedLogger,
   type ListrManager
-} from 'multiverse/rejoinder';
+} from 'multiverse#rejoinder';
 
-import { $artificiallyInvoked } from 'multiverse/@black-flag/extensions/symbols';
+import { $artificiallyInvoked } from 'multiverse#bfe symbols.ts';
 
-import { LogTag } from './logging';
 // ? Used in a comment for taskManager
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { type makeStandardConfigureExecutionContext } from './configure';
+import { type makeStandardConfigureExecutionContext } from '#cli-utils src/configure.ts';
+import { globalDebuggerNamespace } from '#cli-utils src/constant.ts';
+import { LogTag } from '#cli-utils src/logging.ts';
 
-const globalDebuggerNamespace = '@-xun/cli-utils';
-
-export { withUsageExtensions as withStandardUsage } from 'multiverse/@black-flag/extensions/index';
+export { withUsageExtensions as withStandardUsage } from 'multiverse#bfe';
 
 /**
  * This {@link ExecutionContext} subtype contains state related to
@@ -247,7 +244,7 @@ export function withStandardBuilder<
       return async function handler(rawArgv) {
         const tagsSet = new Set<LogTag>();
         const debug = createDebugLogger({
-          namespace: `${globalLoggerNamespace}:withStandardHandler`
+          namespace: `${globalDebuggerNamespace}:withStandardHandler`
         });
 
         debug('entered withStandardHandler wrapper');

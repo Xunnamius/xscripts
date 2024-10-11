@@ -5,12 +5,12 @@ import {
   TAB,
   type ExtendedDebugger,
   type ExtendedLogger
-} from 'multiverse/rejoinder';
+} from 'multiverse#rejoinder';
 
-import { TaskError } from './error';
-import { type StandardExecutionContext } from './extensions';
-import { LogTag, MAX_LOG_ERROR_ENTRIES } from './logging';
-import { toFirstLowerCase, toSentenceCase } from './util';
+import { TaskError } from '#cli-utils src/error.ts';
+import { type StandardExecutionContext } from '#cli-utils src/extensions.ts';
+import { LogTag, MAX_LOG_ERROR_ENTRIES } from '#cli-utils src/logging.ts';
+import { toFirstLowerCase, toSentenceCase } from '#cli-utils src/util.ts';
 
 import type {
   ConfigureErrorHandlingEpilogue,

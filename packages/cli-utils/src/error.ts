@@ -1,8 +1,8 @@
 import { CliError, FrameworkExitCode } from '@black-flag/core';
 
-import { ErrorMessage as UpstreamErrorMessage } from 'multiverse/@black-flag/extensions/error';
+import { ErrorMessage as UpstreamErrorMessage } from 'multiverse#bfe error.ts';
 
-import { toSentenceCase } from './util';
+import { toSentenceCase } from '#cli-utils src/util.ts';
 
 /**
  * An `Error` class where the first letter of the message is capitalized.

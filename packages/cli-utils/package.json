@@ -1,5 +1,5 @@
 {
-  "name": "@-xun/cli-utils",
+  "name": "@-xun/cli",
   "dependencies": {
     "@black-flag/extensions": "^1.0.0"
   },

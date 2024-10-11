@@ -5,7 +5,7 @@ import {
   withStandardBuilder,
   type StandardCommonCliArguments,
   type StandardExecutionContext
-} from './extensions';
+} from '#cli-utils src/extensions.ts';
 
 const expectedStandardCommonCliArguments = {
   hush: {
