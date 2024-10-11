@@ -13,15 +13,15 @@ import { $executionContext, isCliError, type Arguments } from '@black-flag/core'
 import isEqual from 'lodash.isequal';
 import deepMerge from 'lodash.merge';
 
-import { ErrorMessage } from './error';
-import { $artificiallyInvoked, $exists } from './symbols';
+import { ErrorMessage } from '#bfe src/error.ts';
+import { $artificiallyInvoked, $exists } from '#bfe src/symbols.ts';
 
 import {
   getInvocableExtendedHandler,
   withBuilderExtensions,
   withUsageExtensions,
   type AsStrictExecutionContext
-} from './index';
+} from '#bfe src/index.ts';
 
 import type { PartialDeep } from 'type-fest';
 import type { ParserConfigurationOptions } from 'yargs';

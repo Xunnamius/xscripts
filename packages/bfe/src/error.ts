@@ -1,6 +1,6 @@
 import { ErrorMessage as UpstreamErrorMessage } from '@black-flag/core/util';
 
-import { $exists } from './symbols';
+import { $exists } from '#bfe src/symbols.ts';
 
 import type { Entries } from 'type-fest';
 

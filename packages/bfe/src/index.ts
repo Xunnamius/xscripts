@@ -23,13 +23,13 @@ import {
   type FrameworkArguments
 } from '@black-flag/core/util';
 
-import { globalLoggerNamespace } from 'universe/constant';
+import { hardAssert, softAssert } from 'multiverse#cli-utils error.ts';
+import { createDebugLogger } from 'multiverse#rejoinder';
 
-import { hardAssert, softAssert } from 'multiverse/@-xun/cli-utils/error';
-import { createDebugLogger } from 'multiverse/rejoinder';
+import { globalDebuggerNamespace } from '#bfe src/constant.ts';
 
-import { ErrorMessage, type KeyValueEntry } from './error';
-import { $artificiallyInvoked, $canonical, $exists, $genesis } from './symbols';
+import { ErrorMessage, type KeyValueEntry } from '#bfe src/error.ts';
+import { $artificiallyInvoked, $canonical, $exists, $genesis } from '#bfe src/symbols.ts';
 
 import type {
   Entries,
@@ -38,8 +38,6 @@ import type {
   Promisable,
   StringKeyOf
 } from 'type-fest';
-
-const globalDebuggerNamespace = '@black-flag/extensions';
 
 /**
  * Internal metadata derived from analysis of a {@link BfeBuilderObject}.
@@ -869,7 +867,7 @@ export function withBuilderExtensions<
     function withHandlerExtensions(customHandler) {
       return async function handler(realArgv) {
         const debug = createDebugLogger({
-          namespace: `${globalLoggerNamespace}:withHandlerExtensions`
+          namespace: `${globalDebuggerNamespace}:withHandlerExtensions`
         });
 
         debug('entered withHandlerExtensions::handler wrapper function');
@@ -1199,7 +1197,6 @@ export async function getInvocableExtendedHandler<
 
   // ? ESM <=> CJS interop, again. See: @black-flag/core/src/discover.ts
   // ! We cannot trust the type of command.default yet, hence the next line:
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (command?.default !== undefined) {
     command = command.default;
   }
@@ -1210,7 +1207,6 @@ export async function getInvocableExtendedHandler<
     config = await command(context);
   } else {
     // ! We cannot trust the type of command if we've reached this point
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     hardAssert(command && typeof command === 'object', ErrorMessage.FalsyCommandExport());
 
     // * Now we can trust its type :)
@@ -1578,7 +1574,6 @@ function getParserConfigurationFromBlackFlagInstance(blackFlag: any) {
 
   hardAssert(
     // ! We cannot trust the type of parserConfiguration, hence the next line:
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     parserConfiguration && typeof parserConfiguration === 'object',
     ErrorMessage.UnexpectedValueFromInternalYargsMethod()
   );
