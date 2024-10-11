@@ -50,7 +50,7 @@ const lintConfig = {
   ]
 };
 
-if (process.env.XSCRIPTS_ALLOW_WARNING_COMMENTS === 'true') {
+if (process.env.XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS !== 'true') {
   // TODO: add no-warning-comments to unified-utils and add pub to dependencies
   //lintConfig.plugins.push('no-warning-comments');
 }
@@ -70,7 +70,7 @@ const formatConfig = {
     ['capitalize-headings', { excludeHeadingLevel: { h1: true } }],
     'remove-unused-definitions',
     'remove-url-trailing-slash',
-    ...(process.env.SHOULD_RENUMBER_REFERENCES === 'true'
+    ...(process.env.XSCRIPTS_FORMAT_RENUMBER_REFERENCES === 'true'
       ? ['renumber-references']
       : ['remark-reference-links']),
     'sort-definitions'
