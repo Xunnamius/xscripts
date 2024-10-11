@@ -51,77 +51,116 @@ sparingly.
 
 ## Releases
 
-Our releases are automatic. They happen whenever code lands into `master`. A
-GitHub Actions build gets kicked off and, if it's successful, a tool called
-[`semantic-release`][10] is used to automatically publish a new release to npm
-and GitHub along with an updated changelog. It is only able to determine the
-version and whether a release is necessary by the git commit messages. With this
-in mind, **please brush up on [the commit message convention][commit] which
-drives our releases.**
+Our releases are automatic. They happen whenever certain commits are pushed to a
+relevant branch. That means a new release is generated only when there are
+useful changes to justify it. See [the release rules][11] for a list of commit
+types that trigger releases.
 
-> One important note about this: please make sure that commit messages do NOT
-> contain the words "BREAKING CHANGE" in them unless we want to push a major
-> version. I've been burned by this more than once where someone will include
-> "BREAKING CHANGE: None" and it will end up releasing a new major version. Do
-> not do this!
+To generate a new release, a GitHub Actions build gets kicked off and, if it's
+successful, [semantic-release][10] (SR) is used to automatically publish a new
+release to npm and GitHub along with an updated changelog. SR determines whether
+a release is necessary, and what the new version number will be, by analyzing
+git commit messages. With this in mind, **it is imperative you brush up on [the
+commit message convention][commit] which drives our releases.**
+
+> [!IMPORTANT]
+>
+> **UNDER NO CIRCUMSTANCES** should any of your commit messages contain the
+> phrases `BREAKING:`, `BREAKING CHANGE:`, or `BREAKING CHANGES:` unless the
+> goal is to release a new major version.
 
 ### Manual Releases
 
-This project has an automated release set up. That means things are only
-released when there are useful changes in the code that justify a release. See
-[the release rules][11] for a list of commit types that trigger releases.
+This project employs an automated CI/CD release pipeline. However, sometimes
+things get messed up (e.g. CI workflow / GitHub Actions breaks) and we need to
+trigger a release ourselves. When this happens, semantic-release can be
+triggered locally.
 
-However, sometimes things get messed up (e.g. CI workflow / GitHub Actions
-breaks) and we need to trigger a release ourselves. When this happens,
-semantic-release can be triggered locally by following these steps:
+> [!CAUTION]
+>
+> Note that any manual releases generated outside of the CI/CD pipeline will be
+> published
+> [_without established provenance_](https://docs.npmjs.com/generating-provenance-statements#provenance-limitations)!
+> It is for that reason that, outside of truly exceptional events, manual
+> releases should be avoided at all costs.
+
+#### Preparing Repository For Release
+
+Before proceeding with a manual release, first ensure all dependencies are
+installed and all necessary secrets are available.
+
+> You only need to run the following commands if you have not run `npm install`
+> at least once.
+
+> These command should only be run at the project root level and not in any
+> individual package root.
+
+```bash
+# 1. Install dependencies and add your auth tokens to the .env file.
+#
+# ! DO NOT COMMIT THE .env FILE !
+cp .env.default .env
+npm ci
+```
+
+#### Manual Release Method 1: Semi-Automated
+
+To release all packages in a repository:
+
+```bash
+# Do a dry run first:
+npx turbo release --dry-run
+# Then do the actual release:
+npx turbo release
+```
+
+To release one or more specific packages:
+
+```bash
+# Do a dry run first:
+npx turbo release --filter=pkg-1 --filter=pkg-2 --dry-run
+# Then do the actual release:
+npx turbo release --filter=pkg-1 --filter=pkg-2
+```
+
+#### Manual Release Method 2: By Hand
+
+To release a specific package by hand:
 
 > If one of these steps fails, you should address the failure before running the
 > next step.
 
+> These commands should be run with the root of the individual package you're
+> trying to release root as the current working directory.
+
 ```bash
-# These commands must be run from the project root. It is recommended to clone a
-# fresh version of the repo to a temp directory and run these commands from
-# there.
-
-# 1. Install dependencies and add your auth tokens to the .env file.
-# ! DO NOT COMMIT THE .env FILE !
-cp .env.default .env
-npm ci
-
-# 2. OPTIONAL: Reset the working tree to a clean state.
+# 1. OPTIONAL: Reset the working tree to a clean state.
 # npm run clean -- --force
 
-# 3. Lint all files.
+# 2. Lint _all_ recognized file types under the current working directory.
 npm run lint:source:all
 
-# 4. Build distributables.
+# 3. Build this package's distributables.
 npm run build:dist
 
-# 5. Build any external executables (used in GitHub Actions workflows).
-npm run build:externals
-
-# 6. Format all files.
+# 4. Format this package's files.
 npm run format
 
-# 7. Build auxiliary documentation (AFTER format so line numbers are correct).
+# 5. Build this package's documentation (AFTER format for correct line numbers).
 npm run build:docs
 
-# 8. Run all possible tests and generate coverage information.
+# 6. Run all of this package's tests and generate coverage data.
 npm run test:all
 
-# 9. Trigger semantic-release locally and generate a new release. This requires
-# having valid tokens for NPM and GitHub with the appropriate permissions.
+# 7. Trigger semantic-release locally to public a new release of this package.
+# This requires having valid tokens for NPM, GitHub, and Codecov each with the
+# appropriate permissions.
 #
 # Do a dry run first:
-NPM_TOKEN="$(npx --yes dotenv-cli -p NPM_TOKEN)" GH_TOKEN="$(npx --yes dotenv-cli -p GITHUB_TOKEN)" HUSKY=0 UPDATE_CHANGELOG=true GIT_AUTHOR_NAME="$(npx --yes dotenv-cli -p GIT_AUTHOR_NAME)" GIT_COMMITTER_NAME="$(npx --yes dotenv-cli -p GIT_COMMITTER_NAME)" GIT_AUTHOR_EMAIL="$(npx --yes dotenv-cli -p GIT_AUTHOR_EMAIL)" GIT_COMMITTER_EMAIL="$(npx --yes dotenv-cli -p GIT_COMMITTER_EMAIL)" npx --no-install semantic-release --no-ci --extends "$(pwd)/release.config.js" --dry-run
-# Then do the actual publish:
-NPM_TOKEN="$(npx --yes dotenv-cli -p NPM_TOKEN)" GH_TOKEN="$(npx --yes dotenv-cli -p GITHUB_TOKEN)" HUSKY=0 UPDATE_CHANGELOG=true GIT_AUTHOR_NAME="$(npx --yes dotenv-cli -p GIT_AUTHOR_NAME)" GIT_COMMITTER_NAME="$(npx --yes dotenv-cli -p GIT_COMMITTER_NAME)" GIT_AUTHOR_EMAIL="$(npx --yes dotenv-cli -p GIT_AUTHOR_EMAIL)" GIT_COMMITTER_EMAIL="$(npx --yes dotenv-cli -p GIT_COMMITTER_EMAIL)" npx --no-install semantic-release --no-ci --extends "$(pwd)/release.config.js"
-
-# 10. Upload coverage information to codecov (only if you have a valid token).
-CODECOV_TOKEN=$(npx --yes dotenv-cli -p CODECOV_TOKEN) npx codecov
+npm run release -- --dry-run
+# Then do the actual release:
+npm run release
 ```
-
-<!-- lint ignore -->
 
 ## Deprecation and End of Life
 
@@ -146,8 +185,9 @@ With somber focus, the following steps should be taken:
 
 > If the deprecated project is using [xscripts][12]/[xpipeline][14], at least
 > one of the commits created as a result of following these instructions must be
-> of the [`build` type][15]. If operating on a monorepo, said commit must touch
-> every package.
+> of the [`build` type][15] so that a final "deprecated" version with updated
+> deprecation documentation is released. If operating on a monorepo, said commit
+> must touch every package.
 
 <br />
 
