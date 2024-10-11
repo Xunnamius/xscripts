@@ -15,7 +15,8 @@
         "--linter",
         "tsc",
         "eslint",
-        "--run-to-completion"
+        "--run-to-completion",
+        "--no-allow-warning-comments"
       ],
       "presentation": {
         "echo": true,
