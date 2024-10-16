@@ -6,14 +6,14 @@
 
 # Function: moduleExport()
 
-> **moduleExport**(`runContext`): `Promise`\<`ConfigArray`\>
+> **moduleExport**(`projectMetadata`?): `Promise`\<`ConfigArray`\>
 
 ## Parameters
 
-• **runContext**: `MonorepoRunContext` \| `PolyrepoRunContext` = `...`
+• **projectMetadata?**: `ProjectMetadata`
 
-An optional `runContext` that, if given, will be used instead of calling
-getRunContext.
+An optional ProjectMetadata instance that, if given, will be used
+instead of calling analyzeProjectStructure.
 
 ## Returns
 
@@ -21,4 +21,4 @@ getRunContext.
 
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:322](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/assets/config/_eslint.config.mjs.ts#L322)
+[src/assets/config/\_eslint.config.mjs.ts:346](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/assets/config/_eslint.config.mjs.ts#L346)

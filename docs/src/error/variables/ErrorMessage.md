@@ -264,11 +264,11 @@ A collection of possible error and warning messages.
 
 • **name1**: `string`
 
-• **type1**: `"name"` \| `"alias"`
+• **type1**: `"alias"` \| `"name"`
 
 • **name2**: `string`
 
-• **type2**: `"name"` \| `"alias"`
+• **type2**: `"alias"` \| `"name"`
 
 #### Returns
 
@@ -368,7 +368,7 @@ A collection of possible error and warning messages.
 
 `string`
 
-### BadProjectTypeInPackageJson()
+### BadSkipArgs()
 
 #### Returns
 
@@ -384,19 +384,29 @@ A collection of possible error and warning messages.
 
 `string`
 
-### CannotBeCliAndNextJs()
+### CannotCopyFile()
 
-#### Returns
+#### Parameters
 
-`string`
+• **from**: `string`
 
-### CannotBuildIntermediatesForNextJs()
+• **to**: `string`
 
 #### Returns
 
 `string`
 
 ### CannotImportConventionalConfig()
+
+#### Parameters
+
+• **path**: `string`
+
+#### Returns
+
+`string`
+
+### CannotMakeDirectory()
 
 #### Parameters
 
@@ -750,13 +760,25 @@ A collection of possible error and warning messages.
 
 `string`
 
-### UnexpectedValueFromInternalYargsMethod()
+### TranspilationReturnedNothing()
+
+#### Parameters
+
+• **sourcePath**: `string`
+
+• **outputPath**: `string`
 
 #### Returns
 
 `string`
 
 ### UnexpectedlyFalsyDetailedArguments()
+
+#### Returns
+
+`string`
+
+### UnexpectedValueFromInternalYargsMethod()
 
 #### Returns
 
@@ -784,9 +806,29 @@ A collection of possible error and warning messages.
 
 #### Parameters
 
-• **expected**: [`ProjectMetaAttribute`](../../util/enumerations/ProjectMetaAttribute.md)[]
+• **expected**: `ProjectAttribute`[]
 
-• **actual**: [`ProjectMetaAttribute`](../../util/enumerations/ProjectMetaAttribute.md)[]
+• **actual**
+
+• **actual.cjs**: `undefined` \| `boolean`
+
+• **actual.cli**: `undefined` \| `boolean`
+
+• **actual.esm**: `undefined` \| `boolean`
+
+• **actual.hybridrepo**: `undefined` \| `boolean`
+
+• **actual.monorepo**: `undefined` \| `boolean`
+
+• **actual.next**: `undefined` \| `boolean`
+
+• **actual.polyrepo**: `undefined` \| `boolean`
+
+• **actual.private**: `undefined` \| `boolean`
+
+• **actual.vercel**: `undefined` \| `boolean`
+
+• **actual.webpack**: `undefined` \| `boolean`
 
 • **preposition**: `string` = `'with'`
 
@@ -796,4 +838,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/error.ts#L11)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/error.ts#L11)

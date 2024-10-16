@@ -6,14 +6,14 @@
 
 # Type Alias: GlobalExecutionContext
 
-> **GlobalExecutionContext**: [`StandardExecutionContext`](../../../lib/@-xun/cli-utils/extensions/type-aliases/StandardExecutionContext.md) & `object`
+> **GlobalExecutionContext**: `StandardExecutionContext` & `object`
 
 ## Type declaration
 
-### runtimeContext
+### projectMetadata
 
-> **runtimeContext**: `ReturnType`\<*typeof* `getRunContext`\> \| `undefined`
+> **projectMetadata**: `ProjectMetadata` \| `undefined`
 
 ## Defined in
 
-[src/configure.ts:31](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/configure.ts#L31)
+[src/configure.ts:35](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/configure.ts#L35)

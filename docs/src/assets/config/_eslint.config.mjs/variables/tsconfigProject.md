@@ -6,10 +6,10 @@
 
 # Variable: tsconfigProject
 
-> `const` **tsconfigProject**: `"tsconfig.eslint.json"` = `'tsconfig.eslint.json'`
+> `const` **tsconfigProject**: `ProjectLintUnlimited` = `Tsconfig.ProjectLintUnlimited`
 
 The name of the tsconfig JSON file used by the linter.
 
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:44](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/assets/config/_eslint.config.mjs.ts#L44)
+[src/assets/config/\_eslint.config.mjs.ts:55](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/assets/config/_eslint.config.mjs.ts#L55)

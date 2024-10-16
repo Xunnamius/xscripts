@@ -24,4 +24,4 @@ state.
 
 ## Defined in
 
-[src/assets/config/\_release.config.js.ts:331](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/assets/config/_release.config.js.ts#L331)
+[src/assets/config/\_release.config.js.ts:350](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/assets/config/_release.config.js.ts#L350)

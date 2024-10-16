@@ -22,4 +22,4 @@
 
 ## Defined in
 
-[test/setup.ts:283](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L283)
+[test/setup.ts:388](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L388)

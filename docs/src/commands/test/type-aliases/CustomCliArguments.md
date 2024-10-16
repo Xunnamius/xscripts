@@ -6,7 +6,7 @@
 
 # Type Alias: CustomCliArguments
 
-> **CustomCliArguments**: [`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md) & `object`
+> **CustomCliArguments**: `Omit`\<[`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md), `"scope"`\> & `object`
 
 ## Type declaration
 
@@ -28,7 +28,11 @@
 
 ### scope
 
-> **scope**: [`TestScope`](../enumerations/TestScope.md)[]
+> **scope**: [`TesterScope`](TesterScope.md)
+
+### skipSlowTests
+
+> **skipSlowTests**: `number`
 
 ### type
 
@@ -36,4 +40,4 @@
 
 ## Defined in
 
-[src/commands/test.ts:79](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/commands/test.ts#L79)
+[src/commands/test.ts:79](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/commands/test.ts#L79)

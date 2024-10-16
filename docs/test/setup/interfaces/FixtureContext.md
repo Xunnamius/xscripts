@@ -18,11 +18,11 @@
 
 ### debug
 
-> **debug**: [`ExtendedDebugger`](../../../lib/debug-extended/interfaces/ExtendedDebugger.md)
+> **debug**: `ExtendedDebugger`
 
 #### Defined in
 
-[test/setup.ts:612](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L612)
+[test/setup.ts:717](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L717)
 
 ***
 
@@ -36,7 +36,7 @@
 
 #### Defined in
 
-[test/setup.ts:611](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L611)
+[test/setup.ts:716](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L716)
 
 ***
 
@@ -145,7 +145,7 @@ context root.
 
 #### Defined in
 
-[test/setup.ts:617](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L617)
+[test/setup.ts:722](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L722)
 
 ***
 
@@ -159,7 +159,7 @@ context root.
 
 #### Defined in
 
-[test/setup.ts:641](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L641)
+[test/setup.ts:746](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L746)
 
 ***
 
@@ -169,7 +169,7 @@ context root.
 
 #### Defined in
 
-[test/setup.ts:609](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L609)
+[test/setup.ts:714](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L714)
 
 ***
 
@@ -179,7 +179,7 @@ context root.
 
 #### Defined in
 
-[test/setup.ts:607](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L607)
+[test/setup.ts:712](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L712)
 
 ***
 
@@ -189,7 +189,7 @@ context root.
 
 #### Defined in
 
-[test/setup.ts:608](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L608)
+[test/setup.ts:713](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L713)
 
 ***
 
@@ -199,7 +199,7 @@ context root.
 
 #### all
 
-> **all**: `undefined` \| `string` \| `unknown`[] \| `string`[] \| `Uint8Array`
+> **all**: `undefined` \| `string` \| `string`[] \| `unknown`[] \| `Uint8Array`
 
 The output of the subprocess with `result.stdout` and `result.stderr` interleaved.
 
@@ -363,7 +363,7 @@ If a signal terminated the subprocess, this property is defined and included in 
 
 #### stdio
 
-> **stdio**: `MapResultStdio`\<readonly [`StdinOptionCommon`\<`false`, `false`\>, `StdoutStderrOptionCommon`\<`false`, `false`\>, `StdoutStderrOptionCommon`\<`false`, `false`\>, `StdioExtraOptionCommon`\<`false`\>] \| readonly [`undefined`, `undefined`, `undefined`] \| readonly [`"pipe"`, `"pipe"`, `"pipe"`] \| readonly [`"inherit"`, `"inherit"`, `"inherit"`] \| readonly [`"ignore"`, `"ignore"`, `"ignore"`] \| readonly [`"overlapped"`, `"overlapped"`, `"overlapped"`], [`RunOptions`](../../../lib/run/type-aliases/RunOptions.md)\>
+> **stdio**: `MapResultStdio`\<readonly [`StdinOptionCommon`\<`false`, `false`\>, `StdoutStderrOptionCommon`\<`false`, `false`\>, `StdoutStderrOptionCommon`\<`false`, `false`\>, `StdioExtraOptionCommon`\<`false`\>] \| readonly [`undefined`, `undefined`, `undefined`] \| readonly [`"pipe"`, `"pipe"`, `"pipe"`] \| readonly [`"inherit"`, `"inherit"`, `"inherit"`] \| readonly [`"ignore"`, `"ignore"`, `"ignore"`] \| readonly [`"overlapped"`, `"overlapped"`, `"overlapped"`], `RunOptions`\>
 
 The output of the subprocess on `stdin`, `stdout`, `stderr` and other file descriptors.
 
@@ -387,7 +387,7 @@ Whether the subprocess timed out due to the `timeout` option.
 
 #### Defined in
 
-[test/setup.ts:631](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L631)
+[test/setup.ts:736](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L736)
 
 ***
 
@@ -401,7 +401,7 @@ Whether the subprocess timed out due to the `timeout` option.
 
 #### Defined in
 
-[test/setup.ts:636](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L636)
+[test/setup.ts:741](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L741)
 
 ***
 
@@ -411,4 +411,4 @@ Whether the subprocess timed out due to the `timeout` option.
 
 #### Defined in
 
-[test/setup.ts:610](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L610)
+[test/setup.ts:715](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L715)

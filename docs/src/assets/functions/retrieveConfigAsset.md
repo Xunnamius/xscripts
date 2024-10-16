@@ -9,8 +9,8 @@
 > **retrieveConfigAsset**(`__namedParameters`): `Promise`\<[`TransformerResult`](../type-aliases/TransformerResult.md)\>
 
 Retrieve an asset via its filename. For example, to retrieve an
-`eslint.config.js` file (the transformer source for which exists in
-`./config/_eslint.config.js.ts`), pass `"eslint.config.js"` as the `name`
+`eslint.config.mjs` file (the transformer source for which exists in
+`./config/_eslint.config.mjs.ts`), pass `"eslint.config.mjs"` as the `name`
 parameter.
 
 Throws if no corresponding transformer for `name` can be found.
@@ -34,4 +34,4 @@ Expects an xscripts project init-time (or renovate-time) context object (i.e.
 
 ## Defined in
 
-[src/assets/index.ts:100](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/assets/index.ts#L100)
+[src/assets/index.ts:99](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/assets/index.ts#L99)

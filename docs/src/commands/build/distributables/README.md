@@ -11,6 +11,7 @@
 ### Enumerations
 
 - [IntermediateTranspilationEnvironment](enumerations/IntermediateTranspilationEnvironment.md)
+- [ModuleSystem](enumerations/ModuleSystem.md)
 
 ### Type Aliases
 

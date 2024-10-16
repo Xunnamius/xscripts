@@ -106,4 +106,4 @@ The contents of a potential top-level heading
 
 ## Defined in
 
-[src/assets/index.ts:35](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/assets/index.ts#L35)
+[src/assets/index.ts:34](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/assets/index.ts#L34)

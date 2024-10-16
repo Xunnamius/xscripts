@@ -8,12 +8,10 @@
 
 ## Index
 
+### Classes
+
+- [TaskError](classes/TaskError.md)
+
 ### Variables
 
 - [ErrorMessage](variables/ErrorMessage.md)
-
-## References
-
-### TaskError
-
-Re-exports [TaskError](../../lib/@-xun/cli-utils/error/classes/TaskError.md)

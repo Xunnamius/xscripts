@@ -6,7 +6,7 @@
 
 # Type Alias: CustomCliArguments
 
-> **CustomCliArguments**: [`GlobalCliArguments`](../../../../configure/type-aliases/GlobalCliArguments.md) & `object`
+> **CustomCliArguments**: `Omit`\<[`GlobalCliArguments`](../../../../configure/type-aliases/GlobalCliArguments.md), `"scope"`\> & `object`
 
 ## Type declaration
 
@@ -14,30 +14,42 @@
 
 > **cleanOutputDir**: `boolean`
 
+### excludeInternalFiles?
+
+> `optional` **excludeInternalFiles**: (`AbsolutePath` \| `RelativePath`)[]
+
 ### generateIntermediatesFor?
 
 > `optional` **generateIntermediatesFor**: [`IntermediateTranspilationEnvironment`](../enumerations/IntermediateTranspilationEnvironment.md)
 
-### generateTypes
+### generateTypes?
 
-> **generateTypes**: `boolean`
+> `optional` **generateTypes**: `boolean`
 
-### linkCliIntoBin
+### includeExternalFiles?
 
-> **linkCliIntoBin**: `boolean`
+> `optional` **includeExternalFiles**: (`AbsolutePath` \| `RelativePath`)[]
 
-### moduleSystem
+### linkCliIntoBin?
 
-> **moduleSystem**: `"cjs"` \| `"esm"`
+> `optional` **linkCliIntoBin**: `boolean`
+
+### moduleSystem?
+
+> `optional` **moduleSystem**: [`ModuleSystem`](../enumerations/ModuleSystem.md)
 
 ### outputExtension?
 
 > `optional` **outputExtension**: `string`
 
-### prependShebang
+### prependShebang?
 
-> **prependShebang**: `boolean`
+> `optional` **prependShebang**: `boolean`
+
+### scope
+
+> **scope**: [`LimitedGlobalScope`](../../../../configure/enumerations/LimitedGlobalScope.md)
 
 ## Defined in
 
-[src/commands/build/distributables.ts:58](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/commands/build/distributables.ts#L58)
+[src/commands/build/distributables.ts:103](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/commands/build/distributables.ts#L103)

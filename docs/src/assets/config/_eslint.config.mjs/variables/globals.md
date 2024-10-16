@@ -10,6 +10,14 @@
 
 ## Type declaration
 
+### \_\_dirname
+
+> `readonly` **\_\_dirname**: `false`
+
+### \_\_filename
+
+> `readonly` **\_\_filename**: `false`
+
 ### AbortController
 
 > `readonly` **AbortController**: `false`
@@ -29,6 +37,10 @@
 ### ArrayBuffer
 
 > `readonly` **ArrayBuffer**: `false`
+
+### atob
+
+> `readonly` **atob**: `false`
 
 ### Atomics
 
@@ -58,6 +70,10 @@
 
 > `readonly` **BroadcastChannel**: `false`
 
+### btoa
+
+> `readonly` **btoa**: `false`
+
 ### Buffer
 
 > `readonly` **Buffer**: `false`
@@ -66,13 +82,33 @@
 
 > `readonly` **ByteLengthQueuingStrategy**: `false`
 
+### clearImmediate
+
+> `readonly` **clearImmediate**: `false`
+
+### clearInterval
+
+> `readonly` **clearInterval**: `false`
+
+### clearTimeout
+
+> `readonly` **clearTimeout**: `false`
+
 ### CompressionStream
 
 > `readonly` **CompressionStream**: `false`
 
+### console
+
+> `readonly` **console**: `false`
+
 ### CountQueuingStrategy
 
 > `readonly` **CountQueuingStrategy**: `false`
+
+### crypto
+
+> `readonly` **crypto**: `false`
 
 ### Crypto
 
@@ -86,10 +122,6 @@
 
 > `readonly` **CustomEvent**: `false`
 
-### DOMException
-
-> `readonly` **DOMException**: `false`
-
 ### DataView
 
 > `readonly` **DataView**: `false`
@@ -98,13 +130,41 @@
 
 > `readonly` **Date**: `false`
 
+### decodeURI
+
+> `readonly` **decodeURI**: `false`
+
+### decodeURIComponent
+
+> `readonly` **decodeURIComponent**: `false`
+
 ### DecompressionStream
 
 > `readonly` **DecompressionStream**: `false`
 
+### DOMException
+
+> `readonly` **DOMException**: `false`
+
+### encodeURI
+
+> `readonly` **encodeURI**: `false`
+
+### encodeURIComponent
+
+> `readonly` **encodeURIComponent**: `false`
+
 ### Error
 
 > `readonly` **Error**: `false`
+
+### escape
+
+> `readonly` **escape**: `false`
+
+### eval
+
+> `readonly` **eval**: `false`
 
 ### EvalError
 
@@ -117,6 +177,14 @@
 ### EventTarget
 
 > `readonly` **EventTarget**: `false`
+
+### exports
+
+> `readonly` **exports**: `true`
+
+### fetch
+
+> `readonly` **fetch**: `false`
 
 ### File
 
@@ -142,6 +210,14 @@
 
 > `readonly` **Function**: `false`
 
+### global
+
+> `readonly` **global**: `false`
+
+### globalThis
+
+> `readonly` **globalThis**: `false`
+
 ### Headers
 
 > `readonly` **Headers**: `false`
@@ -165,6 +241,14 @@
 ### Intl
 
 > `readonly` **Intl**: `false`
+
+### isFinite
+
+> `readonly` **isFinite**: `false`
+
+### isNaN
+
+> `readonly` **isNaN**: `false`
 
 ### Iterator
 
@@ -194,9 +278,17 @@
 
 > `readonly` **MessagePort**: `false`
 
+### module
+
+> `readonly` **module**: `false`
+
 ### NaN
 
 > `readonly` **NaN**: `false`
+
+### navigator
+
+> `readonly` **navigator**: `false`
 
 ### Navigator
 
@@ -209,6 +301,18 @@
 ### Object
 
 > `readonly` **Object**: `false`
+
+### parseFloat
+
+> `readonly` **parseFloat**: `false`
+
+### parseInt
+
+> `readonly` **parseInt**: `false`
+
+### performance
+
+> `readonly` **performance**: `false`
 
 ### Performance
 
@@ -238,6 +342,10 @@
 
 > `readonly` **PerformanceResourceTiming**: `false`
 
+### process
+
+> `readonly` **process**: `false`
+
 ### Promise
 
 > `readonly` **Promise**: `false`
@@ -245,6 +353,10 @@
 ### Proxy
 
 > `readonly` **Proxy**: `false`
+
+### queueMicrotask
+
+> `readonly` **queueMicrotask**: `false`
 
 ### RangeError
 
@@ -290,6 +402,10 @@
 
 > `readonly` **Request**: `false`
 
+### require
+
+> `readonly` **require**: `false`
+
 ### Response
 
 > `readonly` **Response**: `false`
@@ -298,6 +414,18 @@
 
 > `readonly` **Set**: `false`
 
+### setImmediate
+
+> `readonly` **setImmediate**: `false`
+
+### setInterval
+
+> `readonly` **setInterval**: `false`
+
+### setTimeout
+
+> `readonly` **setTimeout**: `false`
+
 ### SharedArrayBuffer
 
 > `readonly` **SharedArrayBuffer**: `false`
@@ -305,6 +433,10 @@
 ### String
 
 > `readonly` **String**: `false`
+
+### structuredClone
+
+> `readonly` **structuredClone**: `false`
 
 ### SubtleCrypto
 
@@ -346,18 +478,6 @@
 
 > `readonly` **TypeError**: `false`
 
-### URIError
-
-> `readonly` **URIError**: `false`
-
-### URL
-
-> `readonly` **URL**: `false`
-
-### URLSearchParams
-
-> `readonly` **URLSearchParams**: `false`
-
 ### Uint16Array
 
 > `readonly` **Uint16Array**: `false`
@@ -373,6 +493,26 @@
 ### Uint8ClampedArray
 
 > `readonly` **Uint8ClampedArray**: `false`
+
+### undefined
+
+> `readonly` **undefined**: `false`
+
+### unescape
+
+> `readonly` **unescape**: `false`
+
+### URIError
+
+> `readonly` **URIError**: `false`
+
+### URL
+
+> `readonly` **URL**: `false`
+
+### URLSearchParams
+
+> `readonly` **URLSearchParams**: `false`
 
 ### WeakMap
 
@@ -406,146 +546,6 @@
 
 > `readonly` **WritableStreamDefaultWriter**: `false`
 
-### \_\_dirname
-
-> `readonly` **\_\_dirname**: `false`
-
-### \_\_filename
-
-> `readonly` **\_\_filename**: `false`
-
-### atob
-
-> `readonly` **atob**: `false`
-
-### btoa
-
-> `readonly` **btoa**: `false`
-
-### clearImmediate
-
-> `readonly` **clearImmediate**: `false`
-
-### clearInterval
-
-> `readonly` **clearInterval**: `false`
-
-### clearTimeout
-
-> `readonly` **clearTimeout**: `false`
-
-### console
-
-> `readonly` **console**: `false`
-
-### crypto
-
-> `readonly` **crypto**: `false`
-
-### decodeURI
-
-> `readonly` **decodeURI**: `false`
-
-### decodeURIComponent
-
-> `readonly` **decodeURIComponent**: `false`
-
-### encodeURI
-
-> `readonly` **encodeURI**: `false`
-
-### encodeURIComponent
-
-> `readonly` **encodeURIComponent**: `false`
-
-### escape
-
-> `readonly` **escape**: `false`
-
-### eval
-
-> `readonly` **eval**: `false`
-
-### exports
-
-> `readonly` **exports**: `true`
-
-### fetch
-
-> `readonly` **fetch**: `false`
-
-### global
-
-> `readonly` **global**: `false`
-
-### globalThis
-
-> `readonly` **globalThis**: `false`
-
-### isFinite
-
-> `readonly` **isFinite**: `false`
-
-### isNaN
-
-> `readonly` **isNaN**: `false`
-
-### module
-
-> `readonly` **module**: `false`
-
-### navigator
-
-> `readonly` **navigator**: `false`
-
-### parseFloat
-
-> `readonly` **parseFloat**: `false`
-
-### parseInt
-
-> `readonly` **parseInt**: `false`
-
-### performance
-
-> `readonly` **performance**: `false`
-
-### process
-
-> `readonly` **process**: `false`
-
-### queueMicrotask
-
-> `readonly` **queueMicrotask**: `false`
-
-### require
-
-> `readonly` **require**: `false`
-
-### setImmediate
-
-> `readonly` **setImmediate**: `false`
-
-### setInterval
-
-> `readonly` **setInterval**: `false`
-
-### setTimeout
-
-> `readonly` **setTimeout**: `false`
-
-### structuredClone
-
-> `readonly` **structuredClone**: `false`
-
-### undefined
-
-> `readonly` **undefined**: `false`
-
-### unescape
-
-> `readonly` **unescape**: `false`
-
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:315](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/assets/config/_eslint.config.mjs.ts#L315)
+[src/assets/config/\_eslint.config.mjs.ts:334](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/assets/config/_eslint.config.mjs.ts#L334)

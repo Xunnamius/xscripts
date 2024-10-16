@@ -14,10 +14,16 @@
 
 ### Variables
 
-- [NODE\_LTS](variables/NODE_LTS.md)
 - [babelExpectedEnvironment](variables/babelExpectedEnvironment.md)
+- [extensionsAcceptedByBabel](variables/extensionsAcceptedByBabel.md)
+- [extensionsJavascript](variables/extensionsJavascript.md)
+- [extensionsTypescript](variables/extensionsTypescript.md)
+- [NODE\_LTS](variables/NODE_LTS.md)
 
 ### Functions
 
+- [hasExtensionAcceptedByBabel](functions/hasExtensionAcceptedByBabel.md)
+- [hasJavascriptExtension](functions/hasJavascriptExtension.md)
+- [hasTypescriptExtension](functions/hasTypescriptExtension.md)
 - [moduleExport](functions/moduleExport.md)
 - [transformer](functions/transformer.md)

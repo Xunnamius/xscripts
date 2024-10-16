@@ -24,10 +24,11 @@
 
 ### Type Aliases
 
+- [AnyFunction](type-aliases/AnyFunction.md)
 - [FixtureAction](type-aliases/FixtureAction.md)
 - [MockArgvOptions](type-aliases/MockArgvOptions.md)
-- [MockEnvOptions](type-aliases/MockEnvOptions.md)
 - [MockedOutputOptions](type-aliases/MockedOutputOptions.md)
+- [MockEnvOptions](type-aliases/MockEnvOptions.md)
 - [ReturnsString](type-aliases/ReturnsString.md)
 - [WithContextProperty](type-aliases/WithContextProperty.md)
 - [WithMockedFixtureOptions](type-aliases/WithMockedFixtureOptions.md)
@@ -35,6 +36,7 @@
 
 ### Functions
 
+- [asMockedFunction](functions/asMockedFunction.md)
 - [describeRootFixture](functions/describeRootFixture.md)
 - [dummyDirectoriesFixture](functions/dummyDirectoriesFixture.md)
 - [dummyFilesFixture](functions/dummyFilesFixture.md)
@@ -49,6 +51,7 @@
 - [npmCopySelfFixture](functions/npmCopySelfFixture.md)
 - [npmLinkSelfFixture](functions/npmLinkSelfFixture.md)
 - [protectedImportFactory](functions/protectedImportFactory.md)
+- [reconfigureJestGlobalsToSkipTestsInThisFileIfRequested](functions/reconfigureJestGlobalsToSkipTestsInThisFileIfRequested.md)
 - [rootFixture](functions/rootFixture.md)
 - [runnerFactory](functions/runnerFactory.md)
 - [webpackTestFixture](functions/webpackTestFixture.md)

@@ -14,7 +14,7 @@
 
 #### all
 
-> **all**: `undefined` \| `string` \| `unknown`[] \| `string`[] \| `Uint8Array`
+> **all**: `undefined` \| `string` \| `string`[] \| `unknown`[] \| `Uint8Array`
 
 The output of the subprocess with `result.stdout` and `result.stderr` interleaved.
 
@@ -178,7 +178,7 @@ If a signal terminated the subprocess, this property is defined and included in 
 
 #### stdio
 
-> **stdio**: `MapResultStdio`\<readonly [`StdinOptionCommon`\<`false`, `false`\>, `StdoutStderrOptionCommon`\<`false`, `false`\>, `StdoutStderrOptionCommon`\<`false`, `false`\>, `StdioExtraOptionCommon`\<`false`\>] \| readonly [`undefined`, `undefined`, `undefined`] \| readonly [`"pipe"`, `"pipe"`, `"pipe"`] \| readonly [`"inherit"`, `"inherit"`, `"inherit"`] \| readonly [`"ignore"`, `"ignore"`, `"ignore"`] \| readonly [`"overlapped"`, `"overlapped"`, `"overlapped"`], [`RunOptions`](../../../lib/run/type-aliases/RunOptions.md)\>
+> **stdio**: `MapResultStdio`\<readonly [`StdinOptionCommon`\<`false`, `false`\>, `StdoutStderrOptionCommon`\<`false`, `false`\>, `StdoutStderrOptionCommon`\<`false`, `false`\>, `StdioExtraOptionCommon`\<`false`\>] \| readonly [`undefined`, `undefined`, `undefined`] \| readonly [`"pipe"`, `"pipe"`, `"pipe"`] \| readonly [`"inherit"`, `"inherit"`, `"inherit"`] \| readonly [`"ignore"`, `"ignore"`, `"ignore"`] \| readonly [`"overlapped"`, `"overlapped"`, `"overlapped"`], `RunOptions`\>
 
 The output of the subprocess on `stdin`, `stdout`, `stderr` and other file descriptors.
 
@@ -198,4 +198,4 @@ Whether the subprocess timed out due to the `timeout` option.
 
 #### Defined in
 
-[test/setup.ts:631](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/test/setup.ts#L631)
+[test/setup.ts:736](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/test/setup.ts#L736)

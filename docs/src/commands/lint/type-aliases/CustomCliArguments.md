@@ -6,9 +6,13 @@
 
 # Type Alias: CustomCliArguments
 
-> **CustomCliArguments**: [`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md) & `object`
+> **CustomCliArguments**: `Omit`\<[`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md), `"scope"`\> & `object`
 
 ## Type declaration
+
+### allowWarningComments
+
+> **allowWarningComments**: `boolean`
 
 ### ignoreWarnings
 
@@ -28,8 +32,8 @@
 
 ### scope
 
-> **scope**: `"limited"` \| `"all"`
+> **scope**: [`LinterScope`](LinterScope.md)
 
 ## Defined in
 
-[src/commands/lint.ts:39](https://github.com/Xunnamius/xscripts/blob/ce701f3d57da9f82ee0036320bc62d5c51233011/src/commands/lint.ts#L39)
+[src/commands/lint.ts:80](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/commands/lint.ts#L80)

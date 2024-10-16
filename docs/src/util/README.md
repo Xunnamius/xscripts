@@ -8,34 +8,20 @@
 
 ## Index
 
-### Enumerations
-
-- [ProjectMetaAttribute](enumerations/ProjectMetaAttribute.md)
-
-### Type Aliases
-
-- [ProjectMetadata](type-aliases/ProjectMetadata.md)
-
-### Variables
-
-- [fsConstants](variables/fsConstants.md)
-
 ### Functions
 
 - [\_\_read\_file\_sync](functions/read_file_sync.md)
 - [\_\_write\_file\_sync](functions/write_file_sync.md)
 - [checkAllChoiceIfGivenIsByItself](functions/checkAllChoiceIfGivenIsByItself.md)
-- [checkChoicesNotEmpty](functions/checkChoicesNotEmpty.md)
+- [checkArrayNotEmpty](functions/checkArrayNotEmpty.md)
 - [checkIsNotNegative](functions/checkIsNotNegative.md)
 - [checkIsNotNil](functions/checkIsNotNil.md)
-- [deriveVirtualPrettierIgnoreLines](functions/deriveVirtualPrettierIgnoreLines.md)
-- [findMainBinFile](functions/findMainBinFile.md)
-- [findProjectFiles](functions/findProjectFiles.md)
-- [getImportSpecifierEntriesFromFiles](functions/getImportSpecifierEntriesFromFiles.md)
-- [getProjectMetadata](functions/getProjectMetadata.md)
+- [copyFile](functions/copyFile.md)
 - [hasExitCode](functions/hasExitCode.md)
-- [isAccessible](functions/isAccessible.md)
 - [isNonEmptyString](functions/isNonEmptyString.md)
+- [makeDirectory](functions/makeDirectory.md)
 - [readFile](functions/readFile.md)
 - [runGlobalPreChecks](functions/runGlobalPreChecks.md)
+- [withGlobalBuilder](functions/withGlobalBuilder.md)
+- [withGlobalUsage](functions/withGlobalUsage.md)
 - [writeFile](functions/writeFile.md)

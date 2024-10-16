@@ -11,15 +11,18 @@
 ### Enumerations
 
 - [Linter](enumerations/Linter.md)
+- [LinterScope\_](enumerations/LinterScope.md)
 
 ### Type Aliases
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
+- [LinterScope](type-aliases/LinterScope.md)
 
 ### Variables
 
-- [limitedScopeDirectories](variables/limitedScopeDirectories.md)
 - [linters](variables/linters.md)
+- [LinterScope](variables/LinterScope.md)
+- [linterScopes](variables/linterScopes.md)
 
 ### Functions
 

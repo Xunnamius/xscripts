@@ -10,12 +10,17 @@
 
 ### Enumerations
 
-- [TestScope](enumerations/TestScope.md)
+- [TestScope\_](enumerations/TestScope.md)
 - [TestType](enumerations/TestType.md)
 
 ### Type Aliases
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
+- [TesterScope](type-aliases/TesterScope.md)
+
+### Variables
+
+- [TesterScope](variables/TesterScope.md)
 
 ### Functions
 

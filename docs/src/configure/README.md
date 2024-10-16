@@ -8,6 +8,11 @@
 
 ## Index
 
+### Enumerations
+
+- [GlobalScope](enumerations/GlobalScope.md)
+- [LimitedGlobalScope](enumerations/LimitedGlobalScope.md)
+
 ### Type Aliases
 
 - [GlobalCliArguments](type-aliases/GlobalCliArguments.md)
@@ -16,6 +21,7 @@
 ### Variables
 
 - [$executionContext](variables/$executionContext.md)
+- [globalCliArguments](variables/globalCliArguments.md)
 
 ### Functions
 
