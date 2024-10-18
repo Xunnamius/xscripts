@@ -1,6 +1,7 @@
 import { createDebugLogger } from 'multiverse#rejoinder';
 
-import { type RelativePath, type AbsolutePath } from '#project-utils src/fs/common.ts';
+import { globalDebuggerNamespace } from '#project-utils src/constant.ts';
+import { type AbsolutePath, type RelativePath } from '#project-utils src/fs/common.ts';
 
 // @ts-expect-error: used in documentation
 import type {
@@ -11,8 +12,6 @@ import type {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   webpackConfigProjectBase
 } from '#project-utils src/fs/exports/well-known-constants.ts';
-
-import { globalDebuggerNamespace } from '#project-utils src/constant.ts';
 
 import type { PackageJson } from 'type-fest';
 
@@ -199,9 +198,12 @@ export type ProjectMetadata = {
   project: RootPackage;
   /**
    * An object representing the current sub-root (determined by current working
-   * directory) in a monorepo project, or `undefined` if in a polyrepo-type project
-   * or when the current working directory is not within any sub-root in a
-   * monorepo project.
+   * directory) in a monorepo project, or `undefined` if in a polyrepo-type
+   * project or when the current working directory is not within any sub-root in
+   * a monorepo project.
+   *
+   * Note that `package`, if defined, always strictly equals (`===`) one value
+   * in {@link RootPackage.packages}'s `all` property.
    */
   package: WorkspacePackage | undefined;
 };

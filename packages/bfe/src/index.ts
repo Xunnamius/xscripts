@@ -438,10 +438,17 @@ export type BfeSubOptionOfExtensionValue<
   CustomExecutionContext extends ExecutionContext
 > = {
   /**
-   * This function receives the `superOptionValue` of the "super option" (i.e.
-   * the key in `{ subOptionOf: { key: { when: ... }}}`), which you are free to
-   * type as you please, and the fully parsed `argv`. This function must return
-   * a boolean indicating whether the `update` function should run or not.
+   * This function receives the `superOptionValue` of the so-called "super
+   * option" (i.e. `key` in `{ subOptionOf: { key: { when: ... }}}`), which you
+   * are free to type as you please, and the fully parsed `argv` (not including
+   * any default values). This function must return a boolean indicating whether
+   * the `update` function should run or not.
+   *
+   * Note that this function is only invoked if the super option is given on the
+   * command line. If it is not, neither this function nor `update` will ever
+   * run. Therefore, if your updater should run whenever the super option is
+   * given, regardless of its value, it is acceptable to use `{ when: () => true
+   * }`
    */
   when: (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -450,8 +457,8 @@ export type BfeSubOptionOfExtensionValue<
   ) => boolean;
   /**
    * This function receives the current configuration for this option
-   * (`oldOptionConfig`) and the fully parsed `argv`, and must return the new
-   * configuration for this option.
+   * (`oldOptionConfig`) and the fully parsed `argv` (not including any default
+   * values), and must return the new configuration for this option.
    *
    * This configuration will completely overwrite the old configuration. To
    * extend the old configuration instead, spread it. For example:
