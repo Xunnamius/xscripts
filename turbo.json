@@ -30,10 +30,8 @@
       "inputs": [
         "src/**",
         "types/**",
-        "lib/**",
-        "packages/**/src/**",
-        "packages/**/types/**",
-        "packages/**/lib/**"
+        "packages/*/src/**",
+        "packages/*/types/**"
       ]
     }
   }
