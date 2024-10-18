@@ -131,16 +131,8 @@ npx turbo release --filter=pkg-1 --filter=pkg-2
 > [Turbo][24] solves this problem and should be preferred over building packages
 > by hand.
 
-There are two ways to release a specific package by hand. The first is using
-[xscripts][12]:
-
-```bash
-# cd packages/some-pkg
-# npx xscripts release --help
-npx xscripts release
-```
-
-Alternatively, you can call each individual NPM script by hand:
+To manually execute the release procedure, run the following npm scripts in the
+specified order:
 
 > If one of these steps fails, you should address the failure before running the
 > next step.
