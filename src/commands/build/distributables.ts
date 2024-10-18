@@ -237,7 +237,7 @@ export default async function command({
     builder,
     description: 'Transpile sources and assets into production-ready distributables',
     usage: withGlobalUsage(
-      `$1. Also performs lightweight validation of import specifiers to ensure well-formedness.
+      `$1. Also performs lightweight validation of import specifiers and package entry points to ensure baseline consistency, integrity, and well-formedness of build output.
 
 ${isCwdANextJsPackage ? "Note that the current working directory points to a Next.js package! When attempting to build such a package, this command will defer entirely to `next build`, which disables several of this command's options.\n\n" : ''}"Source," "sources," or "source files" describe all the build targets that will be transpiled while "assets" or "asset files" describe the remaining targets that are copied-through to the output directory without modification.
 

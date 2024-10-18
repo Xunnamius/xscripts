@@ -61,6 +61,11 @@ export default function command({
       description:
         'Pull latest package.json dependency versions from other packages in this project',
       default: true
+    },
+    force: {
+      boolean: true,
+      description: "Dangerously take ownership of the project's concurrency lock",
+      default: true
     }
   });
 
@@ -92,7 +97,7 @@ The only available scope is "${ReleaseScope.ThisPackage}"; hence, when invoking 
 
 Provide --synchronize-interdependencies to run a version of \`xscripts project renovate --synchronize-interdependencies\`, except the renovation is limited to the current package's package.json rather than every package's package.json across the entire project.
 
-This command was designed to handle concurrent execution in a safe manner. A simple file-based locking mechanism is used to ensure only one instance of this command is performing Git operations and/or running semantic-release at any given moment. If a new instance of this command begins executing before another instance has finished, the new instance will backoff and try again later.
+This command was designed to handle concurrent execution in a safe manner. A simple file-based locking mechanism is used to ensure only one instance of this command is performing Git operations and/or running semantic-release at any given moment. If a new instance of this command begins executing before another instance has finished, the new instance will backoff and try again later. If for some reason a deadlock occurs that prevents this command from running, providing --force will forcefully and _dangerously_ take ownership of any existing locks associated with this project. If used recklessly, --force could result in a deeply and unpredictably broken release process.
 
 Uploading test coverage data to Codecov is only performed if any coverage data exists. A warning will be issued if no coverage data exists. Coverage data can be generated using \`xscripts test --coverage\` (which is prerelease task #8). When uploading coverage data, the package's name is used to derive a flag (https://docs.codecov.com/docs/flags). Codecov uses flags to map reports to specific packages in its UI and coverage badges.
 
@@ -133,7 +138,7 @@ Note: this command will refuse to release a package version below 1.0.0. This is
       // TODO: sanity check exports to ensure all entry points are valid
 
       // TODO: becomes part of xscripts build distributables (and project lint)
-      // TODO: sanity check all node_modules imports are included among package.json dependencies and no extraneous dependencies are included (only issue warning if this last check fails)
+      // TODO: sanity check all node_modules imports are included among package.json dependencies and no extraneous dependencies (dev or devDep) are included (only issue warning if this last check fails)
 
       // TODO: ensure simultaneous releases are supported (backoff if locked)
 
