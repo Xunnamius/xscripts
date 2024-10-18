@@ -5,6 +5,21 @@
  */
 const debug = (await import('debug')).default('xscripts:config:remark');
 
+export const noUndefinedReferencesPlugin = [
+  'lint-no-undefined-references',
+  { allow: [/![A-Z]+/] }
+];
+
+/**
+ * Remark configuration loaded when `NODE_ENV === 'lint-no-undef'`. The goal
+ * here is to check for undefined references. This would normally be something
+ * to do ad hoc on the CLI, but we need to pass remark a regular expression to
+ * do this optimally, which means we need to load the configuration via JS.
+ *
+ * @type {Config}
+ */
+const lintNoUndefConfig = { plugins: ['gfm', noUndefinedReferencesPlugin] };
+
 /**
  * Remark configuration loaded when `NODE_ENV === 'lint'`. The goal here is to
  * check for things that will not be corrected by prettier or remark during a
@@ -41,7 +56,7 @@ const lintConfig = {
     'lint-no-shortcut-reference-image',
     'lint-no-shortcut-reference-link',
     'lint-no-tabs',
-    'lint-no-undefined-references',
+    noUndefinedReferencesPlugin,
     'lint-ordered-list-marker-value',
     ['lint-strikethrough-marker', '~~'],
     // ? Prettier will reformat list markers UNLESS they precede checkboxes
@@ -79,30 +94,38 @@ const formatConfig = {
 
 debug('saw process.env.NODE_ENV: %O', process.env.NODE_ENV);
 
-if (!['lint', 'format'].includes(process.env.NODE_ENV)) {
-  throw new Error('remark expects NODE_ENV to be one of either: lint, format');
+if (!['lint', 'lint-no-undef', 'format'].includes(process.env.NODE_ENV)) {
+  throw new Error(
+    'remark expects NODE_ENV to be one of either: lint, lint-no-undef, format'
+  );
 }
 
 /**
  * @type {Config}
  */
-const config = {
-  settings: {
-    bullet: '-',
-    emphasis: '_',
-    fences: true,
-    listItemIndent: 'one',
-    rule: '-',
-    strong: '*',
-    tightDefinitions: true,
-    ...(process.env.NODE_ENV === 'lint' ? lintConfig.settings : formatConfig.settings)
-  },
-  plugins: [
-    ...(process.env.NODE_ENV === 'lint' ? lintConfig.plugins : formatConfig.plugins)
-  ]
-};
+const config =
+  process.env.NODE_ENV === 'lint-no-undef'
+    ? lintNoUndefConfig
+    : {
+        settings: {
+          bullet: '-',
+          emphasis: '_',
+          fences: true,
+          listItemIndent: 'one',
+          rule: '-',
+          strong: '*',
+          tightDefinitions: true,
+          ...(process.env.NODE_ENV === 'lint'
+            ? lintConfig.settings
+            : formatConfig.settings)
+        },
+        plugins: [
+          ...(process.env.NODE_ENV === 'lint' ? lintConfig.plugins : formatConfig.plugins)
+        ]
+      };
 
 debug('lintConfig: %O', lintConfig);
+debug('lintNoUndefConfig: %O', lintNoUndefConfig);
 debug('formatConfig: %O', formatConfig);
 debug('export config: %O', config);
 
