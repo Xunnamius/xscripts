@@ -9,6 +9,8 @@ module.exports = {
     // ? Pin the CJS version (for the debug package)
     'supports-color',
     // ? Until upstream semantic-release-atam updates, this needs to be frozen
-    '@semantic-release/release-notes-generator'
+    '@semantic-release/release-notes-generator',
+    // TODO: report that the latest version of this package causes issues
+    'remark-lint-no-inline-padding'
   ]
 };
