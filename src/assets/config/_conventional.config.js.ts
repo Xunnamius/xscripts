@@ -4,7 +4,7 @@ import semver from 'semver';
 
 import { softAssert } from 'multiverse#cli-utils error.ts';
 import { interpolateTemplate, toSentenceCase } from 'multiverse#cli-utils util.ts';
-import { analyzeProjectStructure, ProjectAttribute } from 'multiverse#project-utils';
+import { analyzeProjectStructure } from 'multiverse#project-utils';
 import { createDebugLogger } from 'multiverse#rejoinder';
 
 import {
@@ -320,12 +320,10 @@ export function moduleExport(
         debug_(`saw version: ${commit.version!}`);
 
         if (commit.version) {
-          const { type, package: pkg } = analyzeProjectStructure.sync();
+          const { package: pkg } = analyzeProjectStructure.sync();
 
-          if (type === ProjectAttribute.Monorepo) {
-            debug_('monorepo context detected');
-            // TODO: consider replacing softAssert and throw new Error instead
-            softAssert(pkg, ErrorMessage.CannotRunOutsideRoot());
+          if (pkg) {
+            debug_('sub-root package context detected');
 
             const {
               json: { name: pkgName }
@@ -335,14 +333,13 @@ export function moduleExport(
 
             debug_(`monorepo package: ${pkgName}`);
 
-            // TODO: remove the .{5,} bit and make this more generic so that
-            // TODO: version aliases like "beta" and "-canary.2" will work. Also
-            // TODO: test that such aliases/tags function properly!
-            if (new RegExp(`^${pkgName}@.{5,}$`).test(commit.version)) {
+            if (new RegExp(`^${pkgName}@.+$`).test(commit.version)) {
               // ? Remove the package name from the version string
               commit.version = commit.version.split('@').at(-1)!;
               debug_(`using version: ${commit.version}`);
             }
+          } else {
+            debug_('root package context detected');
           }
 
           decision = !!semver.valid(commit.version) && !semver.prerelease(commit.version);
