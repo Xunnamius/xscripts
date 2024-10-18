@@ -12,6 +12,10 @@
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
 
+### Variables
+
+- [releaseScopes](variables/releaseScopes.md)
+
 ### Functions
 
 - [default](functions/default.md)

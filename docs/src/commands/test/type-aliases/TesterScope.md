@@ -6,10 +6,10 @@
 
 # Type Alias: TesterScope
 
-> **TesterScope**: [`GlobalScope`](../../../configure/enumerations/GlobalScope.md) \| [`TestScope_`](../enumerations/TestScope.md)
+> **TesterScope**: [`DefaultGlobalScope`](../../../configure/enumerations/DefaultGlobalScope.md) \| [`TestScope_`](../enumerations/TestScope.md)
 
 The context in which to search for test files.
 
 ## Defined in
 
-[src/commands/test.ts:70](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/commands/test.ts#L70)
+[src/commands/test.ts:70](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/commands/test.ts#L70)

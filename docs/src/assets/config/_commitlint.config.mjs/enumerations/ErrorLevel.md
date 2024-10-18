@@ -18,7 +18,7 @@ https://github.com/conventional-changelog/commitlint/blob/master/docs/reference/
 
 #### Defined in
 
-[src/assets/config/\_commitlint.config.mjs.ts:15](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/assets/config/_commitlint.config.mjs.ts#L15)
+[src/assets/config/\_commitlint.config.mjs.ts:16](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/assets/config/_commitlint.config.mjs.ts#L16)
 
 ***
 
@@ -28,7 +28,7 @@ https://github.com/conventional-changelog/commitlint/blob/master/docs/reference/
 
 #### Defined in
 
-[src/assets/config/\_commitlint.config.mjs.ts:17](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/assets/config/_commitlint.config.mjs.ts#L17)
+[src/assets/config/\_commitlint.config.mjs.ts:18](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/assets/config/_commitlint.config.mjs.ts#L18)
 
 ***
 
@@ -38,4 +38,4 @@ https://github.com/conventional-changelog/commitlint/blob/master/docs/reference/
 
 #### Defined in
 
-[src/assets/config/\_commitlint.config.mjs.ts:16](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/assets/config/_commitlint.config.mjs.ts#L16)
+[src/assets/config/\_commitlint.config.mjs.ts:17](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/assets/config/_commitlint.config.mjs.ts#L17)

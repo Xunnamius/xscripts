@@ -23,4 +23,4 @@ passed via `release.config.js`.
 
 ## Defined in
 
-[src/assets/config/\_release.config.js.ts:198](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/assets/config/_release.config.js.ts#L198)
+[src/assets/config/\_release.config.js.ts:200](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/assets/config/_release.config.js.ts#L200)

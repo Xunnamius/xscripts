@@ -17,7 +17,7 @@ non-distributables). See this command's options configuration for details.
 
 #### Defined in
 
-[src/commands/build/distributables.ts:81](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/commands/build/distributables.ts#L81)
+[src/commands/build/distributables.ts:86](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/commands/build/distributables.ts#L86)
 
 ***
 
@@ -27,4 +27,4 @@ non-distributables). See this command's options configuration for details.
 
 #### Defined in
 
-[src/commands/build/distributables.ts:82](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/commands/build/distributables.ts#L82)
+[src/commands/build/distributables.ts:87](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/commands/build/distributables.ts#L87)

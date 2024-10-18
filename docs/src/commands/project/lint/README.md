@@ -12,6 +12,10 @@
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
 
+### Variables
+
+- [projectLinterScopes](variables/projectLinterScopes.md)
+
 ### Functions
 
 - [default](functions/default.md)

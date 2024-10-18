@@ -11,9 +11,17 @@
 A version of withStandardBuilder that expects `CustomCliArguments` to
 extend [GlobalCliArguments](../../configure/type-aliases/GlobalCliArguments.md).
 
+When providing a `customBuilder` function or object, any key in the returned
+object that is also a key in [globalCliArguments](../../configure/variables/globalCliArguments.md) will have its value
+merged with the value in [globalCliArguments](../../configure/variables/globalCliArguments.md) _instead_ of fully
+overwriting it. This means you can pass minimal configuration values for the
+keys that are also in [globalCliArguments](../../configure/variables/globalCliArguments.md) and those values will be
+merged over the corresponding default configuration value in
+[globalCliArguments](../../configure/variables/globalCliArguments.md).
+
 ## Type Parameters
 
-• **CustomCliArguments** *extends* `Omit`\<[`GlobalCliArguments`](../../configure/type-aliases/GlobalCliArguments.md), `"scope"`\> & `object`
+• **CustomCliArguments** *extends* [`GlobalCliArguments`](../../configure/type-aliases/GlobalCliArguments.md)\<`string`\>
 
 ## Parameters
 
@@ -25,4 +33,4 @@ extend [GlobalCliArguments](../../configure/type-aliases/GlobalCliArguments.md).
 
 ## Defined in
 
-[src/util.ts:27](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/util.ts#L27)
+[src/util.ts:35](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/util.ts#L35)

@@ -12,6 +12,10 @@
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
 
+### Variables
+
+- [projectRenovateScopes](variables/projectRenovateScopes.md)
+
 ### Functions
 
 - [default](functions/default.md)

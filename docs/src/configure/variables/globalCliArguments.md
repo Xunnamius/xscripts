@@ -15,27 +15,35 @@ construct its `builder`.
 This object is manually synchronized with [GlobalCliArguments](../type-aliases/GlobalCliArguments.md), but the
 keys may differ slightly (e.g. hyphens may be elided in favor of camelCase).
 
+When providing a custom BfeBuilderObject instance to
+[withGlobalBuilder](../../util/functions/withGlobalBuilder.md), any key specified in that instance that is also a
+key in this object (`globalCliArguments`) will have its value merged with the
+value in this object _instead_ of fully overwriting it. This means you can
+pass minimal configuration values for the keys that are also in
+`globalCliArguments` and those values will be merged over the corresponding
+default configuration value in `globalCliArguments`.
+
 ## Type declaration
 
 ### scope
 
-> `readonly` **scope**: `object`
+> **scope**: `object`
 
 ### scope.choices
 
-> `readonly` **choices**: [`GlobalScope`](../enumerations/GlobalScope.md)[]
+> **choices**: [`DefaultGlobalScope`](../enumerations/DefaultGlobalScope.md)[]
 
 ### scope.default
 
-> `readonly` **default**: [`ThisPackage`](../enumerations/GlobalScope.md#thispackage) = `GlobalScope.ThisPackage`
+> **default**: [`DefaultGlobalScope`](../enumerations/DefaultGlobalScope.md) = `DefaultGlobalScope.ThisPackage`
 
 ### scope.description
 
-> `readonly` **description**: `"Which files this command will consider"` = `'Which files this command will consider'`
+> **description**: `string` = `'Which files this command will consider when scanning the filesystem'`
 
 ### scope.string
 
-> `readonly` **string**: `true` = `true`
+> **string**: `true` = `true`
 
 ## See
 
@@ -43,4 +51,4 @@ StandardCommonCliArguments
 
 ## Defined in
 
-[src/configure.ts:100](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/configure.ts#L100)
+[src/configure.ts:127](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/configure.ts#L127)

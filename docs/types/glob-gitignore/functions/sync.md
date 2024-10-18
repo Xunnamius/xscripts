@@ -20,4 +20,4 @@
 
 ## Defined in
 
-[types/glob-gitignore.d.ts:18](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/types/glob-gitignore.d.ts#L18)
+[types/glob-gitignore.d.ts:18](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/types/glob-gitignore.d.ts#L18)

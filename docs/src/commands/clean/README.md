@@ -12,6 +12,10 @@
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
 
+### Variables
+
+- [defaultCleanExcludedPaths](variables/defaultCleanExcludedPaths.md)
+
 ### Functions
 
 - [default](functions/default.md)

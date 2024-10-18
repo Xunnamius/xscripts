@@ -23,6 +23,7 @@
 ### Variables
 
 - [availableOutputOrders](variables/availableOutputOrders.md)
+- [changelogBuilderScopes](variables/changelogBuilderScopes.md)
 
 ### Functions
 

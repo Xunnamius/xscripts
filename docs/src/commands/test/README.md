@@ -21,6 +21,8 @@
 ### Variables
 
 - [TesterScope](variables/TesterScope.md)
+- [testerScopes](variables/testerScopes.md)
+- [testTypes](variables/testTypes.md)
 
 ### Functions
 

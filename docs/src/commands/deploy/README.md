@@ -18,6 +18,7 @@
 
 ### Variables
 
+- [deployScopes](variables/deployScopes.md)
 - [deployTargets](variables/deployTargets.md)
 
 ### Functions

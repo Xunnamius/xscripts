@@ -18,7 +18,7 @@
 
 ### builder
 
-> **builder**: `BfeBuilderFunction`\<[`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md), [`GlobalExecutionContext`](../../../configure/type-aliases/GlobalExecutionContext.md)\>
+> **builder**: `BfeBuilderFunction`\<[`CustomCliArguments`](../type-aliases/CustomCliArguments.md), [`GlobalExecutionContext`](../../../configure/type-aliases/GlobalExecutionContext.md)\>
 
 ### description
 
@@ -30,7 +30,7 @@
 
 #### Parameters
 
-• **argv**: `Arguments`\<[`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md), [`GlobalExecutionContext`](../../../configure/type-aliases/GlobalExecutionContext.md)\>
+• **argv**: `Arguments`\<[`CustomCliArguments`](../type-aliases/CustomCliArguments.md), [`GlobalExecutionContext`](../../../configure/type-aliases/GlobalExecutionContext.md)\>
 
 #### Returns
 
@@ -42,4 +42,4 @@
 
 ## Defined in
 
-[src/commands/start.ts:30](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/commands/start.ts#L30)
+[src/commands/start.ts:33](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/commands/start.ts#L33)

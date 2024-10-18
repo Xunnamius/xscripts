@@ -10,8 +10,9 @@
 
 ### Enumerations
 
-- [GlobalScope](enumerations/GlobalScope.md)
-- [LimitedGlobalScope](enumerations/LimitedGlobalScope.md)
+- [DefaultGlobalScope](enumerations/DefaultGlobalScope.md)
+- [ThisPackageGlobalScope](enumerations/ThisPackageGlobalScope.md)
+- [UnlimitedGlobalScope](enumerations/UnlimitedGlobalScope.md)
 
 ### Type Aliases
 

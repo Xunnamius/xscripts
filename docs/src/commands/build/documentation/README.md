@@ -12,6 +12,10 @@
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
 
+### Variables
+
+- [documentationBuilderScopes](variables/documentationBuilderScopes.md)
+
 ### Functions
 
 - [default](functions/default.md)

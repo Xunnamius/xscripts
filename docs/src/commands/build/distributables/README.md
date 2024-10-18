@@ -19,7 +19,9 @@
 
 ### Variables
 
+- [distributablesBuilderScopes](variables/distributablesBuilderScopes.md)
 - [intermediateTranspilationEnvironment](variables/intermediateTranspilationEnvironment.md)
+- [moduleSystems](variables/moduleSystems.md)
 
 ### Functions
 

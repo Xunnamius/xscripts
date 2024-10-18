@@ -6,7 +6,7 @@
 
 # Type Alias: CustomCliArguments
 
-> **CustomCliArguments**: `Omit`\<[`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md), `"scope"`\> & `object`
+> **CustomCliArguments**: [`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md)\<[`LinterScope`](LinterScope.md)\> & `object`
 
 ## Type declaration
 
@@ -30,10 +30,6 @@
 
 > **runToCompletion**: `boolean`
 
-### scope
-
-> **scope**: [`LinterScope`](LinterScope.md)
-
 ## Defined in
 
-[src/commands/lint.ts:80](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/commands/lint.ts#L80)
+[src/commands/lint.ts:90](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/commands/lint.ts#L90)

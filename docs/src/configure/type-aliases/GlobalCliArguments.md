@@ -4,9 +4,9 @@
 
 [@-xun/scripts](../../../README.md) / [src/configure](../README.md) / GlobalCliArguments
 
-# Type Alias: GlobalCliArguments
+# Type Alias: GlobalCliArguments\<Scope\>
 
-> **GlobalCliArguments**: `StandardCommonCliArguments` & `object`
+> **GlobalCliArguments**\<`Scope`\>: `StandardCommonCliArguments` & `object`
 
 These properties will be available in the `argv` object of any command that
 uses [withGlobalBuilder](../../util/functions/withGlobalBuilder.md) to construct its `builder`.
@@ -16,9 +16,13 @@ keys may differ slightly (e.g. hyphens may be elided in favor of camelCase).
 
 ## Type declaration
 
-### scope?
+### scope
 
-> `optional` **scope**: [`GlobalScope`](../enumerations/GlobalScope.md)
+> **scope**: `Scope`
+
+## Type Parameters
+
+• **Scope** *extends* `string` = [`DefaultGlobalScope`](../enumerations/DefaultGlobalScope.md)
 
 ## See
 
@@ -26,4 +30,4 @@ StandardCommonCliArguments
 
 ## Defined in
 
-[src/configure.ts:86](https://github.com/Xunnamius/xscripts/blob/86b76a595de7a0bbf273ef7bb201d4c62f5e3d77/src/configure.ts#L86)
+[src/configure.ts:104](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/configure.ts#L104)
