@@ -240,11 +240,11 @@ export async function generateNotes(
   pluginDebug('entered step function');
 
   const {
-    env: { XSCRIPTS_RELEASE_UPDATE_CHANGELOG }
+    env: { XSCRIPTS_RELEASE_REBUILD_CHANGELOG }
   } = context;
 
-  const shouldUpdateChangelog = XSCRIPTS_RELEASE_UPDATE_CHANGELOG !== 'false';
-  pluginDebug('shouldUpdateChangelog: %O', shouldUpdateChangelog);
+  const shouldRebuildChangelog = XSCRIPTS_RELEASE_REBUILD_CHANGELOG !== 'false';
+  pluginDebug('shouldRebuildChangelog: %O', shouldRebuildChangelog);
 
   const pseudoBfGlobalExecutionContext = await configureExecutionContext({
     commands: new Map(),
@@ -270,8 +270,8 @@ export async function generateNotes(
 
   await writeFile(releaseSectionPath, rawNotes);
 
-  if (shouldUpdateChangelog) {
-    pluginDebug('updating changelog (calling out to xscripts api)');
+  if (shouldRebuildChangelog) {
+    pluginDebug('rebuilding changelog (calling out to xscripts api)');
 
     await buildChangelogHandler({
       [$executionContext]: pseudoBfGlobalExecutionContext,
@@ -293,7 +293,7 @@ export async function generateNotes(
 
     pluginDebug('xscripts api call completed successfully');
   } else {
-    pluginDebug('skipped updating changelog');
+    pluginDebug('skipped rebuilding changelog');
   }
 
   pluginDebug(
