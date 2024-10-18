@@ -1,5 +1,5 @@
 import { readlink } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve as toAbsolutePath } from 'node:path';
 
 import { type ConfigureExecutionContext } from '@black-flag/core';
 import { defaultVersionTextDescription } from '@black-flag/core/util';
@@ -152,20 +152,38 @@ export const configureExecutionContext: ConfigureExecutionContext<GlobalExecutio
 
       const xscriptsBinFileLink = join(nodeModulesBinDir, globalCliName);
 
+      rootDebugLogger('distDir: %O', distDir);
+      rootDebugLogger('nodeModulesBinDir: %O', nodeModulesBinDir);
+      rootDebugLogger('xscriptsBinFileLink: %O', xscriptsBinFileLink);
+
       if (await isAccessible({ path: xscriptsBinFileLink })) {
-        const xscriptsBinFileActual = resolve(
-          projectMetadata.project.root,
+        rootDebugLogger('xscriptsBinFileLink is accessible');
+
+        const xscriptsBinFileActual = toAbsolutePath(
+          dirname(xscriptsBinFileLink),
           await readlink(xscriptsBinFileLink)
         );
 
-        // ? Lets us know when we're loading xscripts under special conditions.
-        const developmentTag = xscriptsBinFileActual.startsWith(distDir) ? '' : ' (dev)';
+        rootDebugLogger('xscriptsBinFileActual: %O', xscriptsBinFileActual);
+
+        const startsWithDistDir = xscriptsBinFileActual.startsWith(distDir);
+        const selfDirMatchesDistDir = __dirname === dirname(xscriptsBinFileActual);
+
+        rootDebugLogger('startsWithDistDir: %O', startsWithDistDir);
+        rootDebugLogger('selfDirMatchesDistDir: %O', selfDirMatchesDistDir);
+
+        // ? Lets us know when we're loading a custom-built "dev" xscripts.
+        const developmentTag = startsWithDistDir && selfDirMatchesDistDir ? ' (dev)' : '';
+
+        rootDebugLogger('add development tag?: %O', !!developmentTag);
 
         standardContext.state.globalVersionOption = {
           name: 'version',
           description: defaultVersionTextDescription,
           text: String(projectMetadata.project.json.version) + developmentTag
         };
+      } else {
+        rootDebugLogger('xscriptsBinFileLink was not accessible');
       }
     }
 
