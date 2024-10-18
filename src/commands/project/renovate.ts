@@ -78,6 +78,7 @@ export default function command({
       // TODO (--clone-remote-wiki to clone the GitHub wiki (if it exists) into .wiki, reconfigure the local branch from master to main)
       // TODO (--regenerate-gpg-key regenerates the project-specific GPG key and automatically find and delete the old one from the appropriate account, all automatically)
       // TODO (need to handle assetverse aliasing concerns (example in quiz-euphoriareign))
+      // TODO (xscripts project renovate --synchronize-interdependencies (If monorepo, update all package.json-s dependencies with latest versions from other packages in the monorepo))
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
