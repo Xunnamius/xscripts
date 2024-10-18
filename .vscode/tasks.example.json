@@ -8,10 +8,10 @@
       "type": "process",
       "command": "npx",
       "args": [
-        "xscripts",
+        "@-xun/scripts",
         "lint",
         "--scope",
-        "all",
+        "unlimited",
         "--linter",
         "tsc",
         "eslint",
