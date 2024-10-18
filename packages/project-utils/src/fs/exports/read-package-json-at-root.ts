@@ -1,7 +1,7 @@
-import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 import { PackageJsonNotParsableError } from '#project-utils src/error.ts';
-import { type AbsolutePath } from '#project-utils src/fs/index.ts';
 import { readJson } from '#project-utils src/fs/exports/read-json.ts';
+import { type AbsolutePath } from '#project-utils src/fs/index.ts';
+import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 
 import type { PackageJson, Promisable } from 'type-fest';
 

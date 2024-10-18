@@ -4,29 +4,15 @@ import { dirname, join as joinPath } from 'node:path';
 import { sync as findUp } from 'find-up~5';
 
 import {
-  type GlobGitignoreOptions,
+  glob as globAsync,
   sync as globSync,
-  glob as globAsync
+  type GlobGitignoreOptions
 } from 'glob-gitignore';
 
 import {
-  ErrorMessage,
-  DuplicatePackageIdError,
-  DuplicatePackageNameError,
-  NotAGitRepositoryError,
-  ProjectError
-} from '#project-utils src/error.ts';
-
-import {
-  isAccessible,
-  ensurePathIsAbsolute,
-  readPackageJsonAtRoot,
-  deriveVirtualGitignoreLines,
-  nextjsConfigProjectBase,
-  webpackConfigProjectBase,
-  type AbsolutePath,
-  type RelativePath
-} from '#project-utils src/fs/index.ts';
+  _internalProjectMetadataCache,
+  cacheDebug
+} from '#project-utils src/analyze/cache.ts';
 
 import {
   debug as debug_,
@@ -40,13 +26,28 @@ import {
   type WorkspacePackageId
 } from '#project-utils src/analyze/common.ts';
 
+import { packageRootToId } from '#project-utils src/analyze/exports/package-root-to-id.ts';
+
 import {
-  _internalProjectMetadataCache,
-  cacheDebug
-} from '#project-utils src/analyze/cache.ts';
+  DuplicatePackageIdError,
+  DuplicatePackageNameError,
+  ErrorMessage,
+  NotAGitRepositoryError,
+  ProjectError
+} from '#project-utils src/error.ts';
+
+import {
+  deriveVirtualGitignoreLines,
+  ensurePathIsAbsolute,
+  isAccessible,
+  nextjsConfigProjectBase,
+  readPackageJsonAtRoot,
+  webpackConfigProjectBase,
+  type AbsolutePath,
+  type RelativePath
+} from '#project-utils src/fs/index.ts';
 
 import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
-import { packageRootToId } from '#project-utils src/analyze/exports/package-root-to-id.ts';
 
 import type { PackageJson, Promisable } from 'type-fest';
 

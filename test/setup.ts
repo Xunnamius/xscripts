@@ -6,20 +6,20 @@ import { tmpdir } from 'node:os';
 import { basename, join as joinPath, resolve as resolvePath } from 'node:path';
 
 import glob from 'glob';
+import { simpleGit, type SimpleGit } from 'simple-git';
 import uniqueFilename from 'unique-filename';
 // ? https://github.com/jest-community/jest-extended#typescript
 import 'jest-extended';
 import 'jest-extended/all';
-import { type SimpleGit, simpleGit } from 'simple-git';
 
+import { webpackConfigProjectBase } from 'multiverse#project-utils fs/exports/well-known-constants.ts';
 import { createDebugLogger, type ExtendedDebugger } from 'multiverse#rejoinder';
 import { run, type RunReturnType } from 'multiverse#run';
-import { webpackConfigProjectBase } from 'multiverse#project-utils fs/exports/well-known-constants.ts';
 
 import { name as pkgName, version as pkgVersion } from '# package.json';
 
-import type { LiteralUnion, Promisable } from 'type-fest';
 import type { Options as ExecaOptions } from 'execa' with { 'resolution-mode': 'import' };
+import type { LiteralUnion, Promisable } from 'type-fest';
 
 const globalDebug = createDebugLogger({ namespace: `${pkgName}:jest-setup` });
 

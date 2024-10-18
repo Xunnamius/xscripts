@@ -3,7 +3,6 @@ import { Manager } from '@listr2/manager';
 import { type ExtendedDebugger } from 'multiverse#debug';
 
 import {
-  TAB,
   createDebugLogger,
   createGenericLogger,
   createListrManager,
@@ -14,6 +13,7 @@ import {
   enableLoggingByTag,
   getLoggersByType,
   resetInternalState,
+  TAB,
   type ExtendedLogger,
   type GenericListrTask
 } from 'multiverse#rejoinder';

@@ -1,32 +1,32 @@
 import { runNoRejectOnBadExit } from 'multiverse#run';
 
+import { pathToPackage } from '#project-utils src/analyze/exports/path-to-package.ts';
+import { ErrorMessage } from '#project-utils src/error.ts';
+import { type AbsolutePath, type RelativePath } from '#project-utils src/fs/index.ts';
+
 import {
   analyzeProjectStructure,
+  assetPrefix,
+  clearInternalCache,
+  gatherImportEntriesFromFiles,
+  gatherPackageBuildTargets,
   gatherPackageSrcFiles,
   gatherProjectFiles,
-  clearInternalCache,
   generatePackageJsonEngineMaintainedNodeVersions,
   packageRootToId,
   ProjectAttribute,
-  gatherImportEntriesFromFiles,
-  gatherPackageBuildTargets,
-  assetPrefix,
-  type RootPackage,
-  type WorkspacePackage,
+  type PackageBuildTargets,
   type ProjectMetadata,
-  type PackageBuildTargets
+  type RootPackage,
+  type WorkspacePackage
 } from '#project-utils src/index.ts';
 
 import {
-  type FixtureName,
   fixtures,
   fixtureToProjectMetadata,
-  patchReadPackageJsonAtRoot
+  patchReadPackageJsonAtRoot,
+  type FixtureName
 } from '#project-utils test/helpers/dummy-repo.ts';
-
-import { pathToPackage } from '#project-utils src/analyze/exports/path-to-package.ts';
-import { type RelativePath, type AbsolutePath } from '#project-utils src/fs/index.ts';
-import { ErrorMessage } from '#project-utils src/error.ts';
 
 import { asMockedFunction } from 'testverse setup.ts';
 

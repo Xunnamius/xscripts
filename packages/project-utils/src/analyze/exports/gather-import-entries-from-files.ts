@@ -7,13 +7,13 @@ import {
   type Options as AccumulatorOptions
 } from 'multiverse#babel-plugin-metadata-accumulator';
 
-import { type AbsolutePath } from '#project-utils src/fs/index.ts';
-import { type SyncVersionOf, type ParametersNoFirst } from '#project-utils src/util.ts';
-import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
-import { debug as debug_ } from '#project-utils src/analyze/common.ts';
-
 // TODO: update this to an @-xun/scripts import instead
 import { hasExtensionAcceptedByBabel } from '# src/assets/config/_babel.config.js.ts';
+
+import { debug as debug_ } from '#project-utils src/analyze/common.ts';
+import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
+import { type AbsolutePath } from '#project-utils src/fs/index.ts';
+import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 
 import type { Promisable } from 'type-fest';
 

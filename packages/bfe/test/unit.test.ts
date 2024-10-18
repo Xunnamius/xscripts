@@ -4,17 +4,17 @@
 import { setTimeout as delay } from 'node:timers/promises';
 import { isNativeError } from 'node:util/types';
 
+import { $executionContext, isCliError, type Arguments } from '@black-flag/core';
+
 import {
   isCommandNotImplementedError,
   type ExecutionContext
 } from '@black-flag/core/util';
 
-import { $executionContext, isCliError, type Arguments } from '@black-flag/core';
 import isEqual from 'lodash.isequal';
 import deepMerge from 'lodash.merge';
 
 import { ErrorMessage } from '#bfe src/error.ts';
-import { $artificiallyInvoked, $exists } from '#bfe src/symbols.ts';
 
 import {
   getInvocableExtendedHandler,
@@ -22,6 +22,8 @@ import {
   withUsageExtensions,
   type AsStrictExecutionContext
 } from '#bfe src/index.ts';
+
+import { $artificiallyInvoked, $exists } from '#bfe src/symbols.ts';
 
 import type { PartialDeep } from 'type-fest';
 import type { ParserConfigurationOptions } from 'yargs';
@@ -6119,7 +6121,6 @@ function generateFakeExecutionContext() {
 async function trycatch<T extends () => any>(fn: T): Promise<ReturnType<T> | Error> {
   try {
     // ? fn() could return literally anything, including a promise
-    // eslint-disable-next-line @typescript-eslint/return-await
     return await fn();
   } catch (error) {
     return error as Error;

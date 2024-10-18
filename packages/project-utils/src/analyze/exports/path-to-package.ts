@@ -1,11 +1,11 @@
 import {
+  type ProjectMetadata,
   type RootPackage,
-  type WorkspacePackage,
-  type ProjectMetadata
+  type WorkspacePackage
 } from 'multiverse#project-utils analyze/common.ts';
 
-import { ProjectError, ErrorMessage } from '#project-utils src/error.ts';
-import { type AbsolutePath, ensurePathIsAbsolute } from '#project-utils src/fs/index.ts';
+import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
+import { ensurePathIsAbsolute, type AbsolutePath } from '#project-utils src/fs/index.ts';
 import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 
 import type { Promisable } from 'type-fest';

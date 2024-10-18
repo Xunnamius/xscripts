@@ -1,6 +1,6 @@
 import { basename } from 'node:path';
 
-import { type AbsolutePath, ensurePathIsAbsolute } from '#project-utils src/fs/index.ts';
+import { ensurePathIsAbsolute, type AbsolutePath } from '#project-utils src/fs/index.ts';
 import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 
 import type { Promisable } from 'type-fest';

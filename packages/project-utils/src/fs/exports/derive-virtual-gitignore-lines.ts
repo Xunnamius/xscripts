@@ -4,11 +4,11 @@ import { readFile as readFileAsync } from 'node:fs/promises';
 import { createDebugLogger } from 'multiverse#rejoinder';
 import { runNoRejectOnBadExit } from 'multiverse#run';
 
-import { type ParametersNoFirst } from '#project-utils src/util.ts';
-import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
 import { globalDebuggerNamespace } from '#project-utils src/constant.ts';
-import { type AbsolutePath } from '#project-utils src/fs/index.ts';
+import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
 import { ensurePathIsAbsolute } from '#project-utils src/fs/exports/ensure-path-is-absolute.ts';
+import { type AbsolutePath } from '#project-utils src/fs/index.ts';
+import { type ParametersNoFirst } from '#project-utils src/util.ts';
 
 import type { Promisable } from 'type-fest';
 

@@ -6,17 +6,17 @@ import { TrialError } from 'named-app-errors';
 import { toss } from 'toss-expression';
 
 import {
+  flattenPackageJsonSubpathMap,
+  resolveEntryPointsFromExportsTarget,
+  resolveEntryPointsFromImportsTarget,
+  resolveExportsTargetsFromEntryPoint,
+  resolveImportsTargetsFromEntryPoint,
   type FlattenedExportsOption,
   type FlattenedImportsOption,
   type ReplaceSubpathAsterisksOption,
   type SubpathMapping,
   type SubpathMappings,
-  type UnsafeFallbackOption,
-  flattenPackageJsonSubpathMap,
-  resolveEntryPointsFromExportsTarget,
-  resolveEntryPointsFromImportsTarget,
-  resolveExportsTargetsFromEntryPoint,
-  resolveImportsTargetsFromEntryPoint
+  type UnsafeFallbackOption
 } from '#project-utils src/resolver/index.ts';
 
 import {

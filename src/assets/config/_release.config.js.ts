@@ -4,26 +4,29 @@
 // * - @semantic-release/changelog
 // * - @-xun/scripts (build changelog)
 
-import { readFile, writeFile, rm as rmFile } from 'node:fs/promises';
 import assert from 'node:assert';
+import { readFile, rm as rmFile, writeFile } from 'node:fs/promises';
 
 import { type ExecutionContext } from '@black-flag/core/util';
 
 import {
+  type GenerateNotesContext,
   type Options as ReleaseConfig,
-  type VerifyConditionsContext,
   type SuccessContext,
-  type GenerateNotesContext
+  type VerifyConditionsContext
 } from 'semantic-release';
 
-import { createDebugLogger } from 'multiverse#rejoinder';
 import { getInvocableExtendedHandler } from 'multiverse#bfe';
-import { run } from 'multiverse#run';
 
 import {
   conventionalChangelogConfigProjectBase,
   releaseConfigProjectBase
 } from 'multiverse#project-utils fs/index.ts';
+
+import { createDebugLogger } from 'multiverse#rejoinder';
+import { run } from 'multiverse#run';
+
+import type { ConventionalChangelogCliConfig } from 'universe assets/config/_conventional.config.js.ts';
 
 import {
   assertIsExpectedTransformerContext,
@@ -31,20 +34,19 @@ import {
 } from 'universe assets/index.ts';
 
 import {
-  $executionContext,
-  configureExecutionContext,
-  type GlobalExecutionContext
-} from 'universe configure.ts';
-
-import {
   default as buildChangelog,
   OutputOrder,
   type CustomCliArguments as BuildChangelogCliArguments
 } from 'universe commands/build/changelog.ts';
 
-import { globalDebuggerNamespace } from 'universe constant.ts';
+import {
+  $executionContext,
+  configureExecutionContext,
+  ThisPackageGlobalScope,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
 
-import type { ConventionalChangelogCliConfig } from 'universe assets/config/_conventional.config.js';
+import { globalDebuggerNamespace } from 'universe constant.ts';
 
 import { ErrorMessage } from 'universe error.ts';
 
@@ -275,6 +277,7 @@ export async function generateNotes(
       [$executionContext]: pseudoBfGlobalExecutionContext,
       $0: 'build changelog',
       _: [],
+      scope: ThisPackageGlobalScope.ThisPackage,
       silent: true,
       quiet: true,
       hush: true,
@@ -301,6 +304,7 @@ export async function generateNotes(
     [$executionContext]: pseudoBfGlobalExecutionContext,
     $0: 'build changelog',
     _: [],
+    scope: ThisPackageGlobalScope.ThisPackage,
     silent: true,
     quiet: true,
     hush: true,

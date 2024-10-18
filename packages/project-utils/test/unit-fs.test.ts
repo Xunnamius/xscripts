@@ -5,18 +5,19 @@ import { toss } from 'toss-expression';
 
 import { runNoRejectOnBadExit } from 'multiverse#run';
 
+import { ErrorMessage } from '#project-utils src/error.ts';
+
 import {
-  type AbsolutePath,
   deriveVirtualGitignoreLines,
   deriveVirtualPrettierignoreLines,
   ensurePathIsAbsolute,
   isAccessible,
   readJson,
   readJsonc,
-  readPackageJsonAtRoot
+  readPackageJsonAtRoot,
+  type AbsolutePath
 } from '#project-utils src/fs/index.ts';
 
-import { ErrorMessage } from '#project-utils src/error.ts';
 import { fixtures } from '#project-utils test/helpers/dummy-repo.ts';
 
 import { asMockedFunction } from 'testverse setup.ts';

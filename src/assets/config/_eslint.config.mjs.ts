@@ -10,11 +10,13 @@ import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import jsGlobals from 'globals';
 
 import {
+  config as makeTsEslintConfig,
   configs as eslintTsConfigs,
   parser as eslintTsParser,
-  config as makeTsEslintConfig,
   type Config
 } from 'typescript-eslint';
+
+import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse#project-utils';
 
 import {
   deriveAliasesForEslint,
@@ -22,7 +24,6 @@ import {
 } from 'multiverse#project-utils alias.ts';
 
 import { Tsconfig } from 'multiverse#project-utils fs/exports/well-known-constants.ts';
-import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse#project-utils';
 
 import {
   assertIsExpectedTransformerContext,

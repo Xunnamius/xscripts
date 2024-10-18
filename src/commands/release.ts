@@ -74,6 +74,7 @@ The only available scope is "${ReleaseScope.ThisPackage}"; hence, when invoking 
       // TODO (do not allow packages below version 1.0.0 to be published (semantic-release incompatibility))
       // TODO (GPG keys generated during each major must be set to never expire... however previously active keys must be revoked (only if they maintain their "verified" status on GitHub though))
       // TODO (need to do codecov stuff in here: CODECOV_TOKEN=$(npx --yes dotenv-cli -p CODECOV_TOKEN) npx codecov)
+      // TODO (sanity check built files to ensure all require() paths are valid)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

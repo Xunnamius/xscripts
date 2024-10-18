@@ -1,8 +1,8 @@
 import { isAbsolute } from 'node:path';
 
-import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
 import { type RelativePath } from '#project-utils src/fs/common.ts';
+import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 
 import type { Promisable } from 'type-fest';
 

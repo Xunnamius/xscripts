@@ -307,6 +307,8 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
 
         const results = await Promise.allSettled(promisedLinters);
 
+        debug('%O linters have run to completion: %O', results.length, results);
+
         if (
           results.some((result, index) => {
             // ? This logic relies on tsc being the first linter in the results!
@@ -368,10 +370,11 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
               linterSubprocesses.forEach((subprocess) => subprocess.kill('SIGKILL'));
 
               genericLogger.newline([LogTag.IF_NOT_QUIETED]);
-              throw new CliError(ErrorMessage.LintingFailed(), {
-                dangerouslyFatal: true
-              });
             }
+
+            throw new CliError(ErrorMessage.LintingFailed(), {
+              dangerouslyFatal: true
+            });
           }
         }
       }

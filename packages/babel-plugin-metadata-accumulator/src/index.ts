@@ -2,8 +2,8 @@ import assert from 'node:assert';
 
 import {
   types as util,
-  type PluginObj,
   type NodePath,
+  type PluginObj,
   type PluginPass
 } from '@babel/core';
 

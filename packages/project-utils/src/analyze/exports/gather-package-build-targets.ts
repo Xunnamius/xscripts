@@ -1,8 +1,11 @@
-import { join as joinPath, relative as toRelativePath } from 'node:path';
 import assert from 'node:assert';
+import { join as joinPath, relative as toRelativePath } from 'node:path';
 
-import { toss } from 'toss-expression';
 import { glob as globAsync, sync as globSync } from 'glob';
+import { toss } from 'toss-expression';
+
+// TODO: replace this with actual package once published
+import { hasTypescriptExtension } from '# src/assets/config/_babel.config.js.ts';
 
 import {
   ensureRawSpecifierOk,
@@ -13,32 +16,29 @@ import {
 } from '#project-utils src/alias.ts';
 
 import {
-  gatherImportEntriesFromFiles,
-  type ImportSpecifierEntry
-} from '#project-utils src/analyze/exports/gather-import-entries-from-files.ts';
-
-import {
-  debug as debug_,
-  type RootPackage,
-  type WorkspacePackage,
-  type PackageBuildTargets,
-  type ProjectMetadata,
-  type WorkspacePackageName
-} from '#project-utils src/analyze/common.ts';
-
-import {
   _internalPackageBuildTargetsCache,
   cacheDebug
 } from '#project-utils src/analyze/cache.ts';
 
-import { pathToPackage } from '#project-utils src/analyze/exports/path-to-package.ts';
-import { type SyncVersionOf, type ParametersNoFirst } from '#project-utils src/util.ts';
-import { type AbsolutePath, type RelativePath } from '#project-utils src/fs/index.ts';
-import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
-import { gatherPackageSrcFiles } from '#project-utils src/analyze/exports/gather-package-src-files.ts';
+import {
+  debug as debug_,
+  type PackageBuildTargets,
+  type ProjectMetadata,
+  type RootPackage,
+  type WorkspacePackage,
+  type WorkspacePackageName
+} from '#project-utils src/analyze/common.ts';
 
-// TODO: replace this with actual package once published
-import { hasTypescriptExtension } from '# src/assets/config/_babel.config.js.ts';
+import {
+  gatherImportEntriesFromFiles,
+  type ImportSpecifierEntry
+} from '#project-utils src/analyze/exports/gather-import-entries-from-files.ts';
+
+import { gatherPackageSrcFiles } from '#project-utils src/analyze/exports/gather-package-src-files.ts';
+import { pathToPackage } from '#project-utils src/analyze/exports/path-to-package.ts';
+import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
+import { type AbsolutePath, type RelativePath } from '#project-utils src/fs/index.ts';
+import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 
 import type { Promisable } from 'type-fest';
 

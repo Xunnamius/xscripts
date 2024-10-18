@@ -6,6 +6,8 @@
 import assert from 'node:assert';
 import { isPromise } from 'node:util/types';
 
+import { Manager } from '@listr2/manager';
+
 import {
   ListrLogger,
   PRESET_TIMER,
@@ -16,8 +18,6 @@ import {
   type ListrRenderer,
   type ListrTaskWrapper
 } from 'listr2';
-
-import { Manager } from '@listr2/manager';
 
 import {
   $instances,

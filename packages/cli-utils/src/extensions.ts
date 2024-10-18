@@ -8,6 +8,8 @@ import {
   type WithBuilderExtensionsReturnType
 } from 'multiverse#bfe';
 
+import { $artificiallyInvoked } from 'multiverse#bfe symbols.ts';
+
 import {
   createDebugLogger,
   disableLoggingByTag,
@@ -17,8 +19,6 @@ import {
   type ExtendedLogger,
   type ListrManager
 } from 'multiverse#rejoinder';
-
-import { $artificiallyInvoked } from 'multiverse#bfe symbols.ts';
 
 // ? Used in a comment for taskManager
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

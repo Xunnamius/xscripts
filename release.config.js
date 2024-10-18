@@ -1,9 +1,9 @@
 // @ts-check
 'use strict';
 
+const crypto = require('node:crypto');
 const os = require('node:os');
 const path = require('node:path');
-const crypto = require('node:crypto');
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 const { moduleExport } = require('@-xun/scripts/assets/config/release.config.js');

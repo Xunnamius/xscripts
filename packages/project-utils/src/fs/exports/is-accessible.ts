@@ -1,5 +1,5 @@
 import { accessSync } from 'node:fs';
-import { constants as fsConstants_, access as accessAsync } from 'node:fs/promises';
+import { access as accessAsync, constants as fsConstants_ } from 'node:fs/promises';
 
 import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 

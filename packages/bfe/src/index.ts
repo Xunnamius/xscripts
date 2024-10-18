@@ -1,12 +1,5 @@
 import { isNativeError } from 'node:util/types';
 
-import toCamelCase from 'lodash.camelcase';
-import clone from 'lodash.clone';
-import cloneDeepWith from 'lodash.clonedeepwith';
-import isEqual from 'lodash.isequal';
-import { type ParserConfigurationOptions } from 'yargs';
-import makeVanillaYargs from 'yargs/yargs';
-
 import {
   CliError,
   FrameworkExitCode,
@@ -22,6 +15,13 @@ import {
   type ExecutionContext,
   type FrameworkArguments
 } from '@black-flag/core/util';
+
+import toCamelCase from 'lodash.camelcase';
+import clone from 'lodash.clone';
+import cloneDeepWith from 'lodash.clonedeepwith';
+import isEqual from 'lodash.isequal';
+import { type ParserConfigurationOptions } from 'yargs';
+import makeVanillaYargs from 'yargs/yargs';
 
 import { hardAssert, softAssert } from 'multiverse#cli-utils error.ts';
 import { createDebugLogger } from 'multiverse#rejoinder';

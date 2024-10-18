@@ -1,20 +1,20 @@
 import {
-  makeRawAliasMapping,
-  generateRawAliasMap,
   deriveAliasesForBabel,
   deriveAliasesForEslint,
   deriveAliasesForJest,
   deriveAliasesForNextJs,
   deriveAliasesForTypeScript,
   deriveAliasesForWebpack,
-  WellKnownImportAlias,
-  mapRawSpecifierToRawAliasMapping,
-  mapRawSpecifierToPath,
   ensureRawSpecifierOk,
+  generateRawAliasMap,
+  makeRawAliasMapping,
+  mapRawSpecifierToPath,
+  mapRawSpecifierToRawAliasMapping,
   rawAliasToRegExp,
+  WellKnownImportAlias,
+  type RawAlias,
   type RawAliasMapping,
-  type RawPath,
-  type RawAlias
+  type RawPath
 } from '#project-utils src/alias.ts';
 
 import { ErrorMessage } from '#project-utils src/error.ts';

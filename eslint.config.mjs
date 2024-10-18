@@ -104,7 +104,9 @@ const wellKnownPackageAliases = [
 const genericRules = {
   // * eslint
   'no-console': 'warn',
-  'no-return-await': 'warn',
+  // ? We rely on https://typescript-eslint.io/rules/return-await instead
+  // ? since this rule is now deprecated (and for good reason)
+  'no-return-await': 'off',
   'no-await-in-loop': 'warn',
   'no-restricted-globals': ['warn', ...restrictedGlobals],
   'no-empty': 'off',

@@ -3,18 +3,18 @@ import { debugFactory } from 'multiverse#debug';
 import { runNoRejectOnBadExit } from 'multiverse#run';
 
 import {
+  exports as pkgExports,
   name as pkgName,
-  version as pkgVersion,
-  exports as pkgExports
+  version as pkgVersion
 } from '#project-utils package.json';
 
 import {
-  mockFixtureFactory,
-  dummyFilesFixture,
   dummyDirectoriesFixture,
+  dummyFilesFixture,
   dummyNpmPackageFixture,
-  npmLinkSelfFixture,
+  mockFixtureFactory,
   nodeImportAndRunTestFixture,
+  npmLinkSelfFixture,
   reconfigureJestGlobalsToSkipTestsInThisFileIfRequested,
   type FixtureOptions
 } from 'testverse setup';

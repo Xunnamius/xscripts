@@ -1,4 +1,4 @@
-import { relative as toRelativePath, join as joinPath, extname } from 'node:path';
+import { extname, join as joinPath, relative as toRelativePath } from 'node:path';
 
 import { type Arrayable } from 'type-fest';
 
@@ -6,8 +6,8 @@ import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
 import { type RelativePath } from '#project-utils src/fs/index.ts';
 
 import {
-  type WorkspacePackageId,
-  type ProjectMetadata
+  type ProjectMetadata,
+  type WorkspacePackageId
 } from '#project-utils src/index.ts';
 
 /**

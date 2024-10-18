@@ -2,10 +2,10 @@
 import { readFileSync } from 'node:fs';
 import { readFile as readFileAsync } from 'node:fs/promises';
 
-import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
-import { type AbsolutePath } from '#project-utils src/fs/index.ts';
 import { ensurePathIsAbsolute } from '#project-utils src/fs/exports/ensure-path-is-absolute.ts';
+import { type AbsolutePath } from '#project-utils src/fs/index.ts';
+import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 
 import type { JsonValue, Promisable } from 'type-fest';
 

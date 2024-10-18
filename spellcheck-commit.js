@@ -4,8 +4,8 @@
 /* eslint-disable no-console */
 const read = require('node:fs/promises').readFile;
 
-const spellcheck = require('spellchecker');
 const debug = require('debug')('commit-spell');
+const spellcheck = require('spellchecker');
 
 const tryToRead = async (
   /** @type {import("fs").PathLike | import("fs/promises").FileHandle} */ path

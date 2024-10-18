@@ -1,8 +1,21 @@
 import { relative as toRelativePath, resolve as toAbsolutePath } from 'node:path';
 
-import { sync as globSync, glob as globAsync } from 'glob-gitignore';
+import { glob as globAsync, sync as globSync } from 'glob-gitignore';
 
-import { type ParametersNoFirst } from '#project-utils src/util.ts';
+import {
+  _internalProjectFilesCache,
+  cacheDebug
+} from '#project-utils src/analyze/cache.ts';
+
+import {
+  assignResultTo,
+  debug as debug_,
+  type ProjectFiles,
+  type ProjectMetadata,
+  type RootPackage,
+  type WorkspacePackage
+} from '#project-utils src/analyze/common.ts';
+
 import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
 
 import {
@@ -10,19 +23,7 @@ import {
   type AbsolutePath
 } from '#project-utils src/fs/index.ts';
 
-import {
-  debug as debug_,
-  assignResultTo,
-  type RootPackage,
-  type WorkspacePackage,
-  type ProjectFiles,
-  type ProjectMetadata
-} from '#project-utils src/analyze/common.ts';
-
-import {
-  _internalProjectFilesCache,
-  cacheDebug
-} from '#project-utils src/analyze/cache.ts';
+import { type ParametersNoFirst } from '#project-utils src/util.ts';
 
 import type { Promisable } from 'type-fest';
 
