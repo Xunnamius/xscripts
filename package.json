@@ -84,7 +84,7 @@
     "lint:source": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js lint",
     "lint:source:all": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js lint --scope unlimited --run-to-completion",
     "list-tasks": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js list-tasks",
-    "prepare": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js prepare",
+    "prepare": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js project prepare",
     "release": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js release",
     "renovate": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js project renovate",
     "start": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js start --",
