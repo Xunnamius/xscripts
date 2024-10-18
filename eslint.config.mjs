@@ -2,19 +2,21 @@ import assert from 'node:assert';
 
 import { fixupConfigRules } from '@eslint/compat';
 import eslintJs from '@eslint/js';
-// TODO: replace with analyzeProjectStructure
-import { getRunContext } from '@projector-js/core/project';
 import restrictedGlobals from 'confusing-browser-globals';
+import eslintPluginImport from 'eslint-plugin-import';
 import eslintPluginJest from 'eslint-plugin-jest';
 import eslintPluginNode from 'eslint-plugin-n';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import jsGlobals from 'globals';
 
 import {
+  config as makeTsEslintConfig,
   configs as eslintTsConfigs,
-  parser as eslintTsParser,
-  config as makeTsEslintConfig
+  parser as eslintTsParser
 } from 'typescript-eslint';
+
+// TODO: replace with @-xun/project
+import { analyzeProjectStructure } from './dist/packages/project-utils/src/index.js';
 
 const $verse = Symbol('verse');
 
@@ -114,7 +116,13 @@ const genericRules = {
   // * import
   // TODO: replace with fork that fixes this (fix is: ignorePackages should only
   // TODO: ignore stuff that resolves into node_modules)
-  'import/extensions': ['error', 'always', { ignorePackages: true }],
+  // TODO: https://github.com/import-js/eslint-plugin-import/blob/v2.31.0/docs/rules/extensions.md
+  'import/extensions': [
+    'error',
+    'always',
+    { ignorePackages: true, checkTypeImports: true }
+  ],
+  'import/no-duplicates': ['warn', { 'prefer-inline': true }],
   'import/no-unresolved': ['error', { commonjs: true }],
   'import/no-empty-named-blocks': 'warn',
   'import/first': 'warn',
@@ -126,6 +134,11 @@ const genericRules = {
   'import/order': [
     'warn',
     {
+      alphabetize: { order: 'asc', caseInsensitive: true },
+      named: {
+        enabled: true,
+        types: 'types-last'
+      },
       groups: [
         'builtin',
         'external',
@@ -155,6 +168,8 @@ const genericRules = {
           return groups;
         }, []),
       pathGroupsExcludedImportTypes: ['builtin', 'object'],
+      // TODO: replace with fork that adds new feature (new feature is: new
+      // TODO: spacing mode where single-line imports kept together)
       'newlines-between': 'always-and-inside-groups',
       distinctGroup: true
     }
@@ -392,8 +407,7 @@ const globals = {
   ...jsGlobals.node
 };
 
-// TODO: Use top-level await here?
-const runtimeContext = getRunContext();
+const runtimeContext = analyzeProjectStructure.sync();
 
 const {
   project: { root: projectRootDir }
@@ -424,13 +438,31 @@ assert(eslintPluginJestStyle);
 
 const plugins = {
   /* unicorn: eslintPluginUnicorn ... included by imports */
-  /* '@typescript-eslint': eslintPluginTsEslint, */
-  /* import: fixupPluginRules(eslintPluginImport) ... included by imports */
+  /* @typescript-eslint: eslintPluginTsEslint ... included by imports */
+  /* import: eslintPluginImport ... included by imports */
   node: eslintPluginNode
   /* jest ... included by imports */
 };
 
-function overwriteFileProperty(configs, files) {
+/**
+ * Accepts an array of configuration objects/arrays and returns a flattened
+ * array with each object's `files` property overwritten by the `files`
+ * parameter.
+ *
+ * For example:
+ *
+ * ```typescript
+ * const eslintConfig = makeTsEslintConfig({
+ *   // some other configs...
+ * },
+ * ...[
+ *   legacyExtends('plugin:import/recommended', 'eslint-plugin-import:recommended'),
+ *   legacyExtends('plugin:import/typescript', 'eslint-plugin-import:typescript')
+ * ]).flatMap((configs) =>
+ *   overwriteFileProperty(configs, [`*.{js,jsx,cjs,mjs}`])
+ * );
+ */
+export function overwriteFileProperty(configs, files) {
   configs = [configs].flat();
 
   configs.forEach((config) => {
@@ -440,7 +472,20 @@ function overwriteFileProperty(configs, files) {
   return configs;
 }
 
-function legacyExtends(extension, name) {
+/**
+ * Returns an eslint@>=9 configuration object that adapts a legacy eslint@<9
+ * plugin's exposed rule extension.
+ *
+ * For example:
+ *
+ * ```typescript
+ * const eslintConfig = makeTsEslintConfig(
+ *   legacyExtends('plugin:import/recommended', 'eslint-plugin-import:recommended'),
+ *   legacyExtends('plugin:import/typescript', 'eslint-plugin-import:typescript')
+ * );
+ * ```
+ */
+export function legacyExtends(extension, name) {
   return { ...fixupConfigRules(flatCompat.extends(extension)[0])[0], name };
 }
 
@@ -452,7 +497,9 @@ const config = makeTsEslintConfig(
       '**/bin/**/*',
       '**/build/**/*',
       '!**/src/**/*',
-      '**/dummy-repo/**/*'
+      '**/dummy-repo/**/*',
+      // TODO: specific to this project; delete this comment after generalization
+      'src/assets/template/.remarkrc.mjs'
     ]
   },
   ...[
@@ -460,8 +507,8 @@ const config = makeTsEslintConfig(
     eslintTsConfigs.strictTypeChecked,
     eslintTsConfigs.stylisticTypeChecked,
     eslintTsConfigs.eslintRecommended,
-    legacyExtends('plugin:import/recommended', 'eslint-plugin-import:recommended'),
-    legacyExtends('plugin:import/typescript', 'eslint-plugin-import:typescript'),
+    eslintPluginImport.flatConfigs.recommended,
+    eslintPluginImport.flatConfigs.typescript,
     eslintPluginUnicornRecommended,
     {
       name: '@-xun/scripts:base',
