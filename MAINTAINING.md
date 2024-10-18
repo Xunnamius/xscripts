@@ -63,7 +63,7 @@ a release is necessary, and what the new version number will be, by analyzing
 git commit messages. With this in mind, **it is imperative you brush up on [the
 commit message convention][commit] which drives our releases.**
 
-> [!IMPORTANT]
+> \[!IMPORTANT]
 >
 > **UNDER NO CIRCUMSTANCES** should any of your commit messages contain the
 > phrases `BREAKING:`, `BREAKING CHANGE:`, or `BREAKING CHANGES:` unless the
@@ -76,15 +76,14 @@ things get messed up (e.g. CI workflow / GitHub Actions breaks) and we need to
 trigger a release ourselves. When this happens, semantic-release can be
 triggered locally.
 
-> [!CAUTION]
+> \[!CAUTION]
 >
 > Note that any manual releases generated outside of the CI/CD pipeline will be
-> published
-> [_without established provenance_](https://docs.npmjs.com/generating-provenance-statements#provenance-limitations)!
-> It is for that reason that, outside of truly exceptional events, manual
-> releases should be avoided at all costs.
+> published [_without established provenance_][21]! It is for that reason that,
+> outside of truly exceptional events, manual releases should be avoided at all
+> costs.
 
-#### Preparing Repository For Release
+#### Preparing Repository for Release
 
 Before proceeding with a manual release, first ensure all dependencies are
 installed and all necessary secrets are available.
@@ -125,7 +124,22 @@ npx turbo release --filter=pkg-1 --filter=pkg-2
 
 #### Manual Release Method 2: By Hand
 
-To release a specific package by hand:
+> Note that, in a monorepo/hybridrepo, relying on these commands to manually cut
+> a release may result in a non-functional package being released if said
+> package depends on other packages in the project that have unreleased changes.
+>
+> [Turbo][24] solves this problem and should be preferred over building packages
+> by hand.
+
+There are two ways to release a specific package by hand. The first is using
+[xscripts][12]:
+
+```bash
+# npx xscripts release --help
+npx xscripts release
+```
+
+Alternatively, you can call each individual NPM scripts by hand:
 
 > If one of these steps fails, you should address the failure before running the
 > next step.
@@ -176,8 +190,11 @@ maintenance is intended.
 
 With somber focus, the following steps should be taken:
 
-> If you're using [xscripts][12], all of this can be done automatically via
-> `xscripts project renovate --deprecate`.
+> If you're using [xscripts][12], all of this can be done automatically:
+>
+> ```bash
+> npx xscripts project renovate --deprecate
+> ```
 
 > These steps were inspired by [Richard Litt's checklist][13].
 
@@ -315,6 +332,9 @@ Thank you so much for helping to maintain this project!
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
 [19]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#keywords
 [20]: #deprecate-the-remote-github-repository
+[21]:
+  https://docs.npmjs.com/generating-provenance-statements#provenance-limitations
 [22]: https://docs.npmjs.com/cli/v8/commands/npm-deprecate
 [23]:
   https://docs.npmjs.com/deprecating-and-undeprecating-packages-or-package-versions
+[24]: #manual-release-method-1-semi-automated
