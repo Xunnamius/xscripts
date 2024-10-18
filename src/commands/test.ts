@@ -3,33 +3,33 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 import { type ChildConfiguration } from '@black-flag/core';
 
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
 import {
-  LogTag,
   logStartTime,
+  LogTag,
   standardSuccessMessage
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { jestConfigProjectBase } from 'multiverse#project-utils fs/index.ts';
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
-import { run } from 'multiverse#run';
-
 import { ProjectAttribute } from 'multiverse#project-utils analyze/common.ts';
-
-import {
-  GlobalScope,
-  type GlobalCliArguments,
-  type GlobalExecutionContext
-} from 'universe configure.ts';
+import { jestConfigProjectBase } from 'multiverse#project-utils fs/index.ts';
+import { run } from 'multiverse#run';
 
 import { baseConfig } from 'universe assets/config/_jest.config.mjs.ts';
 
 import {
-  withGlobalBuilder,
+  DefaultGlobalScope,
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
+
+import {
   checkAllChoiceIfGivenIsByItself,
   checkArrayNotEmpty,
   checkIsNotNegative,
-  runGlobalPreChecks
+  runGlobalPreChecks,
+  withGlobalBuilder
 } from 'universe util.ts';
 
 /**
@@ -56,7 +56,7 @@ export enum TestType {
   All = 'all'
 }
 
-enum TestScope_ {
+export enum TestScope_ {
   /**
    * Limit the command to relevant _transpiled_ files (aka "intermediates")
    * within `./.transpiled` (with respect to the current working directory).
@@ -67,18 +67,25 @@ enum TestScope_ {
 /**
  * The context in which to search for test files.
  */
-export type TesterScope = GlobalScope | TestScope_;
+export type TesterScope = DefaultGlobalScope | TestScope_;
+
 /**
  * The context in which to search for test files.
  */
-export const TesterScope = { ...GlobalScope, ...TestScope_ } as const;
+export const TesterScope = { ...DefaultGlobalScope, ...TestScope_ } as const;
 
-const testTypes = Object.values(TestType);
-const testerScopes = Object.values(TesterScope);
+/**
+ * @see {@link TestType}
+ */
+export const testTypes = Object.values(TestType);
 
-export type CustomCliArguments = Omit<GlobalCliArguments, 'scope'> & {
+/**
+ * @see {@link TesterScope}
+ */
+export const testerScopes = Object.values(TesterScope);
+
+export type CustomCliArguments = GlobalCliArguments<TesterScope> & {
   type: TestType[];
-  scope: TesterScope;
   repeat: number;
   collectCoverage: boolean;
   skipSlowTests: number;
@@ -100,6 +107,10 @@ export default function command({
       blackFlag.parserConfiguration({ 'unknown-options-as-args': true });
 
       return {
+        scope: {
+          choices: testerScopes,
+          default: defaultScope
+        },
         type: {
           alias: 'types',
           array: true,
@@ -110,12 +121,6 @@ export default function command({
             checkArrayNotEmpty('--type'),
             checkAllChoiceIfGivenIsByItself(TestType.All, 'test type')
           ]
-        },
-        scope: {
-          string: true,
-          choices: testerScopes,
-          description: 'Which test file(s) to run',
-          default: defaultScope
         },
         repeat: {
           number: true,
@@ -157,7 +162,7 @@ export default function command({
         baseline: {
           alias: ['base', 'bare'],
           boolean: true,
-          description: 'Do not add scope- or type- based paths to the execution plan',
+          description: 'Do not use computed scope/type args/patterns when executing Jest',
           default: false,
           conflicts: ['type', 'scope']
         }
@@ -172,9 +177,11 @@ export default function command({
 
 $1.
 
-Any "extra" arguments passed to this command, including file globs and unrecognized flags, are always passed through directly to Jest. Therefore, provide --baseline when you want to construct your own custom Jest execution plan but still wish to make use of the standard environmental setup provided by this tool.
+Any extra arguments passed to this command, including file globs and unrecognized flags, are always passed through directly to Jest. They are inserted after computed args but before test path patterns, i.e. \`--reporters=... --testPathIgnorePatterns=... <your extra args> -- testPathPattern1 testPathPattern2\`.
 
-Provide --collect-coverage to instruct jest to collect coverage information. --collect-coverage is false by default unless \`--scope=${TesterScope.Unlimited}\` and \`--type=${TestType.All}\`, in which case it will be true by default.
+By default, this command constructs an execution plan (i.e. the computed arguments and path patterns passed to Jest's CLI) based on project metadata and provided options. Alternatively, you can provide --baseline when you want to construct your own custom Jest execution plan but still wish to make use of the runtime environment provided by this tool.
+
+Provide --collect-coverage to instruct Jest to collect coverage information. --collect-coverage is false by default unless \`--scope=${TesterScope.Unlimited}\` and \`--type=${TestType.All}\`, in which case it will be true by default.
 
 For detecting flakiness in tests, which is almost always a sign of deep developer error, provide --repeat; e.g. \`--repeat 100\`.
 
@@ -184,11 +191,11 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
     handler: withGlobalHandler(async function ({
       _: _extraArguments,
       $0: scriptFullName,
+      scope,
       collectCoverage,
       skipSlowTests,
       nodeOptions,
       repeat,
-      scope,
       type: types,
       baseline,
       hush: isHushed,
@@ -266,7 +273,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       const { testPathIgnorePatterns = [] } = baseConfig;
       const isCwdTheProjectRoot = projectMetadata.package === undefined;
       const isMonorepo = projectMetadata.type === ProjectAttribute.Monorepo;
-      const npxArguments = ['jest', `--config=${rootDir}/${jestConfigProjectBase}`];
+      const npxArguments = ['jest'];
 
       if (collectCoverage) {
         npxArguments.push('--coverage');
@@ -277,34 +284,42 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
         // * jest.config.mjs, which is aware of the
         // * XSCRIPTS_TEST_JEST_TRANSPILED environment variable.
 
-        if (scope === TesterScope.ThisPackage && isCwdTheProjectRoot && isMonorepo) {
-          testPathIgnorePatterns.push('/packages/');
-
-          npxArguments.push(
-            `--testPathIgnorePatterns=${testPathIgnorePatterns
-              .map((p) => `(${p})`)
-              .join('|')}`,
-            ...testPathPatterns,
-            ...extraArguments
-          );
-        }
-
         if (allTypes || types.includes(TestType.Unit)) {
-          testPathPatterns.push(`/test(/.*)?/unit(-.*)?\\.test\\.tsx?`);
+          testPathPatterns.push(String.raw`/test(/.*)?/unit(-.*)?\.test\.tsx?`);
         }
 
         if (allTypes || types.includes(TestType.Integration)) {
-          testPathPatterns.push(`/test(/.*)?/integration(-.*)?\\.test\\.tsx?`);
+          testPathPatterns.push(String.raw`/test(/.*)?/integration(-.*)?\.test\.tsx?`);
         }
 
         if (allTypes || types.includes(TestType.EndToEnd)) {
-          testPathPatterns.push(`/test(/.*)?/e2e(-.*)?\\.test\\.tsx?`);
+          testPathPatterns.push(String.raw`/test(/.*)?/e2e(-.*)?\.test\.tsx?`);
+        }
+
+        if (scope === TesterScope.ThisPackage && isCwdTheProjectRoot && isMonorepo) {
+          testPathIgnorePatterns.push('/packages/');
+        }
+
+        if (testPathIgnorePatterns.length) {
+          npxArguments.push(
+            `--testPathIgnorePatterns=${testPathIgnorePatterns.map((p) => `(${p})`).join('|')}`
+          );
         }
       }
 
       if (isRepeating) {
-        // ? Has to be last due to how Jest's CLI processes array arguments
+        // ? Jest's CLI array intake ability is trash, so all array-taking
+        // ? args need to be followed by another arg (i.e. --something)
         npxArguments.push('--reporters=jest-silent-reporter');
+      }
+
+      npxArguments.push(
+        `--config=${rootDir}/${jestConfigProjectBase}`,
+        ...extraArguments
+      );
+
+      if (testPathPatterns) {
+        npxArguments.push(...testPathPatterns);
       }
 
       debug('npxArguments: %O', npxArguments);

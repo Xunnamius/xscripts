@@ -1,8 +1,10 @@
-import { join, resolve } from 'node:path';
 import { readlink } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
 
 import { type ConfigureExecutionContext } from '@black-flag/core';
 import { defaultVersionTextDescription } from '@black-flag/core/util';
+
+import { type BfeBuilderObject } from 'multiverse#bfe';
 
 import {
   makeStandardConfigureErrorHandlingEpilogue,
@@ -14,16 +16,19 @@ import {
   type StandardExecutionContext
 } from 'multiverse#cli-utils extensions.ts';
 
-import { createDebugLogger, createGenericLogger } from 'multiverse#rejoinder';
 import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse#project-utils';
-import { type BfeBuilderObject } from 'multiverse#bfe';
 import { isAccessible } from 'multiverse#project-utils fs/exports/is-accessible.ts';
+import { createDebugLogger, createGenericLogger } from 'multiverse#rejoinder';
 
 import {
   globalCliName,
   globalDebuggerNamespace,
   globalLoggerNamespace
 } from 'universe constant.ts';
+
+// ? Used in documentation
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { withGlobalBuilder } from 'universe util.ts';
 
 const rootGenericLogger = createGenericLogger({ namespace: globalLoggerNamespace });
 const rootDebugLogger = createDebugLogger({ namespace: globalDebuggerNamespace });
@@ -38,8 +43,11 @@ export type GlobalExecutionContext = StandardExecutionContext & {
  * Determines which project files are considered within a command's purview.
  * Files outside of a command's purview will be treated by xscripts as if they
  * do not exist where possible.
+ *
+ * This enum is essentially {@link ThisPackageGlobalScope} +
+ * {@link UnlimitedGlobalScope}.
  */
-export enum GlobalScope {
+export enum DefaultGlobalScope {
   /**
    * Limit the command to _all_ relevant files contained within the current
    * package (as determined by the current working directory), excluding the
@@ -59,17 +67,29 @@ export enum GlobalScope {
 }
 
 /**
- * This enum represents the "base class" of {@link GlobalScope}. This enum is
- * useful for type checking commands that only operate in the "this-package"
- * scope.
+ * This enum represents a subset of {@link DefaultGlobalScope}, and is useful for type
+ * checking commands that only operate in the "this-package" scope.
  *
- * @see {@link GlobalScope}
+ * @see {@link DefaultGlobalScope}
  */
-export enum LimitedGlobalScope {
+export enum ThisPackageGlobalScope {
   /**
-   * @see {@link GlobalScope.ThisPackage}
+   * @see {@link DefaultGlobalScope.ThisPackage}
    */
   ThisPackage = 'this-package'
+}
+
+/**
+ * This enum represents a subset of {@link DefaultGlobalScope}, and is useful for type
+ * checking commands that only operate in the "unlimited" scope.
+ *
+ * @see {@link DefaultGlobalScope}
+ */
+export enum UnlimitedGlobalScope {
+  /**
+   * @see {@link DefaultGlobalScope.Unlimited}
+   */
+  Unlimited = 'unlimited'
 }
 
 /**
@@ -81,9 +101,10 @@ export enum LimitedGlobalScope {
  *
  * @see {@link StandardCommonCliArguments}
  */
-export type GlobalCliArguments = StandardCommonCliArguments & {
-  scope?: GlobalScope;
-};
+export type GlobalCliArguments<Scope extends string = DefaultGlobalScope> =
+  StandardCommonCliArguments & {
+    scope: Scope;
+  };
 
 /**
  * This {@link BfeBuilderObject} instance describes the CLI arguments available
@@ -93,16 +114,24 @@ export type GlobalCliArguments = StandardCommonCliArguments & {
  * This object is manually synchronized with {@link GlobalCliArguments}, but the
  * keys may differ slightly (e.g. hyphens may be elided in favor of camelCase).
  *
+ * When providing a custom {@link BfeBuilderObject} instance to
+ * {@link withGlobalBuilder}, any key specified in that instance that is also a
+ * key in this object (`globalCliArguments`) will have its value merged with the
+ * value in this object _instead_ of fully overwriting it. This means you can
+ * pass minimal configuration values for the keys that are also in
+ * `globalCliArguments` and those values will be merged over the corresponding
+ * default configuration value in `globalCliArguments`.
+ *
  * @see {@link StandardCommonCliArguments}
  */
 export const globalCliArguments = {
   scope: {
     string: true,
-    choices: Object.values(GlobalScope),
-    default: GlobalScope.ThisPackage,
-    description: 'Which files this command will consider'
+    choices: Object.values(DefaultGlobalScope),
+    default: DefaultGlobalScope.ThisPackage,
+    description: 'Which files this command will consider when scanning the filesystem'
   }
-} as const satisfies BfeBuilderObject<Record<string, unknown>, StandardExecutionContext>;
+} satisfies BfeBuilderObject<Record<string, unknown>, StandardExecutionContext>;
 
 export const configureExecutionContext: ConfigureExecutionContext<GlobalExecutionContext> =
   async function (context) {

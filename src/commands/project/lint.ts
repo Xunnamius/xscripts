@@ -1,22 +1,29 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
 import {
-  LogTag,
   logStartTime,
+  LogTag,
   standardSuccessMessage
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
-
-import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
+  UnlimitedGlobalScope as ProjectLinterScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe configure.ts';
 
-export type CustomCliArguments = GlobalCliArguments & {
+import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe util.ts';
+
+/**
+ * @see {@link ProjectLinterScope}
+ */
+export const projectLinterScopes = Object.values(ProjectLinterScope);
+
+export type CustomCliArguments = GlobalCliArguments<ProjectLinterScope> & {
   // TODO
 };
 
@@ -28,13 +35,14 @@ export default function command({
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     // TODO
+    scope: { choices: projectLinterScopes, default: ProjectLinterScope.Unlimited }
   });
 
   return {
     builder,
     description: 'Verify project-wide structural compliance with latest best practices',
     usage: withGlobalUsage(),
-    handler: withGlobalHandler(async function ({ $0: scriptFullName }) {
+    handler: withGlobalHandler(async function ({ $0: scriptFullName, scope }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
@@ -45,6 +53,8 @@ export default function command({
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Verifying structural compliance...');
+
+      debug('scope (unused): %O', scope);
 
       // TODO (ensure all test files have the proper naming convention and are located in the correct place.)
       // TODO (bring in lint code from the old projector project (plugin-lint I think it was called... see the old "lost" commits for project-utils))

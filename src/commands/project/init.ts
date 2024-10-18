@@ -1,22 +1,29 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
 import {
-  LogTag,
   logStartTime,
+  LogTag,
   standardSuccessMessage
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
-
-import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
+  UnlimitedGlobalScope as ProjectInitScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe configure.ts';
 
-export type CustomCliArguments = GlobalCliArguments & {
+import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe util.ts';
+
+/**
+ * @see {@link ProjectInitScope}
+ */
+export const projectInitScopes = Object.values(ProjectInitScope);
+
+export type CustomCliArguments = GlobalCliArguments<ProjectInitScope> & {
   // TODO
 };
 
@@ -28,13 +35,14 @@ export default function command({
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     // TODO
+    scope: { choices: projectInitScopes, default: ProjectInitScope.Unlimited }
   });
 
   return {
     builder,
     description: 'Create a brand new project from one of several templates',
     usage: withGlobalUsage(),
-    handler: withGlobalHandler(async function ({ $0: scriptFullName }) {
+    handler: withGlobalHandler(async function ({ $0: scriptFullName, scope }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
@@ -45,6 +53,8 @@ export default function command({
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Initializing new project...');
+
+      debug('scope (unused): %O', scope);
 
       // TODO: (select either: create a new directory at custom path OR use cwd)
       // ! v

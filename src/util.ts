@@ -4,29 +4,35 @@ import fs from 'node:fs/promises';
 
 import { CliError, FrameworkExitCode } from '@black-flag/core';
 
-import { createDebugLogger } from 'multiverse#rejoinder';
-
 import {
   withStandardBuilder,
   withStandardUsage
 } from 'multiverse#cli-utils extensions.ts';
 
-import { ErrorMessage } from 'universe error.ts';
-import { globalDebuggerNamespace } from 'universe constant.ts';
+import { createDebugLogger } from 'multiverse#rejoinder';
 
 import {
-  type GlobalExecutionContext,
+  globalCliArguments,
   type GlobalCliArguments,
-  globalCliArguments
+  type GlobalExecutionContext
 } from 'universe configure.ts';
+
+import { globalDebuggerNamespace } from 'universe constant.ts';
+import { ErrorMessage } from 'universe error.ts';
 
 /**
  * A version of {@link withStandardBuilder} that expects `CustomCliArguments` to
  * extend {@link GlobalCliArguments}.
+ *
+ * When providing a `customBuilder` function or object, any key in the returned
+ * object that is also a key in {@link globalCliArguments} will have its value
+ * merged with the value in {@link globalCliArguments} _instead_ of fully
+ * overwriting it. This means you can pass minimal configuration values for the
+ * keys that are also in {@link globalCliArguments} and those values will be
+ * merged over the corresponding default configuration value in
+ * {@link globalCliArguments}.
  */
-export function withGlobalBuilder<
-  CustomCliArguments extends Omit<GlobalCliArguments, 'scope'> & { scope?: string }
->(
+export function withGlobalBuilder<CustomCliArguments extends GlobalCliArguments<string>>(
   ...[customBuilder, settings]: Parameters<
     typeof withStandardBuilder<CustomCliArguments, GlobalExecutionContext>
   >
@@ -44,6 +50,16 @@ export function withGlobalBuilder<
         (typeof customBuilder === 'function'
           ? customBuilder(blackFlag, helpOrVersionSet, argv)
           : customBuilder) || {};
+
+      for (const key of Object.keys(customCliArguments)) {
+        if (key in globalCliArguments) {
+          customCliArguments[key] = Object.assign(
+            {},
+            globalCliArguments[key as keyof typeof globalCliArguments],
+            customCliArguments[key]
+          );
+        }
+      }
 
       debug_('exited withGlobalBuilder::builder wrapper function');
 

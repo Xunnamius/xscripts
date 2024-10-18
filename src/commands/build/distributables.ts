@@ -1,70 +1,75 @@
 /* eslint-disable unicorn/no-array-reduce */
-import {
-  dirname,
-  relative as toRelativePath,
-  resolve as toAbsolutePath,
-  join as joinPath
-} from 'node:path';
-
 import { chmod, rename, stat, symlink } from 'node:fs/promises';
 
 import {
-  transformFileAsync as babelTransformAsync,
-  loadOptions as loadBabelOptions
+  dirname,
+  join as joinPath,
+  relative as toRelativePath,
+  resolve as toAbsolutePath
+} from 'node:path';
+
+import { setTimeout as delay } from 'node:timers/promises';
+
+import {
+  loadOptions as loadBabelOptions,
+  transformFileAsync as babelTransformAsync
 } from '@babel/core';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { rimraf as forceDeletePaths } from 'rimraf';
 import uniqueFilename from 'unique-filename';
 
+import { type AsStrictExecutionContext, type BfeBuilderObject } from 'multiverse#bfe';
+import { hardAssert, softAssert } from 'multiverse#cli-utils error.ts';
+
 import {
-  LogTag,
   logStartTime,
+  LogTag,
   standardSuccessMessage
 } from 'multiverse#cli-utils logging.ts';
 
-import {
-  type AbsolutePath,
-  type RelativePath,
-  Tsconfig
-} from 'multiverse#project-utils fs/index.ts';
-
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { hardAssert, softAssert } from 'multiverse#cli-utils error.ts';
 import { ProjectAttribute, WorkspaceAttribute } from 'multiverse#project-utils';
-import { type BfeBuilderObject, type AsStrictExecutionContext } from 'multiverse#bfe';
-import { SHORT_TAB } from 'multiverse#rejoinder';
-import { run } from 'multiverse#run';
+
 import {
   assetPrefix,
   gatherPackageBuildTargets
 } from 'multiverse#project-utils analyze/exports/gather-package-build-targets.ts';
 
 import {
-  LimitedGlobalScope as DistributablesBuilderScope,
-  type GlobalCliArguments,
-  type GlobalExecutionContext
-} from 'universe configure.ts';
+  Tsconfig,
+  type AbsolutePath,
+  type RelativePath
+} from 'multiverse#project-utils fs/index.ts';
 
-import {
-  withGlobalBuilder,
-  withGlobalUsage,
-  checkIsNotNil,
-  runGlobalPreChecks,
-  readFile,
-  writeFile,
-  copyFile,
-  makeDirectory
-} from 'universe util.ts';
+import { SHORT_TAB } from 'multiverse#rejoinder';
+import { run } from 'multiverse#run';
 
-import { ErrorMessage } from 'universe error.ts';
-// ? Used in usage string generation
-import { TesterScope } from 'universe commands/test.ts';
 import {
   extensionsTypescript,
   hasTypescriptExtension
 } from 'universe assets/config/_babel.config.js.ts';
-import { setTimeout as delay } from 'node:timers/promises';
+
+import { TesterScope } from 'universe commands/test.ts';
+
+import {
+  ThisPackageGlobalScope as DistributablesBuilderScope,
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
+
+import { ErrorMessage } from 'universe error.ts';
+
+import {
+  checkIsNotNil,
+  copyFile,
+  makeDirectory,
+  readFile,
+  runGlobalPreChecks,
+  withGlobalBuilder,
+  withGlobalUsage,
+  writeFile
+} from 'universe util.ts';
 
 const standardNodeShebang = '#!/usr/bin/env node\n';
 const nodeModulesRelativeBinDir = `node_modules/.bin`;
@@ -97,11 +102,17 @@ export const intermediateTranspilationEnvironment = Object.values(
   IntermediateTranspilationEnvironment
 );
 
-const moduleSystems = Object.values(ModuleSystem);
-const distributablesBuilderScopes = Object.values(DistributablesBuilderScope);
+/**
+ * @see {@link ModuleSystem}
+ */
+export const moduleSystems = Object.values(ModuleSystem);
 
-export type CustomCliArguments = Omit<GlobalCliArguments, 'scope'> & {
-  scope: DistributablesBuilderScope;
+/**
+ * @see {@link DistributablesBuilderScope}
+ */
+export const distributablesBuilderScopes = Object.values(DistributablesBuilderScope);
+
+export type CustomCliArguments = GlobalCliArguments<DistributablesBuilderScope> & {
   cleanOutputDir: boolean;
   // ? The remaining args might be undefined if we're building a NextJs package
   generateTypes?: boolean;
@@ -129,13 +140,9 @@ export default async function command({
     function (_blackFlag, _helpOrVersionSet, argv) {
       const baseParameters: BfeBuilderObject<CustomCliArguments, GlobalExecutionContext> =
         {
-          scope: {
-            string: true,
-            choices: distributablesBuilderScopes,
-            description: 'Which files to consider as potential sources/assets',
-            default: DistributablesBuilderScope.ThisPackage
-          },
+          scope: { choices: distributablesBuilderScopes },
           'clean-output-dir': {
+            alias: 'clean-dist',
             boolean: true,
             description: 'Force-delete the output directory before transpilation',
             default: projectMetadata_
@@ -317,12 +324,12 @@ Note that, when attempting to build a Next.js package, this command will defer e
         const prependShebang = prependShebang_;
         const moduleSystem = moduleSystem_;
 
-        hardAssert(includeExternalFiles, ErrorMessage.GuruMeditation());
-        hardAssert(excludeInternalFiles, ErrorMessage.GuruMeditation());
-        hardAssert(generateTypes, ErrorMessage.GuruMeditation());
-        hardAssert(linkCliIntoBin, ErrorMessage.GuruMeditation());
-        hardAssert(prependShebang, ErrorMessage.GuruMeditation());
-        hardAssert(moduleSystem, ErrorMessage.GuruMeditation());
+        hardAssert(includeExternalFiles !== undefined, ErrorMessage.GuruMeditation());
+        hardAssert(excludeInternalFiles !== undefined, ErrorMessage.GuruMeditation());
+        hardAssert(generateTypes !== undefined, ErrorMessage.GuruMeditation());
+        hardAssert(linkCliIntoBin !== undefined, ErrorMessage.GuruMeditation());
+        hardAssert(prependShebang !== undefined, ErrorMessage.GuruMeditation());
+        hardAssert(moduleSystem !== undefined, ErrorMessage.GuruMeditation());
 
         outputExtension ??=
           moduleSystem === ModuleSystem.Cjs ||

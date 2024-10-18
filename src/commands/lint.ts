@@ -1,6 +1,9 @@
-import { resolve as toAbsolutePath, join as joinPath } from 'node:path';
+import { join as joinPath, resolve as toAbsolutePath } from 'node:path';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
+
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { hardAssert } from 'multiverse#cli-utils error.ts';
 
 import {
   logStartTime,
@@ -8,33 +11,32 @@ import {
   standardSuccessMessage
 } from 'multiverse#cli-utils logging.ts';
 
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { gatherProjectFiles, type ProjectMetadata } from 'multiverse#project-utils';
+
 import {
-  type AbsolutePath,
   isAccessible,
   readJsonc,
-  Tsconfig
+  Tsconfig,
+  type AbsolutePath
 } from 'multiverse#project-utils fs/index.ts';
 
-import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { hardAssert } from 'multiverse#cli-utils error.ts';
-import { gatherProjectFiles, type ProjectMetadata } from 'multiverse#project-utils';
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
 import { runNoRejectOnBadExit, type run, type Subprocess } from 'multiverse#run';
 
-import { ErrorMessage } from 'universe error.ts';
-
 import {
-  GlobalScope,
+  DefaultGlobalScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe configure.ts';
 
+import { ErrorMessage } from 'universe error.ts';
+
 import {
   checkAllChoiceIfGivenIsByItself,
   checkArrayNotEmpty,
+  runGlobalPreChecks,
   withGlobalBuilder,
-  withGlobalUsage,
-  runGlobalPreChecks
+  withGlobalUsage
 } from 'universe util.ts';
 
 export enum Linter {
@@ -44,7 +46,7 @@ export enum Linter {
   All = 'all'
 }
 
-enum LinterScope_ {
+export enum LinterScope_ {
   /**
    * Limit the command to _source_ files contained within the current package
    * (as determined by the current working directory), excluding non-source
@@ -68,18 +70,25 @@ enum LinterScope_ {
 /**
  * The context in which to search for files to lint.
  */
-export type LinterScope = GlobalScope | LinterScope_;
+export type LinterScope = DefaultGlobalScope | LinterScope_;
+
 /**
  * The context in which to search for files to lint.
  */
-export const LinterScope = { ...GlobalScope, ...LinterScope_ } as const;
+export const LinterScope = { ...DefaultGlobalScope, ...LinterScope_ } as const;
 
+/**
+ * @see {@link Linter}
+ */
 export const linters = Object.values(Linter);
+
+/**
+ * @see {@link LinterScope}
+ */
 export const linterScopes = Object.values(LinterScope);
 
-export type CustomCliArguments = Omit<GlobalCliArguments, 'scope'> & {
+export type CustomCliArguments = GlobalCliArguments<LinterScope> & {
   linter: Linter[];
-  scope: LinterScope;
   remarkSkipIgnored: boolean;
   ignoreWarnings: boolean;
   allowWarningComments: boolean;
@@ -95,6 +104,10 @@ export default async function command({
   const defaultScope = await determineDefaultScope();
 
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
+    scope: {
+      choices: linterScopes,
+      default: defaultScope
+    },
     linter: {
       alias: 'linters',
       array: true,
@@ -105,12 +118,6 @@ export default async function command({
         checkArrayNotEmpty('--linter'),
         checkAllChoiceIfGivenIsByItself(Linter.All, 'linter value')
       ]
-    },
-    scope: {
-      string: true,
-      choices: linterScopes,
-      description: 'Which files to lint',
-      default: defaultScope
     },
     'remark-skip-ignored': {
       boolean: true,

@@ -10,6 +10,8 @@ import {
   type AsStrictExecutionContext
 } from 'multiverse#bfe';
 
+import { softAssert } from 'multiverse#cli-utils error.ts';
+
 import {
   logStartTime,
   LogTag,
@@ -17,23 +19,11 @@ import {
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { softAssert } from 'multiverse#cli-utils error.ts';
 
 import {
-  type GlobalCliArguments,
-  type GlobalExecutionContext
-} from 'universe configure.ts';
-
-import { ErrorMessage } from 'universe error.ts';
-
-import {
-  withGlobalBuilder,
-  withGlobalUsage,
-  checkIsNotNil,
-  runGlobalPreChecks,
-  readFile,
-  writeFile
-} from 'universe util.ts';
+  defaultChangelogTopmatter,
+  type ConventionalChangelogCliConfig
+} from 'universe assets/config/_conventional.config.js.ts';
 
 import {
   default as format,
@@ -41,9 +31,22 @@ import {
 } from 'universe commands/format.ts';
 
 import {
-  type ConventionalChangelogCliConfig,
-  defaultChangelogTopmatter
-} from 'universe assets/config/_conventional.config.js.ts';
+  DefaultGlobalScope,
+  ThisPackageGlobalScope as ChangelogBuilderScope,
+  type GlobalCliArguments,
+  type GlobalExecutionContext
+} from 'universe configure.ts';
+
+import { ErrorMessage } from 'universe error.ts';
+
+import {
+  checkIsNotNil,
+  readFile,
+  runGlobalPreChecks,
+  withGlobalBuilder,
+  withGlobalUsage,
+  writeFile
+} from 'universe util.ts';
 
 import type { Promisable } from 'type-fest';
 
@@ -69,11 +72,16 @@ export enum OutputOrder {
 }
 
 /**
- * @see {@link OutputOrder}.
+ * @see {@link OutputOrder}
  */
 export const availableOutputOrders = Object.values(OutputOrder);
 
-export type CustomCliArguments = GlobalCliArguments & {
+/**
+ * @see {@link ChangelogBuilderScope}
+ */
+export const changelogBuilderScopes = Object.values(ChangelogBuilderScope);
+
+export type CustomCliArguments = GlobalCliArguments<ChangelogBuilderScope> & {
   skipTopmatter: boolean;
   patchChangelog: boolean;
   formatChangelog: boolean;
@@ -95,6 +103,7 @@ export default function command(
   } = globalExecutionContext;
 
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
+    scope: { choices: changelogBuilderScopes },
     'skip-topmatter': {
       boolean: true,
       description: 'Do not prepend topmatter when compiling output',
@@ -159,6 +168,7 @@ Use --import-section-file to add a custom release section to the changelog. The 
     handler: withGlobalHandler(async function (argv) {
       const {
         $0: scriptFullName,
+        scope,
         skipTopmatter,
         formatChangelog,
         patchChangelog,
@@ -184,6 +194,7 @@ Use --import-section-file to add a custom release section to the changelog. The 
         project: { root }
       } = projectMetadata;
 
+      debug('scope (unused): %O', scope);
       debug('skipTopmatter: %O', skipTopmatter);
       debug('formatChangelog: %O', formatChangelog);
       debug('patchChangelog: %O', patchChangelog);
@@ -196,7 +207,7 @@ Use --import-section-file to add a custom release section to the changelog. The 
       if (onlyPatchChangelog) {
         debug(`skipped regenerating ${changelogFile}`);
       } else {
-        const conventionalConfigPath = `${root}/conventional.config.cjs`;
+        const conventionalConfigPath = `${root}/conventional.config.js`;
 
         debug('conventionalConfigPath: %O', conventionalConfigPath);
         debug('outputting changelog to path: %O', changelogFile);
@@ -382,6 +393,7 @@ Use --import-section-file to add a custom release section to the changelog. The 
           ...argv,
           $0: 'format',
           _: [],
+          scope: DefaultGlobalScope.ThisPackage,
           files: [changelogFile],
           silent: true,
           quiet: true,

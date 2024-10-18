@@ -1,20 +1,22 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
 import {
-  LogTag,
   logStartTime,
+  LogTag,
   standardSuccessMessage
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
-
-import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
+  DefaultGlobalScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe configure.ts';
+
+import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe util.ts';
 
 const frontmatter = `\n⮞  `;
 
@@ -29,6 +31,7 @@ export default function command({
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
+    scope: { default: DefaultGlobalScope.Unlimited },
     full: {
       boolean: true,
       description: 'List all tasks along with their implementation code',
@@ -40,7 +43,7 @@ export default function command({
     builder,
     description: 'List all tasks (typically NPM scripts) supported by this project',
     usage: withGlobalUsage(),
-    handler: withGlobalHandler(async function ({ $0: scriptFullName, full }) {
+    handler: withGlobalHandler(async function ({ $0: scriptFullName, scope, full }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
@@ -51,49 +54,61 @@ export default function command({
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Gathering available tasks...');
+
+      debug('scope: %O', scope);
+
       genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
-      const {
-        type,
-        project: { json: rootPkgJson, packages: packages_ }
-      } = projectMetadata;
+      const { type, project, package: pkg } = projectMetadata;
 
-      const workspacePkgsJson = Array.from(packages_?.values() ?? []).map(
-        ({ json }) => json
-      );
+      const cwdPkg = pkg || project;
+      const { json: rootPkgJson, packages: packages_ } = project;
 
-      debug('run context: %O', type);
+      const workspacePkgsJson =
+        scope === DefaultGlobalScope.ThisPackage
+          ? []
+          : Array.from(packages_?.all.values() ?? []).map(({ json }) => json);
+
+      debug('repo type: %O', type);
       debug('root package.json contents: %O', rootPkgJson);
-      debug('workspaces package json contents: %O', workspacePkgsJson);
+      debug('workspace packages json contents: %O', workspacePkgsJson);
 
-      const packages = [rootPkgJson, ...workspacePkgsJson];
+      const packages = [
+        scope === DefaultGlobalScope.ThisPackage ? cwdPkg.json : rootPkgJson,
+        ...workspacePkgsJson
+      ];
 
-      for (const [index, { name, scripts }] of packages.entries()) {
+      for (const [index, pkgJson] of packages.entries()) {
+        const { name, scripts } = pkgJson;
+
         const pkgName = name ?? '(unnamed package)';
-        const pkgLogger =
-          packages.length > 1 ? genericLogger.extend(`[${pkgName}]`) : genericLogger;
+        const pkgFullName =
+          pkgName +
+          (workspacePkgsJson.length && index === 0 ? ' (root package)' : '') +
+          (cwdPkg.json === pkgJson ? ' (current package)' : '');
+
+        const pkgLogger = genericLogger.extend(`[${pkgName}]`);
+
+        const tasks = Object.entries(scripts ?? {})
+          .map(([name, script], index_, array) => {
+            let str = name;
+
+            if (full) {
+              str += `\n${String(script)}${index_ < array.length - 1 ? '\n' : ''}`;
+            }
+
+            return str;
+          })
+          .join(frontmatter);
 
         pkgLogger(
           [LogTag.IF_NOT_QUIETED],
-          `Available NPM run commands for ${pkgName}:${full ? '\n' : ''}` +
-            frontmatter +
-            Object.entries(scripts ?? {})
-              .map(([name, script], index_, array) => {
-                let str = name;
-
-                if (full) {
-                  str += `\n${String(script)}${index_ < array.length - 1 ? '\n' : ''}`;
-                }
-
-                return str;
-              })
-              .join(frontmatter) +
+          `${pkgFullName}:${full ? '\n' : ''}` +
+            (tasks ? frontmatter + tasks : '\n(none)') +
             '\n'
         );
 
-        if (index < packages.length - 1) {
-          genericLogger.newline([LogTag.IF_NOT_QUIETED]);
-        }
+        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       }
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);

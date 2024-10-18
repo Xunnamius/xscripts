@@ -2,30 +2,32 @@ import { type ChildConfiguration } from '@black-flag/core';
 import askPassword from 'askpassword';
 import uniqueFilename from 'unique-filename';
 
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { softAssert } from 'multiverse#cli-utils error.ts';
+
 import {
-  LogTag,
   logStartTime,
+  LogTag,
   standardSuccessMessage
 } from 'multiverse#cli-utils logging.ts';
 
-import { softAssert } from 'multiverse#cli-utils error.ts';
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
 import { ProjectAttribute } from 'multiverse#project-utils';
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
 import { run } from 'multiverse#run';
 
-import { ErrorMessage } from 'universe error.ts';
-
 import {
+  ThisPackageGlobalScope as DeployScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe configure.ts';
 
+import { ErrorMessage } from 'universe error.ts';
+
 import {
   checkIsNotNil,
+  runGlobalPreChecks,
   withGlobalBuilder,
-  withGlobalUsage,
-  runGlobalPreChecks
+  withGlobalUsage
 } from 'universe util.ts';
 
 export enum DeployTarget {
@@ -33,9 +35,17 @@ export enum DeployTarget {
   Ssh = 'ssh'
 }
 
+/**
+ * @see {@link DeployTarget}
+ */
 export const deployTargets = Object.values(DeployTarget);
 
-export type CustomCliArguments = GlobalCliArguments & {
+/**
+ * @see {@link DeployScope}
+ */
+export const deployScopes = Object.values(DeployScope);
+
+export type CustomCliArguments = GlobalCliArguments<DeployScope> & {
   target: DeployTarget;
   bumpVersion?: boolean;
 } & (
@@ -59,6 +69,7 @@ export default function command({
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
+    scope: { choices: deployScopes },
     target: {
       string: true,
       description: 'Select deployment target and strategy',
@@ -192,7 +203,9 @@ export default function command({
         ]
       }
     },
-    '--bump-version': {
+
+    // TODO: replace this option with "xscripts release"
+    'bump-version': {
       boolean: true,
       description: 'Bump the patch version in package.json after the deployment completes'
     }
@@ -207,7 +220,8 @@ export default function command({
 When using --target=ssh, it is assumed the key pair necessary to authenticate with --host is available in the environment. This command will fail if authenticating to --host requires a password or other user input.`
     ),
     handler: withGlobalHandler(async function (argv) {
-      const { $0: scriptFullName, target, bumpVersion } = argv;
+      // ? It's down here instead of in the fn signature for typescript reasons
+      const { $0: scriptFullName, scope, target, bumpVersion } = argv;
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
@@ -222,6 +236,8 @@ When using --target=ssh, it is assumed the key pair necessary to authenticate wi
       const { attributes } = projectMetadata.project;
       const deployMessage = (deployTarget: string) =>
         `Deploying distributables to ${deployTarget} target...`;
+
+      debug('scope (unused): %O', scope);
 
       switch (target) {
         case DeployTarget.Vercel: {

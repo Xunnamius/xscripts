@@ -1,5 +1,7 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
 import {
   logStartTime,
   LogTag,
@@ -7,24 +9,28 @@ import {
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { Tsconfig } from 'multiverse#project-utils fs/index.ts';
 import { run } from 'multiverse#run';
 
-import { Tsconfig } from 'multiverse#project-utils fs/index.ts';
-
 import {
+  ThisPackageGlobalScope as DocumentationBuilderScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe configure.ts';
 
 import {
-  withGlobalBuilder,
-  withGlobalUsage,
   checkArrayNotEmpty,
-  runGlobalPreChecks
+  runGlobalPreChecks,
+  withGlobalBuilder,
+  withGlobalUsage
 } from 'universe util.ts';
 
-export type CustomCliArguments = GlobalCliArguments & {
+/**
+ * @see {@link DocumentationBuilderScope}
+ */
+export const documentationBuilderScopes = Object.values(DocumentationBuilderScope);
+
+export type CustomCliArguments = GlobalCliArguments<DocumentationBuilderScope> & {
   entries: string[];
 };
 
@@ -34,19 +40,20 @@ export default function command({
   state,
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
+  const { root: projectRoot } = projectMetadata_?.project || {};
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
+    scope: { choices: documentationBuilderScopes },
     entries: {
       alias: ['entry'],
       array: true,
       description: 'The entry point(s) of your documentation',
-      default: [
-        'lib/**/*.ts',
-        'src/**/*.ts',
-        'test/**/*.ts',
-        'types/**/*.ts',
-        'external-scripts/*.ts',
-        'external-scripts/*/index.ts'
-      ],
+      default: projectRoot
+        ? [
+            'src/**/*.ts',
+            'test/**/*.ts',
+            `${projectRoot === process.cwd() ? '' : `${projectRoot}/`}types/**/*.ts`
+          ]
+        : '(project-dependent)',
       check: checkArrayNotEmpty('--entries')
     }
   });
@@ -58,6 +65,7 @@ export default function command({
     usage: withGlobalUsage(),
     handler: withGlobalHandler(async function ({
       $0: scriptFullName,
+      scope,
       entries,
       hush: isHushed,
       quiet: isQuieted
@@ -73,7 +81,9 @@ export default function command({
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Generating documentation...');
 
+      debug('scope (unused): %O', scope);
       debug('entries: %O', entries);
+
       genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
       await run(

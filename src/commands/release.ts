@@ -1,22 +1,29 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
 import {
-  LogTag,
   logStartTime,
+  LogTag,
   standardSuccessMessage
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
-
-import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
+  ThisPackageGlobalScope as ReleaseScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe configure.ts';
 
-export type CustomCliArguments = GlobalCliArguments;
+import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe util.ts';
+
+/**
+ * @see {@link ReleaseScope}
+ */
+export const releaseScopes = Object.values(ReleaseScope);
+
+export type CustomCliArguments = GlobalCliArguments<ReleaseScope>;
 
 export default function command({
   log,
@@ -25,14 +32,19 @@ export default function command({
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
-    // TODO
+    scope: { choices: releaseScopes }
   });
 
   return {
     builder,
     description: 'Pack and release existing production-ready distributables',
-    usage: withGlobalUsage(),
-    handler: withGlobalHandler(async function ({ $0: scriptFullName }) {
+    usage: withGlobalUsage(
+      `
+$1 according to the release procedure described in this project's MAINTAINING.md file.
+
+The only available scope is "${ReleaseScope.ThisPackage}"; hence, when invoking this command, only the package at the current working directory will be eligible for release. Use Npm's workspace features, or Turbo's, if your goal is to potentially release multiple packages.`.trim()
+    ),
+    handler: withGlobalHandler(async function ({ $0: scriptFullName, scope }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
@@ -43,6 +55,8 @@ export default function command({
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Releasing project...');
+
+      debug('scope (unused): %O', scope);
 
       // TODO (leave turbo's tasks to turbo, only focus on releasing!)
       // TODO (skip reinstalling node_modules if dir exists unless --force-reinstall)

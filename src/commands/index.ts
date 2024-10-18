@@ -3,22 +3,30 @@ import { CommandNotImplementedError } from '@black-flag/core/util';
 
 import { type AsStrictExecutionContext } from 'multiverse#bfe';
 
-import { withGlobalBuilder, withGlobalUsage } from 'universe util.ts';
-import { globalCliName } from 'universe constant.ts';
-
 import {
+  UnlimitedGlobalScope as RootScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe configure.ts';
 
-export type CustomCliArguments = GlobalCliArguments;
+import { globalCliName } from 'universe constant.ts';
+
+import { withGlobalBuilder, withGlobalUsage } from 'universe util.ts';
+
+/**
+ * @see {@link RootScope}
+ */
+export const rootScopes = Object.values(RootScope);
+
+export type CustomCliArguments = GlobalCliArguments<RootScope>;
 
 export default function command({
   debug_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(undefined, {
-    additionalCommonOptions: ['version']
-  });
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
+    { scope: { choices: rootScopes, default: RootScope.Unlimited } },
+    { additionalCommonOptions: ['version'] }
+  );
 
   return {
     name: globalCliName,

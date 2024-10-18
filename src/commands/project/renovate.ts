@@ -1,22 +1,29 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
+import { type AsStrictExecutionContext } from 'multiverse#bfe';
+
 import {
-  LogTag,
   logStartTime,
+  LogTag,
   standardSuccessMessage
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
-
-import { withGlobalBuilder, withGlobalUsage, runGlobalPreChecks } from 'universe util.ts';
 
 import {
+  UnlimitedGlobalScope as ProjectRenovateScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe configure.ts';
 
-export type CustomCliArguments = GlobalCliArguments & {
+import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe util.ts';
+
+/**
+ * @see {@link ProjectRenovateScope}
+ */
+export const projectRenovateScopes = Object.values(ProjectRenovateScope);
+
+export type CustomCliArguments = GlobalCliArguments<ProjectRenovateScope> & {
   // TODO
 };
 
@@ -28,13 +35,14 @@ export default function command({
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     // TODO
+    scope: { choices: projectRenovateScopes, default: ProjectRenovateScope.Unlimited }
   });
 
   return {
     builder,
     description: 'Bring a project into compliance with latest best practices',
     usage: withGlobalUsage(),
-    handler: withGlobalHandler(async function ({ $0: scriptFullName }) {
+    handler: withGlobalHandler(async function ({ $0: scriptFullName, scope }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
@@ -46,7 +54,10 @@ export default function command({
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Renovating project...');
 
+      debug('scope (unused): %O', scope);
+
       // TODO (is idempotent)
+      // TODO (--deprecate --force (requires --force))
       // TODO (like init, can generate missing configs and doesn't overwrite existing configs)
       // TODO (--interactive (default) to trigger an interactive fix of anything from project lint that is fixable (also offer to overwrite/replace, merge, etc; similar to apt) or --no-interactive to do the same but fail if any problem is not automatically resolvable; can also call --no-interactive --force to do the same but force through any changes and overwrite existing configs without regard for their contents (SUPER DANGEROUS))
       // TODO (does nothing if called without at least one "Task Options" (make a new black flag grouping) argument; i.e. must specify each thing that you want done, or specify --strategy X)
