@@ -135,17 +135,19 @@ There are two ways to release a specific package by hand. The first is using
 [xscripts][12]:
 
 ```bash
+# cd packages/some-pkg
 # npx xscripts release --help
 npx xscripts release
 ```
 
-Alternatively, you can call each individual NPM scripts by hand:
+Alternatively, you can call each individual NPM script by hand:
 
 > If one of these steps fails, you should address the failure before running the
 > next step.
 
 > These commands should be run with the root of the individual package you're
-> trying to release root as the current working directory.
+> trying to release root as the current working directory. Using `npm -w` also
+> works.
 
 ```bash
 # 1. OPTIONAL: Reset the working tree to a clean state.
