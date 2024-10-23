@@ -16,15 +16,18 @@ import { webpackConfigProjectBase } from 'multiverse#project-utils fs/exports/we
 import { createDebugLogger, type ExtendedDebugger } from 'multiverse#rejoinder';
 import { run, type RunReturnType } from 'multiverse#run';
 
-import { name as pkgName, version as pkgVersion } from '# package.json';
+import {
+  name as rootPackageJsonName,
+  version as rootPackageJsonVersion
+} from '# package.json';
 
 import type { Options as ExecaOptions } from 'execa' with { 'resolution-mode': 'import' };
 import type { LiteralUnion, Promisable } from 'type-fest';
 
-const globalDebug = createDebugLogger({ namespace: `${pkgName}:jest-setup` });
+const globalDebug = createDebugLogger({ namespace: `${rootPackageJsonName}:jest-setup` });
 
-globalDebug(`pkgName: "${pkgName}"`);
-globalDebug(`pkgVersion: "${pkgVersion}"`);
+globalDebug(`rootPackageJsonName: "${rootPackageJsonName}"`);
+globalDebug(`rootPackageJsonVersion: "${rootPackageJsonVersion}"`);
 
 // TODO: all of the stuff in this file needs to go into their own packages
 
@@ -451,11 +454,11 @@ export function isolatedImport<T = unknown>(args: {
    */
   useDefault?: boolean;
 }) {
-  let pkg: T | undefined;
+  let package_: T | undefined;
 
   // ? Cache-busting
   jest.isolateModules(() => {
-    pkg = ((r) => {
+    package_ = ((r) => {
       globalDebug.extend('isolated-import')(
         `performing isolated import of ${args.path}${
           args.useDefault ? ' (returning default by force)' : ''
@@ -470,7 +473,7 @@ export function isolatedImport<T = unknown>(args: {
     })(require(args.path));
   });
 
-  return pkg as T;
+  return package_ as T;
 }
 
 // TODO: XXX: make this into a separate package (along with the above)
@@ -500,10 +503,10 @@ export async function withMockedExit(
 // TODO: XXX: make this into a separate package (along with the above)
 export function protectedImportFactory(path: string) {
   return async (parameters?: { expectedExitCode?: number }) => {
-    let pkg: unknown = undefined;
+    let package_: unknown = undefined;
 
     await withMockedExit(async ({ exitSpy }) => {
-      pkg = await isolatedImport({ path });
+      package_ = await isolatedImport({ path });
       if (expect && parameters?.expectedExitCode)
         expect(exitSpy).toHaveBeenCalledWith(parameters.expectedExitCode);
       else if (!expect)
@@ -512,7 +515,7 @@ export function protectedImportFactory(path: string) {
         );
     });
 
-    return pkg;
+    return package_;
   };
 }
 
@@ -805,10 +808,13 @@ export function dummyNpmPackageFixture(): MockFixture {
         })
       ]);
 
-      if (pkgName.includes('/')) {
+      if (rootPackageJsonName.includes('/')) {
         await mkdir({
           paths: [
-            resolvePath(context.root, joinPath('node_modules', pkgName.split('/')[0]))
+            resolvePath(
+              context.root,
+              joinPath('node_modules', rootPackageJsonName.split('/')[0])
+            )
           ],
           context
         });
@@ -826,7 +832,10 @@ export function npmLinkSelfFixture(): MockFixture {
     setup: async (context) => {
       await symlink({
         actualPath: resolvePath(__dirname, '..'),
-        linkPath: resolvePath(context.root, joinPath('node_modules', pkgName)),
+        linkPath: resolvePath(
+          context.root,
+          joinPath('node_modules', rootPackageJsonName)
+        ),
         isDir: true,
         context
       });
@@ -850,15 +859,15 @@ export function npmCopySelfFixture(): MockFixture {
       );
       const destinationPath = resolvePath(
         context.root,
-        joinPath('node_modules', pkgName)
+        joinPath('node_modules', rootPackageJsonName)
       );
-      const destPkgJson = resolvePath(destinationPath, 'package.json');
+      const destinationPackageJson = resolvePath(destinationPath, 'package.json');
 
       await mkdir({ paths: [destinationPath], context });
       await copy({ sourcePaths, destinationPath, context });
 
-      if (!destPkgJson) {
-        throw new Error(`expected "${destPkgJson}" to exist`);
+      if (!destinationPackageJson) {
+        throw new Error(`expected "${destinationPackageJson}" to exist`);
       }
 
       // TODO: only optionally remove peer dependencies from the install loop
@@ -867,27 +876,33 @@ export function npmCopySelfFixture(): MockFixture {
       const {
         peerDependencies: _,
         devDependencies: __,
-        ...dummyPkgJson
-      } = JSON.parse(await readFile({ path: destPkgJson, context }));
+        ...dummyPackageJson
+      } = JSON.parse(await readFile({ path: destinationPackageJson, context }));
 
       const installTargets = {
-        ...dummyPkgJson.dependencies,
+        ...dummyPackageJson.dependencies,
         ...Object.fromEntries(
           [context.options.npmInstall]
             .flat()
             .filter((r): r is string => Boolean(r))
-            .map((pkgStr) => {
-              const isScoped = pkgStr.startsWith('@');
-              const pkgSplit = (isScoped ? pkgStr.slice(1) : pkgStr).split('@');
-              const pkg = isScoped ? [`@${pkgSplit[0]}`, pkgSplit[1]] : pkgSplit;
-              return [pkg[0], pkg[1] || 'latest'];
+            .map((packageString) => {
+              const isScoped = packageString.startsWith('@');
+              const packageSplit = (
+                isScoped ? packageString.slice(1) : packageString
+              ).split('@');
+
+              const package_ = isScoped
+                ? [`@${packageSplit[0]}`, packageSplit[1]]
+                : packageSplit;
+
+              return [package_[0], package_[1] || 'latest'];
             })
         )
       };
 
       await writeFile({
-        path: destPkgJson,
-        data: JSON.stringify({ ...dummyPkgJson, dependencies: installTargets }),
+        path: destinationPackageJson,
+        data: JSON.stringify({ ...dummyPackageJson, dependencies: installTargets }),
         context
       });
 
@@ -914,14 +929,14 @@ export function npmCopySelfFixture(): MockFixture {
       });
 
       await rename({
-        oldPath: `${context.root}/node_modules_old/${pkgName}/node_modules`,
+        oldPath: `${context.root}/node_modules_old/${rootPackageJsonName}/node_modules`,
         newPath: `${context.root}/node_modules`,
         context
       });
 
       await rename({
-        oldPath: `${context.root}/node_modules_old/${pkgName}`,
-        newPath: `${context.root}/node_modules/${pkgName}`,
+        oldPath: `${context.root}/node_modules_old/${rootPackageJsonName}`,
+        newPath: `${context.root}/node_modules/${rootPackageJsonName}`,
         context
       });
 
