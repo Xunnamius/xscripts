@@ -1,13 +1,21 @@
 // @ts-check
+// * This script is run automatically by `npx xscripts project prepare`, see
+// * `npx xscripts project prepare --help` for details.
+// ! It is imperative that operations performed by this script are IDEMPOTENT!
+
 import { mkdir, writeFile } from 'node:fs/promises';
+import { basename } from 'node:path';
 
 import { glob as globAsync } from 'glob';
 
 // TODO: replace with rejoinder once published
+// eslint-disable-next-line import/no-relative-packages
 import { createGenericLogger } from '../../node_modules/@-xun/scripts/dist/packages/rejoinder/src/index.js';
 
 const root = import.meta.dirname;
-const log = createGenericLogger({ namespace: 'post-npm-install' });
+const log = createGenericLogger({
+  namespace: `${basename(import.meta.dirname)}:post-npm-install`
+});
 
 await Promise.all([
   globAsync(`${root}/test/fixtures/dummy-repo/*/`, {
