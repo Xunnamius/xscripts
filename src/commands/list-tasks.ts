@@ -59,35 +59,33 @@ export default function command({
 
       genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
-      const { type, project, package: pkg } = projectMetadata;
+      const { type, rootPackage, cwdPackage, subRootPackages } = projectMetadata;
+      const { json: rootPackageJson } = rootPackage;
 
-      const cwdPkg = pkg || project;
-      const { json: rootPkgJson, packages: packages_ } = project;
-
-      const workspacePkgsJson =
+      const subrootPackagesJson =
         scope === DefaultGlobalScope.ThisPackage
           ? []
-          : Array.from(packages_?.all.values() ?? []).map(({ json }) => json);
+          : Array.from(subRootPackages?.all.values() ?? []).map(({ json }) => json);
 
       debug('repo type: %O', type);
-      debug('root package.json contents: %O', rootPkgJson);
-      debug('workspace packages json contents: %O', workspacePkgsJson);
+      debug('root package.json contents: %O', rootPackageJson);
+      debug('sub-root packages json contents: %O', subrootPackagesJson);
 
       const packages = [
-        scope === DefaultGlobalScope.ThisPackage ? cwdPkg.json : rootPkgJson,
-        ...workspacePkgsJson
+        scope === DefaultGlobalScope.ThisPackage ? cwdPackage.json : rootPackageJson,
+        ...subrootPackagesJson
       ];
 
-      for (const [index, pkgJson] of packages.entries()) {
-        const { name, scripts } = pkgJson;
+      for (const [index, packageJson] of packages.entries()) {
+        const { name, scripts } = packageJson;
 
-        const pkgName = name ?? '(unnamed package)';
-        const pkgFullName =
-          pkgName +
-          (workspacePkgsJson.length && index === 0 ? ' (root package)' : '') +
-          (cwdPkg.json === pkgJson ? ' (current package)' : '');
+        const packageName = name ?? '(unnamed package)';
+        const packageFullName =
+          packageName +
+          (subrootPackagesJson.length && index === 0 ? ' (root package)' : '') +
+          (cwdPackage.json === packageJson ? ' (current package)' : '');
 
-        const pkgLogger = genericLogger.extend(`[${pkgName}]`);
+        const packageLogger = genericLogger.extend(`[${packageName}]`);
 
         const tasks = Object.entries(scripts ?? {})
           .map(([name, script], index_, array) => {
@@ -101,9 +99,9 @@ export default function command({
           })
           .join(frontmatter);
 
-        pkgLogger(
+        packageLogger(
           [LogTag.IF_NOT_QUIETED],
-          `${pkgFullName}:${full ? '\n' : ''}` +
+          `${packageFullName}:${full ? '\n' : ''}` +
             (tasks ? frontmatter + tasks : '\n(none)') +
             '\n'
         );

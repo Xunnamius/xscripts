@@ -320,20 +320,20 @@ export function moduleExport(
         debug_(`saw version: ${commit.version!}`);
 
         if (commit.version) {
-          const { package: pkg } = analyzeProjectStructure.sync();
+          const { rootPackage, cwdPackage } = analyzeProjectStructure.sync();
 
-          if (pkg) {
+          if (cwdPackage === rootPackage) {
             debug_('sub-root package context detected');
 
             const {
-              json: { name: pkgName }
-            } = pkg;
+              json: { name: packageName }
+            } = cwdPackage;
 
-            softAssert(pkgName, ErrorMessage.BadProjectNameInPackageJson());
+            softAssert(packageName, ErrorMessage.BadProjectNameInPackageJson());
 
-            debug_(`monorepo package: ${pkgName}`);
+            debug_(`monorepo package: ${packageName}`);
 
-            if (new RegExp(`^${pkgName}@.+$`).test(commit.version)) {
+            if (new RegExp(`^${packageName}@.+$`).test(commit.version)) {
               // ? Remove the package name from the version string
               commit.version = commit.version.split('@').at(-1)!;
               debug_(`using version: ${commit.version}`);

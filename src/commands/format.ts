@@ -165,11 +165,9 @@ With respect to .prettierignore being the single source of truth for formatters:
       let sawMarkdownFilesOutsideProjectRoot = false as boolean;
 
       const {
-        project: { root: projectRoot },
-        package: pkg
+        rootPackage: { root: projectRoot },
+        cwdPackage: { root: packageRoot }
       } = projectMetadata;
-
-      const packageRoot = pkg?.root || projectRoot;
 
       debug('projectRoot: %O', projectRoot);
       debug('packageRoot: %O', packageRoot);
@@ -249,13 +247,13 @@ With respect to .prettierignore being the single source of truth for formatters:
       debug('allMarkdownFiles: %O', allMarkdownFiles);
       debug('allPackageJsonFiles: %O', allPackageJsonFiles);
 
-      const shouldDoPkgJson =
+      const shouldDoPackageJson =
         !onlyMarkdown && !onlyPrettier && allPackageJsonFiles.length > 0;
       const shouldDoMarkdown =
         !onlyPackageJson && !onlyPrettier && allMarkdownFiles.length > 0;
       const shouldDoPrettier = !onlyPackageJson && !onlyMarkdown;
 
-      debug('shouldDoPkgJson: %O', shouldDoPkgJson);
+      debug('shouldDoPackageJson: %O', shouldDoPackageJson);
       debug('shouldDoMarkdown: %O', shouldDoMarkdown);
       debug('shouldDoPrettier: %O', shouldDoPrettier);
 
@@ -318,11 +316,11 @@ With respect to .prettierignore being the single source of truth for formatters:
         // ? This can run completely asynchronously since nothing else relies on
         // ? it (except prettier).
 
-        if (shouldDoPkgJson) {
+        if (shouldDoPackageJson) {
           status.sort = null;
         }
 
-        const sortedPkgJsonFiles = shouldDoPkgJson
+        const sortedPackageJsonFiles = shouldDoPackageJson
           ? run('npx', ['sort-package-json', ...allPackageJsonFiles]).catch(
               (error: unknown) => {
                 status.sort = false;
@@ -430,9 +428,9 @@ With respect to .prettierignore being the single source of truth for formatters:
           status.remark = true;
         }
 
-        await sortedPkgJsonFiles;
+        await sortedPackageJsonFiles;
 
-        if (shouldDoPkgJson) {
+        if (shouldDoPackageJson) {
           status.sort = true;
         }
 
@@ -486,7 +484,7 @@ With respect to .prettierignore being the single source of truth for formatters:
       genericLogger(
         [LogTag.IF_NOT_SILENCED],
         [
-          `${shouldDoPkgJson ? 'Processed' : 'Encountered'} package.json files: ${allPackageJsonFiles.length}`,
+          `${shouldDoPackageJson ? 'Processed' : 'Encountered'} package.json files: ${allPackageJsonFiles.length}`,
           `${SHORT_TAB}Sorted file contents: ${statusToEmoji(status.sort)}`,
           `${shouldDoMarkdown ? 'Processed' : 'Encountered'} markdown files${skipIgnored ? '' : ' (no files ignored)'}: ${allMarkdownFiles.length}`,
           `${SHORT_TAB}Synchronized TOCs: ${statusToEmoji(status.doctoc)}`,

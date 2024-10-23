@@ -57,16 +57,16 @@ export default function command({
 
       debug('scope (unused): %O', scope);
 
-      const { attributes } = projectMetadata.project;
+      const { attributes: projectAttributes } = projectMetadata.rootPackage;
       const passControlMessage = (runtime: string) =>
         `--- control passed to ${runtime} runtime ---`;
 
       try {
-        if (attributes[ProjectAttribute.Next]) {
+        if (projectAttributes[ProjectAttribute.Next]) {
           const port = await acquirePort();
           genericLogger([LogTag.IF_NOT_QUIETED], passControlMessage('Next.js'));
           await runWithInheritedIo(ProjectAttribute.Next, ['-p', port]);
-        } else if (attributes[ProjectAttribute.Webpack]) {
+        } else if (projectAttributes[ProjectAttribute.Webpack]) {
           const port = await acquirePort();
 
           genericLogger(

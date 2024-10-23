@@ -29,7 +29,11 @@ import {
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { ProjectAttribute, WorkspaceAttribute } from 'multiverse#project-utils';
+import {
+  isWorkspacePackage,
+  ProjectAttribute,
+  WorkspaceAttribute
+} from 'multiverse#project-utils';
 
 import {
   assetPrefix,
@@ -43,7 +47,9 @@ import {
 } from 'multiverse#project-utils fs/index.ts';
 
 import { SHORT_TAB } from 'multiverse#rejoinder';
-import { run } from 'multiverse#run';
+import { run, runNoRejectOnBadExit } from 'multiverse#run';
+
+import { gatherPackageFiles } from '#project-utils src/analyze/exports/gather-package-files.ts';
 
 import {
   extensionsTypescript,
@@ -123,6 +129,7 @@ export type CustomCliArguments = GlobalCliArguments<DistributablesBuilderScope> 
   outputExtension?: string;
   includeExternalFiles?: (AbsolutePath | RelativePath)[];
   excludeInternalFiles?: (AbsolutePath | RelativePath)[];
+  skipOutputChecks?: boolean;
 };
 
 export default async function command({
@@ -131,9 +138,11 @@ export default async function command({
   state,
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const { attributes: projectAttributes = {} } = projectMetadata_?.project || {};
-  const isCwdTheProjectRoot = projectMetadata_ && projectMetadata_.package === undefined;
+  const { attributes: projectAttributes = {} } = projectMetadata_?.rootPackage || {};
+  const isCwdTheProjectRoot =
+    projectMetadata_ && projectMetadata_.rootPackage === projectMetadata_.cwdPackage;
   const isCwdANextJsPackage =
+    // TODO: consider allowing Next.js projects as sub-roots / workspace packages
     isCwdTheProjectRoot && !!projectAttributes[ProjectAttribute.Next];
 
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
@@ -155,19 +164,39 @@ export default async function command({
         CustomCliArguments,
         GlobalExecutionContext
       > = {
+        'exclude-internal-files': {
+          alias: 'exclude-internal-file',
+          string: true,
+          array: true,
+          default: [],
+          description: 'Remove one or more files from internal build targets'
+        },
+        'generate-intermediates-for': {
+          string: true,
+          choices: intermediateTranspilationEnvironment,
+          description: 'Transpile into non-production-ready non-distributables',
+          conflicts: ['generate-types', 'link-cli-into-bin', 'prepend-shebang'],
+          implies: {
+            'generate-types': false,
+            'link-cli-into-bin': false,
+            'prepend-shebang': false
+          }
+        },
         'generate-types': {
           boolean: true,
           description: 'Output TypeScript declaration files alongside distributables',
           default: true
         },
+        'include-external-files': {
+          alias: 'include-external-file',
+          string: true,
+          array: true,
+          default: [],
+          description: 'Add one or more files to external build targets'
+        },
         'link-cli-into-bin': {
           boolean: true,
           description: 'Soft-link "bin" entries in package.json into node_modules/.bin',
-          default: true
-        },
-        'prepend-shebang': {
-          boolean: true,
-          description: 'Prepend a shebang to each "bin" distributable in package.json',
           default: true
         },
         'module-system': {
@@ -186,32 +215,17 @@ export default async function command({
             return argument.startsWith('.') ? argument : `.${argument}`;
           }
         },
-        'include-external-files': {
-          alias: 'include-external-file',
-          string: true,
-          array: true,
-          default: [],
-          description: 'Add one or more files to external build targets'
-        },
-        'exclude-internal-files': {
-          alias: 'exclude-internal-file',
-          string: true,
-          array: true,
-          default: [],
-          description: 'Remove one or more files from internal build targets'
+        'prepend-shebang': {
+          boolean: true,
+          description: 'Prepend a shebang to each "bin" distributable in package.json',
+          default: true
         },
         // TODO: consider an option that can reclassify a source as an asset
         // 'reclassify-as-asset': { ... }
-        'generate-intermediates-for': {
-          string: true,
-          choices: intermediateTranspilationEnvironment,
-          description: 'Transpile into non-production-ready non-distributables',
-          conflicts: ['generate-types', 'link-cli-into-bin', 'prepend-shebang'],
-          implies: {
-            'generate-types': false,
-            'link-cli-into-bin': false,
-            'prepend-shebang': false
-          }
+        'skip-output-checks': {
+          boolean: true,
+          description: 'Do not run consistency and integrity checks on build output',
+          default: false
         }
       };
 
@@ -237,7 +251,7 @@ export default async function command({
     builder,
     description: 'Transpile sources and assets into production-ready distributables',
     usage: withGlobalUsage(
-      `$1. Also performs lightweight validation of import specifiers and package entry points to ensure baseline consistency, integrity, and well-formedness of build output.
+      `$1. Also performs lightweight validation of import specifiers and package entry points where appropriate to ensure baseline consistency, integrity, and well-formedness of build output.
 
 ${isCwdANextJsPackage ? "Note that the current working directory points to a Next.js package! When attempting to build such a package, this command will defer entirely to `next build`, which disables several of this command's options.\n\n" : ''}"Source," "sources," or "source files" describe all the build targets that will be transpiled while "assets" or "asset files" describe the remaining targets that are copied-through to the output directory without modification.
 
@@ -263,13 +277,15 @@ Note that, when attempting to build a Next.js package, this command will defer e
       quiet: isQuieted,
       generateIntermediatesFor,
       outputExtension,
+      // TODO: could probably make this easier by using a discriminated union
       // ? We need to make sure these aren't undefined...
       includeExternalFiles: includeExternalFiles_,
       excludeInternalFiles: excludeInternalFiles_,
       generateTypes: generateTypes_,
       linkCliIntoBin: linkCliIntoBin_,
       prependShebang: prependShebang_,
-      moduleSystem: moduleSystem_
+      moduleSystem: moduleSystem_,
+      skipOutputChecks: skipOutputChecks_
     }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
@@ -306,6 +322,7 @@ Note that, when attempting to build a Next.js package, this command will defer e
         debug('linkCliIntoBin: %O', linkCliIntoBin_);
         debug('prependShebang: %O', prependShebang_);
         debug('moduleSystem: %O', moduleSystem_);
+        debug('skipOutputChecks: %O', skipOutputChecks_);
         debug('outputExtension (original): %O', outputExtension);
 
         if (generateIntermediatesFor) {
@@ -323,6 +340,7 @@ Note that, when attempting to build a Next.js package, this command will defer e
         const linkCliIntoBin = linkCliIntoBin_;
         const prependShebang = prependShebang_;
         const moduleSystem = moduleSystem_;
+        const skipOutputChecks = skipOutputChecks_;
 
         hardAssert(includeExternalFiles !== undefined, ErrorMessage.GuruMeditation());
         hardAssert(excludeInternalFiles !== undefined, ErrorMessage.GuruMeditation());
@@ -330,6 +348,7 @@ Note that, when attempting to build a Next.js package, this command will defer e
         hardAssert(linkCliIntoBin !== undefined, ErrorMessage.GuruMeditation());
         hardAssert(prependShebang !== undefined, ErrorMessage.GuruMeditation());
         hardAssert(moduleSystem !== undefined, ErrorMessage.GuruMeditation());
+        hardAssert(skipOutputChecks !== undefined, ErrorMessage.GuruMeditation());
 
         outputExtension ??=
           moduleSystem === ModuleSystem.Cjs ||
@@ -350,23 +369,17 @@ Note that, when attempting to build a Next.js package, this command will defer e
           await forceDeletePaths(absoluteOutputDirPath);
         }
 
-        const { project: rootPackage, package: workspacePackage } = projectMetadata;
+        const { rootPackage, cwdPackage } = projectMetadata;
         const projectRoot = rootPackage.root;
-        const targetPackage = workspacePackage ?? rootPackage;
-        const targetPackageRoot = targetPackage.root;
-        const targetPackageAttributes = targetPackage.attributes;
-        // ? Must be undefined if target package is the root package
-        const targetPackageName = workspacePackage?.json.name;
+        const packageRoot = cwdPackage.root;
+        const packageAttributes = cwdPackage.attributes;
 
         debug('project root: %O', projectRoot);
-        debug('target package: %O', targetPackage);
-        debug('target package root: %O', targetPackageRoot);
-        debug('target package name: %O', targetPackageName);
+        debug('target package: %O', cwdPackage);
+        debug('target package root: %O', packageRoot);
 
         const { targets: buildTargets, metadata: buildMetadata } =
-          await gatherPackageBuildTargets({
-            projectMetadata,
-            targetPackageName,
+          await gatherPackageBuildTargets(cwdPackage, {
             excludeInternalsPatterns: excludeInternalFiles,
             includeExternalsPatterns: includeExternalFiles
           });
@@ -407,12 +420,12 @@ Note that, when attempting to build a Next.js package, this command will defer e
 
 Metadata
 --------
-name      : ${targetPackage.json.name || '(unnamed)'}
-package-id: ${workspacePackage?.id || 'N/A (root package has no id)'}
+name      : ${cwdPackage.json.name || '(unnamed)'}
+package-id: ${isWorkspacePackage(cwdPackage) ? cwdPackage.id : 'N/A (root package has no id)'}
 type      : ${projectMetadata.type} ${
             projectAttributes[ProjectAttribute.Hybridrepo] ? '(hybridrepo) ' : ''
           }${isCwdTheProjectRoot ? 'root package' : 'workspace package (sub-root)'}
-attributes: ${Object.keys(targetPackage.attributes).join(', ')}
+attributes: ${Object.keys(cwdPackage.attributes).join(', ')}
 
 build targets: ${allBuildTargets.length} file${allBuildTargets.length !== 1 ? 's' : ''}
 ${SHORT_TAB}   internal: ${buildTargets.internal.size} file${
@@ -450,7 +463,7 @@ ${dependencyCountsEntries
 Paths
 -----
 project root: ${projectRoot}
-package root: ${targetPackageRoot}
+package root: ${packageRoot}
 distrib root: ${absoluteOutputDirPath}
 `
         );
@@ -473,7 +486,7 @@ distrib root: ${absoluteOutputDirPath}
               '--noCheck'
             ],
             {
-              cwd: targetPackageRoot,
+              cwd: packageRoot,
               env: { NODE_ENV: 'production' },
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
@@ -485,7 +498,7 @@ distrib root: ${absoluteOutputDirPath}
             'npx',
             ['tsconfig-replace-paths', '--project', Tsconfig.PackageTypes],
             {
-              cwd: targetPackageRoot,
+              cwd: packageRoot,
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
             }
@@ -617,11 +630,11 @@ distrib root: ${absoluteOutputDirPath}
         await delay(100);
 
         if (
-          (targetPackageAttributes[ProjectAttribute.Cli] ||
-            targetPackageAttributes[WorkspaceAttribute.Cli]) &&
+          (packageAttributes[ProjectAttribute.Cli] ||
+            packageAttributes[WorkspaceAttribute.Cli]) &&
           linkCliIntoBin
         ) {
-          const { bin, name } = targetPackage.json;
+          const { bin, name } = cwdPackage.json;
 
           if (bin && name) {
             genericLogger.newline([LogTag.IF_NOT_QUIETED]);
@@ -633,9 +646,9 @@ distrib root: ${absoluteOutputDirPath}
 
             debug('symlinking and chmod-ing main bin file into node_modules');
 
-            const targetPackageBin = typeof bin === 'string' ? { [name]: bin } : bin;
+            const cwdPackageBin = typeof bin === 'string' ? { [name]: bin } : bin;
 
-            const binFiles = Object.values(targetPackageBin);
+            const binFiles = Object.values(cwdPackageBin);
             const binFileInodes = await Promise.all(
               binFiles.map(async (path) => {
                 softAssert(path, ErrorMessage.CliProjectHasBadBinConfig());
@@ -669,7 +682,7 @@ distrib root: ${absoluteOutputDirPath}
                     }
                   })
                 : []),
-              ...Object.entries(targetPackageBin).map(async ([binName, binPath]) => {
+              ...Object.entries(cwdPackageBin).map(async ([binName, binPath]) => {
                 softAssert(binName, ErrorMessage.CliProjectHasBadBinConfig());
                 softAssert(binPath, ErrorMessage.CliProjectHasBadBinConfig());
 
@@ -708,6 +721,76 @@ distrib root: ${absoluteOutputDirPath}
           }
         } else {
           debug('skipped cli tasks: not a cli package');
+        }
+
+        if (skipOutputChecks) {
+          debug('skipped consistency and integrity checks on build output');
+        } else {
+          genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+
+          genericLogger(
+            [LogTag.IF_NOT_QUIETED],
+            '⮞ Running consistency and integrity checks on build output'
+          );
+
+          genericLogger.newline([LogTag.IF_NOT_HUSHED]);
+
+          const [{ all: attwOutput, exitCode: attwExitCode }] = await Promise.all([
+            checkDistTypes(),
+            checkDistRequiredPaths(),
+            checkDistEntryPoints(),
+            checkImportsDependenciesBijection()
+          ]);
+
+          const errored = attwExitCode !== 0;
+
+          if (attwExitCode !== 0 && attwOutput) {
+            genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+            genericLogger.error([attwOutput].flat().join('\n'));
+            genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+          }
+
+          if (errored) {
+            throw new CliError(ErrorMessage.BuildOutputChecksFailed());
+          }
+        }
+
+        /**
+         * Check dist type definitions for correctness using attw.
+         */
+        async function checkDistTypes() {
+          return runNoRejectOnBadExit('npx', ['attw', '--pack', '.'], {
+            env: { FORCE_COLOR: '1' },
+            all: true
+          });
+        }
+
+        /**
+         * Check dist files to ensure all `require()` paths are valid and point
+         * to existing files.
+         */
+        async function checkDistRequiredPaths() {
+          // TODO
+        }
+
+        /**
+         * Check dist files against `package.json` `exports` entries for
+         * existence.
+         */
+        async function checkDistEntryPoints() {
+          // TODO
+        }
+
+        /**
+         * Match external dependencies imported by (1) dist files to production
+         * dependencies listed in `package.json` and (2) TypeScript files
+         * belonging to the package to any dependency listed in `package.json`.
+         * Extraneous dependencies and missing dependencies are reported.
+         */
+        async function checkImportsDependenciesBijection() {
+          // TODO
+          // TODO: update comment move #2 to project lint and only do #1 instead
+          void gatherPackageFiles;
         }
       }
 

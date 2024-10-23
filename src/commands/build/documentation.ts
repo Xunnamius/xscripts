@@ -40,7 +40,7 @@ export default function command({
   state,
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const { root: projectRoot } = projectMetadata_?.project || {};
+  const { root: projectRoot } = projectMetadata_?.rootPackage || {};
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     scope: { choices: documentationBuilderScopes },
     entries: {

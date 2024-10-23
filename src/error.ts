@@ -19,6 +19,9 @@ export const ErrorMessage = {
   BadAssetContextKey(key: string) {
     return `assertion failed: asset context value at expected key "${key}" is either not a string, is empty, or is undefined`;
   },
+  BadPostNpmInstallScript(path: string) {
+    return `unable to execute "${path}" as a JavaScript module. Please ensure it is syntactically sound`;
+  },
   BadChangelogPatcher(path: string) {
     return `unable to import "${path}" as a JavaScript module. Please ensure it is syntactically sound and contains the expected exports (see documentation)`;
   },
@@ -68,6 +71,9 @@ export const ErrorMessage = {
   MustChooseDeployEnvironment() {
     return 'must choose either --preview or --production deployment environment';
   },
+  MultipleConfigsWhenExpectingOnlyOne(filename1: string, filename2: string) {
+    return `expected one configuration file but encountered multiple conflicting files: ${filename1} conflicts with ${filename2}`;
+  },
   ArgumentMustBeNonNegative(name: string) {
     return `argument "${name}" must have a non-negative value`;
   },
@@ -82,6 +88,9 @@ export const ErrorMessage = {
   },
   LintingFailed() {
     return 'one or more linters returned a bad exit code';
+  },
+  BuildOutputChecksFailed() {
+    return 'one or more build output integrity checks returned a bad exit code';
   },
   RetrievalFailed(path: string) {
     return `failed to retrieve asset at ${path}`;

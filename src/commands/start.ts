@@ -7,6 +7,7 @@ import { scriptBasename } from 'multiverse#cli-utils util.ts';
 
 import {
   gatherProjectFiles,
+  isWorkspacePackage,
   ProjectAttribute,
   WorkspaceAttribute
 } from 'multiverse#project-utils';
@@ -67,7 +68,11 @@ If this command is run with \`--scope=unlimited\` (the default) in a monorepo, a
       const args = args_.map((a) => a.toString());
       debug('additional (passthrough) args: %O', args);
 
-      const { attributes } = projectMetadata.project;
+      const {
+        cwdPackage,
+        rootPackage: { attributes: projectAttributes }
+      } = projectMetadata;
+
       const {
         mainBinFiles: { atProjectRoot, atWorkspaceRoot, atAnyRoot }
       } = await gatherProjectFiles(projectMetadata);
@@ -78,20 +83,18 @@ If this command is run with \`--scope=unlimited\` (the default) in a monorepo, a
       try {
         // ? If we're in a package sub-root, let's see if it's a CLI first
         if (
-          projectMetadata.package?.attributes[WorkspaceAttribute.Cli] &&
-          atWorkspaceRoot.has(projectMetadata.package.id)
+          isWorkspacePackage(cwdPackage) &&
+          cwdPackage.attributes[WorkspaceAttribute.Cli] &&
+          atWorkspaceRoot.has(cwdPackage.id)
         ) {
           genericLogger(
             [LogTag.IF_NOT_QUIETED],
             passControlMessage('CLI (current package)')
           );
-          await runWithInheritedIo(
-            atWorkspaceRoot.get(projectMetadata.package.id)!,
-            args
-          );
+          await runWithInheritedIo(atWorkspaceRoot.get(cwdPackage.id)!, args);
         }
         // ? Otherwise, check if the project root is a CLI
-        else if (attributes[ProjectAttribute.Cli] && atProjectRoot) {
+        else if (projectAttributes[ProjectAttribute.Cli] && atProjectRoot) {
           genericLogger(
             [LogTag.IF_NOT_QUIETED],
             passControlMessage('CLI (root package) (current package)')
@@ -107,7 +110,7 @@ If this command is run with \`--scope=unlimited\` (the default) in a monorepo, a
           await runWithInheritedIo(atAnyRoot[0], args);
         }
         // ? Otherwise, if no CLIs available, check if we're a Next.js project
-        else if (attributes[ProjectAttribute.Next]) {
+        else if (projectAttributes[ProjectAttribute.Next]) {
           genericLogger(
             [LogTag.IF_NOT_QUIETED],
             passControlMessage('Next.js (root package) (current package)')

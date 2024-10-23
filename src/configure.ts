@@ -143,12 +143,9 @@ export const configureExecutionContext: ConfigureExecutionContext<GlobalExecutio
     const projectMetadata = await analyzeProjectStructure().catch(() => undefined);
 
     if (projectMetadata) {
-      const distDir = join(projectMetadata.project.root, 'dist');
-      const nodeModulesBinDir = join(
-        projectMetadata.project.root,
-        'node_modules',
-        '.bin'
-      );
+      const { root: projectRoot } = projectMetadata.rootPackage;
+      const distDir = join(projectRoot, 'dist');
+      const nodeModulesBinDir = join(projectRoot, 'node_modules', '.bin');
 
       const xscriptsBinFileLink = join(nodeModulesBinDir, globalCliName);
 
@@ -180,7 +177,7 @@ export const configureExecutionContext: ConfigureExecutionContext<GlobalExecutio
         standardContext.state.globalVersionOption = {
           name: 'version',
           description: defaultVersionTextDescription,
-          text: String(projectMetadata.project.json.version) + developmentTag
+          text: String(projectMetadata.rootPackage.json.version) + developmentTag
         };
       } else {
         rootDebugLogger('xscriptsBinFileLink was not accessible');

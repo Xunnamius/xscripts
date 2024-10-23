@@ -250,7 +250,6 @@ export const genericRules: NonNullable<EslintConfig['rules']> = {
         dir: false,
         dist: false,
         tmp: false,
-        pkg: false,
         src: false,
         dest: false,
         obj: false,
@@ -354,7 +353,7 @@ export async function moduleExport(
   projectMetadata ||= await analyzeProjectStructure();
 
   const {
-    project: { root: projectRootDir }
+    rootPackage: { root: projectRootDir }
   } = projectMetadata;
 
   const eslintAliasMap = deriveAliasesForEslint(generateRawAliasMap(projectMetadata));
@@ -522,7 +521,39 @@ export default config;
   }
 });
 
-function overwriteFileProperty(configs: EslintConfig | EslintConfig[], files: string[]) {
+/**
+ * Accepts an array of configuration objects/arrays and returns a flattened
+ * array with each object's `files` property overwritten by the `files`
+ * parameter.
+ *
+ * For example:
+ *
+ * ```typescript
+ * const eslintConfig = makeTsEslintConfig({
+ *   // some other configs...
+ * },
+ * ...[
+ *   legacyExtends('plugin:import/recommended', 'eslint-plugin-import:recommended'),
+ *   legacyExtends('plugin:import/typescript', 'eslint-plugin-import:typescript')
+ * ]).flatMap((configs) =>
+ *   overwriteFileProperty(configs, [`*.{js,jsx,cjs,mjs}`])
+ * );
+ */
+
+export async function makeEslintFlatCompat() {
+  const { FlatCompat } = await import('@eslint/eslintrc');
+
+  const flatCompat = new FlatCompat({
+    baseDirectory: projectRootDir,
+    resolvePluginsRelativeTo: projectRootDir,
+    recommendedConfig: eslintJs.configs.recommended,
+    allConfig: eslintJs.configs.all
+  });
+
+  return flatCompat;
+}
+
+function overwriteFileProperty(configs, files) {
   configs = [configs].flat();
 
   configs.forEach((config) => {
@@ -530,4 +561,21 @@ function overwriteFileProperty(configs: EslintConfig | EslintConfig[], files: st
   });
 
   return configs;
+}
+
+/**
+ * Returns an eslint@>=9 configuration object that adapts a legacy eslint@<9
+ * plugin's exposed rule extension.
+ *
+ * For example:
+ *
+ * ```typescript
+ * const eslintConfig = makeTsEslintConfig(
+ *   legacyExtends('plugin:import/recommended', 'eslint-plugin-import:recommended'),
+ *   legacyExtends('plugin:import/typescript', 'eslint-plugin-import:typescript')
+ * );
+ * ```
+ */
+export function legacyExtends(extension, name) {
+  return { ...fixupConfigRules(flatCompat.extends(extension)[0])[0], name };
 }

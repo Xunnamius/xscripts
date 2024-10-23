@@ -233,7 +233,7 @@ When using --target=ssh, it is assumed the key pair necessary to authenticate wi
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Deploying project...');
 
-      const { attributes } = projectMetadata.project;
+      const { attributes: projectAttributes } = projectMetadata.rootPackage;
       const deployMessage = (deployTarget: string) =>
         `Deploying distributables to ${deployTarget} target...`;
 
@@ -242,8 +242,11 @@ When using --target=ssh, it is assumed the key pair necessary to authenticate wi
       switch (target) {
         case DeployTarget.Vercel: {
           softAssert(
-            attributes[ProjectAttribute.Vercel],
-            ErrorMessage.WrongProjectAttributes([ProjectAttribute.Vercel], attributes)
+            projectAttributes[ProjectAttribute.Vercel],
+            ErrorMessage.WrongProjectAttributes(
+              [ProjectAttribute.Vercel],
+              projectAttributes
+            )
           );
 
           const { production, preview, previewUrl } = argv;

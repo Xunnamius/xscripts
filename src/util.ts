@@ -1,6 +1,7 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
+import { join as joinPath } from 'node:path';
 
 import { CliError, FrameworkExitCode } from '@black-flag/core';
 
@@ -9,6 +10,8 @@ import {
   withStandardUsage
 } from 'multiverse#cli-utils extensions.ts';
 
+import { ProjectError } from 'multiverse#project-utils error';
+import { isAccessible, type AbsolutePath } from 'multiverse#project-utils fs';
 import { createDebugLogger } from 'multiverse#rejoinder';
 
 import {
@@ -105,18 +108,18 @@ export async function runGlobalPreChecks({
     throw new CliError(ErrorMessage.CannotRunOutsideRoot());
   }
 
-  const cwd = process.cwd();
+  const cwd = process.cwd() as AbsolutePath;
 
   const {
-    project: { root },
-    package: pkg
+    rootPackage: { root: projectRoot },
+    cwdPackage: { root: packageRoot }
   } = projectMetadata_;
 
-  debug('project root: %O', root);
-  debug('pkg root: %O', pkg?.root);
+  debug('project root: %O', projectRoot);
+  debug('cwdPackage root: %O', packageRoot);
   debug('cwd (must match one of the above): %O', cwd);
 
-  if (root !== cwd && (!pkg || pkg.root !== cwd)) {
+  if ([projectRoot, packageRoot].includes(cwd)) {
     throw new CliError(ErrorMessage.CannotRunOutsideRoot());
   }
 
@@ -192,6 +195,41 @@ export function __write_file_sync(path: string, contents: string) {
       suggestedExitCode: FrameworkExitCode.AssertionFailed
     });
   }
+}
+
+/**
+ * Takes an array of `wellKnownFiles`, which can be filenames or paths (both
+ * taken local to `configRoot`) and returns an absolute path to an existing
+ * readable file from `wellKnownFiles` should one exist. If more than one file
+ * in `wellKnownFiles` exists, this function will throw.
+ */
+export async function findOneConfigurationFile(
+  wellKnownFiles: string[],
+  configRoot: AbsolutePath
+) {
+  return Promise.all(
+    wellKnownFiles.map(async (filename) => {
+      const path = joinPath(configRoot, filename);
+      return [path, await isAccessible({ path: path })] as const;
+    })
+  ).then((results) => {
+    // eslint-disable-next-line unicorn/no-array-reduce
+    return results.reduce<undefined | AbsolutePath>(function (
+      firstAccessiblePath,
+      [currentPath, currentPathIsReadable]
+    ) {
+      if (firstAccessiblePath !== undefined && currentPathIsReadable) {
+        throw new ProjectError(
+          ErrorMessage.MultipleConfigsWhenExpectingOnlyOne(
+            firstAccessiblePath,
+            currentPath
+          )
+        );
+      }
+
+      return (currentPathIsReadable ? currentPath : firstAccessiblePath) as AbsolutePath;
+    }, undefined);
+  });
 }
 
 export function hasExitCode(error: unknown): error is object & { exitCode: number } {

@@ -132,7 +132,7 @@ export default function command({
           alias: 'coverage',
           boolean: true,
           description: 'Instruct Jest to collect coverage information',
-          defaultDescription: 'false unless --type and --scope are both "all"',
+          defaultDescription: 'false unless --type=all and --scope=unlimited',
           default: false,
           subOptionOf: {
             type: {
@@ -225,13 +225,10 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       debug('extraArguments: %O', extraArguments);
 
       const {
-        project: {
-          // ? This does NOT end in a slash and this must be taken into account!
-          root: rootDir
-        }
+        rootPackage: { root: projectRoot }
       } = projectMetadata;
 
-      debug('rootDir: %O', rootDir);
+      debug('projectRoot: %O', projectRoot);
 
       const allTypes = types.includes(TestType.All);
       const isRepeating = repeat > 0;
@@ -271,9 +268,10 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
       const testPathPatterns: string[] = [];
       const { testPathIgnorePatterns = [] } = baseConfig;
-      const isCwdTheProjectRoot = projectMetadata.package === undefined;
       const isMonorepo = projectMetadata.type === ProjectAttribute.Monorepo;
       const npxArguments = ['jest'];
+      const isCwdTheProjectRoot =
+        projectMetadata.cwdPackage === projectMetadata.rootPackage;
 
       if (collectCoverage) {
         npxArguments.push('--coverage');
@@ -314,7 +312,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       }
 
       npxArguments.push(
-        `--config=${rootDir}/${jestConfigProjectBase}`,
+        `--config=${projectRoot}/${jestConfigProjectBase}`,
         ...extraArguments
       );
 
@@ -338,7 +336,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
         await run('npx', npxArguments, {
           env,
-          cwd: rootDir,
+          cwd: projectRoot,
           stdout: isHushed ? 'ignore' : 'inherit',
           stderr: isQuieted ? 'ignore' : 'inherit'
         });
@@ -357,14 +355,10 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
   function determineDefaultScope(): TesterScope | undefined {
     if (projectMetadata_) {
-      const {
-        package: cwdPackage,
-        project: { attributes: projectAttributes }
-      } = projectMetadata_;
+      const { cwdPackage, rootPackage } = projectMetadata_;
+      const isCwdTheProjectRoot = cwdPackage === rootPackage;
 
-      const isCwdTheProjectRoot = cwdPackage === undefined;
-
-      return projectAttributes[ProjectAttribute.Hybridrepo] && isCwdTheProjectRoot
+      return isCwdTheProjectRoot && rootPackage.attributes[ProjectAttribute.Hybridrepo]
         ? TesterScope.ThisPackage
         : TesterScope.Unlimited;
     }

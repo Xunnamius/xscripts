@@ -6,7 +6,7 @@ import {
   makeTransformer
 } from 'universe assets/index.ts';
 
-import { globalDebuggerNamespace } from 'universe constant.ts';
+import { globalDebuggerNamespace } from 'universe constant';
 
 import type { EmptyObject } from 'type-fest';
 

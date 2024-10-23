@@ -41,6 +41,7 @@ import { ErrorMessage } from 'universe error.ts';
 
 import {
   checkIsNotNil,
+  findOneConfigurationFile,
   readFile,
   runGlobalPreChecks,
   withGlobalBuilder,
@@ -51,6 +52,14 @@ import {
 import type { Promisable } from 'type-fest';
 
 const extractVersionRegExp = /^#+\s\[?([^\s\]]+)/;
+
+const wellKnownChangelogPatcherFilenames = [
+  'changelog.patch.mjs',
+  'changelog.patch.cjs',
+  'changelog.patch.js'
+];
+
+const wellKnownConventionalConfigFilename = 'conventional.config.js';
 
 /**
  * Determines the output format of the changelog file.
@@ -191,7 +200,8 @@ Use --import-section-file to add a custom release section to the changelog. The 
       genericLogger([LogTag.IF_NOT_QUIETED], 'Compiling changelog...');
 
       const {
-        project: { root }
+        rootPackage: { root: projectRoot },
+        cwdPackage: { root: packageRoot }
       } = projectMetadata;
 
       debug('scope (unused): %O', scope);
@@ -207,7 +217,7 @@ Use --import-section-file to add a custom release section to the changelog. The 
       if (onlyPatchChangelog) {
         debug(`skipped regenerating ${changelogFile}`);
       } else {
-        const conventionalConfigPath = `${root}/conventional.config.js`;
+        const conventionalConfigPath = `${projectRoot}/${wellKnownConventionalConfigFilename}`;
 
         debug('conventionalConfigPath: %O', conventionalConfigPath);
         debug('outputting changelog to path: %O', changelogFile);
@@ -411,68 +421,72 @@ Use --import-section-file to add a custom release section to the changelog. The 
         debug(`skipped formatting ${changelogFile}`);
       }
 
-      const { findUp } = await import('find-up');
-      const changelogPatcherFile = await findUp([
-        'changelog.patch.mjs',
-        'changelog.patch.cjs',
-        'changelog.patch.js'
-      ]);
+      if (patchChangelog) {
+        const changelogPatcherFile = await findOneConfigurationFile(
+          wellKnownChangelogPatcherFilenames,
+          packageRoot
+        );
 
-      if (patchChangelog && changelogPatcherFile) {
-        debug('importing changelog patcher at: %O', changelogPatcherFile);
+        debug('changelogPatcherFile: %O', changelogPatcherFile);
 
-        let changelogPatcher: ImportedChangelogPatcher | undefined = undefined;
+        if (changelogPatcherFile) {
+          debug('importing changelog patcher at: %O', changelogPatcherFile);
 
-        try {
-          changelogPatcher = await import(changelogPatcherFile);
-          debug('import successful');
-        } catch (error) {
-          debug('import attempt failed catastrophically: %O', error);
-          throw new CliError(ErrorMessage.BadChangelogPatcher(changelogPatcherFile), {
-            cause: error
-          });
-        }
+          let changelogPatcher: ImportedChangelogPatcher | undefined = undefined;
 
-        debug('changelogPatcher: %O', changelogPatcher);
-
-        if (changelogPatcher) {
-          // ? ESM <=> CJS interop. If there's a default property, we'll use it.
-          if (changelogPatcher.default !== undefined) {
-            changelogPatcher = changelogPatcher.default;
+          try {
+            changelogPatcher = await import(changelogPatcherFile);
+            debug('import successful');
+          } catch (error) {
+            debug('import attempt failed catastrophically: %O', error);
+            throw new CliError(ErrorMessage.BadChangelogPatcher(changelogPatcherFile), {
+              cause: error
+            });
           }
 
-          // ? ESM <=> CJS interop, again. See: @black-flag/core/src/discover.ts
-          // ! We cannot trust the type of changelogPatcher.default yet
-          if (changelogPatcher?.default !== undefined) {
-            changelogPatcher = changelogPatcher.default;
+          debug('changelogPatcher: %O', changelogPatcher);
+
+          if (changelogPatcher) {
+            // ? ESM <=> CJS interop. If there's a default property, we'll use it.
+            if (changelogPatcher.default !== undefined) {
+              changelogPatcher = changelogPatcher.default;
+            }
+
+            // ? ESM <=> CJS interop, again. See: @black-flag/core/src/discover.ts
+            // ! We cannot trust the type of changelogPatcher.default yet
+            if (changelogPatcher?.default !== undefined) {
+              changelogPatcher = changelogPatcher.default;
+            }
           }
-        }
 
-        if (changelogPatcher) {
-          const contents = await readFile(changelogFile);
-          const patcher = (changelog: string, patches: ChangelogPatches) => {
-            // eslint-disable-next-line unicorn/no-array-reduce
-            return patches.reduce(function (str, [searchValue, replaceValue]) {
-              return str.replace(searchValue, replaceValue);
-            }, changelog);
-          };
+          if (changelogPatcher) {
+            const contents = await readFile(changelogFile);
+            const patcher = (changelog: string, patches: ChangelogPatches) => {
+              // eslint-disable-next-line unicorn/no-array-reduce
+              return patches.reduce(function (str, [searchValue, replaceValue]) {
+                return str.replace(searchValue, replaceValue);
+              }, changelog);
+            };
 
-          if (typeof changelogPatcher === 'function') {
-            debug('invoking changelogPatcher as a function');
-            await writeFile(changelogFile, await changelogPatcher(contents, patcher));
-          } else if (Array.isArray(changelogPatcher)) {
-            debug('invoking patcher using changelogPatcher array');
-            await writeFile(changelogFile, patcher(contents, changelogPatcher));
+            if (typeof changelogPatcher === 'function') {
+              debug('invoking changelogPatcher as a function');
+              await writeFile(changelogFile, await changelogPatcher(contents, patcher));
+            } else if (Array.isArray(changelogPatcher)) {
+              debug('invoking patcher using changelogPatcher array');
+              await writeFile(changelogFile, patcher(contents, changelogPatcher));
+            } else {
+              throw new CliError(ErrorMessage.BadChangelogPatcher(changelogPatcherFile));
+            }
           } else {
             throw new CliError(ErrorMessage.BadChangelogPatcher(changelogPatcherFile));
           }
         } else {
-          throw new CliError(ErrorMessage.BadChangelogPatcher(changelogPatcherFile));
+          debug(
+            'changelog patching skipped: no changelog.patch.js (or changelog.patch.[cm]js) file found'
+          );
         }
       } else {
-        debug(
-          `${patchChangelog ? 'no changelog.patch.js (or changelog.patch.[cm]js) file found' : 'changelog patching manually disabled'}; changelog patching skipped`
-        );
+        debug('changelog patching skipped: changelog patching manually disabled');
       }
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);

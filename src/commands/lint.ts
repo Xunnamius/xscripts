@@ -12,7 +12,12 @@ import {
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { gatherProjectFiles, type ProjectMetadata } from 'multiverse#project-utils';
+
+import {
+  gatherProjectFiles,
+  isRootPackage,
+  type ProjectMetadata
+} from 'multiverse#project-utils';
 
 import {
   isAccessible,
@@ -160,7 +165,7 @@ The default value for --scope in the current project is${defaultScope ? `: ${def
 
 Note that the remark linter is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format", .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by "xscripts format".
 
-Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS environment variable in the testing environment. This will be picked up by linters, causing them to ignore any warning comments.`
+Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS environment variable in the testing environment. This will be picked up by linters, causing them to ignore any warning comments. This includes warnings about relative imports of @-xun/* packages from /node_modules/.`
     ),
     handler: withGlobalHandler(async function ({
       $0: scriptFullName,
@@ -204,6 +209,8 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
       ) as AbsolutePath;
 
       debug('tsconfigFilePath: %O', tsconfigFilePath);
+
+      const { cwdPackage } = projectMetadata;
 
       const promisedLinters: Promise<unknown>[] = [];
       const linterSubprocesses: Subprocess[] = [];
@@ -265,15 +272,16 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
             inRoot: rootMarkdownFiles,
             inWorkspace: perPackageMarkdownFiles
           }
-        } = await gatherProjectFiles(projectMetadata, { skipIgnored });
+        } = await gatherProjectFiles(projectMetadata, {
+          skipPrettierIgnored: skipIgnored
+        });
 
-        const isCwdTheProjectRoot = projectMetadata.package === undefined;
         const targetFiles =
           scope === LinterScope.Unlimited || scope === LinterScope.UnlimitedSource
             ? allMarkdownFiles
-            : isCwdTheProjectRoot
+            : isRootPackage(cwdPackage)
               ? rootMarkdownFiles
-              : perPackageMarkdownFiles.get(projectMetadata.package!.id);
+              : perPackageMarkdownFiles.get(cwdPackage.id);
 
         hardAssert(targetFiles, ErrorMessage.GuruMeditation());
 
@@ -384,25 +392,26 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
   async function determineDefaultScope(): Promise<LinterScope | undefined> {
     if (projectMetadata_) {
       const {
-        package: { root: packageRoot } = {},
-        project: { root: projectRoot }
+        cwdPackage: { root: packageRoot }
       } = projectMetadata_;
 
-      const root = packageRoot || projectRoot;
-
-      if (await isAccessible({ path: `${root}/${Tsconfig.PackageLintSource}` })) {
+      if (await isAccessible({ path: `${packageRoot}/${Tsconfig.PackageLintSource}` })) {
         return LinterScope.ThisPackageSource;
       }
 
-      if (await isAccessible({ path: `${root}/${Tsconfig.ProjectLintSource}` })) {
+      if (await isAccessible({ path: `${packageRoot}/${Tsconfig.ProjectLintSource}` })) {
         return LinterScope.UnlimitedSource;
       }
 
-      if (await isAccessible({ path: `${root}/${Tsconfig.PackageLintUnlimited}` })) {
+      if (
+        await isAccessible({ path: `${packageRoot}/${Tsconfig.PackageLintUnlimited}` })
+      ) {
         return LinterScope.ThisPackage;
       }
 
-      if (await isAccessible({ path: `${root}/${Tsconfig.ProjectLintUnlimited}` })) {
+      if (
+        await isAccessible({ path: `${packageRoot}/${Tsconfig.ProjectLintUnlimited}` })
+      ) {
         return LinterScope.Unlimited;
       }
     }
@@ -429,7 +438,7 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
   }
 
   function fromProjectRoot(path: string, projectMetadata: ProjectMetadata | undefined) {
-    return projectMetadata ? joinPath(projectMetadata.project.root, path) : path;
+    return projectMetadata ? joinPath(projectMetadata.rootPackage.root, path) : path;
   }
 
   function fromCwdRoot(path: string, projectMetadata: ProjectMetadata | undefined) {

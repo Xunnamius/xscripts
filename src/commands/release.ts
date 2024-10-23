@@ -45,6 +45,18 @@ export default function command({
       default:
         process.env.NODE_ENV !== undefined && process.env.NODE_ENV !== 'development'
     },
+    'dry-run': {
+      boolean: true,
+      description:
+        "Go through the motions of cutting a release but don't actually do anything",
+      default: false,
+      conflicts: 'force'
+    },
+    force: {
+      boolean: true,
+      description: "Dangerously take ownership of the project's concurrency lock",
+      default: false
+    },
     'rebuild-changelog': {
       boolean: true,
       description: 'Completely rebuild the changelog before release',
@@ -61,11 +73,6 @@ export default function command({
       description:
         'Pull latest package.json dependency versions from other packages in this project',
       default: true
-    },
-    force: {
-      boolean: true,
-      description: "Dangerously take ownership of the project's concurrency lock",
-      default: true
     }
   });
 
@@ -78,20 +85,20 @@ $1 according to the release procedure described in the MAINTAINING.md file and a
 
 1. Validate environment variables
 2. [prerelease task] Run npm ci
-3. [prerelease task] xscripts lint --scope=this-package-source
-4. [prerelease task] xscripts build distributables
-5. [prerelease task] xscripts format
-6. [prerelease task] xscripts build documentation
-7. [prerelease task] xscripts project lint
-8. [prerelease task] xscripts test --coverage
-9. xscripts project renovate --synchronize-interdependencies (this package only)
-10. Run semantic-release and upload coverage results to Codecov
+3. [prerelease task] [npm run lint:source] xscripts lint --scope=this-package-source
+4. [prerelease task] [npm run build] xscripts build distributables
+5. [prerelease task] [npm run format] xscripts format
+6. [prerelease task] [npm run build:docs] xscripts build documentation
+7. [prerelease task] [npm run test:all] xscripts test --coverage
+8. xscripts project renovate --synchronize-interdependencies (affects this package only)
+9. Run semantic-release
+10. Upload coverage results to Codecov
 
-Provide --ci (--continuous-integration) to enable useful functionality for CI execution environments. Specifically: run task #2, run semantic-release in CI mode, and facilitate package provenance (if using GitHub Actions). If running the release procedure by hand instead of via CI/CD, use --no-ci to disable CI-specific functionality. --no-ci (\`--ci=false\`) is the default when the NODE_ENV environment variable is undefined or "development," otherwise --ci (\`--ci=true\`) is the default.
+Provide --ci (--continuous-integration) to enable useful functionality for CI execution environments. Specifically: run task #2, run semantic-release in CI mode, and facilitate package provenance if the runtime environment supports it. If running the release procedure by hand instead of via CI/CD, use --no-ci to disable CI-specific functionality. --no-ci (\`--ci=false\`) is the default when the NODE_ENV environment variable is undefined or "development," otherwise --ci (\`--ci=true\`) is the default.
 
 Provide --rebuild-changelog to set the XSCRIPTS_RELEASE_UPDATE_CHANGELOG environment variable in the current execution environment. This will be picked up by semantic-release, causing it to rebuild the changelog using \`xscripts build changelog\`. Provide --no-rebuild-changelog to prevent this behavior.
 
-Running \`xscripts release\` will usually execute the tasks listed above. Provide --skip-prerelease-tasks to skip running tasks #2-8, also known as the "prerelease tasks". This is useful for task scheduling tools like Turbo that decide out-of-band if/when/how to run specific prerelease tasks; such a tool only calls \`xscripts release\` when it's ready to trigger semantic-release. Therefore, \`--skip-prerelease-tasks=true\` becomes the default when Turbo is detected in the runtime environment (by checking for the existence of \`process.env.TURBO_HASH\`).
+Running \`xscripts release\` will usually execute the tasks listed above. Provide --skip-prerelease-tasks to skip running tasks #2-7, also known as the "prerelease tasks". This is useful for task scheduling tools like Turbo that decide out-of-band if/when/how to run specific prerelease tasks; such a tool only calls \`xscripts release\` when it's ready to trigger semantic-release. Therefore, \`--skip-prerelease-tasks=true\` becomes the default when Turbo is detected in the runtime environment (by checking for the existence of \`process.env.TURBO_HASH\`).
 
 The only available scope is "${ReleaseScope.ThisPackage}"; hence, when invoking this command, only the package at the current working directory will be eligible for release. Use Npm's workspace features, or Turbo's, if your goal is to potentially release multiple packages.
 
@@ -99,7 +106,9 @@ Provide --synchronize-interdependencies to run a version of \`xscripts project r
 
 This command was designed to handle concurrent execution in a safe manner. A simple file-based locking mechanism is used to ensure only one instance of this command is performing Git operations and/or running semantic-release at any given moment. If a new instance of this command begins executing before another instance has finished, the new instance will backoff and try again later. If for some reason a deadlock occurs that prevents this command from running, providing --force will forcefully and _dangerously_ take ownership of any existing locks associated with this project. If used recklessly, --force could result in a deeply and unpredictably broken release process.
 
-Uploading test coverage data to Codecov is only performed if any coverage data exists. A warning will be issued if no coverage data exists. Coverage data can be generated using \`xscripts test --coverage\` (which is prerelease task #8). When uploading coverage data, the package's name is used to derive a flag (https://docs.codecov.com/docs/flags). Codecov uses flags to map reports to specific packages in its UI and coverage badges.
+Uploading test coverage data to Codecov is only performed if any coverage data exists. A warning will be issued if no coverage data exists. Coverage data can be generated using \`xscripts test --coverage\` (which is prerelease task #7). When uploading coverage data, the package's name is used to derive a flag (https://docs.codecov.com/docs/flags). Codecov uses flags to map reports to specific packages in its UI and coverage badges.
+
+Provide --dry-run to ensure no changes are made, no release is cut, and no publishing or git write operations occur. Use --dry-run to test what would happen if you were to cut a release.
 
 Note: this command will refuse to release a package version below 1.0.0. This is because semantic-release does not officially support packages with versions below semver 1.0.0.`.trim()
     ),
