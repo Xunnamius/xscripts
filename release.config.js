@@ -5,10 +5,10 @@ const crypto = require('node:crypto');
 const os = require('node:os');
 const path = require('node:path');
 
+const debug = require('debug')('xscripts:semantic-release-config');
+
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 const { moduleExport } = require('@-xun/scripts/assets/config/release.config.js');
-
-const debug = require('debug')('xscripts:semantic-release-config');
 
 const { parserOpts, writerOpts } = require('./conventional.config.js');
 

@@ -50,8 +50,8 @@ const keys = (/** @type {{}} */ obj = {}) =>
   Object.keys(obj).map((k) => splitOutWords(k));
 
 void (async () => {
-  const pkgFile = await tryToRead('./package.json');
-  const pkg = pkgFile ? JSON.parse(pkgFile) : {};
+  const packageFile = await tryToRead('./package.json');
+  const package_ = packageFile ? JSON.parse(packageFile) : {};
   const lastCommitMessage = (await read('./.git/COMMIT_EDITMSG'), 'utf8');
   const homeDir = require('node:os').homedir();
 
@@ -78,9 +78,9 @@ void (async () => {
           'd',
           'o',
           'ol',
-          ...keys(pkg.dependencies),
-          ...keys(pkg.devDependencies),
-          ...keys(pkg.scripts),
+          ...keys(package_.dependencies),
+          ...keys(package_.devDependencies),
+          ...keys(package_.scripts),
           ...splitOutWords(
             (
               await (
