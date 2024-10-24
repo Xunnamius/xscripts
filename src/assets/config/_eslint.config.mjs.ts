@@ -2,12 +2,12 @@ import assert from 'node:assert';
 
 import { fixupConfigRules } from '@eslint/compat';
 import eslintJs from '@eslint/js';
-
 import restrictedGlobals from 'confusing-browser-globals';
 import eslintPluginJest from 'eslint-plugin-jest';
 import eslintPluginNode from 'eslint-plugin-n';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import jsGlobals from 'globals';
+import { type EmptyObject } from 'type-fest';
 
 import {
   config as makeTsEslintConfig,
@@ -24,6 +24,7 @@ import {
 } from 'multiverse#project-utils alias.ts';
 
 import { Tsconfig } from 'multiverse#project-utils fs/exports/well-known-constants.ts';
+import { type AbsolutePath } from 'multiverse#project-utils fs/index.ts';
 
 import {
   assertIsExpectedTransformerContext,
@@ -32,8 +33,6 @@ import {
 
 import { globalDebuggerNamespace } from 'universe constant.ts';
 import { ErrorMessage } from 'universe error.ts';
-
-import type { EmptyObject } from 'type-fest';
 
 // TODO: update with latest changes from project root eslint.config.mjs
 
@@ -358,15 +357,6 @@ export async function moduleExport(
 
   const eslintAliasMap = deriveAliasesForEslint(generateRawAliasMap(projectMetadata));
 
-  const { FlatCompat } = await import('@eslint/eslintrc');
-
-  const flatCompat = new FlatCompat({
-    baseDirectory: projectRootDir,
-    resolvePluginsRelativeTo: projectRootDir,
-    recommendedConfig: eslintJs.configs.recommended,
-    allConfig: eslintJs.configs.all
-  });
-
   const eslintPluginUnicornRecommended = eslintPluginUnicorn.configs?.[
     'flat/recommended'
   ] as EslintConfig;
@@ -394,8 +384,6 @@ export async function moduleExport(
     eslintTsConfigs.strictTypeChecked,
     eslintTsConfigs.stylisticTypeChecked,
     eslintTsConfigs.eslintRecommended,
-    legacyExtends('plugin:import/recommended', 'eslint-plugin-import:recommended'),
-    legacyExtends('plugin:import/typescript', 'eslint-plugin-import:typescript'),
     eslintPluginUnicornRecommended,
     {
       name: '@-xun/scripts:base',
@@ -458,7 +446,7 @@ export async function moduleExport(
       ]
     },
     ...extendedEslintConfigs.flatMap((configs) =>
-      overwriteFileProperty(configs, [
+      overwriteProperty(configs, 'files', [
         `**/*.{${jsFileExtensions.map((extension) => extension.slice(1)).join(',')}}`
       ])
     ),
@@ -482,13 +470,6 @@ export async function moduleExport(
       rules: jestRules
     }
   );
-
-  function legacyExtends(extension: string, name: string) {
-    return {
-      ...fixupConfigRules(flatCompat.extends(extension)[0])[0],
-      name
-    } as EslintConfig;
-  }
 }
 
 export type Context = EmptyObject;
@@ -522,9 +503,26 @@ export default config;
 });
 
 /**
- * Accepts an array of configuration objects/arrays and returns a flattened
- * array with each object's `files` property overwritten by the `files`
- * parameter.
+ * Accepts an absolute path to the project root and returns a {@link FlatCompat}
+ * instance.
+ */
+export async function makeEslintFlatCompat(projectRoot: AbsolutePath) {
+  const { FlatCompat } = await import('@eslint/eslintrc');
+
+  const flatCompat = new FlatCompat({
+    baseDirectory: projectRoot,
+    resolvePluginsRelativeTo: projectRoot,
+    recommendedConfig: eslintJs.configs.recommended,
+    allConfig: eslintJs.configs.all
+  });
+
+  return flatCompat;
+}
+
+/**
+ * Accepts an {@link EslintConfig} object (or an array of them) and returns a
+ * flattened array with each object's `property` property overwritten by the
+ * given `value`.
  *
  * For example:
  *
@@ -536,36 +534,23 @@ export default config;
  *   legacyExtends('plugin:import/recommended', 'eslint-plugin-import:recommended'),
  *   legacyExtends('plugin:import/typescript', 'eslint-plugin-import:typescript')
  * ]).flatMap((configs) =>
- *   overwriteFileProperty(configs, [`*.{js,jsx,cjs,mjs}`])
+ *   overwriteProperty(configs, 'files', ['*.{js,jsx,cjs,mjs}'])
  * );
  */
-
-export async function makeEslintFlatCompat() {
-  const { FlatCompat } = await import('@eslint/eslintrc');
-
-  const flatCompat = new FlatCompat({
-    baseDirectory: projectRootDir,
-    resolvePluginsRelativeTo: projectRootDir,
-    recommendedConfig: eslintJs.configs.recommended,
-    allConfig: eslintJs.configs.all
+export function overwriteProperty<T extends keyof EslintConfig>(
+  configs: EslintConfig | EslintConfig[],
+  property: T,
+  value: EslintConfig[T]
+) {
+  return [configs].flat().map((config) => {
+    config[property] = value;
+    return config;
   });
-
-  return flatCompat;
-}
-
-function overwriteFileProperty(configs, files) {
-  configs = [configs].flat();
-
-  configs.forEach((config) => {
-    config.files = files;
-  });
-
-  return configs;
 }
 
 /**
- * Returns an eslint@>=9 configuration object that adapts a legacy eslint@<9
- * plugin's exposed rule extension.
+ * Returns a function that, when invoked, returns an eslint@>=9 configuration
+ * object that adapts a legacy eslint@<9 plugin's exposed rule extension.
  *
  * For example:
  *
@@ -576,6 +561,13 @@ function overwriteFileProperty(configs, files) {
  * );
  * ```
  */
-export function legacyExtends(extension, name) {
-  return { ...fixupConfigRules(flatCompat.extends(extension)[0])[0], name };
+export function legacyExtendsFactory(
+  flatCompat: Awaited<ReturnType<typeof makeEslintFlatCompat>>
+) {
+  return function (extension: string, name: string) {
+    return {
+      ...fixupConfigRules(flatCompat.extends(extension)[0])[0],
+      name
+    } as EslintConfig;
+  };
 }
