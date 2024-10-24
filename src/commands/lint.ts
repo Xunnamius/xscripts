@@ -132,7 +132,7 @@ export default async function command({
     'run-to-completion': {
       boolean: true,
       description: 'Do not exit until all linters have finished running',
-      default: false
+      default: true
     },
     'ignore-warnings': {
       boolean: true,
