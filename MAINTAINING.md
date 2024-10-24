@@ -131,8 +131,17 @@ npx turbo release --filter=pkg-1 --filter=pkg-2
 > [Turbo][24] solves this problem and should be preferred over building packages
 > by hand.
 
-To manually execute the release procedure, run the following npm scripts in the
-specified order:
+There are two ways to execute the release procedure by hand. The first is by
+leveraging the release script:
+
+```bash
+# Do a dry run first:
+npm run release -- --dry-run
+# Then do the actual release:
+npm run release --
+```
+
+The second way is by running the following npm scripts in the specified order:
 
 > If one of these steps fails, you should address the failure before running the
 > next step.
@@ -142,14 +151,15 @@ specified order:
 > works.
 
 ```bash
-# 1. OPTIONAL: Reset the working tree to a clean state.
+# 1. OPTIONAL: Reset the working tree to a clean state. The build command
+# usually does this for you, making this step unnecessary.
 # npm run clean -- --force
 
-# 2. Lint _all_ recognized file types under the current working directory.
-npm run lint:source:all
+# 2. Lint all recognized source file types under the current working directory.
+npm run lint:source
 
 # 3. Build this package's distributables.
-npm run build:dist
+npm run build
 
 # 4. Format this package's files.
 npm run format
@@ -157,17 +167,21 @@ npm run format
 # 5. Build this package's documentation (AFTER format for correct line numbers).
 npm run build:docs
 
-# 6. Run all of this package's tests and generate coverage data.
+# 6. OPTIONAL: Run project-wide sanity and validity checks across the entire
+# repository. This is typically run in an ad hoc fashion by the developer.
+# npm run lint:project
+
+# 7. Run all of this package's tests and generate coverage data.
 npm run test:all
 
-# 7. Trigger semantic-release locally to public a new release of this package.
+# 8. Trigger semantic-release locally to public a new release of this package.
 # This requires having valid tokens for NPM, GitHub, and Codecov each with the
 # appropriate permissions.
 #
 # Do a dry run first:
-npm run release -- --dry-run
+npm run release -- --skip-prerelease-tasks --dry-run
 # Then do the actual release:
-npm run release
+npm run release -- --skip-prerelease-tasks
 ```
 
 ## Deprecation and End of Life
