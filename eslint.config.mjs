@@ -1,3 +1,4 @@
+// TODO: re-enable // @ts-check
 /* eslint-disable unicorn/prevent-abbreviations */
 import assert from 'node:assert';
 
@@ -20,7 +21,7 @@ import {
   extensionsTypescript
 } from '@-xun/scripts/assets/config/babel.config.js';
 
-import { overwriteFileProperty } from '@-xun/scripts/assets/config/eslint.config.mjs';
+import { overwriteProperty } from '@-xun/scripts/assets/config/eslint.config.mjs';
 
 import { Tsconfig } from './node_modules/@-xun/scripts/dist/packages/project-utils/src/fs/index.js';
 import { analyzeProjectStructure } from './node_modules/@-xun/scripts/dist/packages/project-utils/src/index.js';
@@ -417,6 +418,12 @@ const nodeRules = {
   'n/no-unpublished-import': 'off',
   // ? Handled by xscripts project lint and xscripts build distributables
   'n/no-unpublished-require': 'off',
+  // ? Handled by babel and core-js
+  'n/no-unsupported-features/es-builtins': 'off',
+  // ? Handled by babel and core-js
+  'n/no-unsupported-features/es-syntax': 'off',
+  // ? Handled by babel and core-js
+  'n/no-unsupported-features/node-builtins': 'off',
   // ? Handled by unicorn
   'n/no-process-exit': 'off',
   'n/no-restricted-import': [
@@ -579,12 +586,14 @@ const config = makeTsEslintConfig(
       }
     }
   ].flatMap((configs) =>
-    overwriteFileProperty(configs, [`**/*.{${toExtensionList(extensionsTsAndJs)}}`])
+    overwriteProperty(configs, 'files', [`**/*.{${toExtensionList(extensionsTsAndJs)}}`])
   ),
 
   // * Configs applying only to JavaScript files ending in .js
   {
     ...eslintPluginNodeRecommendedExtEither,
+    // ? Fix bug in eslint-plugin-n that illegally sets sourceType to "commonjs"
+    languageOptions: { sourceType: 'script' },
     name: 'node/recommended:.js-only',
     files: ['**/*.js'],
     rules: {
@@ -597,6 +606,8 @@ const config = makeTsEslintConfig(
   // * Configs applying only to JavaScript files ending in .cjs
   {
     ...eslintPluginNodeRecommendedExtCjs,
+    // ? Fix bug in eslint-plugin-n that illegally sets sourceType to "commonjs"
+    languageOptions: { sourceType: 'script' },
     name: 'node/recommended-script:.cjs-only',
     files: ['**/*.cjs'],
     rules: {
