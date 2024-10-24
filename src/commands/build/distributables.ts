@@ -740,15 +740,36 @@ distrib root: ${absoluteOutputDirPath}
             checkImportsDependenciesBijection()
           ]);
 
-          const errored = attwExitCode !== 0;
+          // TODO:
+          const errored = attwExitCode !== 0; /* || attwExitCode !== 0 */
 
-          if (attwExitCode !== 0 && attwOutput) {
+          if (attwExitCode !== 0) {
             genericLogger.newline([LogTag.IF_NOT_SILENCED]);
-            genericLogger.error([attwOutput].flat().join('\n'));
-            genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+
+            genericLogger.error(
+              attwOutput
+                ? [attwOutput].flat().join('\n')
+                : '%O returned exit code %O but generated no output',
+              '@arethetypeswrong/cli',
+              attwExitCode
+            );
           }
 
+          // TODO:
+          // if (attwExitCode !== 0) {
+          //   genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+
+          //   genericLogger.error(
+          //     attwOutput
+          //       ? [attwOutput].flat().join('\n')
+          //       : '%O returned exit code %O but generated no output',
+          //     '@arethetypeswrong/cli',
+          //     attwExitCode
+          //   );
+          // }
+
           if (errored) {
+            genericLogger.newline([LogTag.IF_NOT_SILENCED]);
             throw new CliError(ErrorMessage.BuildOutputChecksFailed());
           }
         }

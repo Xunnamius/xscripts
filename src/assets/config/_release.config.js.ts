@@ -218,7 +218,9 @@ export function verifyConditions(
   );
 }
 
-// TODO: implement so-called cross-dependency version coherence here
+// TODO: implement so-called cross-dependency version coherence here (--synchronize-interdependencies)
+
+// TODO: ONLY when cutting a new major, update engines.node to maintained node versions unless --no-update-engines-on-major sets appropriate environment variable
 
 /**
  * This is a custom semantic-release plugin step that replaces
