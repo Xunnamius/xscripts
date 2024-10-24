@@ -482,10 +482,8 @@ describe('::generateRawAliasMap', () => {
 
     expect(
       generateRawAliasMap({
-        project: {
-          root: mockProjectRoot,
-          packages: undefined
-        }
+        rootPackage: { root: mockProjectRoot },
+        subRootPackages: undefined
       } as ProjectMetadata)
     ).toStrictEqual(mockPolyrepoMappings);
   });
@@ -495,14 +493,12 @@ describe('::generateRawAliasMap', () => {
 
     expect(
       generateRawAliasMap({
-        project: {
-          root: mockProjectRoot,
-          packages: {
-            all: [
-              { id: 'pkg-1', json: {}, root: '/path/to/root/path/to/packages/pkg-1' },
-              { id: 'pkg-2', json: {}, root: '/path/to/root/path/to/packages/pkg-2' }
-            ]
-          }
+        rootPackage: { root: mockProjectRoot },
+        subRootPackages: {
+          all: [
+            { id: 'pkg-1', json: {}, root: '/path/to/root/path/to/packages/pkg-1' },
+            { id: 'pkg-2', json: {}, root: '/path/to/root/path/to/packages/pkg-2' }
+          ]
         }
       } as ProjectMetadata)
     ).toStrictEqual(mockHybridrepoMappings);
@@ -513,17 +509,15 @@ describe('::generateRawAliasMap', () => {
 
     expect(
       generateRawAliasMap({
-        project: {
-          root: mockProjectRoot,
-          packages: {
-            all: [
-              { id: 'a', json: {}, root: '/path/to/root/packages/a' },
-              { id: 'aa', json: {}, root: '/path/to/root/packages/aa' },
-              { id: 'a2', json: {}, root: '/path/to/root/packages/a2' },
-              { id: 'b2', json: {}, root: '/path/to/root/packages/b2' },
-              { id: 'a1', json: {}, root: '/path/to/root/packages/a1' }
-            ]
-          }
+        rootPackage: { root: mockProjectRoot },
+        subRootPackages: {
+          all: [
+            { id: 'a', json: {}, root: '/path/to/root/packages/a' },
+            { id: 'aa', json: {}, root: '/path/to/root/packages/aa' },
+            { id: 'a2', json: {}, root: '/path/to/root/packages/a2' },
+            { id: 'b2', json: {}, root: '/path/to/root/packages/b2' },
+            { id: 'a1', json: {}, root: '/path/to/root/packages/a1' }
+          ]
         }
       } as ProjectMetadata)
     ).toStrictEqual([
@@ -1192,7 +1186,10 @@ describe('::ensureRawSpecifierOk', () => {
     expect(() => ensureRawSpecifierOk(mockHybridrepoMappings, 'node:path')).not.toThrow();
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'https://some-website.com/some/pkg')
+      ensureRawSpecifierOk(
+        mockHybridrepoMappings,
+        'https://some-website.com/some/package'
+      )
     ).not.toThrow();
   });
 

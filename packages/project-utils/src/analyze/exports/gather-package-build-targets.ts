@@ -2,7 +2,6 @@ import assert from 'node:assert';
 import { join as joinPath, relative as toRelativePath } from 'node:path';
 
 import { glob as globAsync, sync as globSync } from 'glob';
-import { toss } from 'toss-expression';
 
 // TODO: replace this with actual package once published
 import { hasTypescriptExtension } from '# src/assets/config/_babel.config.js.ts';
@@ -22,11 +21,9 @@ import {
 
 import {
   debug as debug_,
-  type PackageBuildTargets,
-  type ProjectMetadata,
-  type RootPackage,
-  type WorkspacePackage,
-  type WorkspacePackageName
+  isWorkspacePackage,
+  type Package,
+  type PackageBuildTargets
 } from '#project-utils src/analyze/common.ts';
 
 import {
@@ -34,9 +31,9 @@ import {
   type ImportSpecifierEntry
 } from '#project-utils src/analyze/exports/gather-import-entries-from-files.ts';
 
-import { gatherPackageSrcFiles } from '#project-utils src/analyze/exports/gather-package-src-files.ts';
+import { gatherPackageFiles } from '#project-utils src/analyze/exports/gather-package-files.ts';
 import { pathToPackage } from '#project-utils src/analyze/exports/path-to-package.ts';
-import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
+import { ErrorMessage } from '#project-utils src/error.ts';
 import { type AbsolutePath, type RelativePath } from '#project-utils src/fs/index.ts';
 import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 
@@ -54,21 +51,13 @@ export type GatherPackageBuildTargetsOptions = {
   /**
    * Use the internal cached result from a previous run, if available.
    *
-   * The result of `gatherPackageBuildTargets` will be cached
-   * regardless of `useCached`. `useCached` determines if the cached result will
-   * be returned or recomputed on subsequent calls.
+   * The result of `gatherPackageBuildTargets` will be cached regardless of
+   * `useCached`. `useCached` determines if the cached result will be returned
+   * or recomputed on subsequent calls.
    *
    * @default true
    */
   useCached?: boolean;
-  /**
-   * @see {@link ProjectMetadata}
-   */
-  projectMetadata: ProjectMetadata;
-  /**
-   * @see {@link WorkspacePackageName}
-   */
-  targetPackageName: WorkspacePackageName | undefined;
   /**
    * Exclude paths from the internals result with respect to the patterns in
    * `excludeInternalsPatterns`, which are interpreted according to gitignore
@@ -86,48 +75,34 @@ export type GatherPackageBuildTargetsOptions = {
 
 function gatherPackageBuildTargets_(
   shouldRunSynchronously: false,
-  options: GatherPackageBuildTargetsOptions
+  package_: Package,
+  options?: GatherPackageBuildTargetsOptions
 ): Promise<PackageBuildTargets>;
 function gatherPackageBuildTargets_(
   shouldRunSynchronously: true,
-  options: GatherPackageBuildTargetsOptions
+  package_: Package,
+  options?: GatherPackageBuildTargetsOptions
 ): PackageBuildTargets;
 function gatherPackageBuildTargets_(
   shouldRunSynchronously: boolean,
+  package_: Package,
   {
-    projectMetadata,
-    targetPackageName: pkgName,
     excludeInternalsPatterns = [],
     includeExternalsPatterns = [],
     useCached = true
-  }: GatherPackageBuildTargetsOptions
+  }: GatherPackageBuildTargetsOptions = {}
 ): Promisable<PackageBuildTargets> {
   const debug = debug_.extend('gatherPackageBuildTargets');
 
-  const { project } = projectMetadata;
-  const { root: projectRoot, packages } = project;
+  const { projectMetadata } = package_;
+  const { rootPackage } = projectMetadata;
+  const { root: projectRoot } = rootPackage;
 
-  const pkg_ =
-    pkgName === undefined || packages === undefined ? project : packages.get(pkgName);
+  const packageId_ = isWorkspacePackage(package_) ? package_.id : undefined;
 
-  if (!pkg_) {
-    const error = new ProjectError(ErrorMessage.UnknownWorkspacePackageName(pkgName!));
-    return shouldRunSynchronously ? toss(error) : Promise.reject(error);
-  }
-
-  // ? So that functions defined below don't get confused
-  const pkg = pkg_;
-  const pkgId = 'id' in pkg ? pkg.id : undefined;
-
-  assert(
-    // ? Because root packages (represented by undefined pkgName) don't have ids
-    typeof pkgName === typeof pkgId,
-    ErrorMessage.GuruMeditation() + ' (gatherPackageBuildTargets)'
-  );
-
-  if (useCached && _internalPackageBuildTargetsCache.has(pkg)) {
+  if (useCached && _internalPackageBuildTargetsCache.has(package_)) {
     cacheDebug('cache hit!');
-    const cachedResult = _internalPackageBuildTargetsCache.get(pkg)!;
+    const cachedResult = _internalPackageBuildTargetsCache.get(package_)!;
     debug('reusing cached resources: %O', cachedResult);
     return shouldRunSynchronously ? cachedResult : Promise.resolve(cachedResult);
   } else {
@@ -158,7 +133,9 @@ function gatherPackageBuildTargets_(
 
   async function runAsynchronously() {
     const [packageSrcPaths, additionalExternalPaths] = await Promise.all([
-      gatherPackageSrcFiles(pkg, { ignore: excludeInternalsPatterns }),
+      gatherPackageFiles(package_, { ignore: excludeInternalsPatterns }).then(
+        ({ src }) => src
+      ),
       globAsync(includeExternalsPatterns, {
         dot: true,
         absolute: true,
@@ -167,10 +144,10 @@ function gatherPackageBuildTargets_(
       }) as Promise<AbsolutePath[]>
     ]);
 
-    // * Note that targets.internal is relative to the _project root_
+    // * Note that targets.internal is relative to the **PROJECT ROOT**
     targets.internal = absolutePathsSetToRelative(new Set(packageSrcPaths), projectRoot);
 
-    // * Note that targets.external is relative to the _project root_
+    // * Note that targets.external is relative to the **PROJECT ROOT**
     targets.external = absolutePathsSetToRelative(
       new Set(additionalExternalPaths),
       projectRoot
@@ -189,7 +166,7 @@ function gatherPackageBuildTargets_(
         await gatherImportEntriesFromFiles(Array.from(previousDiff.values()))
       );
 
-      // * Note that targets.external is relative to the _project root_
+      // * Note that targets.external is relative to the **PROJECT ROOT**
       targets.external = targets.external.union(
         absolutePathsSetToRelative(externalPaths, projectRoot)
       );
@@ -203,7 +180,7 @@ function gatherPackageBuildTargets_(
 
   function runSynchronously() {
     const [packageSrcPaths, additionalExternalPaths] = [
-      gatherPackageSrcFiles.sync(pkg, { ignore: excludeInternalsPatterns }),
+      gatherPackageFiles.sync(package_, { ignore: excludeInternalsPatterns }).src,
       globSync(includeExternalsPatterns, {
         dot: true,
         absolute: true,
@@ -212,10 +189,10 @@ function gatherPackageBuildTargets_(
       }) as AbsolutePath[]
     ];
 
-    // * Note that targets.internal is relative to the _project root_
+    // * Note that targets.internal is relative to the **PROJECT ROOT**
     targets.internal = absolutePathsSetToRelative(new Set(packageSrcPaths), projectRoot);
 
-    // * Note that targets.external is relative to the _project root_
+    // * Note that targets.external is relative to the **PROJECT ROOT**
     targets.external = absolutePathsSetToRelative(
       new Set(additionalExternalPaths),
       projectRoot
@@ -233,7 +210,7 @@ function gatherPackageBuildTargets_(
         gatherImportEntriesFromFiles.sync(Array.from(previousDiff.values()))
       );
 
-      // * Note that targets.external is relative to the _project root_
+      // * Note that targets.external is relative to the **PROJECT ROOT**
       targets.external = targets.external.union(
         absolutePathsSetToRelative(externalPaths, projectRoot)
       );
@@ -248,8 +225,8 @@ function gatherPackageBuildTargets_(
   function finalize() {
     debug('package build targets: %O', packageBuildTargets);
 
-    if (useCached || !_internalPackageBuildTargetsCache.has(pkg)) {
-      _internalPackageBuildTargetsCache.set(pkg, packageBuildTargets);
+    if (useCached || !_internalPackageBuildTargetsCache.has(package_)) {
+      _internalPackageBuildTargetsCache.set(package_, packageBuildTargets);
       cacheDebug('cache entry updated');
     } else {
       cacheDebug('skipped updating cache entry');
@@ -316,12 +293,14 @@ function gatherPackageBuildTargets_(
     externalTargets: RelativePath[],
     path: AbsolutePath,
     specifiers: Set<string>,
-    specifierPackage: RootPackage | WorkspacePackage
+    specifierPackage: Package
   ) {
-    // TODO: consider optionally allowing files other than typescript to
-    // TODO: have their raw specifiers checked
+    // TODO: consider optionally allowing files other than typescript to have
+    // TODO: their raw specifiers checked
     const comesFromTypescriptFile = hasTypescriptExtension(path);
-    const specifierPackageId = 'id' in specifierPackage ? specifierPackage.id : undefined;
+    const specifierPackageId = isWorkspacePackage(specifierPackage)
+      ? specifierPackage.id
+      : undefined;
 
     for (const specifier of specifiers.values()) {
       if (comesFromTypescriptFile) {
@@ -346,7 +325,7 @@ function gatherPackageBuildTargets_(
         if (comesFromTypescriptFile) {
           const isMultiversal =
             group === WellKnownImportAlias.Multiverse ||
-            (group === WellKnownImportAlias.Rootverse && pkgId !== packageId);
+            (group === WellKnownImportAlias.Rootverse && packageId_ !== packageId);
 
           const specifierResolvedPath = mapRawSpecifierToPath(rawAliasMapping, specifier);
 
@@ -374,8 +353,8 @@ function gatherPackageBuildTargets_(
 }
 
 /**
- * Asynchronously construct a {@link PackageBuildTargets} instance
- * derived from a {@link RootPackage}/{@link WorkspacePackage} instance.
+ * Asynchronously construct a {@link PackageBuildTargets} instance derived from
+ * a {@link Package} instance.
  *
  * Also performs a lightweight correctness check of all imports as they're
  * encountered.
@@ -391,8 +370,8 @@ export function gatherPackageBuildTargets(
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace gatherPackageBuildTargets {
   /**
-   * Synchronously construct a {@link PackageBuildTargets} instance
-   * derived from a {@link RootPackage}/{@link WorkspacePackage} instance.
+   * Synchronously construct a {@link PackageBuildTargets} instance derived from
+   * a {@link Package} instance.
    *
    * Also performs a lightweight correctness check of all imports as they're
    * encountered.

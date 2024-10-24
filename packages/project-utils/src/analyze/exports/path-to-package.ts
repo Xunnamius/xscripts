@@ -1,7 +1,6 @@
 import {
-  type ProjectMetadata,
-  type RootPackage,
-  type WorkspacePackage
+  type Package,
+  type ProjectMetadata
 } from 'multiverse#project-utils analyze/common.ts';
 
 import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
@@ -28,15 +27,15 @@ export type PathToPackageOptions = {
 function pathToPackage_(
   shouldRunSynchronously: false,
   { projectMetadata, path }: PathToPackageOptions
-): Promise<RootPackage | WorkspacePackage>;
+): Promise<Package>;
 function pathToPackage_(
   shouldRunSynchronously: true,
   { projectMetadata, path }: PathToPackageOptions
-): RootPackage | WorkspacePackage;
+): Package;
 function pathToPackage_(
   shouldRunSynchronously: boolean,
   { path, projectMetadata }: PathToPackageOptions
-): Promisable<RootPackage | WorkspacePackage> {
+): Promisable<Package> {
   if (shouldRunSynchronously) {
     ensurePathIsAbsolute.sync({ path });
     return toPackage();
@@ -45,19 +44,20 @@ function pathToPackage_(
   }
 
   function toPackage() {
-    const { project: rootPkg } = projectMetadata;
-    const { packages } = rootPkg;
+    const { rootPackage, subRootPackages } = projectMetadata;
 
-    if (packages) {
-      const pkg = packages.all.find(({ root: pkgRoot }) => path.startsWith(pkgRoot));
+    if (subRootPackages) {
+      const subrootPackage = subRootPackages.all.find(({ root: packageRoot }) => {
+        return path.startsWith(packageRoot);
+      });
 
-      if (pkg) {
-        return pkg;
+      if (subrootPackage) {
+        return subrootPackage;
       }
     }
 
-    if (path.startsWith(rootPkg.root)) {
-      return rootPkg;
+    if (path.startsWith(rootPackage.root)) {
+      return rootPackage;
     }
 
     throw new ProjectError(ErrorMessage.PathOutsideRoot(path));
@@ -65,10 +65,8 @@ function pathToPackage_(
 }
 
 /**
- * Asynchronously resolve path` to the first sub-root package that contains that
- * path. If no sub-root packages contain `path` but the root package does, it
- * will be returned instead. If `path` points to a location outside of the
- * repository, an error is thrown.
+ * Asynchronously resolve `path` to the first package that contains that path.
+ * If `path` points to a location outside of the project, an error is thrown.
  */
 export function pathToPackage(...args: ParametersNoFirst<typeof pathToPackage_>) {
   return pathToPackage_(false, ...args);
@@ -77,10 +75,8 @@ export function pathToPackage(...args: ParametersNoFirst<typeof pathToPackage_>)
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace pathToPackage {
   /**
-   * Synchronously resolve path` to the first sub-root package that contains
-   * that path. If no sub-root packages contain `path` but the root package
-   * does, it will be returned instead. If `path` points to a location outside
-   * of the repository, an error is thrown.
+   * Synchronously resolve `path` to the first package that contains that path.
+   * If `path` points to a location outside of the project, an error is thrown.
    */
   export const sync = function (...args) {
     return pathToPackage_(true, ...args);

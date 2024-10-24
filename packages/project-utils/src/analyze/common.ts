@@ -5,10 +5,10 @@ import { type AbsolutePath, type RelativePath } from '#project-utils src/fs/comm
 
 // @ts-expect-error: used in documentation
 import type {
-  // ? Used in documentation
+  // ? Used in documentation eslint-disable-next-line
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   nextjsConfigProjectBase,
-  // ? Used in documentation
+  // ? Used in documentation eslint-disable-next-line
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   webpackConfigProjectBase
 } from '#project-utils src/fs/exports/well-known-constants.ts';
@@ -48,33 +48,10 @@ export type RootPackage = {
    */
   attributes: { [key in ProjectAttribute]?: boolean };
   /**
-   * A mapping of sub-root package names to {@link WorkspacePackage} objects in
-   * a monorepo, or `undefined` in a polyrepo.
+   * A link back to the {@link ProjectMetadata} instance containing this
+   * package.
    */
-  packages:
-    | (Map<WorkspacePackageName, WorkspacePackage> & {
-        /**
-         * A mapping of sub-root packages missing the `"name"` field in their
-         * respective `package.json` files and {@link WorkspacePackage} objects.
-         */
-        unnamed: Map<WorkspacePackageId, WorkspacePackage>;
-        /**
-         * An array of "broken" pseudo-sub-root pseudo-package directories that
-         * are matching workspace paths but are missing a `package.json` file.
-         */
-        broken: AbsolutePath[];
-        /**
-         * An array of *all* non-broken sub-root packages both named and
-         * unnamed. Sugar for the following:
-         *
-         * ```TypeScript
-         * Array.from(packages.values())
-         *      .concat(Array.from(packages.unnamed.values()))
-         * ```
-         */
-        all: WorkspacePackage[];
-      })
-    | undefined;
+  projectMetadata: ProjectMetadata;
 };
 
 /**
@@ -108,6 +85,14 @@ export type WorkspacePackage = {
    */
   projectMetadata: ProjectMetadata;
 };
+
+/**
+ * An object representing a package in a monorepo or polyrepo project.
+ *
+ * @see {@link RootPackage}
+ * @see {@link WorkspacePackage}
+ */
+export type Package = RootPackage | WorkspacePackage;
 
 /**
  * A "project attribute" describes a capability, scope, or some other
@@ -193,27 +178,51 @@ export type ProjectMetadata = {
    */
   type: ProjectAttribute.Polyrepo | ProjectAttribute.Monorepo;
   /**
-   * Repository root package data.
+   * Project root package data.
    */
-  project: RootPackage;
+  rootPackage: RootPackage;
   /**
-   * An object representing the current sub-root (determined by current working
-   * directory) in a monorepo project, or `undefined` if in a polyrepo-type
-   * project or when the current working directory is not within any sub-root in
-   * a monorepo project.
-   *
-   * Note that `package`, if defined, always strictly equals (`===`) one value
-   * in {@link RootPackage.packages}'s `all` property.
+   * The "current package" data. The "current" package is determined by the
+   * current working directory and will always strictly equal (`===`) either (1)
+   * exactly one value in {@link RootPackage.packages}'s `all` property or (2)
+   * `rootPackage`.
    */
-  package: WorkspacePackage | undefined;
+  cwdPackage: Package;
+  /**
+   * A mapping of sub-root package names to {@link WorkspacePackage} objects in
+   * a monorepo, or `undefined` in a polyrepo.
+   */
+  subRootPackages:
+    | (Map<WorkspacePackageName, WorkspacePackage> & {
+        /**
+         * A mapping of sub-root packages missing the `"name"` field in their
+         * respective `package.json` files and {@link WorkspacePackage} objects.
+         */
+        unnamed: Map<WorkspacePackageId, WorkspacePackage>;
+        /**
+         * An array of "broken" pseudo-sub-root pseudo-package directories that
+         * are matching workspace paths but are missing a `package.json` file.
+         */
+        broken: AbsolutePath[];
+        /**
+         * An array of *all* non-broken sub-root packages both named and
+         * unnamed. Sugar for the following:
+         *
+         * ```TypeScript
+         * Array.from(packages.values())
+         *      .concat(Array.from(packages.unnamed.values()))
+         * ```
+         */
+        all: WorkspacePackage[];
+      })
+    | undefined;
 };
 
 /**
- * In the context of a {@link WorkspacePackage}/{@link RootPackage}, this object
- * represents a collection of all the file paths relative to the _project root_
- * that must be transpiled (source; typically TypeScript files) and/or copied
- * (assets; typically everything that isn't a TypeScript file) to build a
- * specific package.
+ * In the context of a {@link Package}, this object represents a collection of
+ * all the file paths **relative to the _project root_** that must be transpiled
+ * (source; typically TypeScript files) and/or copied (assets; typically
+ * everything that isn't a TypeScript file) to build a specific package.
  *
  * These paths are split into internal and external
  * {@link PackageBuildTargets.targets}. Interesting
@@ -221,9 +230,8 @@ export type ProjectMetadata = {
  */
 export type PackageBuildTargets = {
   /**
-   * The file paths, relative to the _project root_, that must be transpiled
-   * and/or copied when building a specific
-   * {@link WorkspacePackage}/{@link RootPackage}'s distributables.
+   * The file paths, **relative to the _project root_**, that must be transpiled
+   * and/or copied when building a specific {@link Package}'s distributables.
    */
   targets: {
     /**
@@ -231,7 +239,7 @@ export type PackageBuildTargets = {
      * the package. They are the contents of `${packageRoot}/src` and can be any
      * file type.
      *
-     * These paths will always be relative to the _project root_.
+     * These paths will always be **relative to the _project root_**.
      */
     internal: Set<RelativePath>;
     /**
@@ -239,7 +247,7 @@ export type PackageBuildTargets = {
      * external to the package. They are derived from import specifiers and can
      * be any file type.
      *
-     * These paths will always be relative to the _project root_.
+     * These paths will always be **relative to the _project root_**.
      */
     external: Set<RelativePath>;
   };
@@ -269,26 +277,7 @@ export type PackageBuildTargets = {
 };
 
 /**
- * A collection of useful information about a polyrepo.
- */
-export type PolyrepoMetadata = ProjectMetadata & {
-  type: ProjectAttribute.Polyrepo;
-  project: RootPackage & { packages: undefined };
-  package: undefined;
-};
-
-/**
- * A collection of useful information about a monorepo.
- */
-export type MonorepoMetadata = ProjectMetadata & {
-  type: ProjectAttribute.Monorepo;
-  project: RootPackage & {
-    packages: NonNullable<RootPackage['packages']>;
-  };
-};
-
-/**
- * A collection of (absolute) file paths within this project organized by
+ * A collection of {@link AbsolutePath}s within this project organized by
  * location and utility.
  *
  * Unnamed and broken workspaces/packages are ignored.
@@ -381,6 +370,61 @@ export type ProjectFiles = {
 };
 
 /**
+ * In the context of a {@link Package}, this type represents a collection of
+ * {@link AbsolutePath}s, one for each file under the package root that is not
+ * ignored by Git. However, note that files under `${packageRoot}/dist`, while
+ * usually ignored by Git, will _not_ be automatically ignored by this function.
+ *
+ * The collection is organized by location and utility.
+ */
+export type PackageFiles = {
+  /**
+   * Every file under the package's `./dist` directory.
+   */
+  dist: AbsolutePath[];
+  /**
+   * Every file under the package's `./docs` directory that is not ignored by
+   * Git.
+   */
+  docs: AbsolutePath[];
+  /**
+   * Every file under the package's `./src` directory that is not ignored by
+   * Git.
+   */
+  src: AbsolutePath[];
+  /**
+   * Every file under the package's `./test` directory that is not ignored by
+   * Git.
+   */
+  test: AbsolutePath[];
+  /**
+   * Every file under the package's root directory that is not ignored by Git or
+   * contained in any other {@link PackageFiles} property.
+   */
+  other: AbsolutePath[];
+};
+
+/**
+ * A collection of useful information about a polyrepo.
+ *
+ * @see {@link ProjectMetadata}
+ */
+export type PolyrepoMetadata = ProjectMetadata & {
+  type: ProjectAttribute.Polyrepo;
+  subRootPackages: undefined;
+};
+
+/**
+ * A collection of useful information about a monorepo.
+ *
+ * @see {@link ProjectMetadata}
+ */
+export type MonorepoMetadata = ProjectMetadata & {
+  type: ProjectAttribute.Monorepo;
+  subRootPackages: NonNullable<ProjectMetadata['subRootPackages']>;
+};
+
+/**
  * Used to assign the result of an asynchronous operation to some key in some
  * object. For example:
  *
@@ -398,4 +442,41 @@ export function assignResultTo(parentObject: Record<string, unknown>, key: strin
   return function (result: unknown) {
     parentObject[key] = result;
   };
+}
+
+/**
+ * Returns `true` if `o` is probably an instance of `RootPackage` or
+ * `WorkspacePackage`.
+ */
+export function isPackage(o: unknown): o is Package {
+  return isWorkspacePackage(o) || isRootPackage(o);
+}
+
+/**
+ * Returns `true` if `o` is probably an instance of `WorkspacePackage`.
+ */
+export function isWorkspacePackage(o: unknown): o is WorkspacePackage {
+  return (
+    !!o &&
+    typeof o === 'object' &&
+    'id' in o &&
+    'root' in o &&
+    'json' in o &&
+    'attributes' in o &&
+    'projectMetadata' in o
+  );
+}
+
+/**
+ * Returns `true` if `o` is probably an instance of `RootPackage`.
+ */
+export function isRootPackage(o: unknown): o is RootPackage {
+  return (
+    !!o &&
+    typeof o === 'object' &&
+    'root' in o &&
+    'json' in o &&
+    'attributes' in o &&
+    'projectMetadata' in o
+  );
 }

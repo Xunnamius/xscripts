@@ -210,19 +210,26 @@ export class DuplicatePackageNameError extends ProjectError {
    * Represents encountering a workspace package.json file with the same
    * `"name"` field as another workspace.
    */
-  constructor(pkgName: string, firstPath: string, secondPath: string);
+  constructor(packageName: string, firstPath: string, secondPath: string);
   /**
    * This constructor syntax is used by subclasses when calling this constructor
    * via `super`.
    */
-  constructor(pkgName: string, firstPath: string, secondPath: string, message: string);
   constructor(
-    public readonly pkgName: string,
+    packageName: string,
+    firstPath: string,
+    secondPath: string,
+    message: string
+  );
+  constructor(
+    public readonly packageName: string,
     public readonly firstPath: string,
     public readonly secondPath: string,
     message: string | undefined = undefined
   ) {
-    super(message ?? ErrorMessage.DuplicatePackageName(pkgName, firstPath, secondPath));
+    super(
+      message ?? ErrorMessage.DuplicatePackageName(packageName, firstPath, secondPath)
+    );
   }
 }
 makeNamedError(DuplicatePackageNameError, 'DuplicatePackageNameError');
@@ -290,9 +297,9 @@ export const ErrorMessage = {
   PackageJsonNotParsable(packageJsonPath: string, reason: unknown) {
     return `unable to parse ${packageJsonPath}: ${isNativeError(reason) ? reason.message : String(reason)}`;
   },
-  DuplicatePackageName(pkgName: string, firstPath: string, secondPath: string) {
+  DuplicatePackageName(packageName: string, firstPath: string, secondPath: string) {
     return (
-      `the following packages must not have the same name "${pkgName}":\n` +
+      `the following packages must not have the same name "${packageName}":\n` +
       `  ${firstPath}\n` +
       `  ${secondPath}`
     );
@@ -354,9 +361,6 @@ export const ErrorMessage = {
   },
   SpecifierNotOkSelfReferential(specifier: string, path?: string) {
     return `encountered illegal import specifier "${specifier}": this specifier should be replaced with "#${specifier.split('#').at(-1)!.replace(' ', ' src/')}"${path ? ` in ${path}` : ''}`;
-  },
-  EmptyOrMissingSrcDir(rootPath: string) {
-    return `the ./src directory is empty or non-existent at: ${rootPath}`;
   },
   UnknownWorkspacePackageName(name: WorkspacePackageName) {
     return `this project has no workspace package named "${name}"`;

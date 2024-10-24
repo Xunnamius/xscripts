@@ -9,6 +9,8 @@ import {
   type GlobGitignoreOptions
 } from 'glob-gitignore';
 
+import { toss } from 'toss-expression';
+
 import {
   _internalProjectMetadataCache,
   cacheDebug
@@ -18,7 +20,7 @@ import {
   debug as debug_,
   ProjectAttribute,
   WorkspaceAttribute,
-  type MonorepoMetadata,
+  type Package,
   type PolyrepoMetadata,
   type ProjectMetadata,
   type RootPackage,
@@ -78,15 +80,15 @@ export type AnalyzeProjectStructureOptions = {
 function analyzeProjectStructure_(
   shouldRunSynchronously: false,
   options?: AnalyzeProjectStructureOptions
-): Promise<MonorepoMetadata | PolyrepoMetadata>;
+): Promise<ProjectMetadata>;
 function analyzeProjectStructure_(
   shouldRunSynchronously: true,
   options?: AnalyzeProjectStructureOptions
-): MonorepoMetadata | PolyrepoMetadata;
+): ProjectMetadata;
 function analyzeProjectStructure_(
   shouldRunSynchronously: boolean,
   options: AnalyzeProjectStructureOptions = {}
-): Promisable<MonorepoMetadata | PolyrepoMetadata> {
+): Promisable<ProjectMetadata> {
   const { cwd: cwd_ = process.cwd(), useCached = true } = options;
   const cwd = cwd_ as AbsolutePath;
 
@@ -107,12 +109,8 @@ function analyzeProjectStructure_(
 
         return {
           ...cachedMetadata,
-          package: await determineCwdPackage(false, {
-            cwd,
-            projectRoot,
-            packages: cachedMetadata.project.packages
-          })
-        } as typeof cachedMetadata;
+          cwdPackage: await determineCwdPackage(false, cwd, cachedMetadata)
+        } satisfies ProjectMetadata;
       } else {
         cacheDebug('cache miss');
       }
@@ -121,8 +119,6 @@ function analyzeProjectStructure_(
         root: projectRoot
       });
 
-      debug('projectJson: %O', projectJson);
-
       const projectAttributes = await getProjectAttributes(
         false,
         projectRoot,
@@ -130,36 +126,29 @@ function analyzeProjectStructure_(
         projectJson.workspaces ? ProjectAttribute.Monorepo : ProjectAttribute.Polyrepo
       );
 
-      debug('projectAttributes: %O', projectAttributes);
+      const rootPackage: RootPackage = {
+        root: projectRoot,
+        json: projectJson,
+        attributes: projectAttributes,
+        // ? This is defined for real below
+        projectMetadata: '<circular>' as unknown as ProjectMetadata
+      };
 
-      const finalMetadata = {
+      debug('rootPackage: %O', rootPackage);
+
+      const finalMetadata: ProjectMetadata = {
         type: ProjectAttribute.Polyrepo,
-        project: {
-          root: projectRoot,
-          json: projectJson,
-          attributes: projectAttributes,
-          packages: undefined
-        },
-        package: undefined
-      } as MonorepoMetadata | PolyrepoMetadata;
+        cwdPackage: rootPackage,
+        rootPackage,
+        subRootPackages: undefined
+      } satisfies PolyrepoMetadata;
+
+      rootPackage.projectMetadata = finalMetadata;
 
       if (projectAttributes[ProjectAttribute.Monorepo]) {
-        const { packages, cwdPackage } = await getWorkspacePackages(false, {
-          cwd,
-          projectJson,
-          projectMetadata: finalMetadata
-        });
+        await setSubrootPackagesAndCwdPackage(false, cwd, finalMetadata);
 
-        Object.assign(finalMetadata, {
-          type: ProjectAttribute.Monorepo,
-          project: {
-            root: projectRoot,
-            json: projectJson,
-            attributes: projectAttributes,
-            packages
-          },
-          package: cwdPackage
-        } satisfies MonorepoMetadata);
+        finalMetadata.type = ProjectAttribute.Monorepo;
       }
 
       finalize(finalMetadata);
@@ -178,18 +167,15 @@ function analyzeProjectStructure_(
 
       return {
         ...cachedMetadata,
-        package: determineCwdPackage(true, {
-          cwd,
-          projectRoot,
-          packages: cachedMetadata.project.packages
-        })
-      } as typeof cachedMetadata;
+        cwdPackage: determineCwdPackage(true, cwd, cachedMetadata)
+      } satisfies ProjectMetadata;
     } else {
       cacheDebug('cache miss');
     }
 
-    const projectJson = readPackageJsonAtRoot.sync({ root: projectRoot });
-    debug('projectJson: %O', projectJson);
+    const projectJson = readPackageJsonAtRoot.sync({
+      root: projectRoot
+    });
 
     const projectAttributes = getProjectAttributes(
       true,
@@ -198,47 +184,46 @@ function analyzeProjectStructure_(
       projectJson.workspaces ? ProjectAttribute.Monorepo : ProjectAttribute.Polyrepo
     );
 
-    debug('projectAttributes: %O', projectAttributes);
+    const rootPackage: RootPackage = {
+      root: projectRoot,
+      json: projectJson,
+      attributes: projectAttributes,
+      // ? This is defined for real below
+      projectMetadata: '<circular>' as unknown as ProjectMetadata
+    };
 
-    const finalMetadata = {
+    debug('rootPackage: %O', rootPackage);
+
+    const finalMetadata: ProjectMetadata = {
       type: ProjectAttribute.Polyrepo,
-      project: {
-        root: projectRoot,
-        json: projectJson,
-        attributes: projectAttributes,
-        packages: undefined
-      },
-      package: undefined
-    } as MonorepoMetadata | PolyrepoMetadata;
+      cwdPackage: rootPackage,
+      rootPackage,
+      subRootPackages: undefined
+    } satisfies PolyrepoMetadata;
+
+    rootPackage.projectMetadata = finalMetadata;
 
     if (projectAttributes[ProjectAttribute.Monorepo]) {
-      const { packages, cwdPackage } = getWorkspacePackages(true, {
-        cwd,
-        projectJson,
-        projectMetadata: finalMetadata
-      });
+      setSubrootPackagesAndCwdPackage(true, cwd, finalMetadata);
 
-      Object.assign(finalMetadata, {
-        type: ProjectAttribute.Monorepo,
-        project: {
-          root: projectRoot,
-          json: projectJson,
-          attributes: projectAttributes,
-          packages
-        },
-        package: cwdPackage
-      } satisfies MonorepoMetadata);
+      finalMetadata.type = ProjectAttribute.Monorepo;
     }
 
     finalize(finalMetadata);
     return finalMetadata;
   }
 
-  function finalize(projectMetadata: MonorepoMetadata | PolyrepoMetadata) {
+  function finalize(projectMetadata: ProjectMetadata) {
     debug('project metadata: %O', projectMetadata);
 
-    if (useCached || !_internalProjectMetadataCache.has(projectMetadata.project.root)) {
-      _internalProjectMetadataCache.set(projectMetadata.project.root, projectMetadata);
+    if (
+      useCached ||
+      !_internalProjectMetadataCache.has(projectMetadata.rootPackage.root)
+    ) {
+      _internalProjectMetadataCache.set(
+        projectMetadata.rootPackage.root,
+        projectMetadata
+      );
       cacheDebug('cache entry updated');
     } else {
       cacheDebug('skipped updating cache entry');
@@ -246,6 +231,12 @@ function analyzeProjectStructure_(
   }
 }
 
+/**
+ * Asynchronously returns information about the structure of the project at the
+ * current working directory.
+ *
+ * @see {@link clearInternalCache}
+ */
 export function analyzeProjectStructure(
   ...args: ParametersNoFirst<typeof analyzeProjectStructure_>
 ) {
@@ -299,50 +290,29 @@ function determineProjectRootFromCwd(
   }
 }
 
-function getWorkspacePackages(
+function setSubrootPackagesAndCwdPackage(
   runSynchronously: false,
-  options: {
-    cwd: AbsolutePath;
-    projectMetadata: ProjectMetadata;
-    projectJson: PackageJson;
-  }
-): Promise<{
-  packages: NonNullable<ProjectMetadata['project']['packages']>;
-  cwdPackage: WorkspacePackage | undefined;
-}>;
-function getWorkspacePackages(
+  cwd: AbsolutePath,
+  projectMetadata: ProjectMetadata
+): Promise<void>;
+function setSubrootPackagesAndCwdPackage(
   runSynchronously: true,
-  options: {
-    cwd: AbsolutePath;
-    projectMetadata: ProjectMetadata;
-    projectJson: PackageJson;
-  }
-): {
-  packages: NonNullable<ProjectMetadata['project']['packages']>;
-  cwdPackage: WorkspacePackage | undefined;
-};
-function getWorkspacePackages(
+  cwd: AbsolutePath,
+  projectMetadata: ProjectMetadata
+): void;
+function setSubrootPackagesAndCwdPackage(
   runSynchronously: boolean,
-  {
-    cwd,
-    projectMetadata,
-    projectJson: { workspaces }
-  }: {
-    cwd: AbsolutePath;
-    projectMetadata: ProjectMetadata;
-    projectJson: PackageJson;
-  }
-): Promisable<{
-  packages: NonNullable<ProjectMetadata['project']['packages']>;
-  cwdPackage: WorkspacePackage | undefined;
-}> {
+  cwd: AbsolutePath,
+  projectMetadata: ProjectMetadata
+): Promisable<void> {
   const debug = debug_.extend('getWorkspacePackages');
-  const projectRoot = projectMetadata.project.root;
+  const projectRoot = projectMetadata.rootPackage.root;
+  const { workspaces: workspaces_ } = projectMetadata.rootPackage.json;
 
-  workspaces = Array.isArray(workspaces)
-    ? workspaces
-    : Array.isArray(workspaces?.packages)
-      ? workspaces.packages
+  const workspaces = Array.isArray(workspaces_)
+    ? workspaces_
+    : Array.isArray(workspaces_?.packages)
+      ? workspaces_.packages
       : undefined;
 
   assert(workspaces, ErrorMessage.NotAMonorepoError());
@@ -353,9 +323,12 @@ function getWorkspacePackages(
     ignore: []
   };
 
-  const packages = new Map() as NonNullable<RootPackage['packages']>;
-  packages.unnamed = new Map();
-  packages.broken = [];
+  const subRootPackages = (projectMetadata.subRootPackages = new Map() as NonNullable<
+    ProjectMetadata['subRootPackages']
+  >);
+
+  subRootPackages.unnamed = new Map();
+  subRootPackages.broken = [];
 
   if (runSynchronously) {
     globOptions.ignore = deriveVirtualGitignoreLines.sync({ projectRoot });
@@ -371,7 +344,7 @@ function getWorkspacePackages(
             return readPackageJsonAtRoot.sync({ root: packageRoot });
           } catch (error) {
             debug.warn('encountered broken package at %O: %O', packageRoot, error);
-            packages.broken.push(packageRoot);
+            subRootPackages.broken.push(packageRoot);
             return undefined;
           }
         })();
@@ -379,7 +352,7 @@ function getWorkspacePackages(
         if (packageJson) {
           const attributes = getWorkspaceAttributes(true, packageRoot, packageJson);
           addWorkspacePackage({
-            packageId: packageRootToId.sync({ packageRoot }),
+            packageId: packageRootToId.sync(packageRoot),
             attributes,
             negate,
             packageJson,
@@ -389,12 +362,7 @@ function getWorkspacePackages(
       }
     }
 
-    finalize();
-
-    return {
-      packages,
-      cwdPackage: determineCwdPackage(true, { cwd, packages, projectRoot })
-    };
+    finalize(determineCwdPackage(true, cwd, projectMetadata));
   } else {
     return Promise.resolve().then(async () => {
       const workspacesAddFunctionsToCall: {
@@ -428,7 +396,7 @@ function getWorkspacePackages(
                       packageRoot,
                       error
                     );
-                    packages.broken.push(packageRoot);
+                    subRootPackages.broken.push(packageRoot);
                     return undefined;
                   }
                 })();
@@ -448,7 +416,7 @@ function getWorkspacePackages(
                     patternIndex,
                     fn: async () =>
                       addWorkspacePackage({
-                        packageId: await packageRootToId({ packageRoot }),
+                        packageId: await packageRootToId(packageRoot),
                         attributes,
                         negate,
                         packageJson,
@@ -472,27 +440,18 @@ function getWorkspacePackages(
         await fn();
       }
 
-      finalize();
-
-      return {
-        packages,
-        cwdPackage: await determineCwdPackage(false, {
-          cwd,
-          packages,
-          projectRoot
-        })
-      };
+      finalize(await determineCwdPackage(false, cwd, projectMetadata));
     });
   }
 
-  function finalize() {
+  function finalize(cwdPackage: Package) {
     // ? Sugar property for getting *all* of a project's packages
-    Object.defineProperty(packages, 'all', {
+    Object.defineProperty(subRootPackages, 'all', {
       configurable: false,
       enumerable: false,
       get: () => {
-        return Array.from(packages.values()).concat(
-          Array.from(packages.unnamed.values())
+        return Array.from(subRootPackages.values()).concat(
+          Array.from(subRootPackages.unnamed.values())
         );
       }
     });
@@ -500,13 +459,16 @@ function getWorkspacePackages(
     const seenPackages = new Map<WorkspacePackageId, AbsolutePath>();
 
     // ? Ensure no duplicate package-ids across named and unnamed workspaces.
-    packages.all.forEach(({ id, root }) => {
+    subRootPackages.all.forEach(({ id, root }) => {
       if (seenPackages.has(id)) {
         throw new DuplicatePackageIdError(id, root, seenPackages.get(id)!);
       } else {
         seenPackages.set(id, root);
       }
     });
+
+    // ? Set cwdPackage in projectMetadata
+    projectMetadata.cwdPackage = cwdPackage;
   }
 
   function addWorkspacePackage({
@@ -532,37 +494,37 @@ function getWorkspacePackages(
 
     if (negate) {
       if (workspacePackage.json.name) {
-        packages.delete(workspacePackage.json.name);
+        subRootPackages.delete(workspacePackage.json.name);
       } else {
-        packages.unnamed.delete(workspacePackage.id);
+        subRootPackages.unnamed.delete(workspacePackage.id);
       }
     } else {
       if (workspacePackage.json.name) {
-        if (packages.has(workspacePackage.json.name)) {
-          const pkg = packages.get(workspacePackage.json.name)!;
-          if (pkg.root !== workspacePackage.root) {
+        if (subRootPackages.has(workspacePackage.json.name)) {
+          const subrootPackage = subRootPackages.get(workspacePackage.json.name)!;
+          if (subrootPackage.root !== workspacePackage.root) {
             throw new DuplicatePackageNameError(
               workspacePackage.json.name,
-              pkg.root,
+              subrootPackage.root,
               workspacePackage.root
             );
           }
         } else {
-          packages.set(workspacePackage.json.name, workspacePackage);
+          subRootPackages.set(workspacePackage.json.name, workspacePackage);
         }
       } else {
-        if (packages.unnamed.has(workspacePackage.id)) {
-          const pkg = packages.unnamed.get(workspacePackage.id)!;
+        if (subRootPackages.unnamed.has(workspacePackage.id)) {
+          const subrootPackage = subRootPackages.unnamed.get(workspacePackage.id)!;
           /* istanbul ignore else */
-          if (pkg.root !== workspacePackage.root) {
+          if (subrootPackage.root !== workspacePackage.root) {
             throw new DuplicatePackageIdError(
               workspacePackage.id,
-              pkg.root,
+              subrootPackage.root,
               workspacePackage.root
             );
           }
         } else {
-          packages.unnamed.set(workspacePackage.id, workspacePackage);
+          subRootPackages.unnamed.set(workspacePackage.id, workspacePackage);
         }
       }
     }
@@ -571,62 +533,52 @@ function getWorkspacePackages(
 
 function determineCwdPackage(
   runSynchronously: false,
-  options: {
-    cwd: AbsolutePath;
-    packages: RootPackage['packages'];
-    projectRoot: AbsolutePath;
-  }
-): Promise<WorkspacePackage | undefined>;
+  cwd: AbsolutePath,
+  projectMetadata: ProjectMetadata
+): Promise<Package>;
 function determineCwdPackage(
   runSynchronously: true,
-  options: {
-    cwd: AbsolutePath;
-    packages: RootPackage['packages'];
-    projectRoot: AbsolutePath;
-  }
-): WorkspacePackage | undefined;
+  cwd: AbsolutePath,
+  projectMetadata: ProjectMetadata
+): Package;
 function determineCwdPackage(
   runSynchronously: boolean,
-  {
-    cwd,
-    packages,
-    projectRoot
-  }: {
-    cwd: AbsolutePath;
-    packages: RootPackage['packages'];
-    projectRoot: AbsolutePath;
-  }
-): Promisable<WorkspacePackage | undefined> {
-  if (!packages) {
-    return runSynchronously ? undefined : Promise.resolve(undefined);
+  cwd: AbsolutePath,
+  projectMetadata: ProjectMetadata
+): Promisable<Package> {
+  const { subRootPackages, rootPackage } = projectMetadata;
+  const { root: projectRoot } = rootPackage;
+
+  if (!subRootPackages) {
+    return runSynchronously ? rootPackage : Promise.resolve(rootPackage);
   }
 
   // ? At least the root package.json is guaranteed to exist at this point.
   const cwdPackageRoot = dirname(findUp('package.json', { cwd })!) as AbsolutePath;
-  let cwdPackage: WorkspacePackage | undefined = undefined;
 
-  if (cwdPackageRoot !== projectRoot) {
+  if (cwdPackageRoot === projectRoot) {
+    return runSynchronously ? rootPackage : Promise.resolve(rootPackage);
+  } else {
+    let cwdPackage: Package = rootPackage;
+
     if (runSynchronously) {
       const cwdPackageName = readPackageJsonAtRoot.sync({ root: cwdPackageRoot }).name;
-      finalize(cwdPackageName, packageRootToId.sync({ packageRoot: cwdPackageRoot }));
+      finalize(cwdPackageName, packageRootToId.sync(cwdPackageRoot));
       return cwdPackage;
     } else {
       return readPackageJsonAtRoot({
         root: cwdPackageRoot
       }).then(async ({ name: cwdPackageName }) => {
-        finalize(cwdPackageName, await packageRootToId({ packageRoot: cwdPackageRoot }));
+        finalize(cwdPackageName, await packageRootToId(cwdPackageRoot));
         return cwdPackage;
       });
     }
 
     function finalize(cwdPackageName: string | undefined, packageId: string) {
-      if (cwdPackageName) {
-        cwdPackage = packages!.get(cwdPackageName);
-      }
-
-      if (cwdPackage === undefined) {
-        cwdPackage = packages!.unnamed.get(packageId);
-      }
+      cwdPackage =
+        (cwdPackageName ? subRootPackages?.get(cwdPackageName) : undefined) ||
+        subRootPackages?.unnamed.get(packageId) ||
+        toss(new ProjectError(ErrorMessage.GuruMeditation()));
     }
   }
 }

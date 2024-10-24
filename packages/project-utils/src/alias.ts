@@ -303,7 +303,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
   const rootverseAliases: RawAliasMapping[] = [];
 
   const collator = new Intl.Collator(undefined, { numeric: true });
-  const projectPackagesReversed = projectMetadata.project.packages?.all.toSorted(
+  const projectPackagesReversed = projectMetadata.subRootPackages?.all.toSorted(
     ({ id: idA }, { id: idB }) => {
       // ? Natural sort using latest ES6/7 features!
       return -1 * collator.compare(idA, idB);
@@ -312,7 +312,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
 
   if (projectPackagesReversed) {
     projectPackagesReversed.forEach(function ({ id, root: packageRoot }) {
-      const relativeRoot = toRelativePath(projectMetadata.project.root, packageRoot);
+      const relativeRoot = toRelativePath(projectMetadata.rootPackage.root, packageRoot);
 
       multiverseAliases.push(
         makeRawAliasMapping(
@@ -347,7 +347,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
     // ! Order matters here due to string matching. Hence, less-specific goes !
     // ahead of more-specific.
     projectPackagesReversed.forEach(function ({ id, root: packageRoot }) {
-      const relativeRoot = toRelativePath(projectMetadata.project.root, packageRoot);
+      const relativeRoot = toRelativePath(projectMetadata.rootPackage.root, packageRoot);
 
       multiverseAliases.push(
         makeRawAliasMapping(

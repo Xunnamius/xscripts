@@ -10,10 +10,9 @@ import {
 import {
   assignResultTo,
   debug as debug_,
+  type Package,
   type ProjectFiles,
-  type ProjectMetadata,
-  type RootPackage,
-  type WorkspacePackage
+  type ProjectMetadata
 } from '#project-utils src/analyze/common.ts';
 
 import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
@@ -55,21 +54,24 @@ export type GatherProjectFilesOptions = {
       /**
        * If `true`, use `.prettierignore` to filter out returned project files.
        *
+       * Note that `.gitignore` is never used to filter the result of
+       * `gatherProjectFiles`.
+       *
        * @default true
        */
-      skipIgnored: false;
+      skipPrettierIgnored: false;
       /**
        * If `true`, completely ignore (never consider or return) files unknown
        * to git.
        *
-       * Meaningless without `skipIgnored` also being `true`.
+       * Meaningless without `skipPrettierIgnored` also being `true`.
        *
        * @default false
        */
       skipUnknown?: false;
     }
   | {
-      skipIgnored?: true;
+      skipPrettierIgnored?: true;
       skipUnknown?: boolean;
     }
 );
@@ -89,7 +91,7 @@ function gatherProjectFiles_(
   projectMetadata: ProjectMetadata,
   {
     useCached = true,
-    skipIgnored = true,
+    skipPrettierIgnored = true,
     skipUnknown = false,
     ignoreUnsupportedFeatures = false
   }: GatherProjectFilesOptions = {}
@@ -100,8 +102,9 @@ function gatherProjectFiles_(
     throw new ProjectError(ErrorMessage.DeriverAsyncConfigurationConflict());
   }
 
-  const { root: projectRoot, packages: projectPackages_ } = projectMetadata.project;
-  const projectPackages = Array.from(projectPackages_?.values() || []);
+  const { rootPackage, subRootPackages: subRootPackagesMap } = projectMetadata;
+  const subRootPackagesArray = Array.from(subRootPackagesMap?.values() || []);
+  const projectRoot = rootPackage.root;
 
   if (useCached && _internalProjectFilesCache.has(projectMetadata)) {
     cacheDebug('cache hit!');
@@ -153,7 +156,7 @@ function gatherProjectFiles_(
   async function runAsynchronously() {
     initialize();
 
-    const ignore = skipIgnored
+    const ignore = skipPrettierIgnored
       ? await deriveVirtualPrettierignoreLines({
           projectRoot,
           includeUnknownPaths: skipUnknown
@@ -184,16 +187,16 @@ function gatherProjectFiles_(
       }).then(assignResultTo(markdownFiles, 'inRoot')),
 
       Promise.all(
-        projectPackages.map(async (pkg) => {
+        subRootPackagesArray.map(async (package_) => {
           const paths = await globAsync(markdownGlob, {
             ignore,
             dot: true,
             absolute: true,
             nodir: true,
-            cwd: pkg.root
+            cwd: package_.root
           });
 
-          return [pkg.id, paths] as [string, string[]];
+          return [package_.id, paths] as [string, string[]];
         })
       )
         .then((entries) => new Map(entries))
@@ -208,16 +211,16 @@ function gatherProjectFiles_(
       }).then(assignResultTo(typescriptFiles, 'inRootSrc')),
 
       Promise.all(
-        projectPackages.map(async (pkg) => {
+        subRootPackagesArray.map(async (package_) => {
           const paths = await globAsync(typescriptGlob, {
             ignore,
             dot: true,
             absolute: true,
             nodir: true,
-            cwd: pkg.root
+            cwd: package_.root
           });
 
-          return [pkg.id, paths] as [string, string[]];
+          return [package_.id, paths] as [string, string[]];
         })
       )
         .then((entries) => new Map(entries))
@@ -234,7 +237,7 @@ function gatherProjectFiles_(
 
     initialize();
 
-    const ignore = skipIgnored
+    const ignore = skipPrettierIgnored
       ? deriveVirtualPrettierignoreLines.sync({ projectRoot })
       : [];
 
@@ -261,16 +264,16 @@ function gatherProjectFiles_(
     }) as AbsolutePath[];
 
     markdownFiles.inWorkspace = new Map(
-      projectPackages.map((pkg) => {
+      subRootPackagesArray.map((package_) => {
         const paths = globSync(markdownGlob, {
           ignore,
           dot: true,
           absolute: true,
           nodir: true,
-          cwd: pkg.root
+          cwd: package_.root
         });
 
-        return [pkg.id, paths] as [string, AbsolutePath[]];
+        return [package_.id, paths] as [string, AbsolutePath[]];
       })
     );
 
@@ -283,16 +286,16 @@ function gatherProjectFiles_(
     }) as AbsolutePath[];
 
     typescriptFiles.inWorkspaceSrc = new Map(
-      projectPackages.map((pkg) => {
+      subRootPackagesArray.map((package_) => {
         const paths = globSync(typescriptGlob, {
           ignore,
           dot: true,
           absolute: true,
           nodir: true,
-          cwd: pkg.root
+          cwd: package_.root
         });
 
-        return [pkg.id, paths] as [string, AbsolutePath[]];
+        return [package_.id, paths] as [string, AbsolutePath[]];
       })
     );
 
@@ -302,10 +305,8 @@ function gatherProjectFiles_(
   function initialize() {
     if (
       !ignoreUnsupportedFeatures &&
-      (projectMetadata.project.json.directories ||
-        projectMetadata.project.packages
-          ?.values()
-          .some(({ json: { directories } }) => directories))
+      (rootPackage.json.directories ||
+        subRootPackagesArray.some(({ json: { directories } }) => directories))
     ) {
       throw new ProjectError(
         ErrorMessage.UnsupportedFeature('the package.json "directories" field')
@@ -315,7 +316,10 @@ function gatherProjectFiles_(
     packageJsonFiles.atProjectRoot = `${projectRoot}/package.json` as AbsolutePath;
 
     packageJsonFiles.atWorkspaceRoot = new Map(
-      projectPackages.map((pkg) => [pkg.id, `${pkg.root}/package.json` as AbsolutePath])
+      subRootPackagesArray.map((package_) => [
+        package_.id,
+        `${package_.root}/package.json` as AbsolutePath
+      ])
     );
 
     packageJsonFiles.atAnyRoot = [packageJsonFiles.atProjectRoot].concat(
@@ -324,10 +328,10 @@ function gatherProjectFiles_(
   }
 
   function finalize() {
-    binFiles.atProjectRoot = resolveMainBinFile(projectMetadata.project);
+    binFiles.atProjectRoot = resolveMainBinFile(rootPackage);
 
     binFiles.atWorkspaceRoot = new Map(
-      projectPackages.map((pkg) => [pkg.id, resolveMainBinFile(pkg)])
+      subRootPackagesArray.map((package_) => [package_.id, resolveMainBinFile(package_)])
     );
 
     binFiles.atAnyRoot = [binFiles.atProjectRoot]
@@ -352,21 +356,21 @@ function gatherProjectFiles_(
     }
   }
 
-  function resolveMainBinFile(pkg: RootPackage | WorkspacePackage) {
-    const { bin } = pkg.json;
+  function resolveMainBinFile(package_: Package) {
+    const { bin } = package_.json;
     const mainBin =
       typeof bin === 'string' ? bin : Object.values(bin ?? {}).find((path) => !!path);
 
-    return mainBin ? (toAbsolutePath(pkg.root, mainBin) as AbsolutePath) : undefined;
+    return mainBin ? (toAbsolutePath(package_.root, mainBin) as AbsolutePath) : undefined;
   }
 
   function appendWorkspacesToIgnore(ignore: string[]) {
-    // ? Absolute paths in .gitignore/.prettierignore are relative to repo
+    // ? Absolute paths in .git/.prettierignore are relative to project root
     return ignore.concat('/packages');
   }
 
   function appendPackageJsonFilesToIgnore(ignore: string[]) {
-    // ? Absolute paths in .gitignore/.prettierignore are relative to repo
+    // ? Absolute paths in .git/.prettierignore are relative to project root
     return ignore.concat(
       packageJsonFiles.atAnyRoot.map((path) => '/' + toRelativePath(projectRoot, path))
     );

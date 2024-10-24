@@ -1,12 +1,10 @@
 import {
   debug as debug_,
-  type MonorepoMetadata,
+  type Package,
   type PackageBuildTargets,
-  type PolyrepoMetadata,
+  type PackageFiles,
   type ProjectFiles,
-  type ProjectMetadata,
-  type RootPackage,
-  type WorkspacePackage
+  type ProjectMetadata
 } from '#project-utils src/analyze/common.ts';
 
 import { type AbsolutePath } from '#project-utils src/fs/index.ts';
@@ -16,10 +14,7 @@ export const cacheDebug = debug_.extend('cache');
 /**
  * A mapping between project root paths and {@link ProjectMetadata} instances.
  */
-export const _internalProjectMetadataCache = new Map<
-  AbsolutePath,
-  MonorepoMetadata | PolyrepoMetadata
->();
+export const _internalProjectMetadataCache = new Map<AbsolutePath, ProjectMetadata>();
 
 /**
  * A mapping between {@link ProjectMetadata} instances and {@link ProjectFiles}
@@ -28,45 +23,39 @@ export const _internalProjectMetadataCache = new Map<
 export const _internalProjectFilesCache = new Map<ProjectMetadata, ProjectFiles>();
 
 /**
- * A mapping between {@link WorkspacePackage} instances and
- * {@link PackageBuildTargets} instances.
+ * A mapping between {@link Package} instances and {@link PackageBuildTargets}
+ * instances.
  */
-export const _internalPackageBuildTargetsCache = new Map<
-  WorkspacePackage | RootPackage,
-  PackageBuildTargets
->();
+export const _internalPackageBuildTargetsCache = new Map<Package, PackageBuildTargets>();
 
 /**
- * A mapping between {@link ProjectMetadata} instances and {@link AbsolutePath}
- * array instances.
+ * A mapping between {@link Package} instances and {@link AbsolutePath} array
+ * instances.
  */
-export const _internalPackageSrcFilesCache = new Map<
-  WorkspacePackage | RootPackage,
-  AbsolutePath[]
->();
+export const _internalPackageFilesCache = new Map<Package, PackageFiles>();
 
 /**
  * Clear one or more internal caches. Mostly useful in a testing context.
  */
 export function clearInternalCache({
-  analyzeProjectStructure = true,
   gatherProjectFiles = true,
+  gatherPackageFiles = true,
   gatherPackageBuildTargets = true,
-  gatherPackageSrcFiles = true
+  analyzeProjectStructure = true
 }: {
-  analyzeProjectStructure?: boolean;
   gatherProjectFiles?: boolean;
+  gatherPackageFiles?: boolean;
   gatherPackageBuildTargets?: boolean;
-  gatherPackageSrcFiles?: boolean;
+  analyzeProjectStructure?: boolean;
 } = {}) {
-  if (analyzeProjectStructure) {
-    cacheDebug('internal analyzeProjectStructure cache cleared');
-    _internalProjectMetadataCache.clear();
-  }
-
   if (gatherProjectFiles) {
     cacheDebug('internal gatherProjectFiles cache cleared');
     _internalProjectFilesCache.clear();
+  }
+
+  if (gatherPackageFiles) {
+    cacheDebug('internal gatherPackageFiles cache cleared');
+    _internalPackageFilesCache.clear();
   }
 
   if (gatherPackageBuildTargets) {
@@ -74,8 +63,8 @@ export function clearInternalCache({
     _internalPackageBuildTargetsCache.clear();
   }
 
-  if (gatherPackageSrcFiles) {
-    cacheDebug('internal gatherPackageSrcFiles cache cleared');
-    _internalPackageSrcFilesCache.clear();
+  if (analyzeProjectStructure) {
+    cacheDebug('internal analyzeProjectStructure cache cleared');
+    _internalProjectMetadataCache.clear();
   }
 }

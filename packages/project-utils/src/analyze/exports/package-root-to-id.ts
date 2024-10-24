@@ -5,27 +5,17 @@ import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/u
 
 import type { Promisable } from 'type-fest';
 
-/**
- * @see {@link packageRootToId}
- */
-export type PackageRootToIdOptions = {
-  /**
-   * The absolute path to the root directory of a package in a monorepo.
-   */
-  packageRoot: AbsolutePath;
-};
-
 function packageRootToId_(
   shouldRunSynchronously: false,
-  { packageRoot }: PackageRootToIdOptions
+  packageRoot: AbsolutePath
 ): Promise<string>;
 function packageRootToId_(
   shouldRunSynchronously: true,
-  { packageRoot }: PackageRootToIdOptions
+  packageRoot: AbsolutePath
 ): string;
 function packageRootToId_(
   shouldRunSynchronously: boolean,
-  { packageRoot }: PackageRootToIdOptions
+  packageRoot: AbsolutePath
 ): Promisable<string> {
   if (shouldRunSynchronously) {
     ensurePathIsAbsolute.sync({ path: packageRoot });
@@ -35,13 +25,7 @@ function packageRootToId_(
   }
 
   function toId() {
-    const rootBasename = basename(packageRoot);
-
-    return (
-      rootBasename.endsWith('/') || rootBasename.endsWith('\\')
-        ? rootBasename.slice(0, -1)
-        : rootBasename
-    ).replaceAll(/[^\da-z-]/gi, '-');
+    return basename(packageRoot).replaceAll(/[^\da-z-]/gi, '-');
   }
 }
 

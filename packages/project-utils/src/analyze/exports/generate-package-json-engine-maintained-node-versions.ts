@@ -16,6 +16,7 @@ export function generatePackageJsonEngineMaintainedNodeVersions(options?: {
    */
   format?: 'engines';
 }): string;
+
 /**
  * Returns an array of the currently maintained node versions.
  */
@@ -30,6 +31,7 @@ export function generatePackageJsonEngineMaintainedNodeVersions(options?: {
    */
   format: 'array';
 }): string[];
+
 /**
  * Returns maintained node versions in the given format.
  */
@@ -48,8 +50,8 @@ export function generatePackageJsonEngineMaintainedNodeVersions(options?: {
   return options?.format === 'array'
     ? versions
     : versions
-        .map(
-          (value, index, array) => `${index === array.length - 1 ? '>=' : '^'}${value}`
-        )
+        .map((value, index, array) => {
+          return `${index === array.length - 1 ? '>=' : '^'}${value}`;
+        })
         .join(' || ');
 }

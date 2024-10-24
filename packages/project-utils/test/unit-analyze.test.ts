@@ -1,3 +1,5 @@
+import { toss } from 'toss-expression';
+
 import { runNoRejectOnBadExit } from 'multiverse#run';
 
 import { pathToPackage } from '#project-utils src/analyze/exports/path-to-package.ts';
@@ -10,14 +12,13 @@ import {
   clearInternalCache,
   gatherImportEntriesFromFiles,
   gatherPackageBuildTargets,
-  gatherPackageSrcFiles,
+  gatherPackageFiles,
   gatherProjectFiles,
   generatePackageJsonEngineMaintainedNodeVersions,
   packageRootToId,
   ProjectAttribute,
   type PackageBuildTargets,
   type ProjectMetadata,
-  type RootPackage,
   type WorkspacePackage
 } from '#project-utils src/index.ts';
 
@@ -42,6 +43,7 @@ jest.mock('multiverse#run');
 let mockShouldReturnBrowserslistMock = false;
 
 const mockBrowserslist = asMockedFunction<typeof import('browserslist')>();
+// ? We mock this so we can control what external calls to git/npx/etc do
 const mockRunNoRejectOnBadExit = asMockedFunction(runNoRejectOnBadExit);
 
 beforeEach(() => {
@@ -114,18 +116,16 @@ describe('::packageRootToId', () => {
     it('translates a path to a package id', async () => {
       expect.hasAssertions();
 
-      expect(
-        packageRootToId.sync({ packageRoot: '/repo/path/packages/pkg-1' as AbsolutePath })
-      ).toBe('pkg-1');
+      expect(packageRootToId.sync('/repo/path/packages/pkg-1' as AbsolutePath)).toBe(
+        'pkg-1'
+      );
     });
 
     it('replaces non-alphanumeric characters with hyphens', async () => {
       expect.hasAssertions();
 
       expect(
-        packageRootToId.sync({
-          packageRoot: '/repo/path/packages/bad& pack@g3!d' as AbsolutePath
-        })
+        packageRootToId.sync('/repo/path/packages/bad& pack@g3!d' as AbsolutePath)
       ).toBe('bad--pack-g3-d');
     });
 
@@ -133,7 +133,7 @@ describe('::packageRootToId', () => {
       expect.hasAssertions();
 
       expect(() =>
-        packageRootToId.sync({ packageRoot: 'repo/path/packages/pkg-1' as AbsolutePath })
+        packageRootToId.sync('repo/path/packages/pkg-1' as AbsolutePath)
       ).toThrow(ErrorMessage.PathIsNotAbsolute('repo/path/packages/pkg-1'));
     });
   });
@@ -143,7 +143,7 @@ describe('::packageRootToId', () => {
       expect.hasAssertions();
 
       await expect(
-        packageRootToId({ packageRoot: '/repo/path/packages/pkg-1' as AbsolutePath })
+        packageRootToId('/repo/path/packages/pkg-1' as AbsolutePath)
       ).resolves.toBe('pkg-1');
     });
 
@@ -151,9 +151,7 @@ describe('::packageRootToId', () => {
       expect.hasAssertions();
 
       await expect(
-        packageRootToId({
-          packageRoot: '/repo/path/packages/bad& pack@g3!d' as AbsolutePath
-        })
+        packageRootToId('/repo/path/packages/bad& pack@g3!d' as AbsolutePath)
       ).resolves.toBe('bad--pack-g3-d');
     });
 
@@ -161,7 +159,7 @@ describe('::packageRootToId', () => {
       expect.hasAssertions();
 
       await expect(
-        packageRootToId({ packageRoot: 'repo/path/packages/pkg-1' as AbsolutePath })
+        packageRootToId('repo/path/packages/pkg-1' as AbsolutePath)
       ).rejects.toThrow(ErrorMessage.PathIsNotAbsolute('repo/path/packages/pkg-1'));
     });
   });
@@ -179,7 +177,7 @@ describe('::pathToPackage', () => {
           path: fixtures.goodPolyrepo.root,
           projectMetadata
         })
-      ).toStrictEqual(projectMetadata.project);
+      ).toStrictEqual(projectMetadata.rootPackage);
 
       expect(
         pathToPackage.sync({
@@ -187,7 +185,7 @@ describe('::pathToPackage', () => {
             '/some/path/to/somewhere.ts') as AbsolutePath,
           projectMetadata
         })
-      ).toStrictEqual(projectMetadata.project);
+      ).toStrictEqual(projectMetadata.rootPackage);
     });
 
     it('translates a path to the root package in a hybridrepo', () => {
@@ -200,64 +198,64 @@ describe('::pathToPackage', () => {
           path: fixtures.goodHybridrepo.root,
           projectMetadata
         })
-      ).toStrictEqual(projectMetadata.project);
+      ).toStrictEqual(projectMetadata.rootPackage);
 
       expect(
         pathToPackage.sync({
           path: (fixtures.goodHybridrepo.root + '/package.json') as AbsolutePath,
           projectMetadata
         })
-      ).toStrictEqual(projectMetadata.project);
+      ).toStrictEqual(projectMetadata.rootPackage);
     });
 
     it('translates a path to a sub-root package in a monorepo', () => {
       expect.hasAssertions();
 
       const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
-      const firstPkg = fixtures.goodHybridrepo.namedPkgMapData[0][1];
-      const secondPkg = fixtures.goodHybridrepo.unnamedPkgMapData[0][1];
+      const firstPackage = fixtures.goodHybridrepo.namedPackageMapData[0][1];
+      const secondPackage = fixtures.goodHybridrepo.unnamedPackageMapData[0][1];
 
       expect(
         pathToPackage.sync({
-          path: firstPkg.root,
+          path: firstPackage.root,
           projectMetadata
         })
-      ).toStrictEqual(firstPkg);
+      ).toStrictEqual(firstPackage);
 
       expect(
         pathToPackage.sync({
-          path: (firstPkg.root + '/package.json') as AbsolutePath,
+          path: (firstPackage.root + '/package.json') as AbsolutePath,
           projectMetadata
         })
-      ).toStrictEqual(firstPkg);
+      ).toStrictEqual(firstPackage);
 
       expect(
         pathToPackage.sync({
-          path: (firstPkg.root + '/some/path/to/somewhere.ts') as AbsolutePath,
+          path: (firstPackage.root + '/some/path/to/somewhere.ts') as AbsolutePath,
           projectMetadata
         })
-      ).toStrictEqual(firstPkg);
+      ).toStrictEqual(firstPackage);
 
       expect(
         pathToPackage.sync({
-          path: secondPkg.root,
+          path: secondPackage.root,
           projectMetadata
         })
-      ).toStrictEqual(secondPkg);
+      ).toStrictEqual(secondPackage);
 
       expect(
         pathToPackage.sync({
-          path: (secondPkg.root + '/package.json') as AbsolutePath,
+          path: (secondPackage.root + '/package.json') as AbsolutePath,
           projectMetadata
         })
-      ).toStrictEqual(secondPkg);
+      ).toStrictEqual(secondPackage);
 
       expect(
         pathToPackage.sync({
-          path: (secondPkg.root + '/some/path/to/somewhere.ts') as AbsolutePath,
+          path: (secondPackage.root + '/some/path/to/somewhere.ts') as AbsolutePath,
           projectMetadata
         })
-      ).toStrictEqual(secondPkg);
+      ).toStrictEqual(secondPackage);
     });
 
     it('throws if path is not absolute', () => {
@@ -299,7 +297,7 @@ describe('::pathToPackage', () => {
           path: fixtures.goodPolyrepo.root,
           projectMetadata
         })
-      ).resolves.toStrictEqual(projectMetadata.project);
+      ).resolves.toStrictEqual(projectMetadata.rootPackage);
 
       await expect(
         pathToPackage({
@@ -307,7 +305,7 @@ describe('::pathToPackage', () => {
             '/some/path/to/somewhere.ts') as AbsolutePath,
           projectMetadata
         })
-      ).resolves.toStrictEqual(projectMetadata.project);
+      ).resolves.toStrictEqual(projectMetadata.rootPackage);
     });
 
     it('translates a path to the root package in a hybridrepo', async () => {
@@ -320,64 +318,64 @@ describe('::pathToPackage', () => {
           path: fixtures.goodHybridrepo.root,
           projectMetadata
         })
-      ).resolves.toStrictEqual(projectMetadata.project);
+      ).resolves.toStrictEqual(projectMetadata.rootPackage);
 
       await expect(
         pathToPackage({
           path: (fixtures.goodHybridrepo.root + '/package.json') as AbsolutePath,
           projectMetadata
         })
-      ).resolves.toStrictEqual(projectMetadata.project);
+      ).resolves.toStrictEqual(projectMetadata.rootPackage);
     });
 
     it('translates a path to a sub-root package in a monorepo', async () => {
       expect.hasAssertions();
 
       const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
-      const firstPkg = fixtures.goodHybridrepo.namedPkgMapData[0][1];
-      const secondPkg = fixtures.goodHybridrepo.unnamedPkgMapData[0][1];
+      const firstPackage = fixtures.goodHybridrepo.namedPackageMapData[0][1];
+      const secondPackage = fixtures.goodHybridrepo.unnamedPackageMapData[0][1];
 
       await expect(
         pathToPackage({
-          path: firstPkg.root,
+          path: firstPackage.root,
           projectMetadata
         })
-      ).resolves.toStrictEqual(firstPkg);
+      ).resolves.toStrictEqual(firstPackage);
 
       await expect(
         pathToPackage({
-          path: (firstPkg.root + '/package.json') as AbsolutePath,
+          path: (firstPackage.root + '/package.json') as AbsolutePath,
           projectMetadata
         })
-      ).resolves.toStrictEqual(firstPkg);
+      ).resolves.toStrictEqual(firstPackage);
 
       await expect(
         pathToPackage({
-          path: (firstPkg.root + '/some/path/to/somewhere.ts') as AbsolutePath,
+          path: (firstPackage.root + '/some/path/to/somewhere.ts') as AbsolutePath,
           projectMetadata
         })
-      ).resolves.toStrictEqual(firstPkg);
+      ).resolves.toStrictEqual(firstPackage);
 
       await expect(
         pathToPackage({
-          path: secondPkg.root,
+          path: secondPackage.root,
           projectMetadata
         })
-      ).resolves.toStrictEqual(secondPkg);
+      ).resolves.toStrictEqual(secondPackage);
 
       await expect(
         pathToPackage({
-          path: (secondPkg.root + '/package.json') as AbsolutePath,
+          path: (secondPackage.root + '/package.json') as AbsolutePath,
           projectMetadata
         })
-      ).resolves.toStrictEqual(secondPkg);
+      ).resolves.toStrictEqual(secondPackage);
 
       await expect(
         pathToPackage({
-          path: (secondPkg.root + '/some/path/to/somewhere.ts') as AbsolutePath,
+          path: (secondPackage.root + '/some/path/to/somewhere.ts') as AbsolutePath,
           projectMetadata
         })
-      ).resolves.toStrictEqual(secondPkg);
+      ).resolves.toStrictEqual(secondPackage);
     });
 
     it('throws if path is not absolute', async () => {
@@ -405,1058 +403,6 @@ describe('::pathToPackage', () => {
           projectMetadata
         })
       ).rejects.toThrow(ErrorMessage.PathOutsideRoot('/'));
-    });
-  });
-});
-
-describe('::analyzeProjectStructure', () => {
-  describe('<synchronous>', () => {
-    it('accepts workspaces.packages array in package.json', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepoWeirdYarn.root
-        })
-      ).not.toThrow();
-    });
-
-    it('returns expected metadata when cwd is polyrepo project root', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodPolyrepo.root
-      });
-
-      expect(result.package).toBeUndefined();
-      expect(result.project.packages).toBeUndefined();
-
-      expect(result.project.attributes).toStrictEqual(fixtures.goodPolyrepo.attributes);
-    });
-
-    it('returns expected metadata when cwd is monorepo project root', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepo.root
-      });
-
-      expect(result.package).toBeUndefined();
-      expect(result.project.attributes).toStrictEqual(fixtures.goodMonorepo.attributes);
-
-      checkForExpectedPackages(result.project.packages, 'goodMonorepo');
-    });
-
-    it('returns expected metadata when cwd is hybridrepo project root', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodHybridrepo.root
-      });
-
-      expect(result.package).toBeUndefined();
-      expect(result.project.attributes).toStrictEqual(fixtures.goodHybridrepo.attributes);
-
-      checkForExpectedPackages(result.project.packages, 'goodHybridrepo');
-    });
-
-    it('returns expected project.attributes and project.packages[].attributes for various Next.js projects', async () => {
-      expect.hasAssertions();
-
-      {
-        const result = analyzeProjectStructure.sync({
-          cwd: fixtures.badMonorepoNextjsProject.root
-        });
-
-        expect(result.project.attributes).toStrictEqual(
-          fixtures.badMonorepoNextjsProject.attributes
-        );
-
-        checkForExpectedPackages(result.project.packages, 'badMonorepoNextjsProject');
-      }
-
-      {
-        const result = analyzeProjectStructure.sync({
-          cwd: fixtures.badPolyrepoNextjsProject.root
-        });
-
-        expect(result.project.attributes).toStrictEqual(
-          fixtures.badPolyrepoNextjsProject.attributes
-        );
-
-        expect(result.project.packages).toBeUndefined();
-      }
-
-      {
-        const result = analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepoNextjsProject.root
-        });
-
-        expect(result.project.attributes).toStrictEqual(
-          fixtures.goodMonorepoNextjsProject.attributes
-        );
-
-        checkForExpectedPackages(result.project.packages, 'goodMonorepoNextjsProject');
-      }
-
-      {
-        const result = analyzeProjectStructure.sync({
-          cwd: fixtures.goodPolyrepoNextjsProject.root
-        });
-
-        expect(result.project.attributes).toStrictEqual(
-          fixtures.goodPolyrepoNextjsProject.attributes
-        );
-
-        expect(result.project.packages).toBeUndefined();
-      }
-    });
-
-    it('returns expected project.packages and package when cwd is monorepo root with the same name as a sub-root', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepoWeirdSameNames.root
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoWeirdSameNames');
-    });
-
-    it('returns expected project.packages and package when cwd is a sub-root', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepo.namedPkgMapData[0][1].root
-      });
-
-      expect(result.package).toStrictEqual(fixtures.goodMonorepo.namedPkgMapData[0][1]);
-      checkForExpectedPackages(result.project.packages, 'goodMonorepo');
-    });
-
-    it('returns expected project.packages and package when cwd is under the project root but not under a sub-root', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: `${fixtures.goodMonorepo.namedPkgMapData[0][1].root}/..` as AbsolutePath
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepo');
-    });
-
-    it('returns expected project.packages and package when cwd is somewhere under a sub-root', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: `${fixtures.goodMonorepo.namedPkgMapData[0][1].root}/src` as AbsolutePath
-      });
-
-      expect(result.package).toStrictEqual(fixtures.goodMonorepo.namedPkgMapData[0][1]);
-      checkForExpectedPackages(result.project.packages, 'goodMonorepo');
-    });
-
-    it('works with simple workspace cwd', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: `${fixtures.goodMonorepoSimplePaths.namedPkgMapData[0][1].root}/src` as AbsolutePath
-      });
-
-      expect(result.package).toStrictEqual(
-        fixtures.goodMonorepoSimplePaths.namedPkgMapData[0][1]
-      );
-
-      expect(result.project.attributes).toStrictEqual(
-        fixtures.goodMonorepoSimplePaths.attributes
-      );
-
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoSimplePaths');
-    });
-
-    it('works with workspace cwd using Windows-style path separators', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepoWindows.namedPkgMapData[0][1].root
-      });
-
-      expect(result.package).toStrictEqual(
-        fixtures.goodMonorepoWindows.namedPkgMapData[0][1]
-      );
-
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoWindows');
-    });
-
-    it('works with a cwd pointing to a subdirectory of a package root', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: `${fixtures.goodMonorepoWeirdAbsolute.namedPkgMapData[0][1].root}/..` as AbsolutePath
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoWeirdAbsolute');
-    });
-
-    it('normalizes workspace cwd to ignore non-directories', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepoWeirdBoneless.root
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoWeirdBoneless');
-    });
-
-    it('does not return duplicates when dealing with overlapping workspace glob paths, some negated', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepoWeirdOverlap.root
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoWeirdOverlap');
-    });
-
-    it('works with nthly-negated workspace paths where order matters', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepoNegatedPaths.root
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoNegatedPaths');
-    });
-
-    test('matching workspace pseudo-roots (without a package.json) are classified "broken"', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.badMonorepoNonPackageDir.root
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'badMonorepoNonPackageDir');
-    });
-
-    it('uses process.cwd when given no cwd parameter', async () => {
-      expect.hasAssertions();
-      expect(() => analyzeProjectStructure.sync()).toThrow(
-        ErrorMessage.NotAGitRepositoryError()
-      );
-    });
-
-    it('correctly determines repository type', async () => {
-      expect.hasAssertions();
-
-      expect(analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root }).type).toBe(
-        ProjectAttribute.Monorepo
-      );
-
-      expect(analyzeProjectStructure.sync({ cwd: fixtures.goodPolyrepo.root }).type).toBe(
-        ProjectAttribute.Polyrepo
-      );
-    });
-
-    test('project.root and project.json are correct regardless of cwd', async () => {
-      expect.hasAssertions();
-
-      const expectedJsonSpec = patchReadPackageJsonAtRoot(
-        {
-          [fixtures.goodMonorepo.root]: {
-            name: 'good-monorepo-package-json-name',
-            workspaces: ['packages/*']
-          },
-          [fixtures.goodPolyrepo.root]: {
-            name: 'good-polyrepo-package-json-name'
-          }
-        },
-        { replace: true }
-      );
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepo.namedPkgMapData[0][1].root
-        }).project
-      ).toStrictEqual({
-        root: fixtures.goodMonorepo.root,
-        json: expectedJsonSpec[fixtures.goodMonorepo.root],
-        attributes: fixtures.goodMonorepo.attributes,
-        packages: expect.any(Map)
-      });
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: `${fixtures.goodMonorepo.namedPkgMapData[0][1].root}/..` as AbsolutePath
-        }).project
-      ).toStrictEqual({
-        root: fixtures.goodMonorepo.root,
-        json: expectedJsonSpec[fixtures.goodMonorepo.root],
-        attributes: fixtures.goodMonorepo.attributes,
-        packages: expect.any(Map)
-      });
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: `${fixtures.goodMonorepo.namedPkgMapData[0][1].root}/src` as AbsolutePath
-        }).project
-      ).toStrictEqual({
-        root: fixtures.goodMonorepo.root,
-        json: expectedJsonSpec[fixtures.goodMonorepo.root],
-        attributes: fixtures.goodMonorepo.attributes,
-        packages: expect.any(Map)
-      });
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodPolyrepo.root
-        }).project
-      ).toStrictEqual({
-        root: fixtures.goodPolyrepo.root,
-        json: expectedJsonSpec[fixtures.goodPolyrepo.root],
-        attributes: fixtures.goodPolyrepo.attributes,
-        packages: undefined
-      });
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: `${fixtures.goodPolyrepo.root}/src` as AbsolutePath
-        }).project
-      ).toStrictEqual({
-        root: fixtures.goodPolyrepo.root,
-        json: expectedJsonSpec[fixtures.goodPolyrepo.root],
-        attributes: fixtures.goodPolyrepo.attributes,
-        packages: undefined
-      });
-    });
-
-    test('project.packages is populated with correct WorkspacePackage objects in monorepo', async () => {
-      expect.hasAssertions();
-
-      checkForExpectedPackages(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepo.root
-        }).project.packages,
-        'goodMonorepo'
-      );
-    });
-
-    test('project.packages is undefined when in polyrepo', async () => {
-      expect.hasAssertions();
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodPolyrepo.root
-        }).project.packages
-      ).toBeUndefined();
-    });
-
-    test('package is undefined when in polyrepo or at project root in monorepo', async () => {
-      expect.hasAssertions();
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodPolyrepo.root
-        }).package
-      ).toBeUndefined();
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepo.root
-        }).package
-      ).toBeUndefined();
-    });
-
-    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodPolyrepo.root
-      });
-
-      expect(result.project).not.toBe(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodPolyrepo.root,
-          useCached: false
-        }).project
-      );
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodPolyrepo.root
-        }).project
-      ).toBe(result.project);
-    });
-
-    it('package is not undefined when returning project metadata from internal cache and cwd changes from monorepo root to a sub-root of the same monorepo', async () => {
-      expect.hasAssertions();
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepo.root
-        }).package
-      ).toBeUndefined();
-
-      expect(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepo.namedPkgMapData[0][1].root
-        }).package
-      ).toBeDefined();
-    });
-
-    test('project.packages[package.json.name] strictly equals package when expected', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepo.namedPkgMapData[0][1].root
-      });
-
-      expect(result.project.packages?.get(result.package!.json.name!)).toBe(
-        result.package
-      );
-
-      expect(!!result.package).toBeTrue();
-    });
-
-    test('project.packages.unnamed[package.id] strictly equals package when expected', async () => {
-      expect.hasAssertions();
-
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepo.unnamedPkgMapData[0][1].root
-      });
-
-      expect(result.project.packages?.unnamed.get(result.package!.id)).toBe(
-        result.package
-      );
-
-      expect(!!result.package).toBeTrue();
-    });
-
-    it('throws when passed non-existent projectRoot', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        analyzeProjectStructure.sync({ cwd: '/fake/root' as AbsolutePath })
-      ).toThrow(ErrorMessage.NotAGitRepositoryError());
-    });
-
-    it('throws when failing to find a .git directory', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        analyzeProjectStructure.sync({ cwd: '/does/not/exist' as AbsolutePath })
-      ).toThrow(ErrorMessage.NotAGitRepositoryError());
-    });
-
-    it('throws when passed a relative cwd', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        analyzeProjectStructure.sync({ cwd: 'does/not/exist' as AbsolutePath })
-      ).toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist'));
-    });
-
-    it('throws when a project has conflicting cli and next attributes', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        analyzeProjectStructure.sync({
-          cwd: fixtures.badPolyrepoConflictingAttributes.root
-        })
-      ).toThrow(ErrorMessage.CannotBeCliAndNextJs());
-    });
-
-    it('throws when a project has a bad "type" field in package.json', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        analyzeProjectStructure.sync({ cwd: fixtures.badPolyrepoBadType.root })
-      ).toThrow(ErrorMessage.BadProjectTypeInPackageJson());
-    });
-
-    it('throws when two packages have the same "name" field in package.json', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        analyzeProjectStructure.sync({
-          cwd: fixtures.badMonorepoDuplicateName.root
-        })
-      ).toThrow(
-        ErrorMessage.DuplicatePackageName(
-          'pkg',
-          `${fixtures.badMonorepoDuplicateName.root}/pkg/pkg-1`,
-          `${fixtures.badMonorepoDuplicateName.root}/pkg/pkg-2`
-        )
-      );
-    });
-
-    it('throws when two unnamed packages resolve to the same package-id', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        analyzeProjectStructure.sync({
-          cwd: fixtures.badMonorepoDuplicateIdUnnamed.root
-        })
-      ).toThrow(
-        ErrorMessage.DuplicatePackageId(
-          'pkg-1',
-          `${fixtures.badMonorepoDuplicateIdUnnamed.root}/packages-1/pkg-1`,
-          `${fixtures.badMonorepoDuplicateIdUnnamed.root}/packages-2/pkg-1`
-        )
-      );
-    });
-
-    it('throws when two differently-named packages resolve to the same package-id', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        analyzeProjectStructure.sync({ cwd: fixtures.badMonorepoDuplicateIdNamed.root })
-      ).toThrow(
-        ErrorMessage.DuplicatePackageId(
-          'pkg-1',
-          `${fixtures.badMonorepoDuplicateIdNamed.root}/packages-2/pkg-1`,
-          `${fixtures.badMonorepoDuplicateIdNamed.root}/packages-1/pkg-1`
-        )
-      );
-    });
-  });
-
-  describe('<asynchronous>', () => {
-    it('accepts workspaces.packages array in package.json', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        analyzeProjectStructure({
-          cwd: fixtures.goodMonorepoWeirdYarn.root
-        })
-      ).resolves.toBeDefined();
-    });
-
-    it('returns expected metadata when cwd is polyrepo project root', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodPolyrepo.root
-      });
-
-      expect(result.package).toBeUndefined();
-      expect(result.project.packages).toBeUndefined();
-
-      expect(result.project.attributes).toStrictEqual(fixtures.goodPolyrepo.attributes);
-    });
-
-    it('returns expected metadata when cwd is monorepo project root', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepo.root
-      });
-
-      expect(result.package).toBeUndefined();
-      expect(result.project.attributes).toStrictEqual(fixtures.goodMonorepo.attributes);
-
-      checkForExpectedPackages(result.project.packages, 'goodMonorepo');
-    });
-
-    it('returns expected metadata when cwd is hybridrepo project root', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodHybridrepo.root
-      });
-
-      expect(result.package).toBeUndefined();
-      expect(result.project.attributes).toStrictEqual(fixtures.goodHybridrepo.attributes);
-
-      checkForExpectedPackages(result.project.packages, 'goodHybridrepo');
-    });
-
-    it('returns expected project.attributes and project.packages[].attributes for various Next.js projects', async () => {
-      expect.hasAssertions();
-
-      {
-        const result = await analyzeProjectStructure({
-          cwd: fixtures.badMonorepoNextjsProject.root
-        });
-
-        expect(result.project.attributes).toStrictEqual(
-          fixtures.badMonorepoNextjsProject.attributes
-        );
-
-        checkForExpectedPackages(result.project.packages, 'badMonorepoNextjsProject');
-      }
-
-      {
-        const result = await analyzeProjectStructure({
-          cwd: fixtures.badPolyrepoNextjsProject.root
-        });
-
-        expect(result.project.attributes).toStrictEqual(
-          fixtures.badPolyrepoNextjsProject.attributes
-        );
-
-        expect(result.project.packages).toBeUndefined();
-      }
-
-      {
-        const result = await analyzeProjectStructure({
-          cwd: fixtures.goodMonorepoNextjsProject.root
-        });
-
-        expect(result.project.attributes).toStrictEqual(
-          fixtures.goodMonorepoNextjsProject.attributes
-        );
-
-        checkForExpectedPackages(result.project.packages, 'goodMonorepoNextjsProject');
-      }
-
-      {
-        const result = await analyzeProjectStructure({
-          cwd: fixtures.goodPolyrepoNextjsProject.root
-        });
-
-        expect(result.project.attributes).toStrictEqual(
-          fixtures.goodPolyrepoNextjsProject.attributes
-        );
-
-        expect(result.project.packages).toBeUndefined();
-      }
-    });
-
-    it('returns expected project.packages and package when cwd is monorepo root with the same name as a sub-root', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepoWeirdSameNames.root
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoWeirdSameNames');
-    });
-
-    it('returns expected project.packages and package when cwd is a sub-root', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepo.namedPkgMapData[0][1].root
-      });
-
-      expect(result.package).toStrictEqual(fixtures.goodMonorepo.namedPkgMapData[0][1]);
-      checkForExpectedPackages(result.project.packages, 'goodMonorepo');
-    });
-
-    it('returns expected project.packages and package when cwd is under the project root but not under a sub-root', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: `${fixtures.goodMonorepo.namedPkgMapData[0][1].root}/..` as AbsolutePath
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepo');
-    });
-
-    it('returns expected project.packages and package when cwd is somewhere under a sub-root', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: `${fixtures.goodMonorepo.namedPkgMapData[0][1].root}/src` as AbsolutePath
-      });
-
-      expect(result.package).toStrictEqual(fixtures.goodMonorepo.namedPkgMapData[0][1]);
-      checkForExpectedPackages(result.project.packages, 'goodMonorepo');
-    });
-
-    it('works with simple workspace cwd', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: `${fixtures.goodMonorepoSimplePaths.namedPkgMapData[0][1].root}/src` as AbsolutePath
-      });
-
-      expect(result.package).toStrictEqual(
-        fixtures.goodMonorepoSimplePaths.namedPkgMapData[0][1]
-      );
-
-      expect(result.project.attributes).toStrictEqual(
-        fixtures.goodMonorepoSimplePaths.attributes
-      );
-
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoSimplePaths');
-    });
-
-    it('works with workspace cwd using Windows-style path separators', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepoWindows.namedPkgMapData[0][1].root
-      });
-
-      expect(result.package).toStrictEqual(
-        fixtures.goodMonorepoWindows.namedPkgMapData[0][1]
-      );
-
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoWindows');
-    });
-
-    it('works with a cwd pointing to a subdirectory of a package root', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: `${fixtures.goodMonorepoWeirdAbsolute.namedPkgMapData[0][1].root}/..` as AbsolutePath
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoWeirdAbsolute');
-    });
-
-    it('normalizes workspace cwd to ignore non-directories', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepoWeirdBoneless.root
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoWeirdBoneless');
-    });
-
-    it('does not return duplicates when dealing with overlapping workspace glob paths, some negated', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepoWeirdOverlap.root
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoWeirdOverlap');
-    });
-
-    it('works with nthly-negated workspace paths where order matters', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepoNegatedPaths.root
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'goodMonorepoNegatedPaths');
-    });
-
-    test('matching workspace pseudo-roots (without a package.json) are classified "broken"', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.badMonorepoNonPackageDir.root
-      });
-
-      expect(result.package).toBeUndefined();
-      checkForExpectedPackages(result.project.packages, 'badMonorepoNonPackageDir');
-    });
-
-    it('uses process.cwd when given no cwd parameter', async () => {
-      expect.hasAssertions();
-      await expect(analyzeProjectStructure()).rejects.toThrow(
-        ErrorMessage.NotAGitRepositoryError()
-      );
-    });
-
-    it('correctly determines repository type', async () => {
-      expect.hasAssertions();
-
-      expect(
-        (await analyzeProjectStructure({ cwd: fixtures.goodMonorepo.root })).type
-      ).toBe(ProjectAttribute.Monorepo);
-
-      expect(
-        (await analyzeProjectStructure({ cwd: fixtures.goodPolyrepo.root })).type
-      ).toBe(ProjectAttribute.Polyrepo);
-    });
-
-    test('project.root and project.json are correct regardless of cwd', async () => {
-      expect.hasAssertions();
-
-      const expectedJsonSpec = patchReadPackageJsonAtRoot(
-        {
-          [fixtures.goodMonorepo.root]: {
-            name: 'good-monorepo-package-json-name',
-            workspaces: ['packages/*']
-          },
-          [fixtures.goodPolyrepo.root]: {
-            name: 'good-polyrepo-package-json-name'
-          }
-        },
-        { replace: true }
-      );
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: fixtures.goodMonorepo.namedPkgMapData[0][1].root
-          })
-        ).project
-      ).toStrictEqual({
-        root: fixtures.goodMonorepo.root,
-        json: expectedJsonSpec[fixtures.goodMonorepo.root],
-        attributes: fixtures.goodMonorepo.attributes,
-        packages: expect.any(Map)
-      });
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: `${fixtures.goodMonorepo.namedPkgMapData[0][1].root}/..` as AbsolutePath
-          })
-        ).project
-      ).toStrictEqual({
-        root: fixtures.goodMonorepo.root,
-        json: expectedJsonSpec[fixtures.goodMonorepo.root],
-        attributes: fixtures.goodMonorepo.attributes,
-        packages: expect.any(Map)
-      });
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: `${fixtures.goodMonorepo.namedPkgMapData[0][1].root}/src` as AbsolutePath
-          })
-        ).project
-      ).toStrictEqual({
-        root: fixtures.goodMonorepo.root,
-        json: expectedJsonSpec[fixtures.goodMonorepo.root],
-        attributes: fixtures.goodMonorepo.attributes,
-        packages: expect.any(Map)
-      });
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: fixtures.goodPolyrepo.root
-          })
-        ).project
-      ).toStrictEqual({
-        root: fixtures.goodPolyrepo.root,
-        json: expectedJsonSpec[fixtures.goodPolyrepo.root],
-        attributes: fixtures.goodPolyrepo.attributes,
-        packages: undefined
-      });
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: `${fixtures.goodPolyrepo.root}/src` as AbsolutePath
-          })
-        ).project
-      ).toStrictEqual({
-        root: fixtures.goodPolyrepo.root,
-        json: expectedJsonSpec[fixtures.goodPolyrepo.root],
-        attributes: fixtures.goodPolyrepo.attributes,
-        packages: undefined
-      });
-    });
-
-    test('project.packages is populated with correct WorkspacePackage objects in monorepo', async () => {
-      expect.hasAssertions();
-
-      checkForExpectedPackages(
-        (
-          await analyzeProjectStructure({
-            cwd: fixtures.goodMonorepo.root
-          })
-        ).project.packages,
-        'goodMonorepo'
-      );
-    });
-
-    test('project.packages is undefined when in polyrepo', async () => {
-      expect.hasAssertions();
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: fixtures.goodPolyrepo.root
-          })
-        ).project.packages
-      ).toBeUndefined();
-    });
-
-    test('package is undefined when in polyrepo or at project root in monorepo', async () => {
-      expect.hasAssertions();
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: fixtures.goodPolyrepo.root
-          })
-        ).package
-      ).toBeUndefined();
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: fixtures.goodMonorepo.root
-          })
-        ).package
-      ).toBeUndefined();
-    });
-
-    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodPolyrepo.root
-      });
-
-      expect(result.project).not.toBe(
-        (
-          await analyzeProjectStructure({
-            cwd: fixtures.goodPolyrepo.root,
-            useCached: false
-          })
-        ).project
-      );
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: fixtures.goodPolyrepo.root
-          })
-        ).project
-      ).toBe(result.project);
-    });
-
-    it('package is not undefined when returning project metadata from internal cache and cwd changes from monorepo root to a sub-root of the same monorepo', async () => {
-      expect.hasAssertions();
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: fixtures.goodMonorepo.root
-          })
-        ).package
-      ).toBeUndefined();
-
-      expect(
-        (
-          await analyzeProjectStructure({
-            cwd: fixtures.goodMonorepo.namedPkgMapData[0][1].root
-          })
-        ).package
-      ).toBeDefined();
-    });
-
-    test('project.packages[package.json.name] strictly equals package when expected', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepo.namedPkgMapData[0][1].root
-      });
-
-      expect(result.project.packages?.get(result.package!.json.name!)).toBe(
-        result.package
-      );
-
-      expect(!!result.package).toBeTrue();
-    });
-
-    test('project.packages.unnamed[package.id] strictly equals package when expected', async () => {
-      expect.hasAssertions();
-
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepo.unnamedPkgMapData[0][1].root
-      });
-
-      expect(result.project.packages?.unnamed.get(result.package!.id)).toBe(
-        result.package
-      );
-
-      expect(!!result.package).toBeTrue();
-    });
-
-    it('throws when passed non-existent projectRoot', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        analyzeProjectStructure({ cwd: '/fake/root' as AbsolutePath })
-      ).rejects.toThrow(ErrorMessage.NotAGitRepositoryError());
-    });
-
-    it('throws when failing to find a .git directory', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        analyzeProjectStructure({ cwd: '/does/not/exist' as AbsolutePath })
-      ).rejects.toThrow(ErrorMessage.NotAGitRepositoryError());
-    });
-
-    it('throws when passed a relative cwd', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        analyzeProjectStructure({ cwd: 'does/not/exist' as AbsolutePath })
-      ).rejects.toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist'));
-    });
-
-    it('throws when a project has conflicting cli and next attributes', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        analyzeProjectStructure({
-          cwd: fixtures.badPolyrepoConflictingAttributes.root
-        })
-      ).rejects.toThrow(ErrorMessage.CannotBeCliAndNextJs());
-    });
-
-    it('throws when a project has a bad "type" field in package.json', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        analyzeProjectStructure({ cwd: fixtures.badPolyrepoBadType.root })
-      ).rejects.toThrow(ErrorMessage.BadProjectTypeInPackageJson());
-    });
-
-    it('throws when two packages have the same "name" field in package.json', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        analyzeProjectStructure({
-          cwd: fixtures.badMonorepoDuplicateName.root
-        })
-      ).rejects.toThrow(ErrorMessage.DuplicatePackageName('pkg', '', '').trim());
-    });
-
-    it('throws when two unnamed packages resolve to the same package-id', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        analyzeProjectStructure({
-          cwd: fixtures.badMonorepoDuplicateIdUnnamed.root
-        })
-      ).rejects.toThrow(
-        ErrorMessage.DuplicatePackageId(
-          'pkg-1',
-          `${fixtures.badMonorepoDuplicateIdUnnamed.root}/packages-1/pkg-1`,
-          `${fixtures.badMonorepoDuplicateIdUnnamed.root}/packages-2/pkg-1`
-        )
-      );
-    });
-
-    it('throws when two differently-named packages resolve to the same package-id', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        analyzeProjectStructure({ cwd: fixtures.badMonorepoDuplicateIdNamed.root })
-      ).rejects.toThrow(
-        ErrorMessage.DuplicatePackageId(
-          'pkg-1',
-          `${fixtures.badMonorepoDuplicateIdNamed.root}/packages-2/pkg-1`,
-          `${fixtures.badMonorepoDuplicateIdNamed.root}/packages-1/pkg-1`
-        )
-      );
     });
   });
 });
@@ -1602,13 +548,14 @@ describe('::gatherProjectFiles', () => {
         },
         markdownFiles: {
           all: [
+            `${root}/.git-ignored/nope.md`,
             `${root}/packages/cli/README.md`,
             `${root}/packages/private/src/markdown/1.md`,
             `${root}/packages/private/src/markdown/2.md`,
             `${root}/packages/private/src/markdown/3.md`,
             `${root}/packages/webpack/README.md`
           ],
-          inRoot: [],
+          inRoot: [`${root}/.git-ignored/nope.md`],
           inWorkspace: new Map([
             ['cli', [`${root}/packages/cli/README.md`]],
             [
@@ -1680,14 +627,14 @@ describe('::gatherProjectFiles', () => {
       expect(gatherProjectFiles.sync(dummyMetadata)).toBe(projectFiles);
     });
 
-    it('does not ignore files in prettier when "skipIgnored" is false', () => {
+    it('does not ignore files in prettier when "skipPrettierIgnored" is false', () => {
       expect.hasAssertions();
 
       const root = fixtures.goodPolyrepo.root;
 
       expect(
         gatherProjectFiles.sync(fixtureToProjectMetadata('goodPolyrepo'), {
-          skipIgnored: false
+          skipPrettierIgnored: false
         })
       ).toStrictEqual({
         mainBinFiles: {
@@ -1754,51 +701,51 @@ describe('::gatherProjectFiles', () => {
 
       expect(() =>
         gatherProjectFiles.sync({
-          project: {
+          rootPackage: {
             root: '/fake',
-            packages: undefined,
             json: { directories: { bin: 'bad' } }
-          }
+          },
+          subRootPackages: undefined
         } as ProjectMetadata)
       ).toThrow(ErrorMessage.UnsupportedFeature(''));
 
       expect(() =>
         gatherProjectFiles.sync({
-          project: {
+          rootPackage: {
             root: '/fake',
-            packages: new Map([
-              [
-                'id',
-                {
-                  root: 'fake/pkg',
-                  json: { directories: { bin: 'bad' } }
-                } as WorkspacePackage
-              ]
-            ]),
             json: {}
-          }
+          },
+          subRootPackages: new Map([
+            [
+              'id',
+              {
+                root: 'fake/package',
+                json: { directories: { bin: 'bad' } }
+              } as WorkspacePackage
+            ]
+          ])
         } as ProjectMetadata)
       ).toThrow(ErrorMessage.UnsupportedFeature(''));
 
       expect(() =>
         gatherProjectFiles.sync({
-          project: {
+          rootPackage: {
             root: '/fake',
-            packages: undefined,
             json: {}
-          }
+          },
+          subRootPackages: undefined
         } as ProjectMetadata)
       ).not.toThrow(ErrorMessage.UnsupportedFeature(''));
 
       expect(() =>
         gatherProjectFiles.sync({
-          project: {
+          rootPackage: {
             root: '/fake',
-            packages: new Map([
-              ['id', { root: 'fake/pkg', json: {} } as WorkspacePackage]
-            ]),
             json: {}
-          }
+          },
+          subRootPackages: new Map([
+            ['id', { root: 'fake/package', json: {} } as WorkspacePackage]
+          ])
         } as ProjectMetadata)
       ).not.toThrow(ErrorMessage.UnsupportedFeature(''));
     });
@@ -1944,13 +891,14 @@ describe('::gatherProjectFiles', () => {
         },
         markdownFiles: {
           all: [
+            `${root}/.git-ignored/nope.md`,
             `${root}/packages/cli/README.md`,
             `${root}/packages/private/src/markdown/1.md`,
             `${root}/packages/private/src/markdown/2.md`,
             `${root}/packages/private/src/markdown/3.md`,
             `${root}/packages/webpack/README.md`
           ],
-          inRoot: [],
+          inRoot: [`${root}/.git-ignored/nope.md`],
           inWorkspace: new Map([
             ['cli', [`${root}/packages/cli/README.md`]],
             [
@@ -2022,14 +970,14 @@ describe('::gatherProjectFiles', () => {
       await expect(gatherProjectFiles(dummyMetadata)).resolves.toBe(projectFiles);
     });
 
-    it('does not ignore files in prettier when "skipIgnored" is false', async () => {
+    it('does not ignore files in prettier when "skipPrettierIgnored" is false', async () => {
       expect.hasAssertions();
 
       const root = fixtures.goodPolyrepo.root;
 
       await expect(
         gatherProjectFiles(fixtureToProjectMetadata('goodPolyrepo'), {
-          skipIgnored: false
+          skipPrettierIgnored: false
         })
       ).resolves.toStrictEqual({
         mainBinFiles: {
@@ -2129,20 +1077,20 @@ describe('::gatherProjectFiles', () => {
       });
     });
 
-    it('generates a type error if "skipUnknown" is true when "skipIgnored" is false', async () => {
+    it('generates a type error if "skipUnknown" is true when "skipPrettierIgnored" is false', async () => {
       expect.hasAssertions();
 
       await expect(
         gatherProjectFiles(
           {
-            project: {
+            rootPackage: {
               root: '/fake',
-              packages: undefined,
               json: {}
-            }
+            },
+            subRootPackages: undefined
           } as ProjectMetadata,
           {
-            skipIgnored: false,
+            skipPrettierIgnored: false,
             // @ts-expect-error: if this doesn't cause an error, something's wrong
             skipUnknown: true
           }
@@ -2155,51 +1103,51 @@ describe('::gatherProjectFiles', () => {
 
       await expect(
         gatherProjectFiles({
-          project: {
+          rootPackage: {
             root: '/fake',
-            packages: undefined,
             json: { directories: { bin: 'bad' } }
-          }
+          },
+          subRootPackages: undefined
         } as ProjectMetadata)
       ).rejects.toThrow(ErrorMessage.UnsupportedFeature(''));
 
       await expect(
         gatherProjectFiles({
-          project: {
+          rootPackage: {
             root: '/fake',
-            packages: new Map([
-              [
-                'id',
-                {
-                  root: 'fake/pkg',
-                  json: { directories: { bin: 'bad' } }
-                } as WorkspacePackage
-              ]
-            ]),
             json: {}
-          }
+          },
+          subRootPackages: new Map([
+            [
+              'id',
+              {
+                root: 'fake/package',
+                json: { directories: { bin: 'bad' } }
+              } as WorkspacePackage
+            ]
+          ])
         } as ProjectMetadata)
       ).rejects.toThrow(ErrorMessage.UnsupportedFeature(''));
 
       await expect(
         gatherProjectFiles({
-          project: {
+          rootPackage: {
             root: '/fake',
-            packages: undefined,
             json: {}
-          }
+          },
+          subRootPackages: undefined
         } as ProjectMetadata)
       ).resolves.toBeDefined();
 
       await expect(
         gatherProjectFiles({
-          project: {
+          rootPackage: {
             root: '/fake',
-            packages: new Map([
-              ['id', { root: 'fake/pkg', json: {} } as WorkspacePackage]
-            ]),
             json: {}
-          }
+          },
+          subRootPackages: new Map([
+            ['id', { root: 'fake/package', json: {} } as WorkspacePackage]
+          ])
         } as ProjectMetadata)
       ).resolves.toBeDefined();
     });
@@ -2634,187 +1582,559 @@ describe('::gatherImportEntriesFromFiles', () => {
   });
 });
 
-describe('::gatherPackageSrcFiles', () => {
+describe('::gatherPackageFiles', () => {
   describe('<synchronous>', () => {
-    it('returns src files for root package of polyrepo', () => {
+    it('returns expected file paths for polyrepo root package', () => {
       expect.hasAssertions();
 
-      const { project } = fixtureToProjectMetadata('goodPolyrepo');
+      const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
+      const { root } = rootPackage;
 
-      expect(gatherPackageSrcFiles.sync(project)).toStrictEqual([
-        `${project.root}/src/1.ts`,
-        `${project.root}/src/2.mts`,
-        `${project.root}/src/3.cts`,
-        `${project.root}/src/4.tsx`,
-        `${project.root}/src/index.js`,
-        `${project.root}/src/package.json`
-      ]);
+      expect(gatherPackageFiles.sync(rootPackage)).toStrictEqual({
+        dist: [
+          `${root}/dist/index.js`,
+          `${root}/dist/package.json`,
+          `${root}/dist/should-be-ignored.md`
+        ],
+        docs: [],
+        other: [
+          `${root}/.git/.gitkeep`,
+          `${root}/.prettierignore`,
+          `${root}/.vercel/package.json`,
+          `${root}/.vercel/project.json`,
+          `${root}/.vercel/something.md`,
+          `${root}/package.json`,
+          `${root}/README.md`,
+          `${root}/something-else.md`
+        ],
+        src: [
+          `${root}/src/1.ts`,
+          `${root}/src/2.mts`,
+          `${root}/src/3.cts`,
+          `${root}/src/4.tsx`,
+          `${root}/src/index.js`,
+          `${root}/src/package.json`
+        ],
+        test: []
+      });
     });
 
-    it('returns src files for root and sub-root packages (named and unnamed) of hybridrepo', () => {
+    it('returns expected file paths for hybridrepo (monorepo) root package', () => {
       expect.hasAssertions();
 
-      const { project } = fixtureToProjectMetadata('goodHybridrepo');
+      const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+      const { root } = rootPackage;
 
-      expect(gatherPackageSrcFiles.sync(project)).toStrictEqual([
-        `${project.root}/src/1.js`,
-        `${project.root}/src/2.mts`,
-        `${project.root}/src/3.cts`,
-        `${project.root}/src/4.tsx`,
-        `${project.root}/src/index.ts`,
-        `${project.root}/src/package.json`
-      ]);
-
-      expect(gatherPackageSrcFiles.sync(project.packages!.get('cli')!)).toStrictEqual([
-        `${project.root}/packages/cli/src/index.js`,
-        `${project.root}/packages/cli/src/package.json`,
-        `${project.root}/packages/cli/src/som-file.tsx`
-      ]);
-
-      expect(
-        gatherPackageSrcFiles.sync(project.packages!.unnamed.get('unnamed-cjs')!)
-      ).toStrictEqual([
-        `${project.root}/packages/unnamed-cjs/src/index.js`,
-        `${project.root}/packages/unnamed-cjs/src/package.json`
-      ]);
+      expect(gatherPackageFiles.sync(rootPackage)).toStrictEqual({
+        dist: [],
+        docs: [],
+        other: [
+          `${root}/.git/.gitkeep`,
+          `${root}/.gitignore`,
+          `${root}/.prettierignore`,
+          `${root}/package.json`,
+          `${root}/vercel.json`,
+          `${root}/webpack.config.mjs`
+        ],
+        src: [
+          `${root}/src/1.js`,
+          `${root}/src/2.mts`,
+          `${root}/src/3.cts`,
+          `${root}/src/4.tsx`,
+          `${root}/src/index.ts`,
+          `${root}/src/package.json`
+        ],
+        test: []
+      });
     });
 
-    it('respects ignore option', () => {
+    it('returns expected file paths for hybridrepo sub-root packages (named and unnamed)', () => {
       expect.hasAssertions();
 
-      const { project } = fixtureToProjectMetadata('goodPolyrepo');
+      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
 
-      expect(
-        gatherPackageSrcFiles.sync(project, { ignore: ['*.mts', '/4.tsx'] })
-      ).toStrictEqual([
-        `${project.root}/src/1.ts`,
-        `${project.root}/src/3.cts`,
-        `${project.root}/src/4.tsx`,
-        `${project.root}/src/index.js`,
-        `${project.root}/src/package.json`
-      ]);
+      {
+        const workspacePackage = projectMetadata.subRootPackages!.get('cli')!;
+        const { root } = workspacePackage;
+
+        expect(gatherPackageFiles.sync(workspacePackage)).toStrictEqual({
+          dist: [`${root}/dist/index.js`],
+          docs: [`${root}/docs/docs.md`],
+          other: [`${root}/package.json`, `${root}/README.md`],
+          src: [
+            `${root}/src/index.js`,
+            `${root}/src/package.json`,
+            `${root}/src/som-file.tsx`
+          ],
+          test: [`${root}/test/my.unit.test.ts`]
+        });
+      }
+
+      {
+        const workspacePackage =
+          projectMetadata.subRootPackages!.unnamed.get('unnamed-cjs')!;
+        const { root } = workspacePackage;
+
+        expect(gatherPackageFiles.sync(workspacePackage)).toStrictEqual({
+          dist: [`${root}/dist/index.js`],
+          docs: [],
+          other: [`${root}/package.json`, `${root}/README.md`],
+          src: [`${root}/src/index.js`, `${root}/src/package.json`],
+          test: []
+        });
+      }
+    });
+
+    it('respects "ignore" option including negation', () => {
+      expect.hasAssertions();
+
+      {
+        const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
+        const { root } = rootPackage;
+
+        expect(
+          gatherPackageFiles.sync(rootPackage, { ignore: ['*.mts', '/4.tsx', '.vercel'] })
+        ).toStrictEqual({
+          dist: [
+            `${root}/dist/index.js`,
+            `${root}/dist/package.json`,
+            `${root}/dist/should-be-ignored.md`
+          ],
+          docs: [],
+          other: [
+            `${root}/.git/.gitkeep`,
+            `${root}/.prettierignore`,
+            `${root}/package.json`,
+            `${root}/README.md`,
+            `${root}/something-else.md`
+          ],
+          src: [
+            `${root}/src/1.ts`,
+            `${root}/src/3.cts`,
+            `${root}/src/4.tsx`,
+            `${root}/src/index.js`,
+            `${root}/src/package.json`
+          ],
+          test: []
+        });
+      }
+
+      {
+        const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+        const { root } = rootPackage;
+
+        expect(
+          gatherPackageFiles.sync(rootPackage, { ignore: ['package.json'] })
+        ).toStrictEqual({
+          dist: [],
+          docs: [],
+          other: [
+            `${root}/.git/.gitkeep`,
+            `${root}/.gitignore`,
+            `${root}/.prettierignore`,
+            `${root}/vercel.json`,
+            `${root}/webpack.config.mjs`
+          ],
+          src: [
+            `${root}/src/1.js`,
+            `${root}/src/2.mts`,
+            `${root}/src/3.cts`,
+            `${root}/src/4.tsx`,
+            `${root}/src/index.ts`
+          ],
+          test: []
+        });
+      }
+
+      {
+        const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+        const { root } = rootPackage;
+
+        expect(
+          gatherPackageFiles.sync(rootPackage, { ignore: [`!.git-ignored/nope.md`] })
+        ).toStrictEqual({
+          dist: [],
+          docs: [],
+          other: [
+            `${root}/.git-ignored/nope.md`,
+            `${root}/.git/.gitkeep`,
+            `${root}/.gitignore`,
+            `${root}/.prettierignore`,
+            `${root}/package.json`,
+            `${root}/vercel.json`,
+            `${root}/webpack.config.mjs`
+          ],
+          src: [
+            `${root}/src/1.js`,
+            `${root}/src/2.mts`,
+            `${root}/src/3.cts`,
+            `${root}/src/4.tsx`,
+            `${root}/src/index.ts`,
+            `${root}/src/package.json`
+          ],
+          test: []
+        });
+      }
+    });
+
+    it('respects "skipGitIgnored" option', () => {
+      expect.hasAssertions();
+
+      {
+        const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
+        const { root } = rootPackage;
+
+        expect(
+          gatherPackageFiles.sync(rootPackage, { skipGitIgnored: true })
+        ).toStrictEqual({
+          dist: [
+            `${root}/dist/index.js`,
+            `${root}/dist/package.json`,
+            `${root}/dist/should-be-ignored.md`
+          ],
+          docs: [],
+          other: [
+            `${root}/.git/.gitkeep`,
+            `${root}/.prettierignore`,
+            `${root}/.vercel/package.json`,
+            `${root}/.vercel/project.json`,
+            `${root}/.vercel/something.md`,
+            `${root}/package.json`,
+            `${root}/README.md`,
+            `${root}/something-else.md`
+          ],
+          src: [
+            `${root}/src/1.ts`,
+            `${root}/src/2.mts`,
+            `${root}/src/3.cts`,
+            `${root}/src/4.tsx`,
+            `${root}/src/index.js`,
+            `${root}/src/package.json`
+          ],
+          test: []
+        });
+      }
+
+      {
+        const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+        const { root } = rootPackage;
+
+        expect(
+          gatherPackageFiles.sync(rootPackage, { skipGitIgnored: false })
+        ).toStrictEqual({
+          dist: [],
+          docs: [],
+          other: [
+            `${root}/.git-ignored/nope.md`,
+            `${root}/.git/.gitkeep`,
+            `${root}/.gitignore`,
+            `${root}/.prettierignore`,
+            `${root}/package.json`,
+            `${root}/vercel.json`,
+            `${root}/webpack.config.mjs`
+          ],
+          src: [
+            `${root}/src/1.js`,
+            `${root}/src/2.mts`,
+            `${root}/src/3.cts`,
+            `${root}/src/4.tsx`,
+            `${root}/src/index.ts`,
+            `${root}/src/package.json`
+          ],
+          test: []
+        });
+      }
     });
 
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
       expect.hasAssertions();
 
       const dummyMetadata = fixtureToProjectMetadata('goodPolyrepo');
-      const pkgSrcFiles = gatherPackageSrcFiles.sync(dummyMetadata.project);
+      const packageFiles = gatherPackageFiles.sync(dummyMetadata.rootPackage);
 
-      expect(pkgSrcFiles).not.toBe(
-        gatherPackageSrcFiles.sync(dummyMetadata.project, { useCached: false })
+      expect(packageFiles).not.toBe(
+        gatherPackageFiles.sync(dummyMetadata.rootPackage, { useCached: false })
       );
 
-      expect(gatherPackageSrcFiles.sync(dummyMetadata.project)).toBe(pkgSrcFiles);
-    });
-
-    it('throws if src directory is empty or non-existent', () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        gatherPackageSrcFiles.sync({ root: '/dev/null' } as RootPackage)
-      ).toThrow(ErrorMessage.EmptyOrMissingSrcDir(''));
-
-      expect(() =>
-        gatherPackageSrcFiles.sync({
-          root: fixtures.badPolyrepoNonPackageDir.root
-        } as RootPackage)
-      ).toThrow(
-        ErrorMessage.EmptyOrMissingSrcDir(fixtures.badPolyrepoNonPackageDir.root)
-      );
+      expect(gatherPackageFiles.sync(dummyMetadata.rootPackage)).toBe(packageFiles);
     });
   });
 
   describe('<asynchronous>', () => {
-    it('returns src files for root package of polyrepo', async () => {
+    it('returns expected file paths for polyrepo root package', async () => {
       expect.hasAssertions();
 
-      const { project } = fixtureToProjectMetadata('goodPolyrepo');
+      const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
+      const { root } = rootPackage;
 
-      await expect(gatherPackageSrcFiles(project)).resolves.toStrictEqual([
-        `${project.root}/src/1.ts`,
-        `${project.root}/src/2.mts`,
-        `${project.root}/src/3.cts`,
-        `${project.root}/src/4.tsx`,
-        `${project.root}/src/index.js`,
-        `${project.root}/src/package.json`
-      ]);
+      await expect(gatherPackageFiles(rootPackage)).resolves.toStrictEqual({
+        dist: [
+          `${root}/dist/index.js`,
+          `${root}/dist/package.json`,
+          `${root}/dist/should-be-ignored.md`
+        ],
+        docs: [],
+        other: [
+          `${root}/.git/.gitkeep`,
+          `${root}/.prettierignore`,
+          `${root}/.vercel/package.json`,
+          `${root}/.vercel/project.json`,
+          `${root}/.vercel/something.md`,
+          `${root}/package.json`,
+          `${root}/README.md`,
+          `${root}/something-else.md`
+        ],
+        src: [
+          `${root}/src/1.ts`,
+          `${root}/src/2.mts`,
+          `${root}/src/3.cts`,
+          `${root}/src/4.tsx`,
+          `${root}/src/index.js`,
+          `${root}/src/package.json`
+        ],
+        test: []
+      });
     });
 
-    it('returns src files for root and sub-root packages (named and unnamed) of hybridrepo', async () => {
+    it('returns expected file paths for hybridrepo (monorepo) root package', async () => {
       expect.hasAssertions();
 
-      const { project } = fixtureToProjectMetadata('goodHybridrepo');
+      const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+      const { root } = rootPackage;
 
-      await expect(gatherPackageSrcFiles(project)).resolves.toStrictEqual([
-        `${project.root}/src/1.js`,
-        `${project.root}/src/2.mts`,
-        `${project.root}/src/3.cts`,
-        `${project.root}/src/4.tsx`,
-        `${project.root}/src/index.ts`,
-        `${project.root}/src/package.json`
-      ]);
-
-      await expect(
-        gatherPackageSrcFiles(project.packages!.get('cli')!)
-      ).resolves.toStrictEqual([
-        `${project.root}/packages/cli/src/index.js`,
-        `${project.root}/packages/cli/src/package.json`,
-        `${project.root}/packages/cli/src/som-file.tsx`
-      ]);
-
-      await expect(
-        gatherPackageSrcFiles(project.packages!.unnamed.get('unnamed-cjs')!)
-      ).resolves.toStrictEqual([
-        `${project.root}/packages/unnamed-cjs/src/index.js`,
-        `${project.root}/packages/unnamed-cjs/src/package.json`
-      ]);
+      await expect(gatherPackageFiles(rootPackage)).resolves.toStrictEqual({
+        dist: [],
+        docs: [],
+        other: [
+          `${root}/.git/.gitkeep`,
+          `${root}/.gitignore`,
+          `${root}/.prettierignore`,
+          `${root}/package.json`,
+          `${root}/vercel.json`,
+          `${root}/webpack.config.mjs`
+        ],
+        src: [
+          `${root}/src/1.js`,
+          `${root}/src/2.mts`,
+          `${root}/src/3.cts`,
+          `${root}/src/4.tsx`,
+          `${root}/src/index.ts`,
+          `${root}/src/package.json`
+        ],
+        test: []
+      });
     });
 
-    it('respects ignore option', async () => {
+    it('returns expected file paths for hybridrepo sub-root packages (named and unnamed)', async () => {
       expect.hasAssertions();
 
-      const { project } = fixtureToProjectMetadata('goodPolyrepo');
+      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
 
-      await expect(
-        gatherPackageSrcFiles(project, { ignore: ['*.mts', '/4.tsx'] })
-      ).resolves.toStrictEqual([
-        `${project.root}/src/1.ts`,
-        `${project.root}/src/3.cts`,
-        `${project.root}/src/4.tsx`,
-        `${project.root}/src/index.js`,
-        `${project.root}/src/package.json`
-      ]);
+      {
+        const workspacePackage = projectMetadata.subRootPackages!.get('cli')!;
+        const { root } = workspacePackage;
+
+        await expect(gatherPackageFiles(workspacePackage)).resolves.toStrictEqual({
+          dist: [`${root}/dist/index.js`],
+          docs: [`${root}/docs/docs.md`],
+          other: [`${root}/package.json`, `${root}/README.md`],
+          src: [
+            `${root}/src/index.js`,
+            `${root}/src/package.json`,
+            `${root}/src/som-file.tsx`
+          ],
+          test: [`${root}/test/my.unit.test.ts`]
+        });
+      }
+
+      {
+        const workspacePackage =
+          projectMetadata.subRootPackages!.unnamed.get('unnamed-cjs')!;
+        const { root } = workspacePackage;
+
+        await expect(gatherPackageFiles(workspacePackage)).resolves.toStrictEqual({
+          dist: [`${root}/dist/index.js`],
+          docs: [],
+          other: [`${root}/package.json`, `${root}/README.md`],
+          src: [`${root}/src/index.js`, `${root}/src/package.json`],
+          test: []
+        });
+      }
+    });
+
+    it('respects "ignore" option including negation', async () => {
+      expect.hasAssertions();
+
+      {
+        const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
+        const { root } = rootPackage;
+
+        await expect(
+          gatherPackageFiles(rootPackage, { ignore: ['*.mts', '/4.tsx', '.vercel'] })
+        ).resolves.toStrictEqual({
+          dist: [
+            `${root}/dist/index.js`,
+            `${root}/dist/package.json`,
+            `${root}/dist/should-be-ignored.md`
+          ],
+          docs: [],
+          other: [
+            `${root}/.git/.gitkeep`,
+            `${root}/.prettierignore`,
+            `${root}/package.json`,
+            `${root}/README.md`,
+            `${root}/something-else.md`
+          ],
+          src: [
+            `${root}/src/1.ts`,
+            `${root}/src/3.cts`,
+            `${root}/src/4.tsx`,
+            `${root}/src/index.js`,
+            `${root}/src/package.json`
+          ],
+          test: []
+        });
+      }
+
+      {
+        const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+        const { root } = rootPackage;
+
+        await expect(
+          gatherPackageFiles(rootPackage, { ignore: ['package.json'] })
+        ).resolves.toStrictEqual({
+          dist: [],
+          docs: [],
+          other: [
+            `${root}/.git/.gitkeep`,
+            `${root}/.gitignore`,
+            `${root}/.prettierignore`,
+            `${root}/vercel.json`,
+            `${root}/webpack.config.mjs`
+          ],
+          src: [
+            `${root}/src/1.js`,
+            `${root}/src/2.mts`,
+            `${root}/src/3.cts`,
+            `${root}/src/4.tsx`,
+            `${root}/src/index.ts`
+          ],
+          test: []
+        });
+      }
+
+      {
+        const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+        const { root } = rootPackage;
+
+        await expect(
+          gatherPackageFiles(rootPackage, { ignore: [`!.git-ignored/nope.md`] })
+        ).resolves.toStrictEqual({
+          dist: [],
+          docs: [],
+          other: [
+            `${root}/.git-ignored/nope.md`,
+            `${root}/.git/.gitkeep`,
+            `${root}/.gitignore`,
+            `${root}/.prettierignore`,
+            `${root}/package.json`,
+            `${root}/vercel.json`,
+            `${root}/webpack.config.mjs`
+          ],
+          src: [
+            `${root}/src/1.js`,
+            `${root}/src/2.mts`,
+            `${root}/src/3.cts`,
+            `${root}/src/4.tsx`,
+            `${root}/src/index.ts`,
+            `${root}/src/package.json`
+          ],
+          test: []
+        });
+      }
+    });
+
+    it('respects "skipGitIgnored" option', async () => {
+      expect.hasAssertions();
+
+      {
+        const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
+        const { root } = rootPackage;
+
+        await expect(
+          gatherPackageFiles(rootPackage, { skipGitIgnored: true })
+        ).resolves.toStrictEqual({
+          dist: [
+            `${root}/dist/index.js`,
+            `${root}/dist/package.json`,
+            `${root}/dist/should-be-ignored.md`
+          ],
+          docs: [],
+          other: [
+            `${root}/.git/.gitkeep`,
+            `${root}/.prettierignore`,
+            `${root}/.vercel/package.json`,
+            `${root}/.vercel/project.json`,
+            `${root}/.vercel/something.md`,
+            `${root}/package.json`,
+            `${root}/README.md`,
+            `${root}/something-else.md`
+          ],
+          src: [
+            `${root}/src/1.ts`,
+            `${root}/src/2.mts`,
+            `${root}/src/3.cts`,
+            `${root}/src/4.tsx`,
+            `${root}/src/index.js`,
+            `${root}/src/package.json`
+          ],
+          test: []
+        });
+      }
+
+      {
+        const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+        const { root } = rootPackage;
+
+        await expect(
+          gatherPackageFiles(rootPackage, { skipGitIgnored: false })
+        ).resolves.toStrictEqual({
+          dist: [],
+          docs: [],
+          other: [
+            `${root}/.git-ignored/nope.md`,
+            `${root}/.git/.gitkeep`,
+            `${root}/.gitignore`,
+            `${root}/.prettierignore`,
+            `${root}/package.json`,
+            `${root}/vercel.json`,
+            `${root}/webpack.config.mjs`
+          ],
+          src: [
+            `${root}/src/1.js`,
+            `${root}/src/2.mts`,
+            `${root}/src/3.cts`,
+            `${root}/src/4.tsx`,
+            `${root}/src/index.ts`,
+            `${root}/src/package.json`
+          ],
+          test: []
+        });
+      }
     });
 
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
       expect.hasAssertions();
 
       const dummyMetadata = fixtureToProjectMetadata('goodPolyrepo');
-      const pkgSrcFiles = await gatherPackageSrcFiles(dummyMetadata.project);
+      const packageFiles = await gatherPackageFiles(dummyMetadata.rootPackage);
 
-      expect(pkgSrcFiles).not.toBe(
-        await gatherPackageSrcFiles(dummyMetadata.project, { useCached: false })
+      expect(packageFiles).not.toBe(
+        await gatherPackageFiles(dummyMetadata.rootPackage, { useCached: false })
       );
 
-      await expect(gatherPackageSrcFiles(dummyMetadata.project)).resolves.toBe(
-        pkgSrcFiles
-      );
-    });
-
-    it('throws if src directory is empty or non-existent', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        gatherPackageSrcFiles({ root: '/dev/null' } as RootPackage)
-      ).rejects.toThrow(ErrorMessage.EmptyOrMissingSrcDir(''));
-
-      await expect(
-        gatherPackageSrcFiles({
-          root: fixtures.badPolyrepoNonPackageDir.root
-        } as RootPackage)
-      ).rejects.toThrow(
-        ErrorMessage.EmptyOrMissingSrcDir(fixtures.badPolyrepoNonPackageDir.root)
+      await expect(gatherPackageFiles(dummyMetadata.rootPackage)).resolves.toBe(
+        packageFiles
       );
     });
   });
@@ -2826,10 +2146,9 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodPolyrepo'),
-          targetPackageName: undefined
-        })
+        gatherPackageBuildTargets.sync(
+          fixtureToProjectMetadata('goodPolyrepo').rootPackage
+        )
       ).toStrictEqual({
         targets: {
           external: new Set(),
@@ -2855,10 +2174,9 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: undefined
-        })
+        gatherPackageBuildTargets.sync(
+          fixtureToProjectMetadata('goodHybridrepoMultiversal').rootPackage
+        )
       ).toStrictEqual({
         targets: {
           external: new Set([
@@ -2900,10 +2218,11 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: 'cli'
-        })
+        gatherPackageBuildTargets.sync(
+          fixtureToProjectMetadata('goodHybridrepoMultiversal').subRootPackages!.get(
+            'cli'
+          )!
+        )
       ).toStrictEqual({
         targets: {
           external: new Set([
@@ -2932,43 +2251,20 @@ describe('::gatherPackageBuildTargets', () => {
       } satisfies PackageBuildTargets);
     });
 
-    it('returns expected build targets for multiversal hybridrepo self-contained sub-root package with a scoped name different than its package-id', () => {
-      expect.hasAssertions();
-
-      const projectMetadata = fixtureToProjectMetadata('goodHybridrepoMultiversal');
-      // ? Test that we're actually looking up packages by name and not id
-      const targetPackageName = fixtures.goodHybridrepoMultiversal.namedPkgMapData[1][0];
-      const targetPackageId = fixtures.goodHybridrepoMultiversal.namedPkgMapData[1][1].id;
-
-      expect(
-        gatherPackageBuildTargets.sync({ projectMetadata, targetPackageName })
-      ).toStrictEqual({
-        targets: {
-          external: new Set([] as RelativePath[]),
-          internal: new Set([
-            `packages/${targetPackageId}/src/webpack-lib2.ts`,
-            `packages/${targetPackageId}/src/webpack-lib.ts`
-          ] as RelativePath[])
-        },
-        metadata: {
-          imports: { aliasCounts: {}, dependencyCounts: { webpack: 1, 'webpack~2': 1 } }
-        }
-      } satisfies PackageBuildTargets);
-    });
-
     it('does not consider self-referential rootverse imports as "external"', () => {
       expect.hasAssertions();
 
       try {
-        fixtures.goodHybridrepoMultiversal.namedPkgMapData.push(
-          fixtures.goodHybridrepoMultiversal.unnamedPkgMapData[0]
+        fixtures.goodHybridrepoMultiversal.namedPackageMapData.push(
+          fixtures.goodHybridrepoMultiversal.unnamedPackageMapData[0]
         );
 
         expect(
-          gatherPackageBuildTargets.sync({
-            projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-            targetPackageName: 'private'
-          })
+          gatherPackageBuildTargets.sync(
+            fixtureToProjectMetadata('goodHybridrepoMultiversal').subRootPackages!.get(
+              'private'
+            )!
+          )
         ).toStrictEqual({
           targets: {
             external: new Set([] as RelativePath[]),
@@ -2994,7 +2290,7 @@ describe('::gatherPackageBuildTargets', () => {
           }
         } satisfies PackageBuildTargets);
       } finally {
-        fixtures.goodHybridrepoMultiversal.namedPkgMapData.pop();
+        fixtures.goodHybridrepoMultiversal.namedPackageMapData.pop();
       }
     });
 
@@ -3002,10 +2298,11 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoSelfRef'),
-          targetPackageName: 'package-one'
-        })
+        gatherPackageBuildTargets.sync(
+          fixtureToProjectMetadata('goodHybridrepoSelfRef').subRootPackages!.get(
+            'package-one'
+          )!
+        )
       ).toStrictEqual({
         targets: {
           external: new Set([] as RelativePath[]),
@@ -3030,56 +2327,40 @@ describe('::gatherPackageBuildTargets', () => {
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
       expect.hasAssertions();
 
-      const dummyMetadata = fixtureToProjectMetadata('goodPolyrepo');
-
-      const packageBuildTargets = gatherPackageBuildTargets.sync({
-        projectMetadata: dummyMetadata,
-        targetPackageName: undefined
-      });
+      const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
+      const packageBuildTargets = gatherPackageBuildTargets.sync(rootPackage);
 
       expect(packageBuildTargets).not.toBe(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: dummyMetadata,
-          targetPackageName: undefined,
-          useCached: false
-        })
+        gatherPackageBuildTargets.sync(rootPackage, { useCached: false })
       );
 
-      expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: dummyMetadata,
-          targetPackageName: undefined
-        })
-      ).toBe(packageBuildTargets);
+      expect(gatherPackageBuildTargets.sync(rootPackage)).toBe(packageBuildTargets);
     });
 
     it('returns same results regardless of explicitly empty includes/excludes', () => {
       expect.hasAssertions();
 
+      const { rootPackage } = fixtureToProjectMetadata('goodHybridrepoMultiversal');
+
       expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: undefined,
+        gatherPackageBuildTargets.sync(rootPackage, {
           excludeInternalsPatterns: [],
           includeExternalsPatterns: []
         })
-      ).toStrictEqual(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: undefined
-        })
-      );
+      ).toStrictEqual(gatherPackageBuildTargets.sync(rootPackage));
     });
 
     it('respects includeExternalsPatterns relative to project root', () => {
       expect.hasAssertions();
 
+      const { subRootPackages = toss(new Error('assertion failed')) } =
+        fixtureToProjectMetadata('goodHybridrepoMultiversal');
+
       expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          includeExternalsPatterns: ['packages/private/src/index.ts']
-        })
+        gatherPackageBuildTargets.sync(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          { includeExternalsPatterns: ['packages/private/src/index.ts'] }
+        )
       ).toStrictEqual({
         targets: {
           external: new Set([
@@ -3106,11 +2387,10 @@ describe('::gatherPackageBuildTargets', () => {
       } satisfies PackageBuildTargets);
 
       expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          includeExternalsPatterns: ['**/private/*/index.ts']
-        })
+        gatherPackageBuildTargets.sync(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          { includeExternalsPatterns: ['**/private/*/index.ts'] }
+        )
       ).toStrictEqual({
         targets: {
           external: new Set([
@@ -3140,25 +2420,19 @@ describe('::gatherPackageBuildTargets', () => {
     it('respects excludeInternalsPatterns relative to project root', () => {
       expect.hasAssertions();
 
-      expect(() =>
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          excludeInternalsPatterns: ['webpack-lib*']
-        })
-      ).toThrow(
-        ErrorMessage.EmptyOrMissingSrcDir(fixtures.goodHybridrepoMultiversal.root)
-      );
+      const { subRootPackages = toss(new Error('assertion failed')) } =
+        fixtureToProjectMetadata('goodHybridrepoMultiversal');
 
       expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          excludeInternalsPatterns: [
-            'packages/webpack/src/webpack-lib.ts',
-            'src/webpack-lib2.ts'
-          ]
-        })
+        gatherPackageBuildTargets.sync(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          {
+            excludeInternalsPatterns: [
+              'packages/webpack/src/webpack-lib.ts',
+              'src/webpack-lib2.ts'
+            ]
+          }
+        )
       ).toStrictEqual({
         targets: {
           external: new Set([] as RelativePath[]),
@@ -3175,16 +2449,37 @@ describe('::gatherPackageBuildTargets', () => {
       } satisfies PackageBuildTargets);
     });
 
+    it('return an empty result if there is nothing to return', () => {
+      expect.hasAssertions();
+
+      const { subRootPackages = toss(new Error('assertion failed')) } =
+        fixtureToProjectMetadata('goodHybridrepoMultiversal');
+
+      expect(
+        gatherPackageBuildTargets.sync(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          { excludeInternalsPatterns: ['webpack-lib*'] }
+        )
+      ).toStrictEqual({
+        metadata: { imports: { aliasCounts: {}, dependencyCounts: {} } },
+        targets: { external: new Set(), internal: new Set() }
+      });
+    });
+
     it('respects excludeInternalsPatterns + includeExternalsPatterns', () => {
       expect.hasAssertions();
 
+      const { subRootPackages = toss(new Error('assertion failed')) } =
+        fixtureToProjectMetadata('goodHybridrepoMultiversal');
+
       expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          excludeInternalsPatterns: ['packages/webpack/src/webpack-lib2.ts'],
-          includeExternalsPatterns: ['packages/webpack/src/webpack-lib2.ts']
-        })
+        gatherPackageBuildTargets.sync(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          {
+            excludeInternalsPatterns: ['packages/webpack/src/webpack-lib2.ts'],
+            includeExternalsPatterns: ['packages/webpack/src/webpack-lib2.ts']
+          }
+        )
       ).toStrictEqual({
         targets: {
           external: new Set(['packages/webpack/src/webpack-lib2.ts'] as RelativePath[]),
@@ -3202,15 +2497,17 @@ describe('::gatherPackageBuildTargets', () => {
       } satisfies PackageBuildTargets);
     });
 
-    it('tags and does not perform well-formedness checks on specifiers from assets', () => {
+    it('tags but does not perform well-formedness checks on specifiers from assets', () => {
       expect.hasAssertions();
 
+      const { subRootPackages = toss(new Error('assertion failed')) } =
+        fixtureToProjectMetadata('goodHybridrepoMultiversal');
+
       expect(
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          includeExternalsPatterns: ['packages/webpack/webpack.config.mjs']
-        })
+        gatherPackageBuildTargets.sync(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          { includeExternalsPatterns: ['packages/webpack/webpack.config.mjs'] }
+        )
       ).toStrictEqual({
         targets: {
           external: new Set(['packages/webpack/webpack.config.mjs'] as RelativePath[]),
@@ -3240,22 +2537,10 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       expect(() =>
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('badHybridrepoBadSpecifiers'),
-          targetPackageName: undefined
-        })
+        gatherPackageBuildTargets.sync(
+          fixtureToProjectMetadata('badHybridrepoBadSpecifiers').rootPackage
+        )
       ).toThrow(ErrorMessage.SpecifierNotOkSelfReferential('multiverse#pkg-1 lib.ts'));
-    });
-
-    it('throws upon encountering an unknown package name', () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        gatherPackageBuildTargets.sync({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: 'private'
-        })
-      ).toThrow(ErrorMessage.UnknownWorkspacePackageName('private'));
     });
   });
 
@@ -3264,10 +2549,7 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodPolyrepo'),
-          targetPackageName: undefined
-        })
+        gatherPackageBuildTargets(fixtureToProjectMetadata('goodPolyrepo').rootPackage)
       ).resolves.toStrictEqual({
         targets: {
           external: new Set(),
@@ -3293,10 +2575,9 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: undefined
-        })
+        gatherPackageBuildTargets(
+          fixtureToProjectMetadata('goodHybridrepoMultiversal').rootPackage
+        )
       ).resolves.toStrictEqual({
         targets: {
           external: new Set([
@@ -3338,10 +2619,11 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: 'cli'
-        })
+        gatherPackageBuildTargets(
+          fixtureToProjectMetadata('goodHybridrepoMultiversal').subRootPackages!.get(
+            'cli'
+          )!
+        )
       ).resolves.toStrictEqual({
         targets: {
           external: new Set([
@@ -3370,43 +2652,20 @@ describe('::gatherPackageBuildTargets', () => {
       } satisfies PackageBuildTargets);
     });
 
-    it('returns expected build targets for multiversal hybridrepo self-contained sub-root package with a scoped name different than its package-id', async () => {
-      expect.hasAssertions();
-
-      const projectMetadata = fixtureToProjectMetadata('goodHybridrepoMultiversal');
-      // ? Test that we're actually looking up packages by name and not id
-      const targetPackageName = fixtures.goodHybridrepoMultiversal.namedPkgMapData[1][0];
-      const targetPackageId = fixtures.goodHybridrepoMultiversal.namedPkgMapData[1][1].id;
-
-      await expect(
-        gatherPackageBuildTargets({ projectMetadata, targetPackageName })
-      ).resolves.toStrictEqual({
-        targets: {
-          external: new Set([] as RelativePath[]),
-          internal: new Set([
-            `packages/${targetPackageId}/src/webpack-lib2.ts`,
-            `packages/${targetPackageId}/src/webpack-lib.ts`
-          ] as RelativePath[])
-        },
-        metadata: {
-          imports: { aliasCounts: {}, dependencyCounts: { webpack: 1, 'webpack~2': 1 } }
-        }
-      } satisfies PackageBuildTargets);
-    });
-
     it('does not consider self-referential rootverse imports as "external"', async () => {
       expect.hasAssertions();
 
       try {
-        fixtures.goodHybridrepoMultiversal.namedPkgMapData.push(
-          fixtures.goodHybridrepoMultiversal.unnamedPkgMapData[0]
+        fixtures.goodHybridrepoMultiversal.namedPackageMapData.push(
+          fixtures.goodHybridrepoMultiversal.unnamedPackageMapData[0]
         );
 
         await expect(
-          gatherPackageBuildTargets({
-            projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-            targetPackageName: 'private'
-          })
+          gatherPackageBuildTargets(
+            fixtureToProjectMetadata('goodHybridrepoMultiversal').subRootPackages!.get(
+              'private'
+            )!
+          )
         ).resolves.toStrictEqual({
           targets: {
             external: new Set([] as RelativePath[]),
@@ -3432,7 +2691,7 @@ describe('::gatherPackageBuildTargets', () => {
           }
         } satisfies PackageBuildTargets);
       } finally {
-        fixtures.goodHybridrepoMultiversal.namedPkgMapData.pop();
+        fixtures.goodHybridrepoMultiversal.namedPackageMapData.pop();
       }
     });
 
@@ -3440,10 +2699,11 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoSelfRef'),
-          targetPackageName: 'package-one'
-        })
+        gatherPackageBuildTargets(
+          fixtureToProjectMetadata('goodHybridrepoSelfRef').subRootPackages!.get(
+            'package-one'
+          )!
+        )
       ).resolves.toStrictEqual({
         targets: {
           external: new Set([] as RelativePath[]),
@@ -3468,56 +2728,42 @@ describe('::gatherPackageBuildTargets', () => {
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
       expect.hasAssertions();
 
-      const dummyMetadata = fixtureToProjectMetadata('goodPolyrepo');
-
-      const packageBuildTargets = await gatherPackageBuildTargets({
-        projectMetadata: dummyMetadata,
-        targetPackageName: undefined
-      });
+      const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
+      const packageBuildTargets = await gatherPackageBuildTargets(rootPackage);
 
       expect(packageBuildTargets).not.toBe(
-        gatherPackageBuildTargets({
-          projectMetadata: dummyMetadata,
-          targetPackageName: undefined,
-          useCached: false
-        })
+        gatherPackageBuildTargets(rootPackage, { useCached: false })
       );
 
-      await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: dummyMetadata,
-          targetPackageName: undefined
-        })
-      ).resolves.toBe(packageBuildTargets);
+      await expect(gatherPackageBuildTargets(rootPackage)).resolves.toBe(
+        packageBuildTargets
+      );
     });
 
     it('returns same results regardless of explicitly empty includes/excludes', async () => {
       expect.hasAssertions();
 
+      const { rootPackage } = fixtureToProjectMetadata('goodHybridrepoMultiversal');
+
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: undefined,
+        gatherPackageBuildTargets(rootPackage, {
           excludeInternalsPatterns: [],
           includeExternalsPatterns: []
         })
-      ).resolves.toStrictEqual(
-        await gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: undefined
-        })
-      );
+      ).resolves.toStrictEqual(await gatherPackageBuildTargets(rootPackage));
     });
 
     it('respects includeExternalsPatterns relative to project root', async () => {
       expect.hasAssertions();
 
+      const { subRootPackages = toss(new Error('assertion failed')) } =
+        fixtureToProjectMetadata('goodHybridrepoMultiversal');
+
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          includeExternalsPatterns: ['packages/private/src/index.ts']
-        })
+        gatherPackageBuildTargets(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          { includeExternalsPatterns: ['packages/private/src/index.ts'] }
+        )
       ).resolves.toStrictEqual({
         targets: {
           external: new Set([
@@ -3544,11 +2790,10 @@ describe('::gatherPackageBuildTargets', () => {
       } satisfies PackageBuildTargets);
 
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          includeExternalsPatterns: ['**/private/*/index.ts']
-        })
+        gatherPackageBuildTargets(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          { includeExternalsPatterns: ['**/private/*/index.ts'] }
+        )
       ).resolves.toStrictEqual({
         targets: {
           external: new Set([
@@ -3578,25 +2823,19 @@ describe('::gatherPackageBuildTargets', () => {
     it('respects excludeInternalsPatterns relative to project root', async () => {
       expect.hasAssertions();
 
-      await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          excludeInternalsPatterns: ['webpack-lib*']
-        })
-      ).rejects.toThrow(
-        ErrorMessage.EmptyOrMissingSrcDir(fixtures.goodHybridrepoMultiversal.root)
-      );
+      const { subRootPackages = toss(new Error('assertion failed')) } =
+        fixtureToProjectMetadata('goodHybridrepoMultiversal');
 
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          excludeInternalsPatterns: [
-            'packages/webpack/src/webpack-lib.ts',
-            'src/webpack-lib2.ts'
-          ]
-        })
+        gatherPackageBuildTargets(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          {
+            excludeInternalsPatterns: [
+              'packages/webpack/src/webpack-lib.ts',
+              'src/webpack-lib2.ts'
+            ]
+          }
+        )
       ).resolves.toStrictEqual({
         targets: {
           external: new Set([] as RelativePath[]),
@@ -3613,16 +2852,37 @@ describe('::gatherPackageBuildTargets', () => {
       } satisfies PackageBuildTargets);
     });
 
+    it('return an empty result if there is nothing to return', async () => {
+      expect.hasAssertions();
+
+      const { subRootPackages = toss(new Error('assertion failed')) } =
+        fixtureToProjectMetadata('goodHybridrepoMultiversal');
+
+      await expect(
+        gatherPackageBuildTargets(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          { excludeInternalsPatterns: ['webpack-lib*'] }
+        )
+      ).resolves.toStrictEqual({
+        metadata: { imports: { aliasCounts: {}, dependencyCounts: {} } },
+        targets: { external: new Set(), internal: new Set() }
+      });
+    });
+
     it('respects excludeInternalsPatterns + includeExternalsPatterns', async () => {
       expect.hasAssertions();
 
+      const { subRootPackages = toss(new Error('assertion failed')) } =
+        fixtureToProjectMetadata('goodHybridrepoMultiversal');
+
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          excludeInternalsPatterns: ['packages/webpack/src/webpack-lib2.ts'],
-          includeExternalsPatterns: ['packages/webpack/src/webpack-lib2.ts']
-        })
+        gatherPackageBuildTargets(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          {
+            excludeInternalsPatterns: ['packages/webpack/src/webpack-lib2.ts'],
+            includeExternalsPatterns: ['packages/webpack/src/webpack-lib2.ts']
+          }
+        )
       ).resolves.toStrictEqual({
         targets: {
           external: new Set(['packages/webpack/src/webpack-lib2.ts'] as RelativePath[]),
@@ -3640,15 +2900,17 @@ describe('::gatherPackageBuildTargets', () => {
       } satisfies PackageBuildTargets);
     });
 
-    it('tags and does not perform well-formedness checks on specifiers from assets', async () => {
+    it('tags but does not perform well-formedness checks on specifiers from assets', async () => {
       expect.hasAssertions();
 
+      const { subRootPackages = toss(new Error('assertion failed')) } =
+        fixtureToProjectMetadata('goodHybridrepoMultiversal');
+
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: '@namespaced/webpack-common-config',
-          includeExternalsPatterns: ['packages/webpack/webpack.config.mjs']
-        })
+        gatherPackageBuildTargets(
+          subRootPackages.get('@namespaced/webpack-common-config')!,
+          { includeExternalsPatterns: ['packages/webpack/webpack.config.mjs'] }
+        )
       ).resolves.toStrictEqual({
         targets: {
           external: new Set(['packages/webpack/webpack.config.mjs'] as RelativePath[]),
@@ -3678,30 +2940,1088 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('badHybridrepoBadSpecifiers'),
-          targetPackageName: undefined
-        })
+        gatherPackageBuildTargets(
+          fixtureToProjectMetadata('badHybridrepoBadSpecifiers').rootPackage
+        )
       ).rejects.toThrow(
         ErrorMessage.SpecifierNotOkSelfReferential('multiverse#pkg-1 lib.ts')
       );
     });
+  });
+});
 
-    it('throws upon encountering an unknown package name', async () => {
+describe('::analyzeProjectStructure', () => {
+  describe('<synchronous>', () => {
+    it('accepts workspaces.packages array in package.json', () => {
+      expect.hasAssertions();
+
+      expect(
+        analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepoWeirdYarn.root })
+      ).toBeDefined();
+    });
+
+    it('returns expected metadata when cwd is polyrepo project root', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodPolyrepo.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      expect(result.subRootPackages).toBeUndefined();
+      expect(result.type).toStrictEqual(ProjectAttribute.Polyrepo);
+
+      expect(result.rootPackage.attributes).toStrictEqual(
+        fixtures.goodPolyrepo.attributes
+      );
+
+      expect(result.rootPackage.json).toStrictEqual(fixtures.goodPolyrepo.json);
+      expect(result.rootPackage.root).toBe(fixtures.goodPolyrepo.root);
+      expect(result.rootPackage.projectMetadata).toBe(result);
+    });
+
+    it('returns expected metadata when cwd is monorepo project root', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodMonorepo.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      expect(result.subRootPackages).toBeDefined();
+      expect(result.type).toStrictEqual(ProjectAttribute.Monorepo);
+
+      expect(result.rootPackage.attributes).toStrictEqual(
+        fixtures.goodMonorepo.attributes
+      );
+
+      expect(result.rootPackage.json).toStrictEqual(fixtures.goodMonorepo.json);
+      expect(result.rootPackage.root).toBe(fixtures.goodMonorepo.root);
+      expect(result.rootPackage.projectMetadata).toBe(result);
+
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepo');
+    });
+
+    it('returns expected metadata when cwd is hybridrepo project root', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodHybridrepo.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      expect(result.subRootPackages).toBeDefined();
+      expect(result.type).toStrictEqual(ProjectAttribute.Monorepo);
+
+      expect(result.rootPackage.attributes).toStrictEqual(
+        fixtures.goodHybridrepo.attributes
+      );
+
+      expect(result.rootPackage.json).toStrictEqual(fixtures.goodHybridrepo.json);
+      expect(result.rootPackage.root).toBe(fixtures.goodHybridrepo.root);
+      expect(result.rootPackage.projectMetadata).toBe(result);
+
+      checkForExpectedPackages(result.subRootPackages, 'goodHybridrepo');
+    });
+
+    it('returns expected project and workspace attributes for various Next.js projects', () => {
+      expect.hasAssertions();
+
+      {
+        const result = analyzeProjectStructure.sync({
+          cwd: fixtures.badMonorepoNextjsProject.root
+        });
+
+        expect(result.rootPackage.attributes).toStrictEqual(
+          fixtures.badMonorepoNextjsProject.attributes
+        );
+
+        checkForExpectedPackages(result.subRootPackages, 'badMonorepoNextjsProject');
+      }
+
+      {
+        const result = analyzeProjectStructure.sync({
+          cwd: fixtures.badPolyrepoNextjsProject.root
+        });
+
+        expect(result.rootPackage.attributes).toStrictEqual(
+          fixtures.badPolyrepoNextjsProject.attributes
+        );
+
+        expect(result.subRootPackages).toBeUndefined();
+      }
+
+      {
+        const result = analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepoNextjsProject.root
+        });
+
+        expect(result.rootPackage.attributes).toStrictEqual(
+          fixtures.goodMonorepoNextjsProject.attributes
+        );
+
+        checkForExpectedPackages(result.subRootPackages, 'goodMonorepoNextjsProject');
+      }
+
+      {
+        const result = analyzeProjectStructure.sync({
+          cwd: fixtures.goodPolyrepoNextjsProject.root
+        });
+
+        expect(result.rootPackage.attributes).toStrictEqual(
+          fixtures.goodPolyrepoNextjsProject.attributes
+        );
+
+        expect(result.subRootPackages).toBeUndefined();
+      }
+    });
+
+    it('returns expected subRootPackages and cwdPackage when cwd is monorepo root with the same name as a sub-root', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodMonorepoWeirdSameNames.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoWeirdSameNames');
+    });
+
+    it('returns expected subRootPackages and cwdPackage when cwd is a sub-root', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+      });
+
+      expect(result.cwdPackage).toStrictEqual(
+        fixtures.goodMonorepo.namedPackageMapData[0][1]
+      );
+
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepo');
+    });
+
+    it('returns expected subRootPackages and cwdPackage when cwd is under the project root but not under a sub-root', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepo');
+    });
+
+    it('returns expected subRootPackages and cwdPackage when cwd is somewhere under a sub-root', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath
+      });
+
+      expect(result.cwdPackage).toStrictEqual(
+        fixtures.goodMonorepo.namedPackageMapData[0][1]
+      );
+
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepo');
+    });
+
+    it('returns expected subRootPackages and cwdPackage with simple workspace cwd', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: `${fixtures.goodMonorepoSimplePaths.namedPackageMapData[0][1].root}/src` as AbsolutePath
+      });
+
+      expect(result.cwdPackage).toStrictEqual(
+        fixtures.goodMonorepoSimplePaths.namedPackageMapData[0][1]
+      );
+
+      expect(result.rootPackage.attributes).toStrictEqual(
+        fixtures.goodMonorepoSimplePaths.attributes
+      );
+
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoSimplePaths');
+    });
+
+    it('returns expected subRootPackages and cwdPackage when workspace cwd uses Windows-style path separators', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodMonorepoWindows.namedPackageMapData[0][1].root
+      });
+
+      expect(result.cwdPackage).toStrictEqual(
+        fixtures.goodMonorepoWindows.namedPackageMapData[0][1]
+      );
+
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoWindows');
+    });
+
+    it('returns expected subRootPackages and cwdPackage when cwd is under the project root but not under a sub-root in a monorepo with weird absolute paths', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: `${fixtures.goodMonorepoWeirdAbsolute.namedPackageMapData[0][1].root}/..` as AbsolutePath
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoWeirdAbsolute');
+    });
+
+    it('normalizes workspace cwd to ignore non-directories', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodMonorepoWeirdBoneless.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoWeirdBoneless');
+    });
+
+    it('does not return duplicates when dealing with overlapping workspace glob paths, some negated', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodMonorepoWeirdOverlap.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoWeirdOverlap');
+    });
+
+    it('works with nthly-negated workspace paths where order matters', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodMonorepoNegatedPaths.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoNegatedPaths');
+    });
+
+    it('classifies matching workspace pseudo-roots (without a package.json) as "broken"', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.badMonorepoNonPackageDir.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'badMonorepoNonPackageDir');
+    });
+
+    it('uses process.cwd when given no cwd parameter', () => {
+      expect.hasAssertions();
+      expect(() => analyzeProjectStructure.sync()).toThrow(
+        ErrorMessage.NotAGitRepositoryError()
+      );
+    });
+
+    it('correctly determines repository type', () => {
+      expect.hasAssertions();
+
+      expect(analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root }).type).toBe(
+        ProjectAttribute.Monorepo
+      );
+
+      expect(analyzeProjectStructure.sync({ cwd: fixtures.goodPolyrepo.root }).type).toBe(
+        ProjectAttribute.Polyrepo
+      );
+    });
+
+    it('returns correct rootPackage regardless of cwd', () => {
+      expect.hasAssertions();
+
+      const expectedJsonSpec = patchReadPackageJsonAtRoot(
+        {
+          [fixtures.goodMonorepo.root]: {
+            name: 'good-monorepo-package-json-name',
+            workspaces: ['packages/*']
+          },
+          [fixtures.goodPolyrepo.root]: {
+            name: 'good-polyrepo-package-json-name'
+          }
+        },
+        { replace: true }
+      );
+
+      {
+        const { rootPackage } = analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+        });
+
+        expect(rootPackage).toStrictEqual({
+          root: fixtures.goodMonorepo.root,
+          json: expectedJsonSpec[fixtures.goodMonorepo.root],
+          attributes: fixtures.goodMonorepo.attributes,
+          projectMetadata: expect.anything()
+        });
+      }
+
+      {
+        const { rootPackage } = analyzeProjectStructure.sync({
+          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath
+        });
+
+        expect(rootPackage).toStrictEqual({
+          root: fixtures.goodMonorepo.root,
+          json: expectedJsonSpec[fixtures.goodMonorepo.root],
+          attributes: fixtures.goodMonorepo.attributes,
+          projectMetadata: expect.anything()
+        });
+      }
+
+      {
+        const { rootPackage } = analyzeProjectStructure.sync({
+          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath
+        });
+
+        expect(rootPackage).toStrictEqual({
+          root: fixtures.goodMonorepo.root,
+          json: expectedJsonSpec[fixtures.goodMonorepo.root],
+          attributes: fixtures.goodMonorepo.attributes,
+          projectMetadata: expect.anything()
+        });
+      }
+
+      {
+        const { rootPackage } = analyzeProjectStructure.sync({
+          cwd: fixtures.goodPolyrepo.root
+        });
+
+        expect(rootPackage).toStrictEqual({
+          root: fixtures.goodPolyrepo.root,
+          json: expectedJsonSpec[fixtures.goodPolyrepo.root],
+          attributes: fixtures.goodPolyrepo.attributes,
+          projectMetadata: expect.anything()
+        });
+      }
+
+      {
+        const { rootPackage } = analyzeProjectStructure.sync({
+          cwd: `${fixtures.goodPolyrepo.root}/src` as AbsolutePath
+        });
+
+        expect(rootPackage).toStrictEqual({
+          root: fixtures.goodPolyrepo.root,
+          json: expectedJsonSpec[fixtures.goodPolyrepo.root],
+          attributes: fixtures.goodPolyrepo.attributes,
+          projectMetadata: expect.anything()
+        });
+      }
+    });
+
+    it('populates subRootPackages with correct WorkspacePackage objects in monorepo', () => {
+      expect.hasAssertions();
+
+      checkForExpectedPackages(
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepo.root
+        }).subRootPackages,
+        'goodMonorepo'
+      );
+    });
+
+    it('returns undefined subRootPackages when in polyrepo', () => {
+      expect.hasAssertions();
+
+      expect(
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodPolyrepo.root
+        }).subRootPackages
+      ).toBeUndefined();
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodPolyrepo.root
+      });
+
+      expect(result.rootPackage).not.toBe(
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodPolyrepo.root,
+          useCached: false
+        }).rootPackage
+      );
+
+      expect(
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodPolyrepo.root
+        }).rootPackage
+      ).toBe(result.rootPackage);
+    });
+
+    it('defines cwdPackage properly when returning project metadata from internal cache and cwd changes from monorepo root to a sub-root of the same monorepo', () => {
+      expect.hasAssertions();
+
+      expect(
+        analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root }).cwdPackage
+      ).toStrictEqual(fixtureToProjectMetadata('goodMonorepo').rootPackage);
+
+      expect(
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+        }).cwdPackage
+      ).toStrictEqual(fixtures.goodMonorepo.namedPackageMapData[0][1]);
+    });
+
+    it('sets subRootPackages[package.json.name] to strictly equal cwdPackage when expected', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+      });
+
+      expect(result.subRootPackages?.get(result.cwdPackage.json.name!)).toBe(
+        result.cwdPackage
+      );
+
+      expect(!!result.cwdPackage).toBeTrue();
+    });
+
+    it('sets subRootPackages.unnamed[package.id] to strictly equal cwdPackage when expected', () => {
+      expect.hasAssertions();
+
+      const result = analyzeProjectStructure.sync({
+        cwd: fixtures.goodMonorepo.unnamedPackageMapData[0][1].root
+      });
+
+      expect(
+        result.subRootPackages?.unnamed.get((result.cwdPackage as WorkspacePackage).id)
+      ).toBe(result.cwdPackage);
+
+      expect(!!result.cwdPackage).toBeTrue();
+    });
+
+    it('throws when passed non-existent projectRoot', () => {
+      expect.hasAssertions();
+
+      expect(() =>
+        analyzeProjectStructure.sync({ cwd: '/fake/root' as AbsolutePath })
+      ).toThrow(ErrorMessage.NotAGitRepositoryError());
+    });
+
+    it('throws when failing to find a .git directory', () => {
+      expect.hasAssertions();
+
+      expect(() =>
+        analyzeProjectStructure.sync({ cwd: '/does/not/exist' as AbsolutePath })
+      ).toThrow(ErrorMessage.NotAGitRepositoryError());
+    });
+
+    it('throws when passed a relative cwd', () => {
+      expect.hasAssertions();
+
+      expect(() =>
+        analyzeProjectStructure.sync({ cwd: 'does/not/exist' as AbsolutePath })
+      ).toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist'));
+    });
+
+    it('throws when a project has conflicting cli and next attributes', () => {
+      expect.hasAssertions();
+
+      expect(() =>
+        analyzeProjectStructure.sync({
+          cwd: fixtures.badPolyrepoConflictingAttributes.root
+        })
+      ).toThrow(ErrorMessage.CannotBeCliAndNextJs());
+    });
+
+    it('throws when a project has a bad "type" field in package.json', () => {
+      expect.hasAssertions();
+
+      expect(() =>
+        analyzeProjectStructure.sync({ cwd: fixtures.badPolyrepoBadType.root })
+      ).toThrow(ErrorMessage.BadProjectTypeInPackageJson());
+    });
+
+    it('throws when two packages have the same "name" field in package.json', () => {
+      expect.hasAssertions();
+
+      expect(() =>
+        analyzeProjectStructure.sync({
+          cwd: fixtures.badMonorepoDuplicateName.root
+        })
+      ).toThrow(ErrorMessage.DuplicatePackageName('pkg', '', '').trim());
+    });
+
+    it('throws when two unnamed packages resolve to the same package-id', () => {
+      expect.hasAssertions();
+
+      expect(() =>
+        analyzeProjectStructure.sync({
+          cwd: fixtures.badMonorepoDuplicateIdUnnamed.root
+        })
+      ).toThrow(
+        ErrorMessage.DuplicatePackageId(
+          'pkg-1',
+          `${fixtures.badMonorepoDuplicateIdUnnamed.root}/packages-1/pkg-1`,
+          `${fixtures.badMonorepoDuplicateIdUnnamed.root}/packages-2/pkg-1`
+        )
+      );
+    });
+
+    it('throws when two differently-named packages resolve to the same package-id', () => {
+      expect.hasAssertions();
+
+      expect(() =>
+        analyzeProjectStructure.sync({ cwd: fixtures.badMonorepoDuplicateIdNamed.root })
+      ).toThrow(
+        ErrorMessage.DuplicatePackageId(
+          'pkg-1',
+          `${fixtures.badMonorepoDuplicateIdNamed.root}/packages-2/pkg-1`,
+          `${fixtures.badMonorepoDuplicateIdNamed.root}/packages-1/pkg-1`
+        )
+      );
+    });
+  });
+
+  describe('<asynchronous>', () => {
+    it('accepts workspaces.packages array in package.json', async () => {
       expect.hasAssertions();
 
       await expect(
-        gatherPackageBuildTargets({
-          projectMetadata: fixtureToProjectMetadata('goodHybridrepoMultiversal'),
-          targetPackageName: 'private'
+        analyzeProjectStructure({ cwd: fixtures.goodMonorepoWeirdYarn.root })
+      ).resolves.toBeDefined();
+    });
+
+    it('returns expected metadata when cwd is polyrepo project root', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodPolyrepo.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      expect(result.subRootPackages).toBeUndefined();
+      expect(result.type).toStrictEqual(ProjectAttribute.Polyrepo);
+
+      expect(result.rootPackage.attributes).toStrictEqual(
+        fixtures.goodPolyrepo.attributes
+      );
+
+      expect(result.rootPackage.json).toStrictEqual(fixtures.goodPolyrepo.json);
+      expect(result.rootPackage.root).toBe(fixtures.goodPolyrepo.root);
+      expect(result.rootPackage.projectMetadata).toBe(result);
+    });
+
+    it('returns expected metadata when cwd is monorepo project root', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodMonorepo.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      expect(result.subRootPackages).toBeDefined();
+      expect(result.type).toStrictEqual(ProjectAttribute.Monorepo);
+
+      expect(result.rootPackage.attributes).toStrictEqual(
+        fixtures.goodMonorepo.attributes
+      );
+
+      expect(result.rootPackage.json).toStrictEqual(fixtures.goodMonorepo.json);
+      expect(result.rootPackage.root).toBe(fixtures.goodMonorepo.root);
+      expect(result.rootPackage.projectMetadata).toBe(result);
+
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepo');
+    });
+
+    it('returns expected metadata when cwd is hybridrepo project root', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodHybridrepo.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      expect(result.subRootPackages).toBeDefined();
+      expect(result.type).toStrictEqual(ProjectAttribute.Monorepo);
+
+      expect(result.rootPackage.attributes).toStrictEqual(
+        fixtures.goodHybridrepo.attributes
+      );
+
+      expect(result.rootPackage.json).toStrictEqual(fixtures.goodHybridrepo.json);
+      expect(result.rootPackage.root).toBe(fixtures.goodHybridrepo.root);
+      expect(result.rootPackage.projectMetadata).toBe(result);
+
+      checkForExpectedPackages(result.subRootPackages, 'goodHybridrepo');
+    });
+
+    it('returns expected project and workspace attributes for various Next.js projects', async () => {
+      expect.hasAssertions();
+
+      {
+        const result = await analyzeProjectStructure({
+          cwd: fixtures.badMonorepoNextjsProject.root
+        });
+
+        expect(result.rootPackage.attributes).toStrictEqual(
+          fixtures.badMonorepoNextjsProject.attributes
+        );
+
+        checkForExpectedPackages(result.subRootPackages, 'badMonorepoNextjsProject');
+      }
+
+      {
+        const result = await analyzeProjectStructure({
+          cwd: fixtures.badPolyrepoNextjsProject.root
+        });
+
+        expect(result.rootPackage.attributes).toStrictEqual(
+          fixtures.badPolyrepoNextjsProject.attributes
+        );
+
+        expect(result.subRootPackages).toBeUndefined();
+      }
+
+      {
+        const result = await analyzeProjectStructure({
+          cwd: fixtures.goodMonorepoNextjsProject.root
+        });
+
+        expect(result.rootPackage.attributes).toStrictEqual(
+          fixtures.goodMonorepoNextjsProject.attributes
+        );
+
+        checkForExpectedPackages(result.subRootPackages, 'goodMonorepoNextjsProject');
+      }
+
+      {
+        const result = await analyzeProjectStructure({
+          cwd: fixtures.goodPolyrepoNextjsProject.root
+        });
+
+        expect(result.rootPackage.attributes).toStrictEqual(
+          fixtures.goodPolyrepoNextjsProject.attributes
+        );
+
+        expect(result.subRootPackages).toBeUndefined();
+      }
+    });
+
+    it('returns expected subRootPackages and cwdPackage when cwd is monorepo root with the same name as a sub-root', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodMonorepoWeirdSameNames.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoWeirdSameNames');
+    });
+
+    it('returns expected subRootPackages and cwdPackage when cwd is a sub-root', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+      });
+
+      expect(result.cwdPackage).toStrictEqual(
+        fixtures.goodMonorepo.namedPackageMapData[0][1]
+      );
+
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepo');
+    });
+
+    it('returns expected subRootPackages and cwdPackage when cwd is under the project root but not under a sub-root', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepo');
+    });
+
+    it('returns expected subRootPackages and cwdPackage when cwd is somewhere under a sub-root', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath
+      });
+
+      expect(result.cwdPackage).toStrictEqual(
+        fixtures.goodMonorepo.namedPackageMapData[0][1]
+      );
+
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepo');
+    });
+
+    it('returns expected subRootPackages and cwdPackage with simple workspace cwd', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: `${fixtures.goodMonorepoSimplePaths.namedPackageMapData[0][1].root}/src` as AbsolutePath
+      });
+
+      expect(result.cwdPackage).toStrictEqual(
+        fixtures.goodMonorepoSimplePaths.namedPackageMapData[0][1]
+      );
+
+      expect(result.rootPackage.attributes).toStrictEqual(
+        fixtures.goodMonorepoSimplePaths.attributes
+      );
+
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoSimplePaths');
+    });
+
+    it('returns expected subRootPackages and cwdPackage when workspace cwd uses Windows-style path separators', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodMonorepoWindows.namedPackageMapData[0][1].root
+      });
+
+      expect(result.cwdPackage).toStrictEqual(
+        fixtures.goodMonorepoWindows.namedPackageMapData[0][1]
+      );
+
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoWindows');
+    });
+
+    it('returns expected subRootPackages and cwdPackage when cwd is under the project root but not under a sub-root in a monorepo with weird absolute paths', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: `${fixtures.goodMonorepoWeirdAbsolute.namedPackageMapData[0][1].root}/..` as AbsolutePath
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoWeirdAbsolute');
+    });
+
+    it('normalizes workspace cwd to ignore non-directories', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodMonorepoWeirdBoneless.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoWeirdBoneless');
+    });
+
+    it('does not return duplicates when dealing with overlapping workspace glob paths, some negated', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodMonorepoWeirdOverlap.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoWeirdOverlap');
+    });
+
+    it('works with nthly-negated workspace paths where order matters', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodMonorepoNegatedPaths.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'goodMonorepoNegatedPaths');
+    });
+
+    it('classifies matching workspace pseudo-roots (without a package.json) as "broken"', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.badMonorepoNonPackageDir.root
+      });
+
+      expect(result.cwdPackage).toBe(result.rootPackage);
+      checkForExpectedPackages(result.subRootPackages, 'badMonorepoNonPackageDir');
+    });
+
+    it('uses process.cwd when given no cwd parameter', async () => {
+      expect.hasAssertions();
+      await expect(analyzeProjectStructure()).rejects.toThrow(
+        ErrorMessage.NotAGitRepositoryError()
+      );
+    });
+
+    it('correctly determines repository type', async () => {
+      expect.hasAssertions();
+
+      expect(
+        (await analyzeProjectStructure({ cwd: fixtures.goodMonorepo.root })).type
+      ).toBe(ProjectAttribute.Monorepo);
+
+      expect(
+        (await analyzeProjectStructure({ cwd: fixtures.goodPolyrepo.root })).type
+      ).toBe(ProjectAttribute.Polyrepo);
+    });
+
+    it('returns correct rootPackage regardless of cwd', async () => {
+      expect.hasAssertions();
+
+      const expectedJsonSpec = patchReadPackageJsonAtRoot(
+        {
+          [fixtures.goodMonorepo.root]: {
+            name: 'good-monorepo-package-json-name',
+            workspaces: ['packages/*']
+          },
+          [fixtures.goodPolyrepo.root]: {
+            name: 'good-polyrepo-package-json-name'
+          }
+        },
+        { replace: true }
+      );
+
+      {
+        const { rootPackage } = await analyzeProjectStructure({
+          cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+        });
+
+        expect(rootPackage).toStrictEqual({
+          root: fixtures.goodMonorepo.root,
+          json: expectedJsonSpec[fixtures.goodMonorepo.root],
+          attributes: fixtures.goodMonorepo.attributes,
+          projectMetadata: expect.anything()
+        });
+      }
+
+      {
+        const { rootPackage } = await analyzeProjectStructure({
+          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath
+        });
+
+        expect(rootPackage).toStrictEqual({
+          root: fixtures.goodMonorepo.root,
+          json: expectedJsonSpec[fixtures.goodMonorepo.root],
+          attributes: fixtures.goodMonorepo.attributes,
+          projectMetadata: expect.anything()
+        });
+      }
+
+      {
+        const { rootPackage } = await analyzeProjectStructure({
+          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath
+        });
+
+        expect(rootPackage).toStrictEqual({
+          root: fixtures.goodMonorepo.root,
+          json: expectedJsonSpec[fixtures.goodMonorepo.root],
+          attributes: fixtures.goodMonorepo.attributes,
+          projectMetadata: expect.anything()
+        });
+      }
+
+      {
+        const { rootPackage } = await analyzeProjectStructure({
+          cwd: fixtures.goodPolyrepo.root
+        });
+
+        expect(rootPackage).toStrictEqual({
+          root: fixtures.goodPolyrepo.root,
+          json: expectedJsonSpec[fixtures.goodPolyrepo.root],
+          attributes: fixtures.goodPolyrepo.attributes,
+          projectMetadata: expect.anything()
+        });
+      }
+
+      {
+        const { rootPackage } = await analyzeProjectStructure({
+          cwd: `${fixtures.goodPolyrepo.root}/src` as AbsolutePath
+        });
+
+        expect(rootPackage).toStrictEqual({
+          root: fixtures.goodPolyrepo.root,
+          json: expectedJsonSpec[fixtures.goodPolyrepo.root],
+          attributes: fixtures.goodPolyrepo.attributes,
+          projectMetadata: expect.anything()
+        });
+      }
+    });
+
+    it('populates subRootPackages with correct WorkspacePackage objects in monorepo', async () => {
+      expect.hasAssertions();
+
+      checkForExpectedPackages(
+        (
+          await analyzeProjectStructure({
+            cwd: fixtures.goodMonorepo.root
+          })
+        ).subRootPackages,
+        'goodMonorepo'
+      );
+    });
+
+    it('returns undefined subRootPackages when in polyrepo', async () => {
+      expect.hasAssertions();
+
+      expect(
+        (
+          await analyzeProjectStructure({
+            cwd: fixtures.goodPolyrepo.root
+          })
+        ).subRootPackages
+      ).toBeUndefined();
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodPolyrepo.root
+      });
+
+      expect(result.rootPackage).not.toBe(
+        (
+          await analyzeProjectStructure({
+            cwd: fixtures.goodPolyrepo.root,
+            useCached: false
+          })
+        ).rootPackage
+      );
+
+      expect(
+        (
+          await analyzeProjectStructure({
+            cwd: fixtures.goodPolyrepo.root
+          })
+        ).rootPackage
+      ).toBe(result.rootPackage);
+    });
+
+    it('defines cwdPackage properly when returning project metadata from internal cache and cwd changes from monorepo root to a sub-root of the same monorepo', async () => {
+      expect.hasAssertions();
+
+      expect(
+        (await analyzeProjectStructure({ cwd: fixtures.goodMonorepo.root })).cwdPackage
+      ).toStrictEqual(fixtureToProjectMetadata('goodMonorepo').rootPackage);
+
+      expect(
+        (
+          await analyzeProjectStructure({
+            cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+          })
+        ).cwdPackage
+      ).toStrictEqual(fixtures.goodMonorepo.namedPackageMapData[0][1]);
+    });
+
+    it('sets subRootPackages[package.json.name] to strictly equal cwdPackage when expected', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+      });
+
+      expect(result.subRootPackages?.get(result.cwdPackage.json.name!)).toBe(
+        result.cwdPackage
+      );
+
+      expect(!!result.cwdPackage).toBeTrue();
+    });
+
+    it('sets subRootPackages.unnamed[package.id] to strictly equal cwdPackage when expected', async () => {
+      expect.hasAssertions();
+
+      const result = await analyzeProjectStructure({
+        cwd: fixtures.goodMonorepo.unnamedPackageMapData[0][1].root
+      });
+
+      expect(
+        result.subRootPackages?.unnamed.get((result.cwdPackage as WorkspacePackage).id)
+      ).toBe(result.cwdPackage);
+
+      expect(!!result.cwdPackage).toBeTrue();
+    });
+
+    it('throws when passed non-existent projectRoot', async () => {
+      expect.hasAssertions();
+
+      await expect(
+        analyzeProjectStructure({ cwd: '/fake/root' as AbsolutePath })
+      ).rejects.toThrow(ErrorMessage.NotAGitRepositoryError());
+    });
+
+    it('throws when failing to find a .git directory', async () => {
+      expect.hasAssertions();
+
+      await expect(
+        analyzeProjectStructure({ cwd: '/does/not/exist' as AbsolutePath })
+      ).rejects.toThrow(ErrorMessage.NotAGitRepositoryError());
+    });
+
+    it('throws when passed a relative cwd', async () => {
+      expect.hasAssertions();
+
+      await expect(
+        analyzeProjectStructure({ cwd: 'does/not/exist' as AbsolutePath })
+      ).rejects.toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist'));
+    });
+
+    it('throws when a project has conflicting cli and next attributes', async () => {
+      expect.hasAssertions();
+
+      await expect(
+        analyzeProjectStructure({ cwd: fixtures.badPolyrepoConflictingAttributes.root })
+      ).rejects.toThrow(ErrorMessage.CannotBeCliAndNextJs());
+    });
+
+    it('throws when a project has a bad "type" field in package.json', async () => {
+      expect.hasAssertions();
+
+      await expect(
+        analyzeProjectStructure({ cwd: fixtures.badPolyrepoBadType.root })
+      ).rejects.toThrow(ErrorMessage.BadProjectTypeInPackageJson());
+    });
+
+    it('throws when two packages have the same "name" field in package.json', async () => {
+      expect.hasAssertions();
+
+      await expect(
+        analyzeProjectStructure({
+          cwd: fixtures.badMonorepoDuplicateName.root
         })
-      ).rejects.toThrow(ErrorMessage.UnknownWorkspacePackageName('private'));
+      ).rejects.toThrow(ErrorMessage.DuplicatePackageName('pkg', '', '').trim());
+    });
+
+    it('throws when two unnamed packages resolve to the same package-id', async () => {
+      expect.hasAssertions();
+
+      await expect(
+        analyzeProjectStructure({
+          cwd: fixtures.badMonorepoDuplicateIdUnnamed.root
+        })
+      ).rejects.toThrow(
+        ErrorMessage.DuplicatePackageId(
+          'pkg-1',
+          `${fixtures.badMonorepoDuplicateIdUnnamed.root}/packages-1/pkg-1`,
+          `${fixtures.badMonorepoDuplicateIdUnnamed.root}/packages-2/pkg-1`
+        )
+      );
+    });
+
+    it('throws when two differently-named packages resolve to the same package-id', async () => {
+      expect.hasAssertions();
+
+      await expect(
+        analyzeProjectStructure({ cwd: fixtures.badMonorepoDuplicateIdNamed.root })
+      ).rejects.toThrow(
+        ErrorMessage.DuplicatePackageId(
+          'pkg-1',
+          `${fixtures.badMonorepoDuplicateIdNamed.root}/packages-2/pkg-1`,
+          `${fixtures.badMonorepoDuplicateIdNamed.root}/packages-1/pkg-1`
+        )
+      );
     });
   });
 });
 
 function checkForExpectedPackages(
-  maybeResult: RootPackage['packages'],
+  maybeResult: ProjectMetadata['subRootPackages'],
   fixtureName: FixtureName
 ) {
   const result = maybeResult!;
@@ -3709,17 +4029,17 @@ function checkForExpectedPackages(
   expect(maybeResult).toBeDefined();
 
   expect(Array.from(result.entries())).toIncludeSameMembers(
-    fixtures[fixtureName].namedPkgMapData
+    fixtures[fixtureName].namedPackageMapData
   );
 
   expect(Array.from(result.unnamed.entries())).toIncludeSameMembers(
-    fixtures[fixtureName].unnamedPkgMapData
+    fixtures[fixtureName].unnamedPackageMapData
   );
 
-  expect(result.broken).toIncludeSameMembers(fixtures[fixtureName].brokenPkgRoots);
+  expect(result.broken).toIncludeSameMembers(fixtures[fixtureName].brokenPackageRoots);
 
   expect(result.all).toIncludeSameMembers([
-    ...fixtures[fixtureName].namedPkgMapData.map(([, data]) => data),
-    ...fixtures[fixtureName].unnamedPkgMapData.map(([, data]) => data)
+    ...fixtures[fixtureName].namedPackageMapData.map(([, data]) => data),
+    ...fixtures[fixtureName].unnamedPackageMapData.map(([, data]) => data)
   ]);
 }
