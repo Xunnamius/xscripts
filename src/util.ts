@@ -119,7 +119,7 @@ export async function runGlobalPreChecks({
   debug('cwdPackage root: %O', packageRoot);
   debug('cwd (must match one of the above): %O', cwd);
 
-  if ([projectRoot, packageRoot].includes(cwd)) {
+  if (![projectRoot, packageRoot].includes(cwd)) {
     throw new CliError(ErrorMessage.CannotRunOutsideRoot());
   }
 
