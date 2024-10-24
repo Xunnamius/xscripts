@@ -156,7 +156,10 @@ The second way is by running the following npm scripts in the specified order:
 # npm run clean -- --force
 
 # 2. Lint all recognized source file types under the current working directory.
-npm run lint:source
+npm run lint:package:source
+# The above only lints the current package if in a monorepo. To lint the entire
+# monorepo, use the following instead:
+#npm run lint:packages:all
 
 # 3. Build this package's distributables.
 npm run build
@@ -172,7 +175,10 @@ npm run build:docs
 # npm run lint:project
 
 # 7. Run all of this package's tests and generate coverage data.
-npm run test:all
+npm run test:package:all
+# The above only tests the current package if in a monorepo. To test the entire
+# monorepo, use the following instead:
+#npm run test:packages:all
 
 # 8. Trigger semantic-release locally to public a new release of this package.
 # This requires having valid tokens for NPM, GitHub, and Codecov each with the

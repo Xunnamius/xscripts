@@ -85,11 +85,11 @@ $1 according to the release procedure described in the MAINTAINING.md file and a
 
 1. Validate environment variables
 2. [prerelease task] Run npm ci
-3. [prerelease task] [npm run lint:source] xscripts lint --scope=this-package-source
+3. [prerelease task] [npm run lint:package:source] xscripts lint --scope=this-package-source
 4. [prerelease task] [npm run build] xscripts build distributables
 5. [prerelease task] [npm run format] xscripts format
 6. [prerelease task] [npm run build:docs] xscripts build documentation
-7. [prerelease task] [npm run test:all] xscripts test --coverage
+7. [prerelease task] [npm run test:package:all] xscripts test --coverage
 8. xscripts project renovate --synchronize-interdependencies (affects this package only)
 9. Run semantic-release
 10. Upload coverage results to Codecov
