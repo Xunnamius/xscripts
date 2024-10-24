@@ -19,12 +19,13 @@ ignore.*
 
 # Ignore relevant build artifacts in any subdir (with exceptions)
 *.tsbuildinfo
-# ? Preceding AND proceding asterisks (**) are needed to match any build subdir
-# ? in monorepos and allow subsequent negations to be interpreted properly.
+# ? Preceding asterisks "**/" are needed to match any build subdir in monorepos
+# ? and proceding asterisks "/**" allow subsequent negations to be interpreted
+# ? properly. See: https://git-scm.com/docs/gitignore#_pattern_format
 **/build/**
-# ? This negation must end in "/**" to be interpreted properly.
+# ? This and other negations must end in "/**" to be interpreted properly.
 !**/src/**/build/**
-# ? This negation must end in "/**" to be interpreted properly.
+# ? This and other negations must end in "/**" to be interpreted properly.
 !**/docs/**/build/**
 dist
 coverage
