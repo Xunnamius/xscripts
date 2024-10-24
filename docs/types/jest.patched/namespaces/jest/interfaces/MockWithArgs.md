@@ -64,7 +64,7 @@ Provides access to the mock's metadata
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1322
+node\_modules/@types/jest/index.d.ts:1321
 
 ## Methods
 
@@ -84,7 +84,7 @@ Returns the function that was set as the implementation of the mock (using mockI
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1358
+node\_modules/@types/jest/index.d.ts:1357
 
 ***
 
@@ -104,7 +104,7 @@ Returns the mock name string set by calling `mockFn.mockName(value)`.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1320
+node\_modules/@types/jest/index.d.ts:1319
 
 ***
 
@@ -130,7 +130,7 @@ don't access stale data.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1332
+node\_modules/@types/jest/index.d.ts:1331
 
 ***
 
@@ -158,7 +158,7 @@ Note: `jest.fn(implementation)` is a shorthand for `jest.fn().mockImplementation
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1366
+node\_modules/@types/jest/index.d.ts:1365
 
 ***
 
@@ -196,7 +196,7 @@ myMockFn((err, val) => console.log(val)); // false
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1382
+node\_modules/@types/jest/index.d.ts:1381
 
 ***
 
@@ -220,7 +220,7 @@ Sets the name of the mock.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1398
+node\_modules/@types/jest/index.d.ts:1397
 
 ***
 
@@ -254,7 +254,7 @@ test('async test', async () => {
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1471
+node\_modules/@types/jest/index.d.ts:1470
 
 ***
 
@@ -292,7 +292,7 @@ test('async test', async () => {
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1488
+node\_modules/@types/jest/index.d.ts:1487
 
 ***
 
@@ -318,7 +318,7 @@ don't access stale data.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1342
+node\_modules/@types/jest/index.d.ts:1341
 
 ***
 
@@ -342,7 +342,7 @@ Simple sugar function for: `jest.fn().mockImplementation(() => Promise.resolve(v
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1440
+node\_modules/@types/jest/index.d.ts:1439
 
 ***
 
@@ -383,7 +383,7 @@ test('async test', async () => {
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1459
+node\_modules/@types/jest/index.d.ts:1458
 
 ***
 
@@ -411,7 +411,7 @@ to restore mocks automatically between tests.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1354
+node\_modules/@types/jest/index.d.ts:1353
 
 ***
 
@@ -439,7 +439,7 @@ jest.fn(function() {
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1408
+node\_modules/@types/jest/index.d.ts:1407
 
 ***
 
@@ -473,7 +473,7 @@ mock(); // 43
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1420
+node\_modules/@types/jest/index.d.ts:1419
 
 ***
 
@@ -511,7 +511,7 @@ console.log(myMockFn(), myMockFn(), myMockFn(), myMockFn());
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1436
+node\_modules/@types/jest/index.d.ts:1435
 
 ***
 
@@ -545,7 +545,7 @@ Awaiting the promise will await the callback and reset the implementation.
 
 ##### Defined in
 
-node\_modules/@types/jest/index.d.ts:1391
+node\_modules/@types/jest/index.d.ts:1390
 
 #### withImplementation(fn, callback)
 
@@ -570,4 +570,4 @@ then restores its previous implementation.
 
 ##### Defined in
 
-node\_modules/@types/jest/index.d.ts:1396
+node\_modules/@types/jest/index.d.ts:1395

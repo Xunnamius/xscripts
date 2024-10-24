@@ -16,7 +16,7 @@ Represents the result of a single call to a mock function with a thrown error.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1509
+node\_modules/@types/jest/index.d.ts:1508
 
 ***
 
@@ -26,4 +26,4 @@ node\_modules/@types/jest/index.d.ts:1509
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1510
+node\_modules/@types/jest/index.d.ts:1509

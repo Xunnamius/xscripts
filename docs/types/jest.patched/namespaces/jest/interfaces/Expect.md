@@ -38,7 +38,7 @@ The value to apply matchers against.
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:692
+node\_modules/@types/jest/index.d.ts:690
 
 ## Properties
 
@@ -48,7 +48,7 @@ node\_modules/@types/jest/index.d.ts:692
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:778
+node\_modules/@types/jest/index.d.ts:776
 
 ## Methods
 
@@ -68,7 +68,7 @@ Adds a module to format application-specific data structures for serialization.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:759
+node\_modules/@types/jest/index.d.ts:757
 
 ***
 
@@ -103,7 +103,7 @@ test('randocall calls its callback with a number', () => {
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:723
+node\_modules/@types/jest/index.d.ts:721
 
 ***
 
@@ -131,7 +131,7 @@ test('map calls its argument with a non-null argument', () => {
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:706
+node\_modules/@types/jest/index.d.ts:704
 
 ***
 
@@ -158,7 +158,7 @@ Optionally, you can provide a type for the elements via a generic.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:731
+node\_modules/@types/jest/index.d.ts:729
 
 ***
 
@@ -180,7 +180,7 @@ make sure that assertions in a callback actually got called.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:737
+node\_modules/@types/jest/index.d.ts:735
 
 ***
 
@@ -206,7 +206,7 @@ For the default value 2, the test criterion is `Math.abs(expected - received) < 
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:745
+node\_modules/@types/jest/index.d.ts:743
 
 ***
 
@@ -226,7 +226,7 @@ You can use `expect.extend` to add your own matchers to Jest.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:755
+node\_modules/@types/jest/index.d.ts:753
 
 ***
 
@@ -265,7 +265,7 @@ node\_modules/jest-extended/types/index.d.ts:18
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:781
+node\_modules/@types/jest/index.d.ts:779
 
 ***
 
@@ -283,7 +283,7 @@ make sure that assertions in a callback actually got called.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:751
+node\_modules/@types/jest/index.d.ts:749
 
 ***
 
@@ -311,7 +311,7 @@ This ensures that the object contains the desired structure.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:768
+node\_modules/@types/jest/index.d.ts:766
 
 ***
 
@@ -354,7 +354,7 @@ node\_modules/jest-extended/types/index.d.ts:10
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:780
+node\_modules/@types/jest/index.d.ts:778
 
 ***
 
@@ -374,7 +374,7 @@ Matches any received string that contains the exact expected string
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:776
+node\_modules/@types/jest/index.d.ts:774
 
 ***
 
@@ -394,7 +394,7 @@ Matches any string that contains the exact provided string
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:772
+node\_modules/@types/jest/index.d.ts:770
 
 ***
 

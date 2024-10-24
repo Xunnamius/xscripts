@@ -42,4 +42,4 @@
 
 ## Defined in
 
-[src/commands/lint.ts:98](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/commands/lint.ts#L98)
+[src/commands/lint.ts:103](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/commands/lint.ts#L103)

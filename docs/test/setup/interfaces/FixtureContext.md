@@ -22,7 +22,7 @@
 
 #### Defined in
 
-[test/setup.ts:717](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L717)
+[test/setup.ts:720](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L720)
 
 ***
 
@@ -36,7 +36,7 @@
 
 #### Defined in
 
-[test/setup.ts:716](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L716)
+[test/setup.ts:719](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L719)
 
 ***
 
@@ -145,7 +145,7 @@ context root.
 
 #### Defined in
 
-[test/setup.ts:722](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L722)
+[test/setup.ts:725](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L725)
 
 ***
 
@@ -159,7 +159,7 @@ context root.
 
 #### Defined in
 
-[test/setup.ts:746](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L746)
+[test/setup.ts:749](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L749)
 
 ***
 
@@ -169,7 +169,7 @@ context root.
 
 #### Defined in
 
-[test/setup.ts:714](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L714)
+[test/setup.ts:717](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L717)
 
 ***
 
@@ -179,7 +179,7 @@ context root.
 
 #### Defined in
 
-[test/setup.ts:712](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L712)
+[test/setup.ts:715](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L715)
 
 ***
 
@@ -189,7 +189,7 @@ context root.
 
 #### Defined in
 
-[test/setup.ts:713](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L713)
+[test/setup.ts:716](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L716)
 
 ***
 
@@ -387,7 +387,7 @@ Whether the subprocess timed out due to the `timeout` option.
 
 #### Defined in
 
-[test/setup.ts:736](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L736)
+[test/setup.ts:739](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L739)
 
 ***
 
@@ -401,7 +401,7 @@ Whether the subprocess timed out due to the `timeout` option.
 
 #### Defined in
 
-[test/setup.ts:741](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L741)
+[test/setup.ts:744](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L744)
 
 ***
 
@@ -411,4 +411,4 @@ Whether the subprocess timed out due to the `timeout` option.
 
 #### Defined in
 
-[test/setup.ts:715](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L715)
+[test/setup.ts:718](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L718)

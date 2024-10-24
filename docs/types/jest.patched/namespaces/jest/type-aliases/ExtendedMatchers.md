@@ -18,4 +18,4 @@
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:1182
+node\_modules/@types/jest/index.d.ts:1180

@@ -14,4 +14,4 @@
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:784
+node\_modules/@types/jest/index.d.ts:782

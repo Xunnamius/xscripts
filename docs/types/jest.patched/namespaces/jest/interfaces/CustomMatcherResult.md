@@ -18,7 +18,7 @@
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:639
+node\_modules/@types/jest/index.d.ts:637
 
 ***
 
@@ -28,4 +28,4 @@ node\_modules/@types/jest/index.d.ts:639
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:638
+node\_modules/@types/jest/index.d.ts:636

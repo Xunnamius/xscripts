@@ -24,5 +24,8 @@
 
 ### Functions
 
+- [legacyExtendsFactory](functions/legacyExtendsFactory.md)
+- [makeEslintFlatCompat](functions/makeEslintFlatCompat.md)
 - [moduleExport](functions/moduleExport.md)
+- [overwriteProperty](functions/overwriteProperty.md)
 - [transformer](functions/transformer.md)

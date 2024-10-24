@@ -20,4 +20,4 @@
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:505
+node\_modules/@types/jest/index.d.ts:503

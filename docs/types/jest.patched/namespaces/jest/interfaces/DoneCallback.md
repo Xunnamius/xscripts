@@ -18,7 +18,7 @@
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:497
+node\_modules/@types/jest/index.d.ts:495
 
 ## Methods
 
@@ -36,4 +36,4 @@ node\_modules/@types/jest/index.d.ts:497
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:498
+node\_modules/@types/jest/index.d.ts:496

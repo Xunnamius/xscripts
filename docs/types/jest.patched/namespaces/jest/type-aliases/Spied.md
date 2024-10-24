@@ -16,4 +16,4 @@ Constructs the type of a spied class or function.
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:1248
+node\_modules/@types/jest/index.d.ts:1247

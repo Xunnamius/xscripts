@@ -32,7 +32,7 @@ The timeout for an async function test
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:548
+node\_modules/@types/jest/index.d.ts:546
 
 ## Properties
 
@@ -44,7 +44,7 @@ Experimental and should be avoided.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:570
+node\_modules/@types/jest/index.d.ts:568
 
 ***
 
@@ -93,7 +93,7 @@ ${2} | ${1} | ${3}
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:609
+node\_modules/@types/jest/index.d.ts:607
 
 ***
 
@@ -107,7 +107,7 @@ Only available in the default `jest-circus` runner.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:558
+node\_modules/@types/jest/index.d.ts:556
 
 ***
 
@@ -120,7 +120,7 @@ Ensures this test is run regardless of the invocation of
 
 #### Defined in
 
-[types/jest.patched.d.ts:15](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/types/jest.patched.d.ts#L15)
+[types/jest.patched.d.ts:15](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/types/jest.patched.d.ts#L15)
 
 ***
 
@@ -132,7 +132,7 @@ Only runs this test in the current file.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:552
+node\_modules/@types/jest/index.d.ts:550
 
 ***
 
@@ -144,7 +144,7 @@ Skips running this test in the current file.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:562
+node\_modules/@types/jest/index.d.ts:560
 
 ***
 
@@ -164,4 +164,4 @@ Sketch out which tests to write in the future.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:566
+node\_modules/@types/jest/index.d.ts:564

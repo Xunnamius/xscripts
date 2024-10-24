@@ -20,7 +20,7 @@
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:614
+node\_modules/@types/jest/index.d.ts:612
 
 ## Properties
 
@@ -30,7 +30,7 @@ node\_modules/@types/jest/index.d.ts:614
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:619
+node\_modules/@types/jest/index.d.ts:617
 
 ***
 
@@ -43,7 +43,7 @@ invocation of `reconfigureJestGlobalsToSkipTestsInThisFileIfRequested`.
 
 #### Defined in
 
-[types/jest.patched.d.ts:7](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/types/jest.patched.d.ts#L7)
+[types/jest.patched.d.ts:7](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/types/jest.patched.d.ts#L7)
 
 ***
 
@@ -55,7 +55,7 @@ Only runs the tests inside this `describe` for the current file
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:616
+node\_modules/@types/jest/index.d.ts:614
 
 ***
 
@@ -67,4 +67,4 @@ Skips running the tests inside this `describe` for the current file
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:618
+node\_modules/@types/jest/index.d.ts:616

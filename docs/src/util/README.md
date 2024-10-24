@@ -17,6 +17,7 @@
 - [checkIsNotNegative](functions/checkIsNotNegative.md)
 - [checkIsNotNil](functions/checkIsNotNil.md)
 - [copyFile](functions/copyFile.md)
+- [findOneConfigurationFile](functions/findOneConfigurationFile.md)
 - [hasExitCode](functions/hasExitCode.md)
 - [isNonEmptyString](functions/isNonEmptyString.md)
 - [makeDirectory](functions/makeDirectory.md)

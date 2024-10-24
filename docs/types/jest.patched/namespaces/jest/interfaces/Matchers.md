@@ -62,7 +62,7 @@ in favor of `toHaveBeenLastCalledWith`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:813
+node\_modules/@types/jest/index.d.ts:811
 
 ***
 
@@ -93,7 +93,7 @@ in favor of `toHaveLastReturnedWith`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:823
+node\_modules/@types/jest/index.d.ts:821
 
 ***
 
@@ -126,7 +126,7 @@ in favor of `toHaveBeenNthCalledWith`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:833
+node\_modules/@types/jest/index.d.ts:831
 
 ***
 
@@ -159,7 +159,7 @@ in favor of `toHaveNthReturnedWith`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:843
+node\_modules/@types/jest/index.d.ts:841
 
 ***
 
@@ -208,7 +208,7 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:852
+node\_modules/@types/jest/index.d.ts:850
 
 ***
 
@@ -382,7 +382,7 @@ in favor of `toHaveBeenCalled`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:858
+node\_modules/@types/jest/index.d.ts:856
 
 ***
 
@@ -406,7 +406,7 @@ in favor of `toHaveBeenCalledTimes`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:864
+node\_modules/@types/jest/index.d.ts:862
 
 ***
 
@@ -437,7 +437,7 @@ in favor of `toHaveBeenCalledWith`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:874
+node\_modules/@types/jest/index.d.ts:872
 
 ***
 
@@ -461,7 +461,7 @@ The default for numDigits is 2.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:880
+node\_modules/@types/jest/index.d.ts:878
 
 ***
 
@@ -509,7 +509,7 @@ Ensure that a variable is not undefined.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:884
+node\_modules/@types/jest/index.d.ts:882
 
 ***
 
@@ -606,7 +606,7 @@ ensure a value is false in a boolean context.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:889
+node\_modules/@types/jest/index.d.ts:887
 
 ***
 
@@ -674,7 +674,7 @@ For comparing floating point or big integer numbers.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:893
+node\_modules/@types/jest/index.d.ts:891
 
 ***
 
@@ -694,7 +694,7 @@ For comparing floating point or big integer numbers.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:897
+node\_modules/@types/jest/index.d.ts:895
 
 ***
 
@@ -760,7 +760,7 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:906
+node\_modules/@types/jest/index.d.ts:904
 
 ***
 
@@ -796,7 +796,7 @@ For comparing floating point or big integer numbers.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:910
+node\_modules/@types/jest/index.d.ts:908
 
 ***
 
@@ -816,7 +816,7 @@ For comparing floating point or big integer numbers.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:914
+node\_modules/@types/jest/index.d.ts:912
 
 ***
 
@@ -848,7 +848,7 @@ Used to check that a variable is NaN.
 
 ##### Defined in
 
-node\_modules/@types/jest/index.d.ts:933
+node\_modules/@types/jest/index.d.ts:931
 
 ***
 
@@ -897,7 +897,7 @@ So use `.toBeNull()` when you want to check that something is null.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:919
+node\_modules/@types/jest/index.d.ts:917
 
 ***
 
@@ -1067,7 +1067,7 @@ is true in a boolean context. In JavaScript, there are six falsy values:
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:925
+node\_modules/@types/jest/index.d.ts:923
 
 ***
 
@@ -1083,7 +1083,7 @@ Used to check that a variable is undefined.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:929
+node\_modules/@types/jest/index.d.ts:927
 
 ***
 
@@ -1150,7 +1150,7 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:943
+node\_modules/@types/jest/index.d.ts:941
 
 ***
 
@@ -1371,7 +1371,7 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:953
+node\_modules/@types/jest/index.d.ts:951
 
 ***
 
@@ -1515,7 +1515,7 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:962
+node\_modules/@types/jest/index.d.ts:960
 
 ***
 
@@ -1571,7 +1571,7 @@ Ensures that a mock function is called.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:966
+node\_modules/@types/jest/index.d.ts:964
 
 ***
 
@@ -1675,7 +1675,7 @@ Ensures that a mock function is called an exact number of times.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:970
+node\_modules/@types/jest/index.d.ts:968
 
 ***
 
@@ -1702,7 +1702,7 @@ Note that the type must be either an array or a tuple.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:978
+node\_modules/@types/jest/index.d.ts:976
 
 ***
 
@@ -1730,7 +1730,7 @@ Note that the type must be either an array or a tuple.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:995
+node\_modules/@types/jest/index.d.ts:993
 
 ***
 
@@ -1759,7 +1759,7 @@ Note that the type must be either an array or a tuple.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:986
+node\_modules/@types/jest/index.d.ts:984
 
 ***
 
@@ -1788,7 +1788,7 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1005
+node\_modules/@types/jest/index.d.ts:1003
 
 ***
 
@@ -1809,7 +1809,7 @@ and it is set to a certain numeric value.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1010
+node\_modules/@types/jest/index.d.ts:1008
 
 ***
 
@@ -1840,7 +1840,7 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1020
+node\_modules/@types/jest/index.d.ts:1018
 
 ***
 
@@ -1878,7 +1878,7 @@ expect(houseForSale).toHaveProperty('kitchen.area', 20);
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1035
+node\_modules/@types/jest/index.d.ts:1033
 
 ***
 
@@ -1894,7 +1894,7 @@ Use to test that the mock function successfully returned (i.e., did not throw an
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1039
+node\_modules/@types/jest/index.d.ts:1037
 
 ***
 
@@ -1915,7 +1915,7 @@ Any calls to the mock function that throw an error are not counted toward the nu
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1044
+node\_modules/@types/jest/index.d.ts:1042
 
 ***
 
@@ -1942,7 +1942,7 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1052
+node\_modules/@types/jest/index.d.ts:1050
 
 ***
 
@@ -2120,7 +2120,7 @@ Check that a string matches a regular expression.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1056
+node\_modules/@types/jest/index.d.ts:1054
 
 ***
 
@@ -2150,7 +2150,7 @@ Check out [the Snapshot Testing guide](http://facebook.github.io/jest/docs/snaps
 
 ##### Defined in
 
-node\_modules/@types/jest/index.d.ts:1096
+node\_modules/@types/jest/index.d.ts:1094
 
 #### toMatchInlineSnapshot(snapshot)
 
@@ -2170,7 +2170,7 @@ Check out [the Snapshot Testing guide](http://facebook.github.io/jest/docs/snaps
 
 ##### Defined in
 
-node\_modules/@types/jest/index.d.ts:1102
+node\_modules/@types/jest/index.d.ts:1100
 
 ***
 
@@ -2213,7 +2213,7 @@ expect(desiredHouse).toMatchObject<House>({...standardHouse, kitchen: {area: 20}
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1078
+node\_modules/@types/jest/index.d.ts:1076
 
 ***
 
@@ -2242,7 +2242,7 @@ Check out [the Snapshot Testing guide](http://facebook.github.io/jest/docs/snaps
 
 ##### Defined in
 
-node\_modules/@types/jest/index.d.ts:1084
+node\_modules/@types/jest/index.d.ts:1082
 
 #### toMatchSnapshot(snapshotName)
 
@@ -2261,7 +2261,7 @@ Check out [the Snapshot Testing guide](http://facebook.github.io/jest/docs/snaps
 
 ##### Defined in
 
-node\_modules/@types/jest/index.d.ts:1089
+node\_modules/@types/jest/index.d.ts:1087
 
 ***
 
@@ -2337,7 +2337,7 @@ in favor of `toHaveReturned`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1108
+node\_modules/@types/jest/index.d.ts:1106
 
 ***
 
@@ -2361,7 +2361,7 @@ in favor of `toHaveReturnedTimes`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1114
+node\_modules/@types/jest/index.d.ts:1112
 
 ***
 
@@ -2392,7 +2392,7 @@ in favor of `toHaveReturnedWith`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1124
+node\_modules/@types/jest/index.d.ts:1122
 
 ***
 
@@ -2507,7 +2507,7 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1132
+node\_modules/@types/jest/index.d.ts:1130
 
 ***
 
@@ -2527,7 +2527,7 @@ Used to test that a function throws when it is called.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1136
+node\_modules/@types/jest/index.d.ts:1134
 
 ***
 
@@ -2551,7 +2551,7 @@ in favor of `toThrow`
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1142
+node\_modules/@types/jest/index.d.ts:1140
 
 ***
 
@@ -2572,7 +2572,7 @@ Instead of writing the snapshot value to a .snap file, it will be written into t
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1151
+node\_modules/@types/jest/index.d.ts:1149
 
 ***
 
@@ -2592,7 +2592,7 @@ Used to test that a function throws a error matching the most recent snapshot wh
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1146
+node\_modules/@types/jest/index.d.ts:1144
 
 ***
 

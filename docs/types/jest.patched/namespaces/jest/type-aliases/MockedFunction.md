@@ -26,4 +26,4 @@ import { myFunction } from "./library";
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:1265
+node\_modules/@types/jest/index.d.ts:1264

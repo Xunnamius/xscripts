@@ -6,8 +6,22 @@
 
 # Type Alias: CustomCliArguments
 
-> **CustomCliArguments**: [`GlobalCliArguments`](../../../../configure/type-aliases/GlobalCliArguments.md)\<[`UnlimitedGlobalScope`](../../../../configure/enumerations/UnlimitedGlobalScope.md)\>
+> **CustomCliArguments**: [`GlobalCliArguments`](../../../../configure/type-aliases/GlobalCliArguments.md)\<[`UnlimitedGlobalScope`](../../../../configure/enumerations/UnlimitedGlobalScope.md)\> & `object`
+
+## Type declaration
+
+### force
+
+> **force**: `boolean`
+
+### parallel
+
+> **parallel**: `boolean`
+
+### runToCompletion
+
+> **runToCompletion**: `boolean`
 
 ## Defined in
 
-[src/commands/project/prepare.ts:28](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/commands/project/prepare.ts#L28)
+[src/commands/project/prepare.ts:40](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/commands/project/prepare.ts#L40)

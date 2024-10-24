@@ -23,4 +23,4 @@ This is a custom semantic-release plugin step that replaces
 
 ## Defined in
 
-[src/assets/config/\_release.config.js.ts:235](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/assets/config/_release.config.js.ts#L235)
+[src/assets/config/\_release.config.js.ts:227](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/assets/config/_release.config.js.ts#L227)

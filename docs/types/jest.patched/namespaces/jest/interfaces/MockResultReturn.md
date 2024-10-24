@@ -20,7 +20,7 @@ Represents the result of a single call to a mock function with a return value.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1495
+node\_modules/@types/jest/index.d.ts:1494
 
 ***
 
@@ -30,4 +30,4 @@ node\_modules/@types/jest/index.d.ts:1495
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1496
+node\_modules/@types/jest/index.d.ts:1495

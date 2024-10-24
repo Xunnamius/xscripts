@@ -21,7 +21,7 @@ This is the default scope for the `lint` command.
 
 #### Defined in
 
-[src/commands/lint.ts:58](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/commands/lint.ts#L58)
+[src/commands/lint.ts:63](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/commands/lint.ts#L63)
 
 ***
 
@@ -38,4 +38,4 @@ monorepo's source files at once; e.g. `npx xscripts lint
 
 #### Defined in
 
-[src/commands/lint.ts:67](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/commands/lint.ts#L67)
+[src/commands/lint.ts:72](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/commands/lint.ts#L72)

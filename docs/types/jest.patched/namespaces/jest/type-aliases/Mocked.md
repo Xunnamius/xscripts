@@ -26,4 +26,4 @@ jest.mock("../api");
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:1309
+node\_modules/@types/jest/index.d.ts:1308

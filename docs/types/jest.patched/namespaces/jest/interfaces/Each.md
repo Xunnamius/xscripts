@@ -34,7 +34,7 @@
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:513
+node\_modules/@types/jest/index.d.ts:511
 
 > **Each**\<`T`\>(`cases`): (`name`, `fn`, `timeout`?) => `void`
 
@@ -64,7 +64,7 @@ node\_modules/@types/jest/index.d.ts:513
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:518
+node\_modules/@types/jest/index.d.ts:516
 
 > **Each**\<`T`\>(`cases`): (`name`, `fn`, `timeout`?) => `void`
 
@@ -94,7 +94,7 @@ node\_modules/@types/jest/index.d.ts:518
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:524
+node\_modules/@types/jest/index.d.ts:522
 
 > **Each**(`cases`): (`name`, `fn`, `timeout`?) => `void`
 
@@ -120,7 +120,7 @@ node\_modules/@types/jest/index.d.ts:524
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:525
+node\_modules/@types/jest/index.d.ts:523
 
 > **Each**(`strings`, ...`placeholders`): (`name`, `fn`, `timeout`?) => `void`
 
@@ -148,4 +148,4 @@ node\_modules/@types/jest/index.d.ts:525
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:530
+node\_modules/@types/jest/index.d.ts:528

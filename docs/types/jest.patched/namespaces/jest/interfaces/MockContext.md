@@ -24,7 +24,7 @@ List of the call arguments of all calls that have been made to the mock.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1519
+node\_modules/@types/jest/index.d.ts:1518
 
 ***
 
@@ -36,7 +36,7 @@ List of the call contexts of all calls that have been made to the mock.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1523
+node\_modules/@types/jest/index.d.ts:1522
 
 ***
 
@@ -48,7 +48,7 @@ List of all the object instances that have been instantiated from the mock.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1527
+node\_modules/@types/jest/index.d.ts:1526
 
 ***
 
@@ -61,7 +61,7 @@ invocations of all mocks in a test file. The index is starting with `1`.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1532
+node\_modules/@types/jest/index.d.ts:1531
 
 ***
 
@@ -74,7 +74,7 @@ If the function was not called, it will return `undefined`.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1537
+node\_modules/@types/jest/index.d.ts:1536
 
 ***
 
@@ -86,4 +86,4 @@ List of the results of all calls that have been made to the mock.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1541
+node\_modules/@types/jest/index.d.ts:1540

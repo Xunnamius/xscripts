@@ -10,4 +10,4 @@
 
 ## Defined in
 
-[types/eslint-plugin-jest.d.ts:4](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/types/eslint-plugin-jest.d.ts#L4)
+[types/eslint-plugin-jest.d.ts:4](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/types/eslint-plugin-jest.d.ts#L4)

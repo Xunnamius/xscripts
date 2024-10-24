@@ -362,6 +362,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### BadPostNpmInstallScript()
+
+#### Parameters
+
+• **path**: `string`
+
+#### Returns
+
+`string`
+
 ### BadProjectNameInPackageJson()
 
 #### Returns
@@ -369,6 +379,12 @@ A collection of possible error and warning messages.
 `string`
 
 ### BadSkipArgs()
+
+#### Returns
+
+`string`
+
+### BuildOutputChecksFailed()
 
 #### Returns
 
@@ -704,6 +720,18 @@ A collection of possible error and warning messages.
 
 `string`
 
+### MultipleConfigsWhenExpectingOnlyOne()
+
+#### Parameters
+
+• **filename1**: `string`
+
+• **filename2**: `string`
+
+#### Returns
+
+`string`
+
 ### MustChooseDeployEnvironment()
 
 #### Returns
@@ -838,4 +866,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/src/error.ts#L11)
+[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/error.ts#L11)

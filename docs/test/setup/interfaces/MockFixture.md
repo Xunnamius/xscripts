@@ -18,7 +18,7 @@
 
 #### Defined in
 
-[test/setup.ts:762](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L762)
+[test/setup.ts:765](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L765)
 
 ***
 
@@ -28,7 +28,7 @@
 
 #### Defined in
 
-[test/setup.ts:761](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L761)
+[test/setup.ts:764](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L764)
 
 ***
 
@@ -38,7 +38,7 @@
 
 #### Defined in
 
-[test/setup.ts:763](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L763)
+[test/setup.ts:766](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L766)
 
 ***
 
@@ -48,4 +48,4 @@
 
 #### Defined in
 
-[test/setup.ts:764](https://github.com/Xunnamius/xscripts/blob/dab28cbd16e1a8b65bb5fd311af787e2401e7d30/test/setup.ts#L764)
+[test/setup.ts:767](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L767)

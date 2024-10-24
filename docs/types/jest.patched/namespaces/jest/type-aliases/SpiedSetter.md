@@ -16,4 +16,4 @@ Constructs the type of a spied setter.
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:1243
+node\_modules/@types/jest/index.d.ts:1242

@@ -32,4 +32,4 @@ matcher can be chained. If the promise is rejected the assertion fails.
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:786
+node\_modules/@types/jest/index.d.ts:784

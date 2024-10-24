@@ -34,4 +34,4 @@ import { MyClass } from "./library";
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:1287
+node\_modules/@types/jest/index.d.ts:1286

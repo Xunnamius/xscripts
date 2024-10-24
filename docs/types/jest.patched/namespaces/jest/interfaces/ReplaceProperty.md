@@ -28,7 +28,7 @@ Change the value of the property.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1552
+node\_modules/@types/jest/index.d.ts:1551
 
 ***
 
@@ -44,4 +44,4 @@ Restore property to its original value known at the time of mocking.
 
 #### Defined in
 
-node\_modules/@types/jest/index.d.ts:1548
+node\_modules/@types/jest/index.d.ts:1547

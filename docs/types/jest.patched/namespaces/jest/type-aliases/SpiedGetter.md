@@ -16,4 +16,4 @@ Constructs the type of a spied getter.
 
 ## Defined in
 
-node\_modules/@types/jest/index.d.ts:1238
+node\_modules/@types/jest/index.d.ts:1237
