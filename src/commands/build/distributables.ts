@@ -730,10 +730,8 @@ distrib root: ${absoluteOutputDirPath}
 
           genericLogger(
             [LogTag.IF_NOT_QUIETED],
-            '⮞ Running consistency and integrity checks on build output'
+            '⮞ Running lightweight consistency and integrity checks on build output'
           );
-
-          genericLogger.newline([LogTag.IF_NOT_HUSHED]);
 
           const [{ all: attwOutput, exitCode: attwExitCode }] = await Promise.all([
             checkDistTypes(),
@@ -774,7 +772,7 @@ distrib root: ${absoluteOutputDirPath}
         }
 
         /**
-         * Check dist files against `package.json` `exports` entries for
+         * Check `package.json` `exports` entries against dist files for
          * existence.
          */
         async function checkDistEntryPoints() {
@@ -782,7 +780,7 @@ distrib root: ${absoluteOutputDirPath}
         }
 
         /**
-         * Match external dependencies imported by (1) dist files to production
+         * Match npm dependencies imported by (1) dist files to production
          * dependencies listed in `package.json` and (2) TypeScript files
          * belonging to the package to any dependency listed in `package.json`.
          * Extraneous dependencies and missing dependencies are reported.
