@@ -218,6 +218,8 @@ export function verifyConditions(
   );
 }
 
+// TODO: implement so-called cross-dependency version coherence here
+
 /**
  * This is a custom semantic-release plugin step that replaces
  * `nextRelease.notes` with the version patched by xscripts.

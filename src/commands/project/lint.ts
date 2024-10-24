@@ -71,7 +71,7 @@ export default function command({
       // TODO (warn when using --experimental-vm-modules and jest's `transformIgnorePatterns: []` together!)
       // TODO (warn when copyright dates, like with LICENSE, are out of date)
       // TODO (warn when launch.example and task.example diverge from expected launch and task files in .vscode)
-      // TODO (new flag: --run-to-completion for finishing all linting then error/success; also update the task and example task to use this new flag)
+      // TODO (new flag: --run-to-completion (default: true) for finishing all linting then error/success; also update the task and example task to use this new flag)
       // TODO (check to ensure all breaking commits in the repository are in `type(scope)!: subject` form (specifically focusing on the "!" since our changelog generator needs to know if a commit is breaking just by looking at the subject alone))
       // TODO (must verify that "repository" url in package.json is correct (see current package.json for an example of it being correct) for provenance reasons)
       // TODO (diff generated config files versus on-disk config files and warn (but don't error) when different)
