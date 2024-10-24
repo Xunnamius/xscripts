@@ -1,6 +1,8 @@
 import { basename, resolve } from 'node:path';
 
+import { type Package } from '#project-utils src/analyze/common.ts';
 import * as fs from '#project-utils src/fs/index.ts';
+
 import {
   ProjectAttribute,
   type ProjectMetadata,
@@ -40,27 +42,27 @@ export function patchReadPackageJsonAtRoot(
   >('#project-utils src/fs/index.ts').readPackageJsonAtRoot;
 
   jest.spyOn(fs, 'readPackageJsonAtRoot').mockImplementation(async ({ root }) => {
-    const pkgJson = await actualReadPackageJsonAtRoot({ root });
-    return finalize(root, pkgJson);
+    const packageJson = await actualReadPackageJsonAtRoot({ root });
+    return finalize(root, packageJson);
   });
 
   // @ts-expect-error: we're mocking do we'll do what we like
   fs.readPackageJsonAtRoot.sync = ({ root }) => {
-    const pkgJson = actualReadPackageJsonAtRoot.sync({ root });
-    return finalize(root, pkgJson);
+    const packageJson = actualReadPackageJsonAtRoot.sync({ root });
+    return finalize(root, packageJson);
   };
 
   return spec;
 
-  function finalize(root: string, pkgJson: PackageJson): PackageJson {
+  function finalize(root: string, packageJson: PackageJson): PackageJson {
     return options?.replace === false
       ? {
           ...spec['*'],
           ...spec[root],
-          ...pkgJson
+          ...packageJson
         }
       : {
-          ...(options?.replace ? {} : pkgJson),
+          ...(options?.replace ? {} : packageJson),
           ...spec['*'],
           ...spec[root]
         };
@@ -74,9 +76,9 @@ export type Fixture = {
   root: fs.AbsolutePath;
   json: PackageJson;
   attributes: RootPackage['attributes'];
-  namedPkgMapData: PkgMapEntry[];
-  unnamedPkgMapData: PkgMapEntry[];
-  brokenPkgRoots: fs.AbsolutePath[];
+  namedPackageMapData: PackageMapEntry[];
+  unnamedPackageMapData: PackageMapEntry[];
+  brokenPackageRoots: fs.AbsolutePath[];
 };
 
 /**
@@ -117,9 +119,10 @@ export type FixtureName =
   | 'repoThatDoesNotExist';
 
 /**
- * A type represents an object that will be expanded into a `PkgMapEntry`.
+ * A type represents an object that will be expanded into a
+ * {@link PackageMapEntry}.
  */
-export type PkgMapDatum = {
+export type PackageMapDatum = {
   /**
    * A package's name (for named packages) or its id (for unnamed packages).
    */
@@ -134,7 +137,7 @@ export type PkgMapDatum = {
  * `name` represents a package's name (for named packages) or its id (for
  * unnamed packages).
  */
-export type PkgMapEntry = [name: string, workspacePackage: WorkspacePackage];
+export type PackageMapEntry = [name: string, workspacePackage: WorkspacePackage];
 
 /**
  * A collection of fixtures representing dummy monorepo and polyrepo projects.
@@ -146,9 +149,9 @@ fixtures.repoThatDoesNotExist = {
   root: '/does/not/exist' as fs.AbsolutePath,
   json: {},
   attributes: {},
-  namedPkgMapData: [],
-  unnamedPkgMapData: [],
-  brokenPkgRoots: []
+  namedPackageMapData: [],
+  unnamedPackageMapData: [],
+  brokenPackageRoots: []
 };
 
 createFixture({
@@ -163,11 +166,11 @@ createFixture({
     vercel: true,
     webpack: true
   },
-  namedPkgMapData: [
+  namedPackageMapData: [
     // * Note how the package name and package-id diverge!
     { name: 'package-one', root: 'packages/pkg-1', attributes: { cjs: true, cli: true } }
   ],
-  unnamedPkgMapData: []
+  unnamedPackageMapData: []
 });
 
 createFixture({
@@ -182,17 +185,17 @@ createFixture({
     vercel: true,
     webpack: true
   },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'package-one', root: 'packages/pkg-1', attributes: { cjs: true, cli: true } }
   ],
-  unnamedPkgMapData: []
+  unnamedPackageMapData: []
 });
 
 createFixture({
   fixtureName: 'badMonorepo',
   prototypeRoot: 'bad-monorepo',
   attributes: {},
-  unnamedPkgMapData: [
+  unnamedPackageMapData: [
     { name: 'empty', root: 'packages/0-empty', attributes: { cjs: true } },
     { name: 'tsbuildinfo', root: 'packages/1-tsbuildinfo', attributes: { cjs: true } },
     { name: 'bad-importer', root: 'packages/2-bad-importer', attributes: { cjs: true } }
@@ -209,7 +212,7 @@ createFixture({
   fixtureName: 'badMonorepoDuplicateIdNamed',
   prototypeRoot: 'bad-monorepo-duplicate-id-named',
   attributes: {},
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'pkg-1', root: 'packages-1/pkg-1', attributes: { cjs: true } },
     { name: 'pkg-2', root: 'packages-2/pkg-1', attributes: { cjs: true } }
   ]
@@ -225,7 +228,7 @@ createFixture({
   fixtureName: 'badMonorepoEmptyMdFiles',
   prototypeRoot: 'bad-monorepo-empty-md-files',
   attributes: { cjs: true, polyrepo: true },
-  unnamedPkgMapData: [
+  unnamedPackageMapData: [
     { name: 'md-empty', root: 'packages/md-empty', attributes: { cjs: true } }
   ]
 });
@@ -234,7 +237,7 @@ createFixture({
   fixtureName: 'badMonorepoNextjsProject',
   prototypeRoot: 'bad-monorepo-nextjs-project',
   attributes: { cjs: true, monorepo: true, next: true },
-  unnamedPkgMapData: [
+  unnamedPackageMapData: [
     { name: 'empty', root: 'packages/empty', attributes: { cjs: true } }
   ]
 });
@@ -243,8 +246,8 @@ createFixture({
   fixtureName: 'badMonorepoNonPackageDir',
   prototypeRoot: 'bad-monorepo-non-package-dir',
   attributes: { cjs: true, polyrepo: true },
-  namedPkgMapData: [{ name: 'pkg-1', root: 'pkgs/pkg-1', attributes: { cjs: true } }],
-  brokenPkgRoots: ['pkgs/pkg-10', 'pkgs/pkg-100']
+  namedPackageMapData: [{ name: 'pkg-1', root: 'pkgs/pkg-1', attributes: { cjs: true } }],
+  brokenPackageRoots: ['pkgs/pkg-10', 'pkgs/pkg-100']
 });
 
 createFixture({
@@ -307,7 +310,7 @@ createFixture({
     vercel: true,
     webpack: true
   },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'cli', root: 'packages/cli', attributes: { cjs: true, cli: true } },
     {
       name: 'private',
@@ -320,7 +323,7 @@ createFixture({
       attributes: { cjs: true, webpack: true }
     }
   ],
-  unnamedPkgMapData: [
+  unnamedPackageMapData: [
     {
       name: 'unnamed-cjs',
       root: 'packages/unnamed-cjs',
@@ -346,7 +349,7 @@ createFixture({
     vercel: true,
     webpack: true
   },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'cli', root: 'packages/cli', attributes: { cjs: true, cli: true } },
     {
       name: '@namespaced/webpack-common-config',
@@ -354,7 +357,7 @@ createFixture({
       attributes: { cjs: true, webpack: true }
     }
   ],
-  unnamedPkgMapData: [
+  unnamedPackageMapData: [
     {
       name: 'private',
       root: 'packages/private',
@@ -367,7 +370,7 @@ createFixture({
   fixtureName: 'goodMonorepo',
   prototypeRoot: 'good-monorepo',
   attributes: { cjs: true, monorepo: true },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'pkg-1', root: 'packages/pkg-1', attributes: { cjs: true, cli: true } },
     {
       name: '@namespaced/pkg',
@@ -380,7 +383,7 @@ createFixture({
       attributes: { cjs: true }
     }
   ],
-  unnamedPkgMapData: [
+  unnamedPackageMapData: [
     { name: 'unnamed-pkg-1', root: 'packages/unnamed-pkg-1', attributes: { cjs: true } },
     { name: 'unnamed-pkg-2', root: 'packages/unnamed-pkg-2', attributes: { cjs: true } }
   ]
@@ -390,7 +393,7 @@ createFixture({
   fixtureName: 'goodMonorepoNegatedPaths',
   prototypeRoot: 'good-monorepo-negated-paths',
   attributes: { cjs: true, monorepo: true },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'pkg-1', root: 'packages/pkg-1', attributes: { cjs: true } },
     { name: '@namespace/pkg-3', root: 'packages/pkg-3-x', attributes: { cjs: true } }
   ]
@@ -400,7 +403,7 @@ createFixture({
   fixtureName: 'goodMonorepoNextjsProject',
   prototypeRoot: 'good-monorepo-nextjs-project',
   attributes: { cjs: true, monorepo: true, next: true },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'pkg-1', root: 'packages/pkg-1', attributes: { cjs: true } },
     { name: '@namespaced/pkg', root: 'packages/pkg-2', attributes: { cjs: true } },
     {
@@ -409,7 +412,7 @@ createFixture({
       attributes: { cjs: true }
     }
   ],
-  unnamedPkgMapData: [
+  unnamedPackageMapData: [
     { name: 'unnamed-pkg-1', root: 'packages/unnamed-pkg-1', attributes: { cjs: true } },
     { name: 'unnamed-pkg-2', root: 'packages/unnamed-pkg-2', attributes: { cjs: true } }
   ]
@@ -419,7 +422,7 @@ createFixture({
   fixtureName: 'goodMonorepoSimplePaths',
   prototypeRoot: 'good-monorepo-simple-paths',
   attributes: { cjs: true, monorepo: true },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'pkg-1', root: 'pkgs/pkg-1', attributes: { cjs: true } },
     { name: 'pkg-10', root: 'pkgs/pkg-10', attributes: { cjs: true } }
   ]
@@ -429,7 +432,7 @@ createFixture({
   fixtureName: 'goodMonorepoWeirdAbsolute',
   prototypeRoot: 'good-monorepo-weird-absolute',
   attributes: { cjs: true, monorepo: true },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'pkg-1', root: 'packages/pkg-1', attributes: { cjs: true } },
     { name: 'pkg-2', root: 'packages/pkg-2', attributes: { cjs: true } }
   ]
@@ -439,19 +442,19 @@ createFixture({
   fixtureName: 'goodMonorepoWeirdBoneless',
   prototypeRoot: 'good-monorepo-weird-boneless',
   attributes: { cjs: true, monorepo: true },
-  namedPkgMapData: [{ name: 'pkg-1', root: 'pkg-1', attributes: { cjs: true } }]
+  namedPackageMapData: [{ name: 'pkg-1', root: 'pkg-1', attributes: { cjs: true } }]
 });
 
 createFixture({
   fixtureName: 'goodMonorepoWeirdOverlap',
   prototypeRoot: 'good-monorepo-weird-overlap',
   attributes: { cjs: true, monorepo: true },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'pkg-1', root: 'pkgs/pkg-1', attributes: { cjs: true } },
     { name: 'pkg-2', root: 'pkgs/pkg-20', attributes: { cjs: true } }
   ],
   // I can't imagine a project having such weird (useless) overlapping paths...
-  brokenPkgRoots: [
+  brokenPackageRoots: [
     'pkgs',
     'pkgs/pkg-1/dist',
     'pkgs/pkg-1/src',
@@ -464,7 +467,7 @@ createFixture({
   fixtureName: 'goodMonorepoWeirdSameNames',
   prototypeRoot: 'good-monorepo-weird-same-names',
   attributes: { cjs: true, monorepo: true },
-  namedPkgMapData: [
+  namedPackageMapData: [
     {
       name: 'good-monorepo-weird-same-names',
       root: 'packages/pkg-1',
@@ -478,7 +481,7 @@ createFixture({
   fixtureName: 'goodMonorepoWeirdYarn',
   prototypeRoot: 'good-monorepo-weird-yarn',
   attributes: { cjs: true, monorepo: true },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'pkg-1', root: 'packages/pkg-1', attributes: { cjs: true } },
     { name: 'pkg-2', root: 'packages/pkg-2', attributes: { cjs: true } }
   ]
@@ -488,7 +491,7 @@ createFixture({
   fixtureName: 'goodMonorepoWindows',
   prototypeRoot: 'good-monorepo-windows',
   attributes: { cjs: true, monorepo: true },
-  namedPkgMapData: [
+  namedPackageMapData: [
     { name: 'pkg-1', root: 'packages/deep/pkg', attributes: { cjs: true } },
     { name: 'pkg-2', root: 'packages/deep/wkg', attributes: { cjs: true } }
   ]
@@ -514,16 +517,16 @@ function createFixture({
   fixtureName,
   prototypeRoot: prototypeRoot_,
   attributes,
-  namedPkgMapData = [],
-  unnamedPkgMapData = [],
-  brokenPkgRoots = []
+  namedPackageMapData: namedPackageMapData = [],
+  unnamedPackageMapData: unnamedPackageMapData = [],
+  brokenPackageRoots: brokenPackageRoots = []
 }: {
   fixtureName: FixtureName;
   prototypeRoot: string;
   attributes: Fixture['attributes'];
-  namedPkgMapData?: PkgMapDatum[];
-  unnamedPkgMapData?: PkgMapDatum[];
-  brokenPkgRoots?: string[];
+  namedPackageMapData?: PackageMapDatum[];
+  unnamedPackageMapData?: PackageMapDatum[];
+  brokenPackageRoots?: string[];
 }) {
   const prototypeRoot = resolve(
     __dirname,
@@ -540,9 +543,11 @@ function createFixture({
         } catch {}
       })() || {},
     attributes,
-    namedPkgMapData: namedPkgMapData.map((datum) => expandDatumToEntry(datum)),
-    unnamedPkgMapData: unnamedPkgMapData.map((datum) => expandDatumToEntry(datum)),
-    brokenPkgRoots: brokenPkgRoots.map(
+    namedPackageMapData: namedPackageMapData.map((datum) => expandDatumToEntry(datum)),
+    unnamedPackageMapData: unnamedPackageMapData.map((datum) =>
+      expandDatumToEntry(datum)
+    ),
+    brokenPackageRoots: brokenPackageRoots.map(
       (path) => `${prototypeRoot}/${path}` as fs.AbsolutePath
     )
   };
@@ -551,7 +556,7 @@ function createFixture({
     name,
     root: subRoot,
     attributes
-  }: PkgMapDatum): PkgMapEntry {
+  }: PackageMapDatum): PackageMapEntry {
     return [
       name,
       {
@@ -559,6 +564,7 @@ function createFixture({
         root: `${prototypeRoot}/${subRoot}` as fs.AbsolutePath,
         json: require(`${prototypeRoot}/${subRoot}/package.json`),
         attributes,
+        // ? Side-step this whole thing
         projectMetadata: expect.anything()
       } satisfies WorkspacePackage
     ];
@@ -567,42 +573,52 @@ function createFixture({
 
 export function fixtureToProjectMetadata(
   fixtureName: FixtureName,
-  pkg?: WorkspacePackage
+  cwdPackage_?: Omit<WorkspacePackage, 'projectMetadata'>
 ) {
+  const rootPackage = {
+    root: fixtures[fixtureName].root,
+    json: fixtures[fixtureName].json,
+    attributes: fixtures[fixtureName].attributes
+    // ? the "projectMetadata" property is properly initialized below
+    // projectMetadata: mockProjectMetadata
+  } satisfies Omit<RootPackage, 'projectMetadata'> as RootPackage;
+
+  // ? the "projectMetadata" property is properly initialized below
+  const cwdPackage = (cwdPackage_ ?? rootPackage) as Package;
+
   const mockProjectMetadata: ProjectMetadata = {
     type: fixtures[fixtureName].attributes[ProjectAttribute.Polyrepo]
       ? ProjectAttribute.Polyrepo
       : ProjectAttribute.Monorepo,
-    project: {
-      root: fixtures[fixtureName].root,
-      json: fixtures[fixtureName].json,
-      attributes: fixtures[fixtureName].attributes,
-      packages: (fixtures[fixtureName].namedPkgMapData.length ||
-      fixtures[fixtureName].unnamedPkgMapData.length
-        ? new Map()
-        : undefined) as ProjectMetadata['project']['packages']
-    },
-    package: pkg
+    rootPackage,
+    cwdPackage,
+    subRootPackages: (fixtures[fixtureName].namedPackageMapData.length ||
+    fixtures[fixtureName].unnamedPackageMapData.length
+      ? // ? This map is properly initialized below
+        new Map()
+      : undefined) as ProjectMetadata['subRootPackages']
   };
 
-  if (mockProjectMetadata.project.packages) {
-    mockProjectMetadata.project.packages = new Map(
-      fixtures[fixtureName].namedPkgMapData.map(([key, pkg_]) => {
-        return [key, { ...pkg_, projectMetadata: mockProjectMetadata }];
+  rootPackage.projectMetadata = cwdPackage.projectMetadata = mockProjectMetadata;
+
+  if (mockProjectMetadata.subRootPackages) {
+    mockProjectMetadata.subRootPackages = new Map(
+      fixtures[fixtureName].namedPackageMapData.map(([key, package_]) => {
+        return [key, { ...package_, projectMetadata: mockProjectMetadata }];
       })
-    ) as NonNullable<ProjectMetadata['project']['packages']>;
+    ) as NonNullable<ProjectMetadata['subRootPackages']>;
 
-    mockProjectMetadata.project.packages.broken = fixtures[fixtureName].brokenPkgRoots;
+    mockProjectMetadata.subRootPackages.broken = fixtures[fixtureName].brokenPackageRoots;
 
-    mockProjectMetadata.project.packages.unnamed = new Map(
-      fixtures[fixtureName].unnamedPkgMapData.map(([key, pkg_]) => {
-        return [key, { ...pkg_, projectMetadata: mockProjectMetadata }];
+    mockProjectMetadata.subRootPackages.unnamed = new Map(
+      fixtures[fixtureName].unnamedPackageMapData.map(([key, package_]) => {
+        return [key, { ...package_, projectMetadata: mockProjectMetadata }];
       })
     );
 
-    mockProjectMetadata.project.packages.all = Array.from(
-      mockProjectMetadata.project.packages.values()
-    ).concat(Array.from(mockProjectMetadata.project.packages.unnamed.values()));
+    mockProjectMetadata.subRootPackages.all = Array.from(
+      mockProjectMetadata.subRootPackages.values()
+    ).concat(Array.from(mockProjectMetadata.subRootPackages.unnamed.values()));
   }
 
   return mockProjectMetadata;

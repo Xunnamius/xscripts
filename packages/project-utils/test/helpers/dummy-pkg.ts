@@ -11,7 +11,12 @@ import { type AbsolutePath } from '#project-utils src/fs/index.ts';
 
 import type { PackageJson } from 'type-fest';
 
-const DUMMY_PKG_DIR = resolve(__dirname, '..', 'fixtures', 'dummy-pkg') as AbsolutePath;
+const DUMMY_PACKAGE_DIR = resolve(
+  __dirname,
+  '..',
+  'fixtures',
+  'dummy-pkg'
+) as AbsolutePath;
 
 export const availableDummyPackages = [
   'root',
@@ -81,47 +86,47 @@ export function getDummyPackage<
 ): DummyPackageMetadata<RequireObjectImports, RequireObjectExports> {
   const { requireObjectImports, requireObjectExports } = options ?? {};
 
-  const pkg = {
+  const package_ = {
     path: '',
     json: {} as PackageJson
   };
 
   if (id === 'root') {
-    pkg.path = DUMMY_PKG_DIR;
-    pkg.json = require(`${pkg.path}/package.json`);
+    package_.path = DUMMY_PACKAGE_DIR;
+    package_.json = require(`${package_.path}/package.json`);
   } else if (availableDummyPackages.includes(id)) {
-    pkg.path = `${DUMMY_PKG_DIR}/node_modules/dummy-${id}-pkg`;
-    pkg.json = require(`${pkg.path}/package.json`);
+    package_.path = `${DUMMY_PACKAGE_DIR}/node_modules/dummy-${id}-pkg`;
+    package_.json = require(`${package_.path}/package.json`);
   }
 
-  if (!pkg.json.name) {
+  if (!package_.json.name) {
     throwNewError('package.json is missing "name" field');
   }
 
   if (
     requireObjectImports &&
-    (!pkg.json.imports ||
-      typeof pkg.json.imports === 'string' ||
-      Array.isArray(pkg.json.imports))
+    (!package_.json.imports ||
+      typeof package_.json.imports === 'string' ||
+      Array.isArray(package_.json.imports))
   ) {
     throwNewError('package.json has string, array, null, or undefined "imports" field');
   }
 
   if (
     requireObjectExports &&
-    (!pkg.json.exports ||
-      typeof pkg.json.exports === 'string' ||
-      Array.isArray(pkg.json.exports))
+    (!package_.json.exports ||
+      typeof package_.json.exports === 'string' ||
+      Array.isArray(package_.json.exports))
   ) {
     throwNewError('package.json has string, array, null, or undefined "exports" field');
   }
 
   return {
-    path: pkg.path,
-    name: pkg.json.name,
-    imports: pkg.json.imports,
-    exports: pkg.json.exports,
-    packageJson: pkg.json
+    path: package_.path,
+    name: package_.json.name,
+    imports: package_.json.imports,
+    exports: package_.json.exports,
+    packageJson: package_.json
   } as DummyPackageMetadata<RequireObjectImports, RequireObjectExports>;
 
   function throwNewError(error: string): never {
