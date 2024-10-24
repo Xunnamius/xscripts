@@ -10,8 +10,8 @@ import {
   withStandardUsage
 } from 'multiverse#cli-utils extensions.ts';
 
-import { ProjectError } from 'multiverse#project-utils error';
-import { isAccessible, type AbsolutePath } from 'multiverse#project-utils fs';
+import { ProjectError } from 'multiverse#project-utils error.ts';
+import { isAccessible, type AbsolutePath } from 'multiverse#project-utils fs/index.ts';
 import { createDebugLogger } from 'multiverse#rejoinder';
 
 import {

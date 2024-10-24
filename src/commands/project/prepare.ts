@@ -8,7 +8,7 @@ import {
   standardSuccessMessage
 } from 'multiverse#cli-utils logging.ts';
 
-import { scriptBasename } from 'multiverse#cli-utils util';
+import { scriptBasename } from 'multiverse#cli-utils util.ts';
 import { runWithInheritedIo } from 'multiverse#run';
 
 import {
@@ -16,7 +16,8 @@ import {
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe configure.ts';
-import { ErrorMessage } from 'universe error';
+
+import { ErrorMessage } from 'universe error.ts';
 
 import {
   findOneConfigurationFile,
