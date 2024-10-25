@@ -16,6 +16,8 @@ const debug_ = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:fs:deriveVirtualGitignoreLines`
 });
 
+const alwaysIgnored = ['.git'];
+
 export type DeriveVirtualGitignoreLinesOptions = {
   /**
    * The absolute path to the root directory of a project.
@@ -49,12 +51,14 @@ function deriveVirtualGitignoreLines_(
     }
 
     try {
-      return readFileSync(`${projectRoot}/.gitignore`, 'utf8')
-        .split('\n')
-        .filter((entry) => entry && !entry.startsWith('#'));
+      return alwaysIgnored.concat(
+        readFileSync(`${projectRoot}/.gitignore`, 'utf8')
+          .split('\n')
+          .filter((entry) => entry && !entry.startsWith('#'))
+      );
     } catch (error) {
       debug_.extend('deriveVirtualGitignoreLines').error(error);
-      return [];
+      return alwaysIgnored;
     }
   } else {
     return ensurePathIsAbsolute({ path: projectRoot }).then(() =>
@@ -71,15 +75,18 @@ function deriveVirtualGitignoreLines_(
               '--directory'
             ]);
 
-            const unknownPaths = stdout.split('\n');
+            const unknownPaths = stdout
+              .split('\n')
+              .filter((l) => !alwaysIgnored.includes(l));
+
             ignore.push(...unknownPaths);
           }
 
-          return ignore;
+          return alwaysIgnored.concat(ignore);
         })
         .catch((error: unknown) => {
           debug_.extend('deriveVirtualGitignoreLines').error(error);
-          return [];
+          return alwaysIgnored;
         })
     );
   }
@@ -87,7 +94,7 @@ function deriveVirtualGitignoreLines_(
 
 /**
  * Asynchronously return an array of the lines of a `.gitignore` file, or an
- * empty array if an error occurs.
+ * empty array if an error occurs. The string '.git' is prepended to the result.
  *
  * You can optionally include paths unknown to git as well via
  * `includeUnknownPaths`.
@@ -101,8 +108,9 @@ export function deriveVirtualGitignoreLines(
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace deriveVirtualGitignoreLines {
   /**
-   * Synchronously return an array of the lines of a `.gitignore` file, or
-   * an empty array if an error occurs.
+   * Synchronously return an array of the lines of a `.gitignore` file, or an
+   * empty array if an error occurs. The string '.git' is prepended to the
+   * result.
    */
   export const sync = function (
     options: Omit<DeriveVirtualGitignoreLinesOptions, 'includeUnknownPaths'>

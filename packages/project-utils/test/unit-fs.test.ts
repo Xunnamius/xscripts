@@ -391,10 +391,10 @@ describe('::deriveVirtualPrettierignoreLines', () => {
         deriveVirtualPrettierignoreLines.sync({
           projectRoot: '/fake/root' as AbsolutePath
         })
-      ).toStrictEqual(['item-1', 'item-2']);
+      ).toStrictEqual(['.git', 'item-1', 'item-2']);
     });
 
-    it('returns empty array if .prettierignore does not exist', async () => {
+    it('returns base array if .prettierignore does not exist', async () => {
       expect.hasAssertions();
 
       mockedReadFileSync.mockImplementationOnce(() => toss(new Error('contrived')));
@@ -403,7 +403,7 @@ describe('::deriveVirtualPrettierignoreLines', () => {
         deriveVirtualPrettierignoreLines.sync({
           projectRoot: '/fake/root' as AbsolutePath
         })
-      ).toStrictEqual([]);
+      ).toStrictEqual(['.git']);
     });
 
     it('triggers a type error given bad sync options', async () => {
@@ -441,10 +441,10 @@ describe('::deriveVirtualPrettierignoreLines', () => {
         deriveVirtualPrettierignoreLines({
           projectRoot: '/fake/root' as AbsolutePath
         })
-      ).resolves.toStrictEqual(['item-1', 'item-2']);
+      ).resolves.toStrictEqual(['.git', 'item-1', 'item-2']);
     });
 
-    it('returns empty array if .prettierignore does not exist', async () => {
+    it('returns base array if .prettierignore does not exist', async () => {
       expect.hasAssertions();
 
       mockedReadFileAsync.mockImplementationOnce(() => Promise.reject());
@@ -454,7 +454,7 @@ describe('::deriveVirtualPrettierignoreLines', () => {
           projectRoot: '/fake/root' as AbsolutePath,
           includeUnknownPaths: false
         })
-      ).resolves.toStrictEqual([]);
+      ).resolves.toStrictEqual(['.git']);
     });
 
     it('returns lines from root .prettierignore file and unknown files from git if requested', async () => {
@@ -462,9 +462,9 @@ describe('::deriveVirtualPrettierignoreLines', () => {
 
       mockedRun.mockImplementationOnce(
         () =>
-          Promise.resolve({ stdout: ['item-3', 'item-4'].join('\n') }) as ReturnType<
-            typeof runNoRejectOnBadExit
-          >
+          Promise.resolve({
+            stdout: ['.git', 'item-3', 'item-4'].join('\n')
+          }) as ReturnType<typeof runNoRejectOnBadExit>
       );
 
       mockedReadFileAsync.mockImplementationOnce((path) => {
@@ -486,7 +486,7 @@ describe('::deriveVirtualPrettierignoreLines', () => {
           projectRoot: '/fake/root' as AbsolutePath,
           includeUnknownPaths: true
         })
-      ).resolves.toStrictEqual(['item-1', 'item-2', 'item-3', 'item-4']);
+      ).resolves.toStrictEqual(['.git', 'item-1', 'item-2', 'item-3', 'item-4']);
     });
   });
 });
@@ -510,17 +510,17 @@ describe('::deriveVirtualGitignoreLines', () => {
 
       expect(
         deriveVirtualGitignoreLines.sync({ projectRoot: '/fake/root' as AbsolutePath })
-      ).toStrictEqual(['item-1', 'item-2']);
+      ).toStrictEqual(['.git', 'item-1', 'item-2']);
     });
 
-    it('returns empty array if .gitignore does not exist', async () => {
+    it('returns base array if .gitignore does not exist', async () => {
       expect.hasAssertions();
 
       mockedReadFileSync.mockImplementationOnce(() => toss(new Error('contrived')));
 
       expect(
         deriveVirtualGitignoreLines.sync({ projectRoot: '/fake/root' as AbsolutePath })
-      ).toStrictEqual([]);
+      ).toStrictEqual(['.git']);
     });
 
     it('triggers a type error given bad sync options', async () => {
@@ -558,10 +558,10 @@ describe('::deriveVirtualGitignoreLines', () => {
         deriveVirtualGitignoreLines({
           projectRoot: '/fake/root' as AbsolutePath
         })
-      ).resolves.toStrictEqual(['item-1', 'item-2']);
+      ).resolves.toStrictEqual(['.git', 'item-1', 'item-2']);
     });
 
-    it('returns empty array if .gitignore does not exist', async () => {
+    it('returns base array if .gitignore does not exist', async () => {
       expect.hasAssertions();
 
       mockedReadFileAsync.mockImplementationOnce(() => Promise.reject());
@@ -571,7 +571,7 @@ describe('::deriveVirtualGitignoreLines', () => {
           projectRoot: '/fake/root' as AbsolutePath,
           includeUnknownPaths: false
         })
-      ).resolves.toStrictEqual([]);
+      ).resolves.toStrictEqual(['.git']);
     });
 
     it('returns lines from root .gitignore file and unknown files from git if requested', async () => {
@@ -579,9 +579,9 @@ describe('::deriveVirtualGitignoreLines', () => {
 
       mockedRun.mockImplementationOnce(
         () =>
-          Promise.resolve({ stdout: ['item-3', 'item-4'].join('\n') }) as ReturnType<
-            typeof runNoRejectOnBadExit
-          >
+          Promise.resolve({
+            stdout: ['.git', 'item-3', 'item-4'].join('\n')
+          }) as ReturnType<typeof runNoRejectOnBadExit>
       );
 
       mockedReadFileAsync.mockImplementationOnce((path) => {
@@ -603,7 +603,7 @@ describe('::deriveVirtualGitignoreLines', () => {
           projectRoot: '/fake/root' as AbsolutePath,
           includeUnknownPaths: true
         })
-      ).resolves.toStrictEqual(['item-1', 'item-2', 'item-3', 'item-4']);
+      ).resolves.toStrictEqual(['.git', 'item-1', 'item-2', 'item-3', 'item-4']);
     });
   });
 });

@@ -1598,7 +1598,6 @@ describe('::gatherPackageFiles', () => {
         ],
         docs: [],
         other: [
-          `${root}/.git/.gitkeep`,
           `${root}/.prettierignore`,
           `${root}/.vercel/package.json`,
           `${root}/.vercel/project.json`,
@@ -1629,7 +1628,6 @@ describe('::gatherPackageFiles', () => {
         dist: [],
         docs: [],
         other: [
-          `${root}/.git/.gitkeep`,
           `${root}/.gitignore`,
           `${root}/.prettierignore`,
           `${root}/package.json`,
@@ -1702,7 +1700,6 @@ describe('::gatherPackageFiles', () => {
           ],
           docs: [],
           other: [
-            `${root}/.git/.gitkeep`,
             `${root}/.prettierignore`,
             `${root}/package.json`,
             `${root}/README.md`,
@@ -1729,7 +1726,6 @@ describe('::gatherPackageFiles', () => {
           dist: [],
           docs: [],
           other: [
-            `${root}/.git/.gitkeep`,
             `${root}/.gitignore`,
             `${root}/.prettierignore`,
             `${root}/vercel.json`,
@@ -1757,7 +1753,6 @@ describe('::gatherPackageFiles', () => {
           docs: [],
           other: [
             `${root}/.git-ignored/nope.md`,
-            `${root}/.git/.gitkeep`,
             `${root}/.gitignore`,
             `${root}/.prettierignore`,
             `${root}/package.json`,
@@ -1794,7 +1789,6 @@ describe('::gatherPackageFiles', () => {
           ],
           docs: [],
           other: [
-            `${root}/.git/.gitkeep`,
             `${root}/.prettierignore`,
             `${root}/.vercel/package.json`,
             `${root}/.vercel/project.json`,
@@ -1875,7 +1869,6 @@ describe('::gatherPackageFiles', () => {
         ],
         docs: [],
         other: [
-          `${root}/.git/.gitkeep`,
           `${root}/.prettierignore`,
           `${root}/.vercel/package.json`,
           `${root}/.vercel/project.json`,
@@ -1906,7 +1899,6 @@ describe('::gatherPackageFiles', () => {
         dist: [],
         docs: [],
         other: [
-          `${root}/.git/.gitkeep`,
           `${root}/.gitignore`,
           `${root}/.prettierignore`,
           `${root}/package.json`,
@@ -1979,7 +1971,6 @@ describe('::gatherPackageFiles', () => {
           ],
           docs: [],
           other: [
-            `${root}/.git/.gitkeep`,
             `${root}/.prettierignore`,
             `${root}/package.json`,
             `${root}/README.md`,
@@ -2006,7 +1997,6 @@ describe('::gatherPackageFiles', () => {
           dist: [],
           docs: [],
           other: [
-            `${root}/.git/.gitkeep`,
             `${root}/.gitignore`,
             `${root}/.prettierignore`,
             `${root}/vercel.json`,
@@ -2034,7 +2024,6 @@ describe('::gatherPackageFiles', () => {
           docs: [],
           other: [
             `${root}/.git-ignored/nope.md`,
-            `${root}/.git/.gitkeep`,
             `${root}/.gitignore`,
             `${root}/.prettierignore`,
             `${root}/package.json`,
@@ -2058,34 +2047,27 @@ describe('::gatherPackageFiles', () => {
       expect.hasAssertions();
 
       {
-        const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
+        const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
         const { root } = rootPackage;
 
         await expect(
           gatherPackageFiles(rootPackage, { skipGitIgnored: true })
         ).resolves.toStrictEqual({
-          dist: [
-            `${root}/dist/index.js`,
-            `${root}/dist/package.json`,
-            `${root}/dist/should-be-ignored.md`
-          ],
+          dist: [],
           docs: [],
           other: [
-            `${root}/.git/.gitkeep`,
+            `${root}/.gitignore`,
             `${root}/.prettierignore`,
-            `${root}/.vercel/package.json`,
-            `${root}/.vercel/project.json`,
-            `${root}/.vercel/something.md`,
             `${root}/package.json`,
-            `${root}/README.md`,
-            `${root}/something-else.md`
+            `${root}/vercel.json`,
+            `${root}/webpack.config.mjs`
           ],
           src: [
-            `${root}/src/1.ts`,
+            `${root}/src/1.js`,
             `${root}/src/2.mts`,
             `${root}/src/3.cts`,
             `${root}/src/4.tsx`,
-            `${root}/src/index.js`,
+            `${root}/src/index.ts`,
             `${root}/src/package.json`
           ],
           test: []

@@ -16,6 +16,8 @@ const debug_ = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:fs:deriveVirtualPrettierignoreLines`
 });
 
+const alwaysIgnored = ['.git'];
+
 export type DeriveVirtualPrettierignoreLinesOptions = {
   /**
    * The absolute path to the root directory of a project.
@@ -49,12 +51,14 @@ function deriveVirtualPrettierignoreLines_(
     }
 
     try {
-      return readFileSync(`${projectRoot}/.prettierignore`, 'utf8')
-        .split('\n')
-        .filter((entry) => entry && !entry.startsWith('#'));
+      return alwaysIgnored.concat(
+        readFileSync(`${projectRoot}/.prettierignore`, 'utf8')
+          .split('\n')
+          .filter((entry) => entry && !entry.startsWith('#'))
+      );
     } catch (error) {
       debug_.extend('deriveVirtualPrettierignoreLines').error(error);
-      return [];
+      return alwaysIgnored;
     }
   } else {
     return ensurePathIsAbsolute({ path: projectRoot }).then(() =>
@@ -71,15 +75,18 @@ function deriveVirtualPrettierignoreLines_(
               '--directory'
             ]);
 
-            const unknownPaths = stdout.split('\n');
+            const unknownPaths = stdout
+              .split('\n')
+              .filter((l) => !alwaysIgnored.includes(l));
+
             ignore.push(...unknownPaths);
           }
 
-          return ignore;
+          return alwaysIgnored.concat(ignore);
         })
         .catch((error: unknown) => {
           debug_.extend('deriveVirtualPrettierignoreLines').error(error);
-          return [];
+          return alwaysIgnored;
         })
     );
   }
@@ -87,7 +94,8 @@ function deriveVirtualPrettierignoreLines_(
 
 /**
  * Asynchronously return an array of the lines of a `.prettierignore` file, or
- * an empty array if an error occurs.
+ * an empty array if an error occurs. The string '.git' is prepended to the
+ * result.
  *
  * You can optionally include paths unknown to git as well via
  * `includeUnknownPaths`.
@@ -102,7 +110,8 @@ export function deriveVirtualPrettierignoreLines(
 export namespace deriveVirtualPrettierignoreLines {
   /**
    * Synchronously return an array of the lines of a `.prettierignore` file, or
-   * an empty array if an error occurs.
+   * an empty array if an error occurs. The string '.git' is prepended to the
+   * result.
    */
   export const sync = function (
     options: Omit<DeriveVirtualPrettierignoreLinesOptions, 'includeUnknownPaths'>
