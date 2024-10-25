@@ -230,7 +230,6 @@
     "remark-tight-comments": "^2.0.0",
     "remark-validate-links": "^13.0.1",
     "rimraf": "^6.0.1",
-    "rm": "^0.1.8",
     "semantic-release": "https://xunn.at/semantic-release-atam@22.0.7",
     "semver": "^7.6.3",
     "simple-git": "^3.27.0",
