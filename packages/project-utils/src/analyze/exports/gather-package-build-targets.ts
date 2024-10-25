@@ -336,14 +336,9 @@ function gatherPackageBuildTargets_(
           }
         }
       } else {
-        const split = specifier.split('/').slice(0, 2);
         const key =
           (comesFromTypescriptFile ? '' : `${assetPrefix} `) +
-          (specifier.startsWith('@') && split.length === 2
-            ? split.join('/')
-            : ['.', '..'].includes(split[0])
-              ? specifier
-              : split[0]);
+          specifierToPackageName(specifier);
 
         // ? Looks like a normal non-aliased import. Noting it...
         dependencyCounts[key] = (dependencyCounts[key] || 0) + 1;
@@ -381,6 +376,32 @@ export namespace gatherPackageBuildTargets {
   export const sync = function (...args) {
     return gatherPackageBuildTargets_(true, ...args);
   } as SyncVersionOf<typeof gatherPackageBuildTargets>;
+}
+
+/**
+ * Takes a fully-resolved (i.e. _not an alias_) import specifier and returns its
+ * package name. Accounts for imports of namespaced packages like `@babel/core`.
+ *
+ * Useful for translating external NPM package import specifiers into the names
+ * of the individual packages. Examples:
+ *
+ * ```
+ * specifierToPackageName('next/jest') === 'next'
+ * specifierToPackageName('@babel/core') === '@babel/core'
+ * specifierToPackageName('/something/custom') === '/something/custom'
+ * specifierToPackageName('./something/custom') === './something/custom'
+ * ```
+ */
+export function specifierToPackageName(specifier: string) {
+  const split = specifier.split('/').slice(0, 2);
+  const packageName =
+    specifier.startsWith('@') && split.length === 2
+      ? split.join('/')
+      : ['.', '..'].includes(split[0])
+        ? specifier
+        : split[0];
+
+  return packageName;
 }
 
 function relativePathsArrayToAbsolute(relativePaths: RelativePath[], root: AbsolutePath) {
