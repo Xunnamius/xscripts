@@ -3,6 +3,15 @@
 // * Every now and then, we adopt best practices from CRA
 // * https://tinyurl.com/yakv4ggx
 
+const pluginProposalExportDefaultFrom = require('@babel/plugin-proposal-export-default-from');
+const pluginSyntaxImportAttributes = require('@babel/plugin-syntax-import-attributes');
+const pluginSyntaxTypescript = require('@babel/plugin-syntax-typescript');
+const presetEnv = require('@babel/preset-env');
+const presetReact = require('@babel/preset-react');
+const presetTypescript = require('@babel/preset-typescript');
+const pluginModuleResolver = require('babel-plugin-module-resolver');
+const pluginTransformRewriteImports = require('babel-plugin-transform-rewrite-imports');
+
 // ? https://nodejs.org/en/about/releases
 const NODE_LTS = 'maintained node versions';
 
@@ -16,11 +25,11 @@ module.exports = {
     constantReexports: true
   },
   plugins: [
-    '@babel/plugin-proposal-export-default-from',
+    pluginProposalExportDefaultFrom,
     // ? This is required until tc39 makes up its mind
-    '@babel/plugin-syntax-import-attributes',
+    pluginSyntaxImportAttributes,
     [
-      'module-resolver',
+      pluginModuleResolver,
       {
         root: '.',
         extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
@@ -84,9 +93,9 @@ module.exports = {
       comments: true,
       sourceMaps: 'inline',
       presets: [
-        ['@babel/preset-env', { targets: { node: true } }],
-        ['@babel/preset-typescript', { allowDeclareFields: true }],
-        ['@babel/preset-react', { runtime: 'automatic' }]
+        [presetEnv, { targets: { node: true } }],
+        [presetTypescript, { allowDeclareFields: true }],
+        [presetReact, { runtime: 'automatic' }]
         // ? We don't care about minification
       ],
       plugins: [
@@ -100,7 +109,7 @@ module.exports = {
     'production-cjs': {
       presets: [
         [
-          '@babel/preset-env',
+          presetEnv,
           {
             // ? https://babeljs.io/docs/en/babel-preset-env#modules
             modules: 'cjs',
@@ -111,12 +120,12 @@ module.exports = {
             exclude: ['transform-dynamic-import']
           }
         ],
-        ['@babel/preset-typescript', { allowDeclareFields: true }],
-        ['@babel/preset-react', { runtime: 'automatic' }]
+        [presetTypescript, { allowDeclareFields: true }],
+        [presetReact, { runtime: 'automatic' }]
       ],
       plugins: [
         [
-          'babel-plugin-transform-rewrite-imports',
+          pluginTransformRewriteImports,
           {
             appendExtension: '.js',
             replaceExtensions: { '(.+)\\.(c|m)?ts(x)?$': '$1.$2js$3' }
@@ -129,7 +138,7 @@ module.exports = {
     'production-types': {
       comments: true,
       plugins: [
-        ['@babel/plugin-syntax-typescript', { dts: true }]
+        [pluginSyntaxTypescript, { dts: true }]
         // [
         //   'transform-rewrite-imports',
         //   {

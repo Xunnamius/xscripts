@@ -3,10 +3,51 @@
  * import('unified-engine/lib/configuration').PluggableList |
  * import('unified-engine/lib/configuration').PluginIdList}} Config
  */
+
+import capitalizeHeadings from 'remark-capitalize-headings';
+import remarkFrontmatter from 'remark-frontmatter';
+import remarkGfm from 'remark-gfm';
+import remarkIgnore from 'remark-ignore';
+import remarkLint from 'remark-lint';
+import remarkLintDefinitionCase from 'remark-lint-definition-case';
+import remarkLintFencedCodeFlag from 'remark-lint-fenced-code-flag';
+import remarkLintFencedCodeFlagCase from 'remark-lint-fenced-code-flag-case';
+import remarkLintFileExtension from 'remark-lint-file-extension';
+import remarkLintFirstHeadingLevel from 'remark-lint-first-heading-level';
+import remarkLintHeadingIncrement from 'remark-lint-heading-increment';
+import remarkLintHeadingWhitespace from 'remark-lint-heading-whitespace';
+import remarkLintHeadingWordLength from 'remark-lint-heading-word-length';
+import remarkLintListItemStyle from 'remark-lint-list-item-style';
+import remarkLintNoDuplicateDefinedUrls from 'remark-lint-no-duplicate-defined-urls';
+import remarkLintNoDuplicateHeadingsInSection from 'remark-lint-no-duplicate-headings-in-section';
+import remarkLintNoEmptySections from 'remark-lint-no-empty-sections';
+import remarkLintNoEmptyUrl from 'remark-lint-no-empty-url';
+import remarkLintNoHeadingLikeParagraph from 'remark-lint-no-heading-like-paragraph';
+import remarkLintNoHeadingPunctuation from 'remark-lint-no-heading-punctuation';
+import remarkLintNoInlinePadding from 'remark-lint-no-inline-padding';
+import remarkLintNoLiteralUrls from 'remark-lint-no-literal-urls';
+import remarkLintNoMultipleToplevelHeadings from 'remark-lint-no-multiple-toplevel-headings';
+import remarkLintNoReferenceLikeUrl from 'remark-lint-no-reference-like-url';
+import remarkLintNoShellDollars from 'remark-lint-no-shell-dollars';
+import remarkLintNoShortcutReferenceImage from 'remark-lint-no-shortcut-reference-image';
+import remarkLintNoShortcutReferenceLink from 'remark-lint-no-shortcut-reference-link';
+import remarkLintNoTabs from 'remark-lint-no-tabs';
+import remarkLintNoUndefinedReferences from 'remark-lint-no-undefined-references';
+import remarkLintOrderedListMarkerValue from 'remark-lint-ordered-list-marker-value';
+import remarkLintStrikethroughMarker from 'remark-lint-strikethrough-marker';
+import remarkLintUnorderedListMarkerStyle from 'remark-lint-unordered-list-marker-style';
+import remarkReferenceLinks from 'remark-reference-links';
+import removeUnusedDefinitions from 'remark-remove-unused-definitions';
+import removeUrlTrailingSlash from 'remark-remove-url-trailing-slash';
+import renumberReferences from 'remark-renumber-references';
+import sortDefinitions from 'remark-sort-definitions';
+import tightComments from 'remark-tight-comments';
+import remarkValidateLinks from 'remark-validate-links';
+
 const debug = (await import('debug')).default('xscripts:config:remark');
 
-export const noUndefinedReferencesPlugin = [
-  'lint-no-undefined-references',
+export const remarkLintNoUndefinedReferences_preconfigured = [
+  remarkLintNoUndefinedReferences,
   { allow: [/![A-Z]+/] }
 ];
 
@@ -18,7 +59,9 @@ export const noUndefinedReferencesPlugin = [
  *
  * @type {Config}
  */
-const lintNoUndefConfig = { plugins: ['gfm', noUndefinedReferencesPlugin] };
+const lintNoUndefConfig = {
+  plugins: [remarkGfm, remarkLintNoUndefinedReferences_preconfigured]
+};
 
 /**
  * Remark configuration loaded when `NODE_ENV === 'lint'`. The goal here is to
@@ -29,39 +72,39 @@ const lintNoUndefConfig = { plugins: ['gfm', noUndefinedReferencesPlugin] };
  */
 const lintConfig = {
   plugins: [
-    'ignore',
-    'frontmatter',
-    'gfm',
-    'lint',
-    'lint-definition-case',
-    'lint-fenced-code-flag',
-    'lint-fenced-code-flag-case',
-    'lint-file-extension',
-    'lint-first-heading-level',
-    'lint-heading-increment',
-    'lint-heading-whitespace',
-    'lint-list-item-style',
-    'lint-no-duplicate-defined-urls',
-    'lint-no-duplicate-headings-in-section',
-    'lint-no-empty-sections',
-    'lint-no-empty-url',
-    'lint-heading-word-length',
-    'lint-no-heading-like-paragraph',
-    'lint-no-heading-punctuation',
-    'lint-no-inline-padding',
-    'lint-no-literal-urls',
-    'lint-no-multiple-toplevel-headings',
-    'lint-no-reference-like-url',
-    'lint-no-shell-dollars',
-    'lint-no-shortcut-reference-image',
-    'lint-no-shortcut-reference-link',
-    'lint-no-tabs',
-    noUndefinedReferencesPlugin,
-    'lint-ordered-list-marker-value',
-    ['lint-strikethrough-marker', '~~'],
+    remarkIgnore,
+    remarkFrontmatter,
+    remarkGfm,
+    remarkLint,
+    remarkLintDefinitionCase,
+    remarkLintFencedCodeFlag,
+    remarkLintFencedCodeFlagCase,
+    remarkLintFileExtension,
+    remarkLintFirstHeadingLevel,
+    remarkLintHeadingIncrement,
+    remarkLintHeadingWhitespace,
+    remarkLintListItemStyle,
+    remarkLintNoDuplicateDefinedUrls,
+    remarkLintNoDuplicateHeadingsInSection,
+    remarkLintNoEmptySections,
+    remarkLintNoEmptyUrl,
+    remarkLintHeadingWordLength,
+    remarkLintNoHeadingLikeParagraph,
+    remarkLintNoHeadingPunctuation,
+    remarkLintNoInlinePadding,
+    remarkLintNoLiteralUrls,
+    remarkLintNoMultipleToplevelHeadings,
+    remarkLintNoReferenceLikeUrl,
+    remarkLintNoShellDollars,
+    remarkLintNoShortcutReferenceImage,
+    remarkLintNoShortcutReferenceLink,
+    remarkLintNoTabs,
+    remarkLintNoUndefinedReferences_preconfigured,
+    remarkLintOrderedListMarkerValue,
+    [remarkLintStrikethroughMarker, '~~'],
     // ? Prettier will reformat list markers UNLESS they precede checkboxes
-    ['lint-unordered-list-marker-style', '-'],
-    'validate-links'
+    [remarkLintUnorderedListMarkerStyle, '-'],
+    remarkValidateLinks
   ]
 };
 
@@ -78,17 +121,17 @@ if (process.env.XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS !== 'true') {
  */
 const formatConfig = {
   plugins: [
-    'ignore',
-    'frontmatter',
-    'gfm',
-    'tight-comments',
-    ['capitalize-headings', { excludeHeadingLevel: { h1: true } }],
-    'remove-unused-definitions',
-    'remove-url-trailing-slash',
+    remarkIgnore,
+    remarkFrontmatter,
+    remarkGfm,
+    tightComments,
+    [capitalizeHeadings, { excludeHeadingLevel: { h1: true } }],
+    removeUnusedDefinitions,
+    removeUrlTrailingSlash,
     ...(process.env.XSCRIPTS_FORMAT_RENUMBER_REFERENCES === 'true'
-      ? ['renumber-references']
-      : ['remark-reference-links']),
-    'sort-definitions'
+      ? [renumberReferences]
+      : [remarkReferenceLinks]),
+    sortDefinitions
   ]
 };
 
