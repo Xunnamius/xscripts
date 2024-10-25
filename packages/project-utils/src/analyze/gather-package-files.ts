@@ -18,7 +18,7 @@ import {
   deriveVirtualGitignoreLines,
   type AbsolutePath,
   type RelativePath
-} from '#project-utils src/fs/index.ts';
+} from '#project-utils src/fs.ts';
 
 import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 

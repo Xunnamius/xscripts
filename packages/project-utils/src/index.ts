@@ -1,1 +1,1 @@
-export * from '#project-utils src/analyze/index.ts';
+export * from '#project-utils src/analyze.ts';

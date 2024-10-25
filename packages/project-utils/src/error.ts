@@ -2,7 +2,7 @@ import { isNativeError } from 'node:util/types';
 
 import { makeNamedError } from 'named-app-errors';
 
-import { type WorkspacePackageName } from 'multiverse#project-utils analyze/common.ts';
+import { type WorkspacePackageName } from '#project-utils src/analyze/common.ts';
 
 // TODO: replace a lot of all that follows with the official package(s),
 // TODO: including the symbol use below. Symbols and stuff need to be auto-generated.

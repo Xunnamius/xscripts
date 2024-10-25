@@ -6,8 +6,8 @@ import { runNoRejectOnBadExit } from 'multiverse#run';
 
 import { globalDebuggerNamespace } from '#project-utils src/constant.ts';
 import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
-import { ensurePathIsAbsolute } from '#project-utils src/fs/exports/ensure-path-is-absolute.ts';
-import { type AbsolutePath } from '#project-utils src/fs/index.ts';
+import { ensurePathIsAbsolute } from '#project-utils src/fs/ensure-path-is-absolute.ts';
+import { type AbsolutePath } from '#project-utils src/fs.ts';
 import { type ParametersNoFirst } from '#project-utils src/util.ts';
 
 import type { Promisable } from 'type-fest';

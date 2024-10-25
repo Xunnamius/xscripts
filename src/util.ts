@@ -11,7 +11,7 @@ import {
 } from 'multiverse#cli-utils extensions.ts';
 
 import { ProjectError } from 'multiverse#project-utils error.ts';
-import { isAccessible, type AbsolutePath } from 'multiverse#project-utils fs/index.ts';
+import { isAccessible, type AbsolutePath } from 'multiverse#project-utils fs.ts';
 import { createDebugLogger } from 'multiverse#rejoinder';
 
 import {

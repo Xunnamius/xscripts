@@ -3,7 +3,7 @@ import { extname, join as joinPath, relative as toRelativePath } from 'node:path
 import { type Arrayable } from 'type-fest';
 
 import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
-import { type RelativePath } from '#project-utils src/fs/index.ts';
+import { type RelativePath } from '#project-utils src/fs.ts';
 
 import {
   type ProjectMetadata,

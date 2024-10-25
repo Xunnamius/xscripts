@@ -21,17 +21,14 @@ import { getInvocableExtendedHandler } from 'multiverse#bfe';
 import {
   conventionalChangelogConfigProjectBase,
   releaseConfigProjectBase
-} from 'multiverse#project-utils fs/index.ts';
+} from 'multiverse#project-utils fs.ts';
 
 import { createDebugLogger } from 'multiverse#rejoinder';
 import { run } from 'multiverse#run';
 
 import type { ConventionalChangelogCliConfig } from 'universe assets/config/_conventional.config.js.ts';
 
-import {
-  assertIsExpectedTransformerContext,
-  makeTransformer
-} from 'universe assets/index.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
 
 import {
   default as buildChangelog,

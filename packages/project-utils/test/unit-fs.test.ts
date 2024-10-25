@@ -16,7 +16,7 @@ import {
   readJsonc,
   readPackageJsonAtRoot,
   type AbsolutePath
-} from '#project-utils src/fs/index.ts';
+} from '#project-utils src/fs.ts';
 
 import { fixtures } from '#project-utils test/helpers/dummy-repo.ts';
 

@@ -28,7 +28,7 @@ import {
   type WorkspacePackageId
 } from '#project-utils src/analyze/common.ts';
 
-import { packageRootToId } from '#project-utils src/analyze/exports/package-root-to-id.ts';
+import { packageRootToId } from '#project-utils src/analyze/package-root-to-id.ts';
 
 import {
   DuplicatePackageIdError,
@@ -37,7 +37,6 @@ import {
   NotAGitRepositoryError,
   ProjectError
 } from '#project-utils src/error.ts';
-
 import {
   deriveVirtualGitignoreLines,
   ensurePathIsAbsolute,
@@ -47,7 +46,7 @@ import {
   webpackConfigProjectBase,
   type AbsolutePath,
   type RelativePath
-} from '#project-utils src/fs/index.ts';
+} from '#project-utils src/fs.ts';
 
 import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 

@@ -29,12 +29,12 @@ import {
 import {
   gatherImportEntriesFromFiles,
   type ImportSpecifierEntry
-} from '#project-utils src/analyze/exports/gather-import-entries-from-files.ts';
+} from '#project-utils src/analyze/gather-import-entries-from-files.ts';
 
-import { gatherPackageFiles } from '#project-utils src/analyze/exports/gather-package-files.ts';
-import { pathToPackage } from '#project-utils src/analyze/exports/path-to-package.ts';
+import { gatherPackageFiles } from '#project-utils src/analyze/gather-package-files.ts';
+import { pathToPackage } from '#project-utils src/analyze/path-to-package.ts';
 import { ErrorMessage } from '#project-utils src/error.ts';
-import { type AbsolutePath, type RelativePath } from '#project-utils src/fs/index.ts';
+import { type AbsolutePath, type RelativePath } from '#project-utils src/fs.ts';
 import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 
 import type { Promisable } from 'type-fest';

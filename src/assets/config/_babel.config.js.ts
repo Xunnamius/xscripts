@@ -1,10 +1,7 @@
 // * Every now and then, we adopt best practices from CRA
 // * https://tinyurl.com/yakv4ggx
 
-import {
-  assertIsExpectedTransformerContext,
-  makeTransformer
-} from 'universe assets/index.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
 
 import { globalDebuggerNamespace } from 'universe constant.ts';
 

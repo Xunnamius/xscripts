@@ -2,7 +2,7 @@ import {
   assertIsExpectedTransformerContext,
   makeTransformer,
   type StandardTransformerContext
-} from 'universe assets/index.ts';
+} from 'universe assets.ts';
 
 export type Context = Pick<StandardTransformerContext, 'packageName'>;
 

@@ -17,7 +17,7 @@ import {
 } from 'multiverse#cli-utils extensions.ts';
 
 import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse#project-utils';
-import { isAccessible } from 'multiverse#project-utils fs/exports/is-accessible.ts';
+import { isAccessible } from 'multiverse#project-utils fs/is-accessible.ts';
 import { createDebugLogger, createGenericLogger } from 'multiverse#rejoinder';
 
 import {

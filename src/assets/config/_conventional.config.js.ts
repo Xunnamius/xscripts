@@ -7,10 +7,7 @@ import { interpolateTemplate, toSentenceCase } from 'multiverse#cli-utils util.t
 import { analyzeProjectStructure } from 'multiverse#project-utils';
 import { createDebugLogger } from 'multiverse#rejoinder';
 
-import {
-  assertIsExpectedTransformerContext,
-  makeTransformer
-} from 'universe assets/index.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
 import { globalDebuggerNamespace } from 'universe constant.ts';
 import { ErrorMessage } from 'universe error.ts';
 import { __read_file_sync } from 'universe util.ts';

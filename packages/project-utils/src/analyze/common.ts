@@ -11,7 +11,7 @@ import type {
   // ? Used in documentation eslint-disable-next-line
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   webpackConfigProjectBase
-} from '#project-utils src/fs/exports/well-known-constants.ts';
+} from '#project-utils src/fs/well-known-constants.ts';
 
 import type { PackageJson } from 'type-fest';
 

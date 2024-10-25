@@ -17,7 +17,7 @@ import {
   npmLinkSelfFixture,
   reconfigureJestGlobalsToSkipTestsInThisFileIfRequested,
   type FixtureOptions
-} from 'testverse setup';
+} from 'testverse setup.ts';
 
 import type { PackageJson } from 'type-fest';
 

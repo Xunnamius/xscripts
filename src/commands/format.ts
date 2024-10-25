@@ -21,7 +21,7 @@ import {
   deriveVirtualPrettierignoreLines,
   remarkConfigProjectBase,
   type AbsolutePath
-} from 'multiverse#project-utils fs/index.ts';
+} from 'multiverse#project-utils fs.ts';
 
 import { SHORT_TAB } from 'multiverse#rejoinder';
 import { run, runNoRejectOnBadExit } from 'multiverse#run';

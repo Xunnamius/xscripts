@@ -20,7 +20,7 @@ import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
 import {
   deriveVirtualPrettierignoreLines,
   type AbsolutePath
-} from '#project-utils src/fs/index.ts';
+} from '#project-utils src/fs.ts';
 
 import { type ParametersNoFirst } from '#project-utils src/util.ts';
 

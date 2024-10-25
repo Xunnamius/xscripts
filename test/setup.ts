@@ -12,7 +12,7 @@ import uniqueFilename from 'unique-filename';
 import 'jest-extended';
 import 'jest-extended/all';
 
-import { webpackConfigProjectBase } from 'multiverse#project-utils fs/exports/well-known-constants.ts';
+import { webpackConfigProjectBase } from 'multiverse#project-utils fs/well-known-constants.ts';
 import { createDebugLogger, type ExtendedDebugger } from 'multiverse#rejoinder';
 import { run, type RunReturnType } from 'multiverse#run';
 

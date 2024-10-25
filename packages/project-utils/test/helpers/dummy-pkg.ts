@@ -7,7 +7,7 @@ import { resolve as resolverLibrary } from 'resolve.exports';
 
 import { runNoRejectOnBadExit } from 'multiverse#run';
 
-import { type AbsolutePath } from '#project-utils src/fs/index.ts';
+import { type AbsolutePath } from '#project-utils src/fs.ts';
 
 import type { PackageJson } from 'type-fest';
 

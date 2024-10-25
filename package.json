@@ -21,8 +21,8 @@
       "default": "./dist/src/commands/*.js"
     },
     "./assets": {
-      "types": "./dist/src/assets/index.d.ts",
-      "default": "./dist/src/assets/index.js"
+      "types": "./dist/src/assets.d.ts",
+      "default": "./dist/src/assets.js"
     },
     "./assets/config/*": {
       "types": "./dist/src/assets/config/_*.d.ts",
@@ -44,7 +44,7 @@
         "dist/src/commands/*.d.ts"
       ],
       "assets": [
-        "dist/src/assets/index.d.ts"
+        "dist/src/assets.d.ts"
       ],
       "assets/config/*": [
         "dist/src/assets/config/_*.d.ts"

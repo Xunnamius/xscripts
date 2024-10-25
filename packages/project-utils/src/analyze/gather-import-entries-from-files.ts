@@ -12,7 +12,7 @@ import { hasExtensionAcceptedByBabel } from '# src/assets/config/_babel.config.j
 
 import { debug as debug_ } from '#project-utils src/analyze/common.ts';
 import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
-import { type AbsolutePath } from '#project-utils src/fs/index.ts';
+import { type AbsolutePath } from '#project-utils src/fs.ts';
 import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
 
 import type { Promisable } from 'type-fest';

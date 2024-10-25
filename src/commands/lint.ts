@@ -24,7 +24,7 @@ import {
   readJsonc,
   Tsconfig,
   type AbsolutePath
-} from 'multiverse#project-utils fs/index.ts';
+} from 'multiverse#project-utils fs.ts';
 
 import { runNoRejectOnBadExit, type run, type Subprocess } from 'multiverse#run';
 

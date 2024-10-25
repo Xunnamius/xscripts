@@ -9,7 +9,7 @@ import {
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { Tsconfig } from 'multiverse#project-utils fs/index.ts';
+import { Tsconfig } from 'multiverse#project-utils fs.ts';
 import { run } from 'multiverse#run';
 
 import {

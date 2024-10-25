@@ -23,13 +23,10 @@ import {
   generateRawAliasMap
 } from 'multiverse#project-utils alias.ts';
 
-import { Tsconfig } from 'multiverse#project-utils fs/exports/well-known-constants.ts';
-import { type AbsolutePath } from 'multiverse#project-utils fs/index.ts';
+import { Tsconfig } from 'multiverse#project-utils fs/well-known-constants.ts';
+import { type AbsolutePath } from 'multiverse#project-utils fs.ts';
 
-import {
-  assertIsExpectedTransformerContext,
-  makeTransformer
-} from 'universe assets/index.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
 
 import { globalDebuggerNamespace } from 'universe constant.ts';
 import { ErrorMessage } from 'universe error.ts';
@@ -482,7 +479,7 @@ export const { transformer } = makeTransformer<Context>({
       [name]: /*js*/ `
 // @ts-check
 /*import { createDebugLogger } from 'debug';*/
-import { deepMergeConfig } from '@-xun/scripts/assets';
+import { deepMergeConfig } from '@-xun/scripts/assets.ts';
 import { moduleExport } from '@-xun/scripts/assets/config/${name}';
 
 // TODO: publish latest rejoinder package first, then update configs to use it

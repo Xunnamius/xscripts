@@ -13,7 +13,7 @@ import {
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
 import { ProjectAttribute } from 'multiverse#project-utils analyze/common.ts';
-import { jestConfigProjectBase } from 'multiverse#project-utils fs/index.ts';
+import { jestConfigProjectBase } from 'multiverse#project-utils fs.ts';
 import { run } from 'multiverse#run';
 
 import { baseConfig } from 'universe assets/config/_jest.config.mjs.ts';

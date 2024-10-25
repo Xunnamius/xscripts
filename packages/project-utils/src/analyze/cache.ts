@@ -7,7 +7,7 @@ import {
   type ProjectMetadata
 } from '#project-utils src/analyze/common.ts';
 
-import { type AbsolutePath } from '#project-utils src/fs/index.ts';
+import { type AbsolutePath } from '#project-utils src/fs.ts';
 
 export const cacheDebug = debug_.extend('cache');
 

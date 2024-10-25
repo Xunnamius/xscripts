@@ -2,9 +2,9 @@ import { toss } from 'toss-expression';
 
 import { runNoRejectOnBadExit } from 'multiverse#run';
 
-import { pathToPackage } from '#project-utils src/analyze/exports/path-to-package.ts';
+import { pathToPackage } from '#project-utils src/analyze/path-to-package.ts';
 import { ErrorMessage } from '#project-utils src/error.ts';
-import { type AbsolutePath, type RelativePath } from '#project-utils src/fs/index.ts';
+import { type AbsolutePath, type RelativePath } from '#project-utils src/fs.ts';
 
 import {
   analyzeProjectStructure,

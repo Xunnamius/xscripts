@@ -1,7 +1,7 @@
 import { basename, resolve } from 'node:path';
 
 import { type Package } from '#project-utils src/analyze/common.ts';
-import * as fs from '#project-utils src/fs/index.ts';
+import * as fs from '#project-utils src/fs.ts';
 
 import {
   ProjectAttribute,
@@ -38,8 +38,8 @@ export function patchReadPackageJsonAtRoot(
   }
 ) {
   const actualReadPackageJsonAtRoot = jest.requireActual<
-    typeof import('#project-utils src/fs/index.ts')
-  >('#project-utils src/fs/index.ts').readPackageJsonAtRoot;
+    typeof import('#project-utils src/fs.ts')
+  >('#project-utils src/fs.ts').readPackageJsonAtRoot;
 
   jest.spyOn(fs, 'readPackageJsonAtRoot').mockImplementation(async ({ root }) => {
     const packageJson = await actualReadPackageJsonAtRoot({ root });
