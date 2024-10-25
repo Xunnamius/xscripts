@@ -4,7 +4,8 @@ import { glob as globAsync, sync as globSync } from 'glob-gitignore';
 
 import {
   _internalProjectFilesCache,
-  cacheDebug
+  cacheDebug,
+  deriveCacheKeyFromPackageAndData
 } from '#project-utils src/analyze/cache.ts';
 
 import {
@@ -97,6 +98,11 @@ function gatherProjectFiles_(
   }: GatherProjectFilesOptions = {}
 ): Promisable<ProjectFiles> {
   const debug = debug_.extend('gatherProjectFiles');
+  const cacheKey = deriveCacheKeyFromPackageAndData(projectMetadata.rootPackage, {
+    skipPrettierIgnored,
+    skipUnknown,
+    ignoreUnsupportedFeatures
+  });
 
   if (shouldRunSynchronously && skipUnknown) {
     throw new ProjectError(ErrorMessage.DeriverAsyncConfigurationConflict());
@@ -106,9 +112,9 @@ function gatherProjectFiles_(
   const subRootPackagesArray = Array.from(subRootPackagesMap?.values() || []);
   const projectRoot = rootPackage.root;
 
-  if (useCached && _internalProjectFilesCache.has(projectMetadata)) {
+  if (useCached && _internalProjectFilesCache.has(cacheKey)) {
     cacheDebug('cache hit!');
-    const cachedResult = _internalProjectFilesCache.get(projectMetadata)!;
+    const cachedResult = _internalProjectFilesCache.get(cacheKey)!;
     debug('reusing cached resources: %O', cachedResult);
     return shouldRunSynchronously ? cachedResult : Promise.resolve(cachedResult);
   } else {
@@ -348,8 +354,8 @@ function gatherProjectFiles_(
 
     debug('project files: %O', projectFiles);
 
-    if (useCached || !_internalProjectFilesCache.has(projectMetadata)) {
-      _internalProjectFilesCache.set(projectMetadata, projectFiles);
+    if (useCached || !_internalProjectFilesCache.has(cacheKey)) {
+      _internalProjectFilesCache.set(cacheKey, projectFiles);
       cacheDebug('cache entry updated');
     } else {
       cacheDebug('skipped updating cache entry');

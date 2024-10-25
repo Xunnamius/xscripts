@@ -627,6 +627,22 @@ describe('::gatherProjectFiles', () => {
       expect(gatherProjectFiles.sync(dummyMetadata)).toBe(projectFiles);
     });
 
+    it('uses entire call signature when constructing internal cache key', () => {
+      expect.hasAssertions();
+
+      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
+
+      const result1 = gatherProjectFiles.sync(projectMetadata, {
+        ignoreUnsupportedFeatures: true
+      });
+
+      const result2 = gatherProjectFiles.sync(projectMetadata, {
+        ignoreUnsupportedFeatures: false
+      });
+
+      expect(result1).not.toBe(result2);
+    });
+
     it('does not ignore files in prettier when "skipPrettierIgnored" is false', () => {
       expect.hasAssertions();
 
@@ -689,10 +705,13 @@ describe('::gatherProjectFiles', () => {
       expect.hasAssertions();
 
       expect(() =>
-        gatherProjectFiles.sync({} as ProjectMetadata, {
-          // @ts-expect-error: we expect this to fail or something's wrong
-          skipUnknown: true
-        })
+        gatherProjectFiles.sync(
+          { projectMetadata: {}, rootPackage: {} } as unknown as ProjectMetadata,
+          {
+            // @ts-expect-error: we expect this to fail or something's wrong
+            skipUnknown: true
+          }
+        )
       ).toThrow(ErrorMessage.DeriverAsyncConfigurationConflict());
     });
 
@@ -968,6 +987,22 @@ describe('::gatherProjectFiles', () => {
       );
 
       await expect(gatherProjectFiles(dummyMetadata)).resolves.toBe(projectFiles);
+    });
+
+    it('uses entire call signature when constructing internal cache key', async () => {
+      expect.hasAssertions();
+
+      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
+
+      const result1 = await gatherProjectFiles(projectMetadata, {
+        ignoreUnsupportedFeatures: true
+      });
+
+      const result2 = await gatherProjectFiles(projectMetadata, {
+        ignoreUnsupportedFeatures: false
+      });
+
+      expect(result1).not.toBe(result2);
     });
 
     it('does not ignore files in prettier when "skipPrettierIgnored" is false', async () => {
@@ -1775,69 +1810,56 @@ describe('::gatherPackageFiles', () => {
     it('respects "skipGitIgnored" option', () => {
       expect.hasAssertions();
 
-      {
-        const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
-        const { root } = rootPackage;
+      const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+      const { root } = rootPackage;
 
-        expect(
-          gatherPackageFiles.sync(rootPackage, { skipGitIgnored: true })
-        ).toStrictEqual({
-          dist: [
-            `${root}/dist/index.js`,
-            `${root}/dist/package.json`,
-            `${root}/dist/should-be-ignored.md`
-          ],
-          docs: [],
-          other: [
-            `${root}/.prettierignore`,
-            `${root}/.vercel/package.json`,
-            `${root}/.vercel/project.json`,
-            `${root}/.vercel/something.md`,
-            `${root}/package.json`,
-            `${root}/README.md`,
-            `${root}/something-else.md`
-          ],
-          src: [
-            `${root}/src/1.ts`,
-            `${root}/src/2.mts`,
-            `${root}/src/3.cts`,
-            `${root}/src/4.tsx`,
-            `${root}/src/index.js`,
-            `${root}/src/package.json`
-          ],
-          test: []
-        });
-      }
+      expect(
+        gatherPackageFiles.sync(rootPackage, { skipGitIgnored: true })
+      ).toStrictEqual({
+        dist: [],
+        docs: [],
+        other: [
+          `${root}/.gitignore`,
+          `${root}/.prettierignore`,
+          `${root}/package.json`,
+          `${root}/vercel.json`,
+          `${root}/webpack.config.mjs`
+        ],
+        src: [
+          `${root}/src/1.js`,
+          `${root}/src/2.mts`,
+          `${root}/src/3.cts`,
+          `${root}/src/4.tsx`,
+          `${root}/src/index.ts`,
+          `${root}/src/package.json`
+        ],
+        test: []
+      });
 
-      {
-        const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
-        const { root } = rootPackage;
-
-        expect(
-          gatherPackageFiles.sync(rootPackage, { skipGitIgnored: false })
-        ).toStrictEqual({
-          dist: [],
-          docs: [],
-          other: [
-            `${root}/.git-ignored/nope.md`,
-            `${root}/.git/.gitkeep`,
-            `${root}/.gitignore`,
-            `${root}/.prettierignore`,
-            `${root}/package.json`,
-            `${root}/vercel.json`,
-            `${root}/webpack.config.mjs`
-          ],
-          src: [
-            `${root}/src/1.js`,
-            `${root}/src/2.mts`,
-            `${root}/src/3.cts`,
-            `${root}/src/4.tsx`,
-            `${root}/src/index.ts`,
-            `${root}/src/package.json`
-          ],
-          test: []
-        });
-      }
+      expect(
+        gatherPackageFiles.sync(rootPackage, { skipGitIgnored: false })
+      ).toStrictEqual({
+        dist: [],
+        docs: [],
+        other: [
+          `${root}/.git-ignored/nope.md`,
+          `${root}/.git/.gitkeep`,
+          `${root}/.gitignore`,
+          `${root}/.prettierignore`,
+          `${root}/package.json`,
+          `${root}/vercel.json`,
+          `${root}/webpack.config.mjs`
+        ],
+        src: [
+          `${root}/src/1.js`,
+          `${root}/src/2.mts`,
+          `${root}/src/3.cts`,
+          `${root}/src/4.tsx`,
+          `${root}/src/index.ts`,
+          `${root}/src/package.json`
+        ],
+        test: []
+      });
     });
 
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
@@ -1851,6 +1873,16 @@ describe('::gatherPackageFiles', () => {
       );
 
       expect(gatherPackageFiles.sync(dummyMetadata.rootPackage)).toBe(packageFiles);
+    });
+
+    it('uses entire call signature when constructing internal cache key', () => {
+      expect.hasAssertions();
+
+      const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+      const result1 = gatherPackageFiles.sync(rootPackage, { skipGitIgnored: true });
+      const result2 = gatherPackageFiles.sync(rootPackage, { skipGitIgnored: false });
+
+      expect(result1).not.toBe(result2);
     });
   });
 
@@ -2046,63 +2078,56 @@ describe('::gatherPackageFiles', () => {
     it('respects "skipGitIgnored" option', async () => {
       expect.hasAssertions();
 
-      {
-        const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
-        const { root } = rootPackage;
+      const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+      const { root } = rootPackage;
 
-        await expect(
-          gatherPackageFiles(rootPackage, { skipGitIgnored: true })
-        ).resolves.toStrictEqual({
-          dist: [],
-          docs: [],
-          other: [
-            `${root}/.gitignore`,
-            `${root}/.prettierignore`,
-            `${root}/package.json`,
-            `${root}/vercel.json`,
-            `${root}/webpack.config.mjs`
-          ],
-          src: [
-            `${root}/src/1.js`,
-            `${root}/src/2.mts`,
-            `${root}/src/3.cts`,
-            `${root}/src/4.tsx`,
-            `${root}/src/index.ts`,
-            `${root}/src/package.json`
-          ],
-          test: []
-        });
-      }
+      await expect(
+        gatherPackageFiles(rootPackage, { skipGitIgnored: true })
+      ).resolves.toStrictEqual({
+        dist: [],
+        docs: [],
+        other: [
+          `${root}/.gitignore`,
+          `${root}/.prettierignore`,
+          `${root}/package.json`,
+          `${root}/vercel.json`,
+          `${root}/webpack.config.mjs`
+        ],
+        src: [
+          `${root}/src/1.js`,
+          `${root}/src/2.mts`,
+          `${root}/src/3.cts`,
+          `${root}/src/4.tsx`,
+          `${root}/src/index.ts`,
+          `${root}/src/package.json`
+        ],
+        test: []
+      });
 
-      {
-        const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
-        const { root } = rootPackage;
-
-        await expect(
-          gatherPackageFiles(rootPackage, { skipGitIgnored: false })
-        ).resolves.toStrictEqual({
-          dist: [],
-          docs: [],
-          other: [
-            `${root}/.git-ignored/nope.md`,
-            `${root}/.git/.gitkeep`,
-            `${root}/.gitignore`,
-            `${root}/.prettierignore`,
-            `${root}/package.json`,
-            `${root}/vercel.json`,
-            `${root}/webpack.config.mjs`
-          ],
-          src: [
-            `${root}/src/1.js`,
-            `${root}/src/2.mts`,
-            `${root}/src/3.cts`,
-            `${root}/src/4.tsx`,
-            `${root}/src/index.ts`,
-            `${root}/src/package.json`
-          ],
-          test: []
-        });
-      }
+      await expect(
+        gatherPackageFiles(rootPackage, { skipGitIgnored: false })
+      ).resolves.toStrictEqual({
+        dist: [],
+        docs: [],
+        other: [
+          `${root}/.git-ignored/nope.md`,
+          `${root}/.git/.gitkeep`,
+          `${root}/.gitignore`,
+          `${root}/.prettierignore`,
+          `${root}/package.json`,
+          `${root}/vercel.json`,
+          `${root}/webpack.config.mjs`
+        ],
+        src: [
+          `${root}/src/1.js`,
+          `${root}/src/2.mts`,
+          `${root}/src/3.cts`,
+          `${root}/src/4.tsx`,
+          `${root}/src/index.ts`,
+          `${root}/src/package.json`
+        ],
+        test: []
+      });
     });
 
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
@@ -2118,6 +2143,16 @@ describe('::gatherPackageFiles', () => {
       await expect(gatherPackageFiles(dummyMetadata.rootPackage)).resolves.toBe(
         packageFiles
       );
+    });
+
+    it('uses entire call signature when constructing internal cache key', async () => {
+      expect.hasAssertions();
+
+      const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+      const result1 = await gatherPackageFiles(rootPackage, { skipGitIgnored: true });
+      const result2 = await gatherPackageFiles(rootPackage, { skipGitIgnored: false });
+
+      expect(result1).not.toBe(result2);
     });
   });
 });
@@ -2317,6 +2352,18 @@ describe('::gatherPackageBuildTargets', () => {
       );
 
       expect(gatherPackageBuildTargets.sync(rootPackage)).toBe(packageBuildTargets);
+    });
+
+    it('uses entire call signature when constructing internal cache key', () => {
+      expect.hasAssertions();
+
+      const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+      const result1 = gatherPackageBuildTargets.sync(rootPackage);
+      const result2 = gatherPackageBuildTargets.sync(rootPackage, {
+        excludeInternalsPatterns: ['/fake/exclude']
+      });
+
+      expect(result1).not.toBe(result2);
     });
 
     it('returns same results regardless of explicitly empty includes/excludes', () => {
@@ -2720,6 +2767,18 @@ describe('::gatherPackageBuildTargets', () => {
       await expect(gatherPackageBuildTargets(rootPackage)).resolves.toBe(
         packageBuildTargets
       );
+    });
+
+    it('uses entire call signature when constructing internal cache key', async () => {
+      expect.hasAssertions();
+
+      const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
+      const result1 = await gatherPackageBuildTargets(rootPackage);
+      const result2 = await gatherPackageBuildTargets(rootPackage, {
+        excludeInternalsPatterns: ['/fake/exclude']
+      });
+
+      expect(result1).not.toBe(result2);
     });
 
     it('returns same results regardless of explicitly empty includes/excludes', async () => {

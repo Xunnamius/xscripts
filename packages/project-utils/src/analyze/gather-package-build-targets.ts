@@ -16,7 +16,8 @@ import {
 
 import {
   _internalPackageBuildTargetsCache,
-  cacheDebug
+  cacheDebug,
+  deriveCacheKeyFromPackageAndData
 } from '#project-utils src/analyze/cache.ts';
 
 import {
@@ -93,6 +94,10 @@ function gatherPackageBuildTargets_(
   }: GatherPackageBuildTargetsOptions = {}
 ): Promisable<PackageBuildTargets> {
   const debug = debug_.extend('gatherPackageBuildTargets');
+  const cacheKey = deriveCacheKeyFromPackageAndData(package_, {
+    excludeInternalsPatterns,
+    includeExternalsPatterns
+  });
 
   const { projectMetadata } = package_;
   const { rootPackage } = projectMetadata;
@@ -100,9 +105,9 @@ function gatherPackageBuildTargets_(
 
   const packageId_ = isWorkspacePackage(package_) ? package_.id : undefined;
 
-  if (useCached && _internalPackageBuildTargetsCache.has(package_)) {
+  if (useCached && _internalPackageBuildTargetsCache.has(cacheKey)) {
     cacheDebug('cache hit!');
-    const cachedResult = _internalPackageBuildTargetsCache.get(package_)!;
+    const cachedResult = _internalPackageBuildTargetsCache.get(cacheKey)!;
     debug('reusing cached resources: %O', cachedResult);
     return shouldRunSynchronously ? cachedResult : Promise.resolve(cachedResult);
   } else {
@@ -225,8 +230,8 @@ function gatherPackageBuildTargets_(
   function finalize() {
     debug('package build targets: %O', packageBuildTargets);
 
-    if (useCached || !_internalPackageBuildTargetsCache.has(package_)) {
-      _internalPackageBuildTargetsCache.set(package_, packageBuildTargets);
+    if (useCached || !_internalPackageBuildTargetsCache.has(cacheKey)) {
+      _internalPackageBuildTargetsCache.set(cacheKey, packageBuildTargets);
       cacheDebug('cache entry updated');
     } else {
       cacheDebug('skipped updating cache entry');

@@ -4,7 +4,8 @@ import { glob as globAsync, sync as globSync } from 'glob-gitignore';
 
 import {
   _internalPackageFilesCache,
-  cacheDebug
+  cacheDebug,
+  deriveCacheKeyFromPackageAndData
 } from '#project-utils src/analyze/cache.ts';
 
 import {
@@ -84,10 +85,14 @@ function gatherPackageFiles_(
   }: GatherPackageFilesOptions = {}
 ): Promisable<PackageFiles> {
   const debug = debug_.extend('gatherPackageFiles');
+  const cacheKey = deriveCacheKeyFromPackageAndData(package_, {
+    skipIgnored,
+    additionalIgnores
+  });
 
-  if (useCached && _internalPackageFilesCache.has(package_)) {
+  if (useCached && _internalPackageFilesCache.has(cacheKey)) {
     cacheDebug('cache hit!');
-    const cachedResult = _internalPackageFilesCache.get(package_)!;
+    const cachedResult = _internalPackageFilesCache.get(cacheKey)!;
     debug('reusing cached resources: %O', cachedResult);
     return shouldRunSynchronously ? cachedResult : Promise.resolve(cachedResult);
   } else {
@@ -213,8 +218,8 @@ function gatherPackageFiles_(
   function finalize() {
     debug('package files: %O', packageFiles);
 
-    if (useCached || !_internalPackageFilesCache.has(package_)) {
-      _internalPackageFilesCache.set(package_, packageFiles);
+    if (useCached || !_internalPackageFilesCache.has(cacheKey)) {
+      _internalPackageFilesCache.set(cacheKey, packageFiles);
       cacheDebug('cache entry updated');
     } else {
       cacheDebug('skipped updating cache entry');
