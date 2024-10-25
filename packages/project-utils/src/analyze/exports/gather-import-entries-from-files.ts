@@ -20,6 +20,12 @@ import type { Promisable } from 'type-fest';
 const debug = debug_.extend('gatherImportEntriesFromFiles');
 
 /**
+ * An entry mapping an absolute file path to a single import/require
+ * specifier present in said file.
+ */
+export type SingleImportSpecifier = [filepath: AbsolutePath, specifier: string];
+
+/**
  * An entry mapping an absolute file path to an array of import/require
  * specifiers present in said file.
  *
