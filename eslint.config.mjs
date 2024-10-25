@@ -476,11 +476,9 @@ const globals = {
   ...jsGlobals.node
 };
 
-const runtimeContext = analyzeProjectStructure.sync();
-
 const {
-  project: { root: projectRootDir }
-} = runtimeContext;
+  rootPackage: { root: projectRootDir }
+} = analyzeProjectStructure.sync();
 
 if (process.env.XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS !== 'true') {
   genericRules['no-warning-comments'] = 'warn';
