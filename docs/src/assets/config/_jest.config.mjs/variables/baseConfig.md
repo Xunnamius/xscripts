@@ -10,4 +10,4 @@
 
 ## Defined in
 
-[src/assets/config/\_jest.config.mjs.ts:13](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/assets/config/_jest.config.mjs.ts#L13)
+[src/assets/config/\_jest.config.mjs.ts:22](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/src/assets/config/_jest.config.mjs.ts#L22)

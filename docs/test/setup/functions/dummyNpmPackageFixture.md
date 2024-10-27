@@ -14,4 +14,4 @@
 
 ## Defined in
 
-[test/setup.ts:795](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/test/setup.ts#L795)
+[test/setup.ts:797](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/test/setup.ts#L797)

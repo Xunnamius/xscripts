@@ -264,11 +264,11 @@ A collection of possible error and warning messages.
 
 • **name1**: `string`
 
-• **type1**: `"alias"` \| `"name"`
+• **type1**: `"name"` \| `"alias"`
 
 • **name2**: `string`
 
-• **type2**: `"alias"` \| `"name"`
+• **type2**: `"name"` \| `"alias"`
 
 #### Returns
 
@@ -347,6 +347,12 @@ A collection of possible error and warning messages.
 `string`
 
 ### BadGeneratedChangelogSection()
+
+#### Returns
+
+`string`
+
+### BadPackageExportsInPackageJson()
 
 #### Returns
 
@@ -580,6 +586,46 @@ A collection of possible error and warning messages.
 
 `string`
 
+### DependenciesExtraneous()
+
+#### Parameters
+
+• **packagesMeta**: [`string`, `string`][]
+
+#### Returns
+
+`string`
+
+### DistributablesSpecifiersDependenciesMissing()
+
+#### Parameters
+
+• **packageSpecifiers**: [`AbsolutePath`, `string`, `string`][]
+
+#### Returns
+
+`string`
+
+### DistributablesSpecifiersPointOutsideDist()
+
+#### Parameters
+
+• **specifiers**: `ImportSpecifier`[]
+
+#### Returns
+
+`string`
+
+### DistributablesSpecifiersPointToInaccessible()
+
+#### Parameters
+
+• **specifiers**: `ImportSpecifier`[]
+
+#### Returns
+
+`string`
+
 ### DuplicateOptionName()
 
 #### Parameters
@@ -595,6 +641,16 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **identifier**: `string`
+
+#### Returns
+
+`string`
+
+### ExportSubpathsPointsToInaccessible()
+
+#### Parameters
+
+• **subpaths**: [`string`, `string`][]
 
 #### Returns
 
@@ -738,6 +794,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### OthersSpecifiersDependenciesMissing()
+
+#### Parameters
+
+• **packageSpecifiers**: [`AbsolutePath`, `string`, `string`][]
+
+#### Returns
+
+`string`
+
 ### ReferencedNonExistentOption()
 
 #### Parameters
@@ -866,4 +932,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/error.ts#L11)
+[src/error.ts:15](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/src/error.ts#L15)

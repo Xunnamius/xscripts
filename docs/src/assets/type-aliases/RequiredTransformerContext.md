@@ -21,4 +21,4 @@ The value of the `name` parameter passed to [retrieveConfigAsset](../functions/r
 
 ## Defined in
 
-[src/assets/index.ts:20](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/assets/index.ts#L20)
+[src/assets.ts:20](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/src/assets.ts#L20)

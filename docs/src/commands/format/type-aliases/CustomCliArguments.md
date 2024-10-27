@@ -40,4 +40,4 @@
 
 ## Defined in
 
-[src/commands/format.ts:44](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/commands/format.ts#L44)
+[src/commands/format.ts:44](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/src/commands/format.ts#L44)

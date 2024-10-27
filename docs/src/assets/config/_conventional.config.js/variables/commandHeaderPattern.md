@@ -85,4 +85,4 @@ x: some-other-command, yet-another-command, a-5th-command
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.js.ts:171](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/assets/config/_conventional.config.js.ts#L171)
+[src/assets/config/\_conventional.config.js.ts:172](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/src/assets/config/_conventional.config.js.ts#L172)

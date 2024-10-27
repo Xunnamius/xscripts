@@ -50,6 +50,14 @@
 
 > `optional` **skipOutputChecks**: `boolean`
 
+### skipOutputExtraneityCheckFor?
+
+> `optional` **skipOutputExtraneityCheckFor**: (`string` \| `RegExp`)[]
+
+### skipOutputValidityCheckFor?
+
+> `optional` **skipOutputValidityCheckFor**: (`string` \| `RegExp`)[]
+
 ## Defined in
 
-[src/commands/build/distributables.ts:121](https://github.com/Xunnamius/xscripts/blob/dc527d1504edcd9b99add252bcfe23abb9ef9d78/src/commands/build/distributables.ts#L121)
+[src/commands/build/distributables.ts:147](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/src/commands/build/distributables.ts#L147)
