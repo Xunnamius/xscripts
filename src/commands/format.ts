@@ -124,7 +124,7 @@ export default function command({
     usage: withGlobalUsage(
       `$1.
 
-Note that .prettierignore (and not .gitignore!) is used as the single source of truth for which files are and are not ignored when formatters are run. To prevent a file from being formatted by _any formatter_, add it to .prettierignore. To disregard .prettierignore when formatters are run, use --no-skip-ignored.
+Note that the root project's .prettierignore file (and not .gitignore!) is used as the single exclusive source of truth for which files are and are not ignored when formatters are run. To prevent a file from being formatted by _any formatter_, add it to .prettierignore. To disregard .prettierignore when formatters are run, use --no-skip-ignored.
 
 With respect to .prettierignore being the single source of truth for formatters: note that remark is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format" (this command), .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by this command.`
     ),
