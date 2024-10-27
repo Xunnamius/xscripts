@@ -9,6 +9,8 @@ import {
   type ProjectMetadata
 } from '#project-utils src/analyze/common.ts';
 
+import { type Pseudodecorator } from '#project-utils src/analyze/gather-pseudodecorator-entries-from-files.ts';
+
 import { type AbsolutePath } from '#project-utils src/fs.ts';
 
 /**
@@ -22,6 +24,11 @@ export const cacheDebug = debug_.extend('cache');
  * A mapping between project root paths and {@link ProjectMetadata} instances.
  */
 export const _internalProjectMetadataCache = new Map<AbsolutePath, ProjectMetadata>();
+
+/**
+ * A mapping between absolute paths and {@link Pseudodecorator} instance arrays.
+ */
+export const _internalPseudodecoratorCache = new Map<AbsolutePath, Pseudodecorator[]>();
 
 /**
  * A mapping between {@link ProjectMetadata} instances and {@link ProjectFiles}
@@ -48,30 +55,52 @@ export function clearInternalCache({
   gatherProjectFiles = true,
   gatherPackageFiles = true,
   gatherPackageBuildTargets = true,
+  gatherPseudodecoratorsEntriesFromFiles = true,
   analyzeProjectStructure = true
 }: {
   gatherProjectFiles?: boolean;
   gatherPackageFiles?: boolean;
   gatherPackageBuildTargets?: boolean;
+  gatherPseudodecoratorsEntriesFromFiles?: boolean;
   analyzeProjectStructure?: boolean;
 } = {}) {
   if (gatherProjectFiles) {
-    cacheDebug('internal gatherProjectFiles cache cleared');
+    cacheDebug(
+      'internal gatherProjectFiles cache cleared (%O entries deleted)',
+      _internalProjectFilesCache.size
+    );
     _internalProjectFilesCache.clear();
   }
 
   if (gatherPackageFiles) {
-    cacheDebug('internal gatherPackageFiles cache cleared');
+    cacheDebug(
+      'internal gatherPackageFiles cache cleared (%O entries deleted)',
+      _internalPackageFilesCache.size
+    );
     _internalPackageFilesCache.clear();
   }
 
   if (gatherPackageBuildTargets) {
-    cacheDebug('internal gatherPackageBuildTargets cache cleared');
+    cacheDebug(
+      'internal gatherPackageBuildTargets cache cleared (%O entries deleted)',
+      _internalPackageBuildTargetsCache.size
+    );
     _internalPackageBuildTargetsCache.clear();
   }
 
+  if (gatherPseudodecoratorsEntriesFromFiles) {
+    cacheDebug(
+      'internal gatherPseudodecoratorsEntriesFromFiles cache cleared (%O entries deleted)',
+      _internalPseudodecoratorCache.size
+    );
+    _internalPseudodecoratorCache.clear();
+  }
+
   if (analyzeProjectStructure) {
-    cacheDebug('internal analyzeProjectStructure cache cleared');
+    cacheDebug(
+      'internal analyzeProjectStructure cache cleared (%O entries deleted)',
+      _internalProjectMetadataCache.size
+    );
     _internalProjectMetadataCache.clear();
   }
 }
@@ -90,6 +119,6 @@ export function deriveCacheKeyFromPackageAndData(
     .update(JSON.stringify(data))
     .digest('hex');
 
-  cacheDebug('cache key: %O', cacheKey);
+  cacheDebug('derived cache key: %O', cacheKey);
   return cacheKey;
 }

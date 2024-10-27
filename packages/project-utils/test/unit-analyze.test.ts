@@ -14,9 +14,11 @@ import {
   gatherPackageBuildTargets,
   gatherPackageFiles,
   gatherProjectFiles,
+  gatherPseudodecoratorsEntriesFromFiles,
   generatePackageJsonEngineMaintainedNodeVersions,
   packageRootToId,
   ProjectAttribute,
+  PseudodecoratorTag,
   type PackageBuildTargets,
   type ProjectMetadata,
   type WorkspacePackage
@@ -1613,6 +1615,50 @@ describe('::gatherImportEntriesFromFiles', () => {
       );
 
       jest.dontMock('@babel/plugin-syntax-typescript');
+    });
+  });
+});
+
+describe('::gatherPseudodecoratorsEntriesFromFiles', () => {
+  const tsFile = `${__dirname}/fixtures/dummy-pseudodecorators/1.ts` as AbsolutePath;
+  const jsFile = `${__dirname}/fixtures/dummy-pseudodecorators/2.js` as AbsolutePath;
+  const jsonFile = `${__dirname}/fixtures/dummy-pseudodecorators/3.json` as AbsolutePath;
+  const mdFile = `${__dirname}/fixtures/dummy-pseudodecorators/4.md` as AbsolutePath;
+  const ymlFile = `${__dirname}/fixtures/dummy-pseudodecorators/5.yml` as AbsolutePath;
+
+  describe('<synchronous>', () => {
+    it('returns an array of pseudodecorator entries from a variety of files', () => {
+      expect.hasAssertions();
+
+      expect(
+        gatherPseudodecoratorsEntriesFromFiles.sync([
+          tsFile,
+          jsFile,
+          jsonFile,
+          mdFile,
+          ymlFile
+        ])
+      ).toStrictEqual(
+        getExpectedPseudodecorators(tsFile, jsFile, jsonFile, mdFile, ymlFile)
+      );
+    });
+  });
+
+  describe('<asynchronous>', () => {
+    it('returns an array of pseudodecorator entries from a variety of files', async () => {
+      expect.hasAssertions();
+
+      await expect(
+        gatherPseudodecoratorsEntriesFromFiles([
+          tsFile,
+          jsFile,
+          jsonFile,
+          mdFile,
+          ymlFile
+        ])
+      ).resolves.toStrictEqual(
+        getExpectedPseudodecorators(tsFile, jsFile, jsonFile, mdFile, ymlFile)
+      );
     });
   });
 });
@@ -4083,4 +4129,96 @@ function checkForExpectedPackages(
     ...fixtures[fixtureName].namedPackageMapData.map(([, data]) => data),
     ...fixtures[fixtureName].unnamedPackageMapData.map(([, data]) => data)
   ]);
+}
+
+function getExpectedPseudodecorators(
+  tsFile: string,
+  jsFile: string,
+  jsonFile: string,
+  mdFile: string,
+  ymlFile: string
+) {
+  return [
+    [
+      tsFile,
+      [
+        {
+          tag: PseudodecoratorTag.NotExtraneous,
+          items: [
+            'all-contributors-cli',
+            'remark-cli',
+            'jest',
+            'husky',
+            'doctoc',
+            '@babel/cli'
+          ]
+        },
+        {
+          tag: PseudodecoratorTag.NotInvalid,
+          items: [
+            '@types/eslint__js',
+            'remark-cli',
+            'jest',
+            'husky',
+            'lodash.mergewith',
+            'doctoc',
+            '@babel/cli'
+          ]
+        }
+      ]
+    ],
+    [
+      jsFile,
+      [
+        {
+          tag: PseudodecoratorTag.NotInvalid,
+          items: ['all-contributors-cli', 'remark-cli', 'jest', 'husky', 'doctoc']
+        },
+        { tag: PseudodecoratorTag.NotInvalid, items: [] },
+        { tag: PseudodecoratorTag.NotInvalid, items: [] },
+        { tag: PseudodecoratorTag.NotExtraneous, items: [] },
+        { tag: PseudodecoratorTag.NotInvalid, items: ['something'] },
+        { tag: PseudodecoratorTag.NotInvalid, items: ['something'] },
+        { tag: PseudodecoratorTag.NotInvalid, items: ['something'] },
+        { tag: PseudodecoratorTag.NotInvalid, items: ['something'] },
+        { tag: PseudodecoratorTag.NotInvalid, items: ['something'] },
+        { tag: PseudodecoratorTag.NotInvalid, items: ['something-else'] },
+        { tag: PseudodecoratorTag.NotInvalid, items: ['something-', 'else'] },
+        { tag: PseudodecoratorTag.NotInvalid, items: ['ugly', 'but', 'works'] }
+      ]
+    ],
+    [
+      jsonFile,
+      [
+        {
+          tag: PseudodecoratorTag.NotExtraneous,
+          items: ['a1', 'p2', '@lib/three', '@-xun/four']
+        }
+      ]
+    ],
+    [
+      mdFile,
+      [
+        {
+          tag: PseudodecoratorTag.NotExtraneous,
+          items: ['all-contributors-cli', 'remark-cli', 'jest', 'husky', 'doctoc']
+        },
+        { tag: PseudodecoratorTag.NotExtraneous, items: ['more'] },
+        { tag: PseudodecoratorTag.NotInvalid, items: ['even', 'more', 'items'] }
+      ]
+    ],
+    [
+      ymlFile,
+      [
+        {
+          tag: PseudodecoratorTag.NotExtraneous,
+          items: ['all-contributors-cli', 'remark-cli', 'jest', 'husky', 'doctoc']
+        },
+        {
+          tag: PseudodecoratorTag.NotInvalid,
+          items: ['all-contributors-cli', 'remark-cli', 'jest', 'husky', '@doc/toc']
+        }
+      ]
+    ]
+  ];
 }

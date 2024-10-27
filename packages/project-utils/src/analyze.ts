@@ -3,6 +3,7 @@ export * from '#project-utils src/analyze/gather-project-files.ts';
 export * from '#project-utils src/analyze/gather-package-files.ts';
 export * from '#project-utils src/analyze/gather-package-build-targets.ts';
 export * from '#project-utils src/analyze/gather-import-entries-from-files.ts';
+export * from '#project-utils src/analyze/gather-pseudodecorator-entries-from-files.ts';
 export * from '#project-utils src/analyze/generate-package-json-engine-maintained-node-versions.ts';
 export * from '#project-utils src/analyze/package-root-to-id.ts';
 export * from '#project-utils src/analyze/path-to-package.ts';
