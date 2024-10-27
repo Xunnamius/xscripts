@@ -84,8 +84,11 @@ module.exports = {
       comments: true,
       sourceMaps: 'inline',
       presets: [
+        // {@xscripts/notExtraneous @babel/preset-env}
         ['@babel/preset-env', { targets: { node: true } }],
+        // {@xscripts/notExtraneous @babel/preset-typescript}
         ['@babel/preset-typescript', { allowDeclareFields: true }],
+        // {@xscripts/notExtraneous @babel/preset-react}
         ['@babel/preset-react', { runtime: 'automatic' }]
         // ? We don't care about minification
       ],
@@ -93,13 +96,15 @@ module.exports = {
         // TODO: investigate why this is causing a strange error with coverage
         // ? Only active when testing, the plugin solves the following problem:
         // ? https://stackoverflow.com/q/40771520/1367414
-        //'explicit-exports-references'
+        // {@xscripts/notExtraneous babel-plugin-explicit-exports-references}
+        //'babel-plugin-explicit-exports-references'
       ]
     },
     // * Used by `npm run build` for compiling CJS to code output in ./dist
     'production-cjs': {
       presets: [
         [
+          // {@xscripts/notExtraneous @babel/preset-env}
           '@babel/preset-env',
           {
             // ? https://babeljs.io/docs/en/babel-preset-env#modules
@@ -111,11 +116,14 @@ module.exports = {
             exclude: ['transform-dynamic-import']
           }
         ],
+        // {@xscripts/notExtraneous @babel/preset-typescript}
         ['@babel/preset-typescript', { allowDeclareFields: true }],
+        // {@xscripts/notExtraneous @babel/preset-react}
         ['@babel/preset-react', { runtime: 'automatic' }]
       ],
       plugins: [
         [
+          // {@xscripts/notExtraneous babel-plugin-transform-rewrite-imports}
           'babel-plugin-transform-rewrite-imports',
           {
             appendExtension: '.js',
@@ -129,20 +137,8 @@ module.exports = {
     'production-types': {
       comments: true,
       plugins: [
+        // {@xscripts/notExtraneous @babel/plugin-syntax-typescript}
         ['@babel/plugin-syntax-typescript', { dts: true }]
-        // [
-        //   'transform-rewrite-imports',
-        //   {
-        //     // TODO: fix these to be generalized... and if they're general
-        //     // TODO: enough, maybe even merge these into production-cjs
-        //     replaceExtensions: {
-        //       // ? Ensure deep package.json imports resolve properly
-        //       '^../../../package.json$': '../../package.json',
-        //       // ? Ensure deep imports resolve properly
-        //       '^../../../(.+)$': String.raw`../\1`
-        //     }
-        //   }
-        // ]
       ]
     }
   }

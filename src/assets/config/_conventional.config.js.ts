@@ -12,8 +12,12 @@ import { globalDebuggerNamespace } from 'universe constant.ts';
 import { ErrorMessage } from 'universe error.ts';
 import { __read_file_sync } from 'universe util.ts';
 
+// {@xscripts/notInvalid conventional-changelog-config-spec}
+// {@xscripts/notExtraneous @types/conventional-changelog-config-spec}
 import type { Config as ConventionalChangelogConfigSpecOptions } from 'conventional-changelog-config-spec';
 import type { Options as ConventionalChangelogCoreOptions } from 'conventional-changelog-core';
+// {@xscripts/notInvalid conventional-commits-parser}
+// {@xscripts/notExtraneous @types/conventional-commits-parser}
 import type { Commit } from 'conventional-commits-parser';
 import type { EmptyObject } from 'type-fest';
 

@@ -1,8 +1,8 @@
-// * The semantic-release plugin exports wrap the following functionality:
-// *
+// * The semantic-release plugin exports replaces the following functionality:
 // * - @semantic-release/release-notes-generator
 // * - @semantic-release/changelog
-// * - @-xun/scripts (build changelog)
+
+// {@xscripts/notExtraneous semantic-release}
 
 import assert from 'node:assert';
 import { readFile, rm as rmFile, writeFile } from 'node:fs/promises';
@@ -114,8 +114,10 @@ export function moduleExport({
       // ! NPM (+ attestations) > Git > GitHub.
 
       // TODO: add support for GitHub Actions build provenance attestations here
+      // This comes bundled with semantic-release
       '@semantic-release/npm',
       [
+        // {@xscripts/notExtraneous @semantic-release/git}
         '@semantic-release/git',
         {
           assets: ['package.json', 'package-lock.json', 'CHANGELOG.md', 'docs'],
@@ -123,6 +125,7 @@ export function moduleExport({
           message: `release: <%= nextRelease.version %> [skip ci]\n\n<%= nextRelease.notes %>`
         }
       ],
+      // This comes bundled with semantic-release
       '@semantic-release/github'
     ]
   };

@@ -321,7 +321,8 @@ With respect to .prettierignore being the single source of truth for formatters:
         }
 
         const sortedPackageJsonFiles = shouldDoPackageJson
-          ? run('npx', ['sort-package-json', ...allPackageJsonFiles]).catch(
+          ? // {@xscripts/notExtraneous sort-package-json}
+            run('npx', ['sort-package-json', ...allPackageJsonFiles]).catch(
               (error: unknown) => {
                 status.sort = false;
                 throw error;
@@ -334,6 +335,7 @@ With respect to .prettierignore being the single source of truth for formatters:
 
           status.doctoc = null;
 
+          // {@xscripts/notExtraneous doctoc}
           await run(
             'npx',
             [

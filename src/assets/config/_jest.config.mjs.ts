@@ -1,3 +1,15 @@
+/**
+ * {@xscripts/notExtraneous
+ *   - babel-jest
+ *   - @types/jest
+ *   - jest-circus
+ *   - jest-extended
+ *   - jest-silent-reporter
+ * }
+ */
+
+// {@xscripts/notInvalid @sinclair/typebox}
+
 import { type Config } from 'jest';
 
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';

@@ -1,4 +1,5 @@
 #!/bin/sh
+# {@xscripts/notExtraneous husky}
 
 beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
 

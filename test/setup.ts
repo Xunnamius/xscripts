@@ -6,6 +6,8 @@ import { tmpdir } from 'node:os';
 import { basename, join as joinPath, resolve as resolvePath } from 'node:path';
 
 import glob from 'glob';
+// TODO: make sure to delete this next line when splitting this file up
+// {@xscripts/notExtraneous simple-git}
 import { simpleGit, type SimpleGit } from 'simple-git';
 import uniqueFilename from 'unique-filename';
 // ? https://github.com/jest-community/jest-extended#typescript

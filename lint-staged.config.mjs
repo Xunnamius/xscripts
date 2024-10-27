@@ -10,3 +10,5 @@ export default {
     './node_modules/@-xun/scripts/dist/src/cli.js format --only-package-json --files',
   '*': './node_modules/@-xun/scripts/dist/src/cli.js format --only-prettier --files'
 };
+
+// {@xscripts/notExtraneous lint-staged}

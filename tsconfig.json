@@ -1,4 +1,5 @@
 {
+  // {@xscripts/notExtraneous typescript}
   "compilerOptions": {
     // ? Needed to type check our various .js files
     "allowJs": true,

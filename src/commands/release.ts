@@ -1,3 +1,4 @@
+// {@xscripts/notExtraneous dotenv}
 import { type ChildConfiguration } from '@black-flag/core';
 
 import { type AsStrictExecutionContext } from 'multiverse#bfe';

@@ -21,6 +21,8 @@ import clone from 'lodash.clone';
 import cloneDeepWith from 'lodash.clonedeepwith';
 import isEqual from 'lodash.isequal';
 import { type ParserConfigurationOptions } from 'yargs';
+// ? Black Flag will always come with its own yargs dependency
+// {@xscripts/notInvalid yargs}
 import makeVanillaYargs from 'yargs/yargs';
 
 import { hardAssert, softAssert } from 'multiverse#cli-utils error.ts';

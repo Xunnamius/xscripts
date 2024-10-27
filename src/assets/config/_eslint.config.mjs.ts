@@ -1,3 +1,4 @@
+// {@xscripts/notExtraneous eslint}
 import assert from 'node:assert';
 
 import { fixupConfigRules } from '@eslint/compat';

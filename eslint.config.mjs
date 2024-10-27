@@ -4,6 +4,8 @@ import assert from 'node:assert';
 
 import eslintJs from '@eslint/js';
 import restrictedGlobals from 'confusing-browser-globals';
+// TODO: remove this line when merging with _eslint.config.mjs.ts
+// {@xscripts/notExtraneous eslint-plugin-import}
 import eslintPluginImport from 'eslint-plugin-import';
 import eslintPluginJest from 'eslint-plugin-jest';
 import eslintPluginNode from 'eslint-plugin-n';
@@ -560,11 +562,14 @@ const config = makeTsEslintConfig(
         'import/extensions': extensionsTsAndJs,
         // ? Switch parsers depending on which type of file we're looking at
         'import/parsers': {
+          // {@xscripts/notExtraneous @typescript-eslint/parser}
           '@typescript-eslint/parser': extensionsTypescript,
+          // {@xscripts/notExtraneous @babel/eslint-parser}
           '@babel/eslint-parser': extensionsJavascript
         },
         'import/resolver': {
           // ? Aliases come from tsconfig's paths now
+          // {@xscripts/notExtraneous eslint-import-resolver-typescript}
           typescript: {
             alwaysTryTypes: true,
             project: Tsconfig.ProjectLintUnlimited

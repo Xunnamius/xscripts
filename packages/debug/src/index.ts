@@ -1,3 +1,4 @@
+// {@xscripts/notExtraneous supports-color}
 import { isPromise, isSymbolObject } from 'node:util/types';
 
 import getDebugger, { type Debug as _Debug, type Debugger as _Debugger } from 'debug';

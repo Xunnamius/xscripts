@@ -1,4 +1,5 @@
 {
+  // {@xscripts/notExtraneous turbo}
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
     "build:dist": {
