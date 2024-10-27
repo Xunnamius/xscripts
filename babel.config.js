@@ -175,9 +175,10 @@ module.exports = {
       comments: true,
       plugins: [
         // {@xscripts/notExtraneous @babel/plugin-syntax-typescript}
-        ['@babel/plugin-syntax-typescript', { dts: true }][
+        ['@babel/plugin-syntax-typescript', { dts: true }],
+        [
           // {@xscripts/notExtraneous babel-plugin-transform-rewrite-imports}
-          ('babel-plugin-transform-rewrite-imports',
+          'babel-plugin-transform-rewrite-imports',
           {
             appendExtension: '.js',
             recognizedExtensions: ['.js'],
@@ -195,7 +196,7 @@ module.exports = {
                   dTsExtensionsToReplace.map((extension) => [extension, '.js'])
                 )
               }
-          })
+          }
         ]
       ]
     }
