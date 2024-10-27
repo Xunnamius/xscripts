@@ -166,7 +166,9 @@ Note: this command will refuse to release a package version below 1.0.0. This is
       // TODO: simultaneously publish to NPM and JSR?
       // TODO: do not allow packages below version 1.0.0 to be published (error early in plugin)
 
-      // TODO: do codecov upload last; CODECOV_TOKEN=$(npx --yes dotenv-cli -p CODECOV_TOKEN) npx codecov; use codecov flags to determine which flags to send to codecov when uploading test results
+      // TODO: do codecov upload last; CODECOV_TOKEN=$(npx --yes dotenv-cli -p CODECOV_TOKEN) codecov; use codecov flags to determine which flags to send to codecov when uploading test results
+
+      // TODO: DO NOT USE npx codecov, we need to download the binary (to a consistent location based on its filename) if it isn't in path and use it instead
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

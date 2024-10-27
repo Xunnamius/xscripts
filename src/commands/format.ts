@@ -258,6 +258,8 @@ With respect to .prettierignore being the single source of truth for formatters:
       debug('shouldDoPrettier: %O', shouldDoPrettier);
 
       if (shouldDoMarkdown) {
+        // TODO: gain noticeable speedups by switching to node-only API instead
+        // TODO: of calling out via execa runners
         const { all, exitCode } = await runNoRejectOnBadExit(
           'npx',
           [
@@ -398,6 +400,8 @@ With respect to .prettierignore being the single source of truth for formatters:
             log.newline([LogTag.IF_NOT_SILENCED]);
           }
 
+          // TODO: gain noticeable speedups by switching to node-only API instead
+          // TODO: of calling out via execa runners
           await run(
             'npx',
             [

@@ -380,26 +380,41 @@ export type ProjectFiles = {
 export type PackageFiles = {
   /**
    * Every file under the package's `./dist` directory.
+   *
+   * Files not owned by the package (such as those belonging to other packages
+   * in a monorepo) will never be returned.
    */
   dist: AbsolutePath[];
   /**
    * Every file under the package's `./docs` directory that is not ignored by
    * Git.
+   *
+   * Files not owned by the package (such as those belonging to other packages
+   * in a monorepo) will never be returned.
    */
   docs: AbsolutePath[];
   /**
    * Every file under the package's `./src` directory that is not ignored by
    * Git.
+   *
+   * Files not owned by the package (such as those belonging to other packages
+   * in a monorepo) will never be returned.
    */
   src: AbsolutePath[];
   /**
    * Every file under the package's `./test` directory that is not ignored by
    * Git.
+   *
+   * Files not owned by the package (such as those belonging to other packages
+   * in a monorepo) will never be returned.
    */
   test: AbsolutePath[];
   /**
-   * Every file under the package's root directory that is not ignored by Git or
-   * contained in any other {@link PackageFiles} property.
+   * Every file under the package's root directory that is not ignored by Git,
+   * not contained in any other {@link PackageFiles} property.
+   *
+   * Files not owned by the package (such as those belonging to other packages
+   * in a monorepo) will never be returned.
    */
   other: AbsolutePath[];
 };

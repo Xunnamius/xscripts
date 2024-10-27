@@ -285,6 +285,8 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
 
         hardAssert(targetFiles, ErrorMessage.GuruMeditation());
 
+        // TODO: gain noticeable speedups by switching to node-only API instead
+        // TODO: of calling out via execa runners
         promisedLinters.push(
           runLinter(
             'npx',
