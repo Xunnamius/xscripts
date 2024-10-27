@@ -124,7 +124,7 @@ Note that the regular expressions provided via --exclude-paths are computed with
       debug('raw ignored paths: %O', ignoredPaths);
 
       const finalIgnoredPaths = ignoredPaths.filter(
-        (path) => !excludeRegExps.some((regExp) => path.match(regExp))
+        (path) => path && !excludeRegExps.some((regExp) => path.match(regExp))
       );
 
       debug('final ignored paths: %O', finalIgnoredPaths);
