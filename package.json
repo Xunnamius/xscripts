@@ -245,7 +245,7 @@
     "validate-npm-package-name": "^6.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.22.0",
+    "@-xun/scripts": "^1.23.0",
     "@types/conventional-commits-parser": "^5.0.0"
   },
   "engines": {
