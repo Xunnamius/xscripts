@@ -17,7 +17,7 @@ import {
   type SubpathMapping,
   type SubpathMappings,
   type UnsafeFallbackOption
-} from '#project-utils src/resolver';
+} from '#project-utils src/resolver.ts';
 
 import {
   getDummyPackage,
