@@ -1,7 +1,7 @@
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
 import { globalDebuggerNamespace } from 'universe constant.ts';
 
-import type { Options as MdastUtilToMarkdownOptions } from 'mdast-util-to-markdown';
+import type { Options as MdastUtilToMarkdownOptions } from 'mdast-util-to-markdown' with { 'resolution-mode': 'import' };
 import type { EmptyObject } from 'type-fest';
 import type { Options as UnifiedEngineOptions } from 'unified-engine' with { 'resolution-mode': 'import' };
 
@@ -37,7 +37,6 @@ function lintConfig(): RemarkConfig {
       'lint-heading-word-length',
       'lint-no-heading-like-paragraph',
       'lint-no-heading-punctuation',
-      'lint-no-inline-padding',
       'lint-no-literal-urls',
       'lint-no-multiple-toplevel-headings',
       'lint-no-reference-like-url',

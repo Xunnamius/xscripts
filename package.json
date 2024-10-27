@@ -100,14 +100,14 @@
   "dependencies": {
     "@arethetypeswrong/cli": "^0.16.4",
     "@babel/cli": "^7.25.9",
-    "@babel/core": "^7.25.9",
+    "@babel/core": "^7.26.0",
     "@babel/eslint-parser": "^7.25.9",
     "@babel/plugin-proposal-export-default-from": "^7.25.9",
-    "@babel/plugin-syntax-import-attributes": "^7.25.9",
+    "@babel/plugin-syntax-import-attributes": "^7.26.0",
     "@babel/plugin-syntax-typescript": "^7.25.9",
-    "@babel/preset-env": "^7.25.9",
+    "@babel/preset-env": "^7.26.0",
     "@babel/preset-react": "^7.25.9",
-    "@babel/preset-typescript": "^7.25.9",
+    "@babel/preset-typescript": "^7.26.0",
     "@black-flag/core": "^1.3.2",
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
@@ -130,7 +130,7 @@
     "@types/lodash.clonedeepwith": "^4.5.9",
     "@types/lodash.isequal": "^4.5.8",
     "@types/lodash.mergewith": "^4.6.9",
-    "@types/node": "^22.7.9",
+    "@types/node": "^22.8.1",
     "@types/react": "^18.3.12",
     "@types/semver": "^7.5.8",
     "@types/spellchecker": "^3.5.2",
@@ -141,7 +141,7 @@
     "babel-jest": "next",
     "babel-plugin-explicit-exports-references": "^1.0.2",
     "babel-plugin-module-resolver": "^5.0.2",
-    "babel-plugin-transform-rewrite-imports": "^1.2.0",
+    "babel-plugin-transform-rewrite-imports": "^1.3.1",
     "browserslist": "^4.24.2",
     "confusing-browser-globals": "^1.0.11",
     "conventional-changelog-core": "https://xunn.at/conventional-changelog-core@master",
@@ -156,7 +156,7 @@
     "eslint-plugin-jest": "^28.8.3",
     "eslint-plugin-n": "^17.11.1",
     "eslint-plugin-unicorn": "^56.0.0",
-    "execa": "^9.4.1",
+    "execa": "^9.5.0",
     "find-up~5": "npm:find-up@^5.0.0",
     "glob": "^11.0.0",
     "glob-gitignore": "^1.0.15",
@@ -177,7 +177,7 @@
     "mdast-util-to-markdown": "^2.1.0",
     "named-app-errors": "^4.0.2",
     "node-gyp": "^10.2.0",
-    "npm-check-updates": "^17.1.6",
+    "npm-check-updates": "^17.1.8",
     "prettier": "^3.3.3",
     "remark-capitalize-headings": "^2.0.1",
     "remark-cli": "^12.0.1",
@@ -245,7 +245,8 @@
     "validate-npm-package-name": "^6.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.22.0"
+    "@-xun/scripts": "^1.22.0",
+    "@types/conventional-commits-parser": "^5.0.0"
   },
   "engines": {
     "node": "18.20.0 || ^20.15.0 || >=22.5.0"
