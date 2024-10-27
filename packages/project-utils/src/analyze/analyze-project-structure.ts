@@ -111,6 +111,7 @@ function analyzeProjectStructure_(
         } satisfies ProjectMetadata;
 
         debug('reusing cached resources: %O', cachedMetadata);
+        return cachedMetadata;
       } else {
         cacheDebug('cache miss for %O', projectRoot);
       }
@@ -170,6 +171,7 @@ function analyzeProjectStructure_(
       } satisfies ProjectMetadata;
 
       debug('reusing cached resources: %O', cachedMetadata);
+      return cachedMetadata;
     } else {
       cacheDebug('cache miss for %O', projectRoot);
     }
