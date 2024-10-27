@@ -615,16 +615,67 @@ distrib root: ${absoluteOutputDirPath}
             }
           );
 
-          debug('running tsconfig-replace-paths');
-          await run(
-            'npx',
-            ['tsconfig-replace-paths', '--project', Tsconfig.PackageTypes],
-            {
-              cwd: packageRoot,
-              stdout: isHushed ? 'ignore' : 'inherit',
-              stderr: isQuieted ? 'ignore' : 'inherit'
-            }
+          debug('replacing aliases in definition files');
+
+          const { dist: prebuildDistFiles } = await gatherPackageFiles(cwdPackage, {
+            // ? Must explicitly recompute since above steps changed things
+            useCached: false
+          });
+
+          const dTsFiles = prebuildDistFiles.filter((p) => p.endsWith('.d.ts'));
+
+          // TODO: get these NODE_ENV values as imports from _babel.config.js.ts
+          const babelDTsNodeEnvironment = { NODE_ENV: 'production-types' };
+
+          // * Modify environment variables for the duration of this promise
+          const originalEnv = Object.fromEntries(
+            Object.entries(babelDTsNodeEnvironment).map(([k, v]) => {
+              const original = process.env[k];
+              process.env[k] = v;
+              return [k, original];
+            })
           );
+
+          debug('original env: %O', originalEnv);
+          debug('new env: %O', babelDTsNodeEnvironment);
+
+          // * Grab and cache babel's config so that all transformations reuse the
+          // * same plugins
+          const babelDTsOptions =
+            loadBabelOptions({ filename: '[xscripts-internal-types].tsx' }) || undefined;
+
+          debug('babel options: %O', babelDTsOptions);
+
+          await Promise.all(
+            dTsFiles.map(async (filepath) => {
+              debug('fixup typescript definition (transpile): %O', filepath);
+
+              const { code } =
+                (await babelTransformAsync(filepath, babelDTsOptions)) || {};
+
+              if (code) {
+                debug('write-out fixup transpilation result: %O', filepath);
+                await writeFile(filepath, code);
+              } else {
+                debug.error('fixup transpilation returned an empty result: %O', filepath);
+                throw new CliError(
+                  ErrorMessage.TranspilationReturnedNothing(filepath, filepath)
+                );
+              }
+            })
+          );
+
+          // * Restore environment variables
+          Object.entries(originalEnv).map(([k, v]) => {
+            if (v === undefined) {
+              // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+              delete process.env[k];
+            } else {
+              process.env[k] = v;
+            }
+          });
+
+          debug('original env restored');
         } else {
           debug('skipped type generation');
         }
