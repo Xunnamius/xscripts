@@ -1,14 +1,12 @@
 import assert from 'node:assert';
 
+import { hasExtensionAcceptedByBabel } from '@-xun/scripts/assets/config/babel.config.js';
 import { type PluginObj, type TransformOptions } from '@babel/core';
 
 import {
   createMetadataAccumulatorPlugin,
   type Options as AccumulatorOptions
 } from 'multiverse#babel-plugin-metadata-accumulator';
-
-// TODO: update this to an @-xun/scripts import instead
-import { hasExtensionAcceptedByBabel } from '# src/assets/config/_babel.config.js.ts';
 
 import { debug as debug_ } from '#project-utils src/analyze/common.ts';
 import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
@@ -23,7 +21,7 @@ const debug = debug_.extend('gatherImportEntriesFromFiles');
  * An entry mapping an absolute file path to a single import/require
  * specifier present in said file.
  */
-export type SingleImportSpecifier = [filepath: AbsolutePath, specifier: string];
+export type ImportSpecifier = [filepath: AbsolutePath, specifier: string];
 
 /**
  * An entry mapping an absolute file path to an array of import/require
@@ -31,7 +29,7 @@ export type SingleImportSpecifier = [filepath: AbsolutePath, specifier: string];
  *
  * @see {@link gatherImportEntriesFromFiles}
  */
-export type ImportSpecifierEntry = [filepath: AbsolutePath, specifiers: Set<string>];
+export type ImportSpecifiersEntry = [filepath: AbsolutePath, specifiers: Set<string>];
 
 /**
  * @see {@link gatherImportEntriesFromFiles}
@@ -42,24 +40,24 @@ function gatherImportEntriesFromFiles_(
   shouldRunSynchronously: false,
   files: AbsolutePath[],
   options?: GatherImportEntriesFromFilesOptions
-): Promise<ImportSpecifierEntry[]>;
+): Promise<ImportSpecifiersEntry[]>;
 function gatherImportEntriesFromFiles_(
   shouldRunSynchronously: true,
   files: AbsolutePath[],
   options?: GatherImportEntriesFromFilesOptions
-): ImportSpecifierEntry[];
+): ImportSpecifiersEntry[];
 function gatherImportEntriesFromFiles_(
   shouldRunSynchronously: boolean,
   files: AbsolutePath[],
   options: GatherImportEntriesFromFilesOptions = {}
-): Promisable<ImportSpecifierEntry[]> {
+): Promisable<ImportSpecifiersEntry[]> {
   debug('evaluating files: %O', files);
 
   if (shouldRunSynchronously) {
     const babel = getBabel();
     const { plugin, accumulator } = createMetadataAccumulatorPlugin();
 
-    const importSpecifierEntries = files.map((path, index) => {
+    const importSpecifiersEntries = files.map((path, index) => {
       const debug_ = debug.extend(`file-${index}`);
       debug_('evaluating file: %O', path);
 
@@ -72,21 +70,21 @@ function gatherImportEntriesFromFiles_(
         assert(imports, ErrorMessage.GuruMeditation());
 
         debug_('imports seen (%O): %O', imports.size, imports);
-        return [path, imports] satisfies ImportSpecifierEntry;
+        return [path, imports] satisfies ImportSpecifiersEntry;
       } else {
         debug_('skipped using babel to evaluate asset');
-        return [path, new Set()] satisfies ImportSpecifierEntry;
+        return [path, new Set()] satisfies ImportSpecifiersEntry;
       }
     });
 
-    debug('import specifiers: %O', importSpecifierEntries);
-    return importSpecifierEntries;
+    debug('import specifiers: %O', importSpecifiersEntries);
+    return importSpecifiersEntries;
   } else {
     return Promise.resolve().then(async () => {
       const babel = getBabel();
       const { plugin, accumulator } = createMetadataAccumulatorPlugin();
 
-      const importSpecifierEntries = await Promise.all(
+      const importSpecifiersEntries = await Promise.all(
         files.map(async (path, index) => {
           const debug_ = debug.extend(`file-${index}`);
           debug_('evaluating file: %O', path);
@@ -103,23 +101,23 @@ function gatherImportEntriesFromFiles_(
             assert(imports, ErrorMessage.GuruMeditation());
 
             debug_('imports seen (%O): %O', imports.size, imports);
-            return [path, imports] satisfies ImportSpecifierEntry;
+            return [path, imports] satisfies ImportSpecifiersEntry;
           } else {
             debug_('skipped using babel to evaluate asset');
-            return [path, new Set()] satisfies ImportSpecifierEntry;
+            return [path, new Set()] satisfies ImportSpecifiersEntry;
           }
         })
       );
 
-      debug('import specifiers: %O', importSpecifierEntries);
-      return importSpecifierEntries;
+      debug('import specifiers: %O', importSpecifiersEntries);
+      return importSpecifiersEntries;
     });
   }
 }
 
 /**
  * Accepts zero or more file paths and asynchronously returns an array of
- * {@link ImportSpecifierEntry}s each mapping a given file path to an array of
+ * {@link ImportSpecifiersEntry}s each mapping a given file path to an array of
  * import/require specifiers present in said file.
  *
  * This function relies on Babel internally and ignores all configuration files.
@@ -136,7 +134,7 @@ export function gatherImportEntriesFromFiles(
 export namespace gatherImportEntriesFromFiles {
   /**
    * Accepts zero or more file paths and synchronously returns an array of
-   * {@link ImportSpecifierEntry}s each mapping a given file path to an array of
+   * {@link ImportSpecifiersEntry}s each mapping a given file path to an array of
    * import/require specifiers present in said file.
    *
    * This function relies on Babel internally and ignores all configuration

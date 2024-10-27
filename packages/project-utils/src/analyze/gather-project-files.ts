@@ -53,9 +53,10 @@ export type GatherProjectFilesOptions = {
 } & (
   | {
       /**
-       * If `true`, use `.prettierignore` to filter out returned project files.
+       * If `true`, use the project root's `.prettierignore` file exclusively to
+       * filter out returned project files.
        *
-       * Note that `.gitignore` is never used to filter the result of
+       * Note that _`.gitignore`_ is never used to filter the result of
        * `gatherProjectFiles`.
        *
        * @default true
@@ -113,12 +114,12 @@ function gatherProjectFiles_(
   const projectRoot = rootPackage.root;
 
   if (useCached && _internalProjectFilesCache.has(cacheKey)) {
-    cacheDebug('cache hit!');
+    cacheDebug('cache hit for %O', cacheKey);
     const cachedResult = _internalProjectFilesCache.get(cacheKey)!;
     debug('reusing cached resources: %O', cachedResult);
     return shouldRunSynchronously ? cachedResult : Promise.resolve(cachedResult);
   } else {
-    cacheDebug('cache miss');
+    cacheDebug('cache miss for %O', cacheKey);
   }
 
   const projectFiles: ProjectFiles = {
@@ -356,9 +357,9 @@ function gatherProjectFiles_(
 
     if (useCached || !_internalProjectFilesCache.has(cacheKey)) {
       _internalProjectFilesCache.set(cacheKey, projectFiles);
-      cacheDebug('cache entry updated');
+      cacheDebug('cache entry %O updated', cacheKey);
     } else {
-      cacheDebug('skipped updating cache entry');
+      cacheDebug('skipped updating cache entry %O', cacheKey);
     }
   }
 

@@ -47,7 +47,8 @@ export type GatherPackageFilesOptions = {
    */
   useCached?: boolean;
   /**
-   * If `true`, use `.gitignore` to filter out returned project files.
+   * If `true`, use the project root's `.gitignore` file exclusively to filter
+   * out returned project files.
    *
    * @default true
    */
@@ -91,12 +92,12 @@ function gatherPackageFiles_(
   });
 
   if (useCached && _internalPackageFilesCache.has(cacheKey)) {
-    cacheDebug('cache hit!');
+    cacheDebug('cache hit for %O', cacheKey);
     const cachedResult = _internalPackageFilesCache.get(cacheKey)!;
     debug('reusing cached resources: %O', cachedResult);
     return shouldRunSynchronously ? cachedResult : Promise.resolve(cachedResult);
   } else {
-    cacheDebug('cache miss');
+    cacheDebug('cache miss for %O', cacheKey);
   }
 
   const packageRoot = package_.root;
@@ -220,9 +221,9 @@ function gatherPackageFiles_(
 
     if (useCached || !_internalPackageFilesCache.has(cacheKey)) {
       _internalPackageFilesCache.set(cacheKey, packageFiles);
-      cacheDebug('cache entry updated');
+      cacheDebug('cache entry %O updated', cacheKey);
     } else {
-      cacheDebug('skipped updating cache entry');
+      cacheDebug('skipped updating cache entry %O', cacheKey);
     }
   }
 }

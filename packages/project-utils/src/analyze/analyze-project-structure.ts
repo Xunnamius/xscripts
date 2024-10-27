@@ -102,16 +102,17 @@ function analyzeProjectStructure_(
       debug('projectRoot: %O', projectRoot);
 
       if (useCached && _internalProjectMetadataCache.has(projectRoot)) {
-        cacheDebug('cache hit!');
+        cacheDebug('cache hit for %O', projectRoot);
 
-        const cachedMetadata = _internalProjectMetadataCache.get(projectRoot)!;
-
-        return {
-          ...cachedMetadata,
-          cwdPackage: await determineCwdPackage(false, cwd, cachedMetadata)
+        const cachedMetadata_ = _internalProjectMetadataCache.get(projectRoot)!;
+        const cachedMetadata = {
+          ...cachedMetadata_,
+          cwdPackage: await determineCwdPackage(false, cwd, cachedMetadata_)
         } satisfies ProjectMetadata;
+
+        debug('reusing cached resources: %O', cachedMetadata);
       } else {
-        cacheDebug('cache miss');
+        cacheDebug('cache miss for %O', projectRoot);
       }
 
       const projectJson = await readPackageJsonAtRoot({
@@ -160,16 +161,17 @@ function analyzeProjectStructure_(
     debug('projectRoot: %O', projectRoot);
 
     if (useCached && _internalProjectMetadataCache.has(projectRoot)) {
-      cacheDebug('cache hit!');
+      cacheDebug('cache hit for %O', projectRoot);
 
-      const cachedMetadata = _internalProjectMetadataCache.get(projectRoot)!;
-
-      return {
-        ...cachedMetadata,
-        cwdPackage: determineCwdPackage(true, cwd, cachedMetadata)
+      const cachedMetadata_ = _internalProjectMetadataCache.get(projectRoot)!;
+      const cachedMetadata = {
+        ...cachedMetadata_,
+        cwdPackage: determineCwdPackage(true, cwd, cachedMetadata_)
       } satisfies ProjectMetadata;
+
+      debug('reusing cached resources: %O', cachedMetadata);
     } else {
-      cacheDebug('cache miss');
+      cacheDebug('cache miss for %O', projectRoot);
     }
 
     const projectJson = readPackageJsonAtRoot.sync({
@@ -215,17 +217,13 @@ function analyzeProjectStructure_(
   function finalize(projectMetadata: ProjectMetadata) {
     debug('project metadata: %O', projectMetadata);
 
-    if (
-      useCached ||
-      !_internalProjectMetadataCache.has(projectMetadata.rootPackage.root)
-    ) {
-      _internalProjectMetadataCache.set(
-        projectMetadata.rootPackage.root,
-        projectMetadata
-      );
-      cacheDebug('cache entry updated');
+    const { root: projectRoot } = projectMetadata.rootPackage;
+
+    if (useCached || !_internalProjectMetadataCache.has(projectRoot)) {
+      _internalProjectMetadataCache.set(projectRoot, projectMetadata);
+      cacheDebug('cache entry %O updated', projectRoot);
     } else {
-      cacheDebug('skipped updating cache entry');
+      cacheDebug('skipped updating cache entry %O', projectRoot);
     }
   }
 }

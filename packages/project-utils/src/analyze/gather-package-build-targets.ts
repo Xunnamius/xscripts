@@ -1,10 +1,8 @@
 import assert from 'node:assert';
 import { join as joinPath, relative as toRelativePath } from 'node:path';
 
+import { hasTypescriptExtension } from '@-xun/scripts/assets/config/babel.config.js';
 import { glob as globAsync, sync as globSync } from 'glob';
-
-// TODO: replace this with actual package once published
-import { hasTypescriptExtension } from '# src/assets/config/_babel.config.js.ts';
 
 import {
   ensureRawSpecifierOk,
@@ -29,7 +27,7 @@ import {
 
 import {
   gatherImportEntriesFromFiles,
-  type ImportSpecifierEntry
+  type ImportSpecifiersEntry
 } from '#project-utils src/analyze/gather-import-entries-from-files.ts';
 
 import { gatherPackageFiles } from '#project-utils src/analyze/gather-package-files.ts';
@@ -106,12 +104,12 @@ function gatherPackageBuildTargets_(
   const packageId_ = isWorkspacePackage(package_) ? package_.id : undefined;
 
   if (useCached && _internalPackageBuildTargetsCache.has(cacheKey)) {
-    cacheDebug('cache hit!');
+    cacheDebug('cache hit for %O', cacheKey);
     const cachedResult = _internalPackageBuildTargetsCache.get(cacheKey)!;
     debug('reusing cached resources: %O', cachedResult);
     return shouldRunSynchronously ? cachedResult : Promise.resolve(cachedResult);
   } else {
-    cacheDebug('cache miss');
+    cacheDebug('cache miss for %O', cacheKey);
   }
 
   const packageBuildTargets: PackageBuildTargets = {
@@ -239,7 +237,7 @@ function gatherPackageBuildTargets_(
   }
 
   /**
-   * Given an array of {@link ImportSpecifierEntry}s, this function returns a
+   * Given an array of {@link ImportSpecifiersEntry}s, this function returns a
    * flattened array of ({@link AbsolutePath})s resolved from those specifiers.
    * Specifiers that are not multiversal/external, do not come from TypeScript
    * files, or cannot be mapped are ignored, though their existence is still
@@ -250,15 +248,15 @@ function gatherPackageBuildTargets_(
    */
   function rawSpecifiersToExternalTargetPaths(
     runSynchronously: false,
-    entries: ImportSpecifierEntry[]
+    entries: ImportSpecifiersEntry[]
   ): Promise<Set<AbsolutePath>>;
   function rawSpecifiersToExternalTargetPaths(
     runSynchronously: true,
-    entries: ImportSpecifierEntry[]
+    entries: ImportSpecifiersEntry[]
   ): Set<AbsolutePath>;
   function rawSpecifiersToExternalTargetPaths(
     runSynchronously: boolean,
-    entries: ImportSpecifierEntry[]
+    entries: ImportSpecifiersEntry[]
   ): Promisable<Set<AbsolutePath>> {
     const externalTargets: RelativePath[] = [];
 
