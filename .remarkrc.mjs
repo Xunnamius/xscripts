@@ -112,7 +112,8 @@ const lintConfig = {
     // {@xscripts/notExtraneous remark-lint-no-heading-content-indent}
     'remark-lint-no-heading-content-indent',
     // {@xscripts/notExtraneous remark-lint-no-unused-definitions}
-    'remark-lint-no-unused-definitions',
+    // TODO: this package seems broken, perhaps submit a bug fix?
+    //'remark-lint-no-unused-definitions',
     // {@xscripts/notExtraneous remark-lint-ordered-list-marker-style}
     'remark-lint-ordered-list-marker-style',
     // {@xscripts/notExtraneous remark-validate-links}

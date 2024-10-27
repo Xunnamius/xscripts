@@ -21,7 +21,7 @@ assert(
 );
 
 subConfig.plugins = subConfig.plugins.filter(
-  (plugin) => typeof plugin !== 'string' || plugin !== 'validate-links'
+  (plugin) => typeof plugin !== 'string' || plugin !== 'remark-validate-links'
 );
 
 export default subConfig;
