@@ -1,14 +1,19 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable unicorn/no-array-reduce */
 import { chmod, rename, stat, symlink } from 'node:fs/promises';
+import { builtinModules } from 'node:module';
 
 import {
   dirname,
+  extname,
+  isAbsolute,
   join as joinPath,
   relative as toRelativePath,
   resolve as toAbsolutePath
 } from 'node:path';
 
 import { setTimeout as delay } from 'node:timers/promises';
+import { isNativeError } from 'node:util/types';
 
 import {
   loadOptions as loadBabelOptions,
@@ -16,6 +21,7 @@ import {
 } from '@babel/core';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
+import { glob } from 'glob';
 import { rimraf as forceDeletePaths } from 'rimraf';
 import uniqueFilename from 'unique-filename';
 
@@ -29,27 +35,44 @@ import {
 } from 'multiverse#cli-utils logging.ts';
 
 import { scriptBasename } from 'multiverse#cli-utils util.ts';
+
 import {
+  gatherImportEntriesFromFiles,
+  gatherPseudodecoratorsEntriesFromFiles,
   isWorkspacePackage,
   ProjectAttribute,
-  WorkspaceAttribute
+  PseudodecoratorTag,
+  WorkspaceAttribute,
+  type ImportSpecifier
 } from 'multiverse#project-utils';
 
 import {
+  generateRawAliasMap,
+  mapRawSpecifierToPath,
+  mapRawSpecifierToRawAliasMapping
+} from 'multiverse#project-utils alias.ts';
+import {
   assetPrefix,
-  gatherPackageBuildTargets
-} from 'multiverse#project-utils analyze/exports/gather-package-build-targets.ts';
+  gatherPackageBuildTargets,
+  specifierToPackageName
+} from 'multiverse#project-utils analyze/gather-package-build-targets.ts';
+
+import { gatherPackageFiles } from 'multiverse#project-utils analyze/gather-package-files.ts';
 
 import {
+  isAccessible,
   Tsconfig,
   type AbsolutePath,
   type RelativePath
-} from 'multiverse#project-utils fs/index.ts';
+} from 'multiverse#project-utils fs.ts';
 
-import { SHORT_TAB } from 'multiverse#rejoinder';
+import {
+  flattenPackageJsonSubpathMap,
+  resolveExportsTargetsFromEntryPoint
+} from 'multiverse#project-utils resolver.ts';
+
+import { SHORT_TAB, TAB } from 'multiverse#rejoinder';
 import { run, runNoRejectOnBadExit } from 'multiverse#run';
-
-import { gatherPackageFiles } from '#project-utils src/analyze/exports/gather-package-files.ts';
 
 import {
   extensionsTypescript,
@@ -83,6 +106,9 @@ const transpiledDirBase = '.transpiled';
 const distDirBase = 'dist';
 
 const collator = new Intl.Collator(undefined, { numeric: true });
+
+// TODO: move to util/constant
+const isRelativePathRegExp = /^\.\.?(\/|$)/;
 
 /**
  * Possible intermediate transpilation targets (non-production
@@ -130,6 +156,8 @@ export type CustomCliArguments = GlobalCliArguments<DistributablesBuilderScope> 
   includeExternalFiles?: (AbsolutePath | RelativePath)[];
   excludeInternalFiles?: (AbsolutePath | RelativePath)[];
   skipOutputChecks?: boolean;
+  skipOutputValidityCheckFor?: (string | RegExp)[];
+  skipOutputExtraneityCheckFor?: (string | RegExp)[];
 };
 
 export default async function command({
@@ -175,7 +203,14 @@ export default async function command({
           string: true,
           choices: intermediateTranspilationEnvironment,
           description: 'Transpile into non-production-ready non-distributables',
-          conflicts: ['generate-types', 'link-cli-into-bin', 'prepend-shebang'],
+          conflicts: [
+            'generate-types',
+            'link-cli-into-bin',
+            'prepend-shebang',
+            'skip-output-checks',
+            'skip-output-validity-checks-for',
+            'skip-output-extraneity-checks-for'
+          ],
           implies: {
             'generate-types': false,
             'link-cli-into-bin': false,
@@ -185,7 +220,14 @@ export default async function command({
         'generate-types': {
           boolean: true,
           description: 'Output TypeScript declaration files alongside distributables',
-          default: true
+          default: true,
+          conflicts: [
+            'skip-output-checks',
+            'skip-output-validity-checks-for',
+            'skip-output-extraneity-checks-for'
+          ],
+          implies: { 'skip-output-checks': true },
+          vacuousImplications: true
         },
         'include-external-files': {
           alias: 'include-external-file',
@@ -223,9 +265,40 @@ export default async function command({
         // TODO: consider an option that can reclassify a source as an asset
         // 'reclassify-as-asset': { ... }
         'skip-output-checks': {
+          alias: 'skip-output-check',
           boolean: true,
           description: 'Do not run consistency and integrity checks on build output',
           default: false
+        },
+        'skip-output-validity-checks-for': {
+          alias: ['skip-output-validity-check-for', 'skip-invalid'],
+          string: true,
+          array: true,
+          description:
+            'Do not warn when a matching package/dependency fails a build output validity check',
+          default: [],
+          conflicts: ['generate-types'],
+          implies: { 'skip-output-checks': false },
+          coerce(argument: string[]) {
+            return argument.map((a) => {
+              return a.startsWith('^') || a.endsWith('$') ? new RegExp(a) : a;
+            });
+          }
+        },
+        'skip-output-extraneity-checks-for': {
+          alias: ['skip-output-extraneity-check-for', 'skip-extra'],
+          string: true,
+          array: true,
+          description:
+            'Do not warn when a matching package/dependency fails a build output extraneity check',
+          default: [],
+          conflicts: ['generate-types'],
+          implies: { 'skip-output-checks': false },
+          coerce(argument: string[]) {
+            return argument.map((a) => {
+              return a.startsWith('^') || a.endsWith('$') ? new RegExp(a) : a;
+            });
+          }
         }
       };
 
@@ -251,15 +324,17 @@ export default async function command({
     builder,
     description: 'Transpile sources and assets into production-ready distributables',
     usage: withGlobalUsage(
-      `$1. Also performs lightweight validation of import specifiers and package entry points where appropriate to ensure baseline consistency, integrity, and well-formedness of build output.
+      `$1.
 
-${isCwdANextJsPackage ? "Note that the current working directory points to a Next.js package! When attempting to build such a package, this command will defer entirely to `next build`, which disables several of this command's options.\n\n" : ''}"Source," "sources," or "source files" describe all the build targets that will be transpiled while "assets" or "asset files" describe the remaining targets that are copied-through to the output directory without modification.
+${isCwdANextJsPackage ? "Note that the current working directory points to a Next.js package! When attempting to build such a package, this command will defer entirely to `next build`, which disables several of this command's options.\n\n" : ''}This command also performs lightweight validation of import specifiers and package entry points where appropriate to ensure baseline consistency, integrity, and well-formedness of build output.
 
-Currently, only TypeScript files (specifically, files ending in one of: ${extensionsTypescript.join(', ')}) are considered source files. Every other file is considered an asset.
+This validation can be tweaked with \`--skip-output-validity-checks-for\` and  \`--skip-output-extraneity-checks-for\`, which suppresses errors and warnings for matching import specifiers and/or package names when performing final build output checks. Both parameters accept strings _and regular expressions_, the latter being strings that start with "^" or end with "$". Note that some specifiers are always skipped during extraneity checks, such as Node builtins. Also note that it is unnecessary to escape forward slashes (/) in regular expressions provided via these parameters.
+
+All package build targets are classified as either "source" ("sources," "source files") or "asset" ("assets," "asset files"). "Source" targets describe all the files to be transpiled while "assets" describe the remaining targets that are copied-through to the output directory without any modification. Currently, only TypeScript files (specifically, files ending in one of: ${extensionsTypescript.join(', ')}) are considered source files. Every other file is considered an asset.
 
 All source and asset files are further classified as either "internal" or "external". Internal files or "internals" are all of the files within a package's source directory, i.e. \`\${packageRoot}/src\`. One or more of these files can be excluded from transpilation with \`--exclude-internal-files\`. External files or "externals," on the other hand, are all of the files included in transpilation that are outside of the package's source directory, such as files from other packages in the project. One or more files can be added to the list of externals with \`--include-external-files\`.
 
-\`--include-external-files\` accepts one or more pattern strings that are interpreted according to normal glob rules, while \`--exclude-internal-files\` accepts one or more pattern strings that are interpreted according to gitignore glob rules. Both are relative to the project (NOT package!) root. This means seemingly absolute pattern strings like "/home/me/project/src/something.ts" are actually relative to the project (NOT filesystem!) root, and seemingly relative pattern strings like "*.mjs" may exclude files at any depth below the project root. See \`man gitignore\` for more details.
+\`--include-external-files\` accepts one or more pattern strings that are interpreted according to normal glob rules, while \`--exclude-internal-files\` accepts one or more pattern strings that are interpreted according to gitignore glob rules. Both are relative to the project (NOT package!) root. For \`--exclude-internal-files\` specifically, this all means that seemingly absolute pattern strings like "/home/me/project/src/something.ts" are actually relative to the project (NOT filesystem!) root, and seemingly relative pattern strings like "*.mjs" may exclude files at any depth below the project root. See \`man gitignore\` for more details.
 
 After targets are built, CLI projects will have their entry points chmod-ed to be executable, shebangs added if they do not already exist, and "bin" entries soft-linked into the node_modules/.bin directory.
 
@@ -267,7 +342,7 @@ The only available scope is "${DistributablesBuilderScope.ThisPackage}"; hence, 
 
 When you need to access the intermediate babel transpilation result for non-production non-Next.js build outputs, which can be extremely useful when debugging strange problems in development and testing environments, see the --generate-intermediates-for option and the corresponding \`xscripts test --scope=${TesterScope.ThisPackageIntermediates}\` command.
 
-Note that, when attempting to build a Next.js package, this command will defer entirely to \`next build\`. This means most of the options made available by this command are not available when building a Next.js package.`
+Finally, note that, when attempting to build a Next.js package, this command will defer entirely to \`next build\`. This means most of the options made available by this command are not available when building a Next.js package.`
     ),
     handler: withGlobalHandler(async function ({
       $0: scriptFullName,
@@ -285,7 +360,9 @@ Note that, when attempting to build a Next.js package, this command will defer e
       linkCliIntoBin: linkCliIntoBin_,
       prependShebang: prependShebang_,
       moduleSystem: moduleSystem_,
-      skipOutputChecks: skipOutputChecks_
+      skipOutputChecks: skipOutputChecks_,
+      skipOutputValidityCheckFor: skipOutputValidityCheckFor_,
+      skipOutputExtraneityCheckFor: skipOutputExtraneityCheckFor_
     }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
@@ -323,6 +400,11 @@ Note that, when attempting to build a Next.js package, this command will defer e
         debug('prependShebang: %O', prependShebang_);
         debug('moduleSystem: %O', moduleSystem_);
         debug('skipOutputChecks: %O', skipOutputChecks_);
+        debug('skipOutputValidityCheckFor (original): %O', skipOutputValidityCheckFor_);
+        debug(
+          'skipOutputExtraneityCheckFor (original): %O',
+          skipOutputExtraneityCheckFor_
+        );
         debug('outputExtension (original): %O', outputExtension);
 
         if (generateIntermediatesFor) {
@@ -341,6 +423,8 @@ Note that, when attempting to build a Next.js package, this command will defer e
         const prependShebang = prependShebang_;
         const moduleSystem = moduleSystem_;
         const skipOutputChecks = skipOutputChecks_;
+        const skipOutputValidityCheckFor = new Set(skipOutputValidityCheckFor_);
+        const skipOutputExtraneityCheckFor = new Set(skipOutputExtraneityCheckFor_);
 
         hardAssert(includeExternalFiles !== undefined, ErrorMessage.GuruMeditation());
         hardAssert(excludeInternalFiles !== undefined, ErrorMessage.GuruMeditation());
@@ -360,6 +444,8 @@ Note that, when attempting to build a Next.js package, this command will defer e
 
         const outputDirName = generateIntermediatesFor ? transpiledDirBase : distDirBase;
         const absoluteOutputDirPath = toAbsolutePath(outputDirName);
+        const absoluteNodeModulesDirPath = toAbsolutePath('node_modules');
+        const absoluteRootPackageJsonDirPath = toAbsolutePath('package.json');
 
         debug('outputDirName: %O', outputDirName);
         debug('absoluteOutputDirPath: %O', absoluteOutputDirPath);
@@ -373,10 +459,35 @@ Note that, when attempting to build a Next.js package, this command will defer e
         const projectRoot = rootPackage.root;
         const packageRoot = cwdPackage.root;
         const packageAttributes = cwdPackage.attributes;
+        const packageName = cwdPackage.json.name;
 
         debug('project root: %O', projectRoot);
         debug('target package: %O', cwdPackage);
         debug('target package root: %O', packageRoot);
+        debug('target package name: %O', packageName);
+
+        // * Skip checking Node builtins with "node:" prefix
+        skipOutputValidityCheckFor.add(/^node:/);
+
+        // * Skip checking Node builtins
+        for (const builtin of builtinModules) {
+          skipOutputValidityCheckFor.add(builtin);
+        }
+
+        if (packageName) {
+          // * Skip self-referential imports since they'll always work
+          skipOutputValidityCheckFor.add(packageName);
+        }
+
+        debug(
+          'skipOutputValidityCheckFor (intermediate): %O',
+          skipOutputValidityCheckFor
+        );
+
+        debug(
+          'skipOutputExtraneityCheckFor (intermediate): %O',
+          skipOutputExtraneityCheckFor
+        );
 
         const { targets: buildTargets, metadata: buildMetadata } =
           await gatherPackageBuildTargets(cwdPackage, {
@@ -390,6 +501,16 @@ Note that, when attempting to build a Next.js package, this command will defer e
         const allBuildTargets = Array.from(buildTargets.internal).concat(
           Array.from(buildTargets.external)
         );
+
+        if (generateIntermediatesFor === IntermediateTranspilationEnvironment.Test) {
+          const { test: testFiles } = await gatherPackageFiles(cwdPackage, {
+            skipGitIgnored: false
+          });
+
+          for (const filepath of testFiles) {
+            allBuildTargets.push(toRelativePath(projectRoot, filepath) as RelativePath);
+          }
+        }
 
         const allBuildAssetTargets: RelativePath[] = [];
         const allBuildSourceTargets: RelativePath[] = [];
@@ -420,12 +541,13 @@ Note that, when attempting to build a Next.js package, this command will defer e
 
 Metadata
 --------
-name      : ${cwdPackage.json.name || '(unnamed)'}
+name      : ${packageName || '(unnamed)'}
 package-id: ${isWorkspacePackage(cwdPackage) ? cwdPackage.id : 'N/A (root package has no id)'}
 type      : ${projectMetadata.type} ${
             projectAttributes[ProjectAttribute.Hybridrepo] ? '(hybridrepo) ' : ''
           }${isCwdTheProjectRoot ? 'root package' : 'workspace package (sub-root)'}
 attributes: ${Object.keys(cwdPackage.attributes).join(', ')}
+prod ready: ${generateIntermediatesFor ? `NO! (${generateIntermediatesFor})` : 'yes'}
 
 build targets: ${allBuildTargets.length} file${allBuildTargets.length !== 1 ? 's' : ''}
 ${SHORT_TAB}   internal: ${buildTargets.internal.size} file${
@@ -524,7 +646,7 @@ distrib root: ${absoluteOutputDirPath}
         // * might not have been mirrored by tsc above
         await Promise.all(
           allBuildTargets.map((target) => {
-            const path = joinPath(absoluteOutputDirPath, dirname(target));
+            const path = joinPath(absoluteOutputDirPath, dirname(target)) as AbsolutePath;
             debug('make directory deep structure: %O', path);
 
             return makeDirectory(path);
@@ -547,26 +669,27 @@ distrib root: ${absoluteOutputDirPath}
         // * same plugins
         const babelOptions =
           loadBabelOptions({ filename: '[xscripts-internal].tsx' }) || undefined;
+
         debug('babel options: %O', babelOptions);
 
         // * Transpile internal/external build targets into their ./dist dirs
         await Promise.all([
           // * Copy through all assets as-is
           ...allBuildAssetTargets.map((target) => {
-            const from = joinPath(projectRoot, target);
-            const to = joinPath(absoluteOutputDirPath, target);
+            const from = joinPath(projectRoot, target) as AbsolutePath;
+            const to = joinPath(absoluteOutputDirPath, target) as AbsolutePath;
 
             debug('copy-through asset: %O => %O', from, to);
             return copyFile(from, to);
           }),
 
-          // * Transpile internals: ./* => ./dist/*
+          // * Transpile internals: ./* => ./dist/* or ./.transpiled/*
           ...allBuildSourceTargets.map(async (target) => {
-            const sourcePath = joinPath(projectRoot, target);
+            const sourcePath = joinPath(projectRoot, target) as AbsolutePath;
             const outputPath = joinPath(
               absoluteOutputDirPath,
               target.replace(/(?<=[^/])\.[^.]+$/, outputExtension!)
-            );
+            ) as AbsolutePath;
 
             debug('transpile source: %O => %O', sourcePath, outputPath);
 
@@ -583,34 +706,6 @@ distrib root: ${absoluteOutputDirPath}
             }
           })
         ]);
-
-        if (generateIntermediatesFor === IntermediateTranspilationEnvironment.Test) {
-          const sourcePath = 'test';
-          const outputPath = `${absoluteOutputDirPath}/test`;
-          debug('transpile tests (using slower cli)', sourcePath, outputPath);
-
-          // * Transpile tests: ./test => ./.transpiled/test
-          await run(
-            'npx',
-            [
-              'babel',
-              sourcePath,
-              '--extensions',
-              '.ts,.tsx',
-              '--out-dir',
-              outputPath,
-              '--out-file-extension',
-              outputExtension,
-              '--root-mode',
-              'upward'
-            ],
-            {
-              env: babelNodeEnvironment,
-              stdout: isHushed ? 'ignore' : 'inherit',
-              stderr: isQuieted ? 'ignore' : 'inherit'
-            }
-          );
-        }
 
         // * Restore environment variables
         Object.entries(originalEnv).map(([k, v]) => {
@@ -733,83 +828,586 @@ distrib root: ${absoluteOutputDirPath}
             '⮞ Running lightweight consistency and integrity checks on build output'
           );
 
-          const [{ all: attwOutput, exitCode: attwExitCode }] = await Promise.all([
-            checkDistTypes(),
-            checkDistRequiredPaths(),
-            checkDistEntryPoints(),
-            checkImportsDependenciesBijection()
+          const { dependencies, devDependencies, peerDependencies } = cwdPackage.json;
+
+          // eslint-disable-next-line unicorn/prevent-abbreviations
+          const prodDeps = new Set(
+            Object.keys(Object.assign({}, dependencies, peerDependencies))
+          );
+
+          // eslint-disable-next-line unicorn/prevent-abbreviations
+          const devDeps = new Set(Object.keys(devDependencies || {}));
+          const allDeps = prodDeps.union(devDeps);
+
+          // ! Note that skipOutputValidityCheckFor and
+          // ! skipOutputExtraneityCheckFor are incomplete and are only
+          // ! finalized in the body of checkImportsDependenciesValidBijection()
+
+          // ? This code block should only be reached when generateTypes is true
+          // ? due to our Black Flag checks
+          const [attwResult, bijectionResult, entryResult] = await Promise.allSettled([
+            checkDistAreTheTypesWrong(),
+            checkImportsDependenciesValidBijection(),
+            checkDistEntryPoints()
           ]);
 
-          // TODO:
-          const errored = attwExitCode !== 0; /* || attwExitCode !== 0 */
+          hardAssert(attwResult.status === 'fulfilled', ErrorMessage.GuruMeditation());
+          const { all: attwOutput, exitCode: attwExitCode } = attwResult.value;
+
+          const errored: boolean | Error =
+            attwExitCode !== 0 ||
+            (bijectionResult.status === 'rejected' && bijectionResult.reason) ||
+            (entryResult.status === 'rejected' && entryResult.reason) ||
+            false;
+
+          // TODO: replace all this with rejoinder and listr
+
+          genericLogger.newline([LogTag.IF_NOT_SILENCED]);
 
           if (attwExitCode !== 0) {
-            genericLogger.newline([LogTag.IF_NOT_SILENCED]);
-
             genericLogger.error(
+              [LogTag.IF_NOT_SILENCED],
               attwOutput
                 ? [attwOutput].flat().join('\n')
                 : '%O returned exit code %O but generated no output',
               '@arethetypeswrong/cli',
               attwExitCode
             );
+          } else {
+            genericLogger([LogTag.IF_NOT_SILENCED], `${TAB}@attw/cli test succeeded`);
           }
 
-          // TODO:
-          // if (attwExitCode !== 0) {
-          //   genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+          if (bijectionResult.status === 'fulfilled') {
+            genericLogger(
+              [LogTag.IF_NOT_SILENCED],
+              `${TAB}dependency bijection tests succeeded`
+            );
+          }
 
-          //   genericLogger.error(
-          //     attwOutput
-          //       ? [attwOutput].flat().join('\n')
-          //       : '%O returned exit code %O but generated no output',
-          //     '@arethetypeswrong/cli',
-          //     attwExitCode
-          //   );
-          // }
+          if (entryResult.status === 'fulfilled') {
+            genericLogger(
+              [LogTag.IF_NOT_SILENCED],
+              `${TAB}package.json::exports entry point tests succeeded`
+            );
+          }
 
           if (errored) {
             genericLogger.newline([LogTag.IF_NOT_SILENCED]);
-            throw new CliError(ErrorMessage.BuildOutputChecksFailed());
+            throw isNativeError(errored)
+              ? errored
+              : new CliError(ErrorMessage.BuildOutputChecksFailed());
           }
-        }
 
-        /**
-         * Check dist type definitions for correctness using attw.
-         */
-        async function checkDistTypes() {
-          return runNoRejectOnBadExit('npx', ['attw', '--pack', '.'], {
-            env: { FORCE_COLOR: '1' },
-            all: true
-          });
-        }
+          /**
+           * Check dist type definitions for correctness using attw.
+           */
+          async function checkDistAreTheTypesWrong() {
+            // {@xscripts/notExtraneous @arethetypeswrong/cli}
+            return runNoRejectOnBadExit('npx', ['attw', '--pack', '.'], {
+              env: { FORCE_COLOR: '1' },
+              all: true
+            });
+          }
 
-        /**
-         * Check dist files to ensure all `require()` paths are valid and point
-         * to existing files.
-         */
-        async function checkDistRequiredPaths() {
-          // TODO
-        }
+          /**
+           * Check dist files to ensure:
+           *
+           * - All relative required/imported paths point to existing files
+           *   within `./dist`.
+           *
+           * - Required/imported NPM dependencies exist in `package.json`
+           *   `dependencies` object.
+           *
+           * Also checks all of the package's TypeScript files to ensure all
+           * required/imported NPM dependencies exist in `package.json`
+           * somewhere. Extraneous dependencies (dependencies in `package.json`
+           * that aren't required/imported by any TypeScript files nor exist in
+           * `nonExtraneousDependencies`) and missing dependencies (dependencies
+           * in `package.json` that aren't required/imported by any TypeScript
+           * files or in `nonExtraneousDependencies`) are reported.
+           *
+           * TODO: move some or most of this to project lint command later
+           */
+          async function checkImportsDependenciesValidBijection() {
+            const dbg = debug.extend('checkDistRequiredPaths');
 
-        /**
-         * Check `package.json` `exports` entries against dist files for
-         * existence.
-         */
-        async function checkDistEntryPoints() {
-          // TODO
-        }
+            const {
+              dist: distFiles,
+              other: otherFiles,
+              src: srcFiles,
+              test: testFiles
+            } = await gatherPackageFiles(cwdPackage, {
+              // ? Must explicitly recompute since above steps changed things
+              useCached: false
+            });
 
-        /**
-         * Match npm dependencies imported by (1) dist files to production
-         * dependencies listed in `package.json` and (2) TypeScript files
-         * belonging to the package to any dependency listed in `package.json`.
-         * Extraneous dependencies and missing dependencies are reported.
-         */
-        async function checkImportsDependenciesBijection() {
-          // TODO
-          // TODO: update comment move #2 to project lint and only do #1 instead
-          void gatherPackageFiles;
+            const allOtherFiles = otherFiles.concat(srcFiles, testFiles);
+            const allOtherFilesPlusBuildTargets = Array.from(
+              new Set(
+                allOtherFiles.concat(
+                  allBuildTargets.map(
+                    (target) => joinPath(projectRoot, target) as AbsolutePath
+                  )
+                )
+              )
+            );
+
+            const [distImportEntries, otherImportEntries, pseudodecoratorEntries] =
+              await Promise.all([
+                gatherImportEntriesFromFiles(distFiles, { excludeTypeImports: false }),
+                gatherImportEntriesFromFiles(allOtherFiles, {
+                  excludeTypeImports: false
+                }),
+                gatherPseudodecoratorsEntriesFromFiles(allOtherFilesPlusBuildTargets)
+              ]);
+
+            for (const [, pseudodecorators] of pseudodecoratorEntries) {
+              for (const { tag, items } of pseudodecorators) {
+                const targetSet =
+                  tag === PseudodecoratorTag.NotInvalid
+                    ? skipOutputValidityCheckFor
+                    : skipOutputExtraneityCheckFor;
+
+                for (const item of items) {
+                  targetSet.add(item);
+                }
+              }
+            }
+
+            debug('skipOutputValidityCheckFor (final): %O', skipOutputValidityCheckFor);
+
+            debug(
+              'skipOutputExtraneityCheckFor (final): %O',
+              skipOutputExtraneityCheckFor
+            );
+
+            const distImportPackages = new Set<string>();
+            const otherImportPackages = new Set<string>();
+
+            const distInaccessibleLocalImports: ImportSpecifier[] = [];
+            const distLocalImportsOutsideDist: ImportSpecifier[] = [];
+            const distExtraneousDependencies: [name: string, type: string][] = [];
+            const distMissingDependencies = [] as [
+              ...ImportSpecifier,
+              packageName: string
+            ][];
+
+            const otherExtraneousDependencies: [name: string, type: string][] = [];
+            const otherMissingDependencies = [] as [
+              ...ImportSpecifier,
+              packageName: string
+            ][];
+
+            const wellKnownAliases = generateRawAliasMap(projectMetadata);
+
+            dbg('prodDeps: %O', prodDeps);
+            dbg('devDeps: %O', devDeps);
+            dbg('allDeps: prodDeps + devDeps');
+
+            dbg.message(
+              'checking %O "dist" and %O "other" import specifier entries against project metadata',
+              distImportEntries.length,
+              otherImportEntries.length
+            );
+
+            for (const [filepath, specifiers] of distImportEntries) {
+              const dbg1 = dbg.extend('1-prod');
+              const isTypescriptDefinitionFile = filepath.endsWith('.d.ts');
+
+              dbg1('checking %O import specifiers in %O', specifiers.size, filepath);
+              dbg1('isTypescriptDefinitionFile: %O', isTypescriptDefinitionFile);
+
+              for (const specifier of specifiers) {
+                if (shouldSkipCheckForSpecifier(specifier, 'invalid')) {
+                  dbg1.warn('ignored (skipped) specifier: %O', specifier);
+                  continue;
+                }
+
+                // ? Is the specifier erroneously an absolute import?
+                if (isAbsolute(specifier)) {
+                  dbg1.error('absolute specifier: %O', specifier);
+                  distLocalImportsOutsideDist.push([filepath, specifier]);
+                }
+                // ? Is the specifier a relative import?
+                else if (isRelativePathRegExp.test(specifier)) {
+                  const absoluteSpecifier = toAbsolutePath(
+                    dirname(filepath),
+                    specifier
+                  ) as AbsolutePath;
+
+                  dbg1('relative specifier (+ root): %O', absoluteSpecifier);
+
+                  if (isTypescriptDefinitionFile && !specifier.endsWith('.js')) {
+                    genericLogger.warn(
+                      'specifier "%O" has an unexpected extension (expected ".js") in definition file %O',
+                      specifier,
+                      filepath
+                    );
+                  }
+
+                  // ? Is it erroneously outside of ./dist?
+                  if (
+                    !absoluteSpecifier.startsWith(absoluteOutputDirPath) &&
+                    !absoluteSpecifier.startsWith(absoluteNodeModulesDirPath) &&
+                    !absoluteSpecifier.startsWith(absoluteRootPackageJsonDirPath)
+                  ) {
+                    dbg1.error('outsider specifier: %O', specifier);
+                    distLocalImportsOutsideDist.push([filepath, specifier]);
+                  } else {
+                    if (absoluteSpecifier.startsWith(absoluteNodeModulesDirPath)) {
+                      genericLogger.warn(
+                        'specifier "%O" precariously imports from node_modules in %O',
+                        specifier,
+                        filepath
+                      );
+                    }
+
+                    // ? Is it erroneously inaccessible to the current process, or
+                    // ? is it missing an extension (so probably not a file)?
+                    if (
+                      (isTypescriptDefinitionFile &&
+                        // ? tsc likes .d.ts files w/ extensionless imports,
+                        // ? and, to it, .js et al and .d.ts are synonymous
+                        (
+                          await glob(absoluteSpecifier.replace(/\.js$/, '.') + '*', {
+                            dot: true,
+                            nodir: true
+                          })
+                        ).length === 0) ||
+                      (!isTypescriptDefinitionFile &&
+                        (!(await isAccessible({ path: absoluteSpecifier })) ||
+                          !extname(absoluteSpecifier)))
+                    ) {
+                      dbg1.error('inaccessible specifier: %O', specifier);
+                      distInaccessibleLocalImports.push([filepath, specifier]);
+                    }
+                  }
+                }
+                // ? Must be an external NPM dependency
+                else {
+                  const packageName = specifierToPackageName(specifier);
+                  distImportPackages.add(packageName);
+
+                  dbg1('package specifier: %O <== %O', packageName, specifier);
+
+                  // ? Is it erroneously missing in package.json production
+                  // ? dependencies?
+                  if (!prodDeps.has(packageName)) {
+                    if (shouldSkipCheckForSpecifier(packageName, 'invalid')) {
+                      dbg1.warn(
+                        'ignored (skipped) missing package specifier: %O <== %O',
+                        packageName,
+                        specifier
+                      );
+
+                      continue;
+                    } else {
+                      dbg1.error(
+                        'missing package specifier: %O <== %O',
+                        packageName,
+                        specifier
+                      );
+
+                      distMissingDependencies.push([filepath, specifier, packageName]);
+                    }
+                  }
+                }
+              }
+            }
+
+            for (const [filepath, specifiers] of otherImportEntries) {
+              const dbg2 = dbg.extend('2-dev');
+              dbg2('checking %O import specifiers in %O', specifiers.size, filepath);
+
+              for (const specifier_ of specifiers) {
+                const rawAliasMapping = mapRawSpecifierToRawAliasMapping(
+                  wellKnownAliases,
+                  specifier_
+                );
+
+                const mappedPath = rawAliasMapping
+                  ? mapRawSpecifierToPath(rawAliasMapping, specifier_)
+                  : undefined;
+
+                // ? Since we're looking at TypeScript now, we need to handle
+                // ? aliases
+                const specifier =
+                  (mappedPath ? './' + mappedPath : undefined) ?? specifier_;
+
+                if (
+                  isAbsolute(specifier) ||
+                  isRelativePathRegExp.test(specifier) ||
+                  shouldSkipCheckForSpecifier(specifier, 'invalid')
+                ) {
+                  dbg2.warn('ignored (skipped) specifier: %O', specifier);
+                  continue;
+                }
+
+                const packageName = specifierToPackageName(specifier);
+                otherImportPackages.add(packageName);
+
+                dbg2('package specifier: %O <== %O', packageName, specifier);
+
+                // ? Is it erroneously missing in package.json dependencies?
+                if (!allDeps.has(packageName)) {
+                  if (shouldSkipCheckForSpecifier(packageName, 'invalid')) {
+                    dbg2.warn(
+                      'ignored (skipped) missing package specifier: %O <== %O',
+                      packageName,
+                      specifier
+                    );
+
+                    continue;
+                  } else {
+                    dbg2.warn(
+                      'missing package specifier: %O <== %O',
+                      packageName,
+                      specifier
+                    );
+
+                    otherMissingDependencies.push([filepath, specifier, packageName]);
+                  }
+                }
+              }
+            }
+
+            // ? For prod dependencies in package.json, error if any are
+            // ? extraneous with respect to dist files
+            for (const packageName of prodDeps) {
+              const dbg3 = dbg.extend('3-prod');
+
+              if (shouldSkipCheckForSpecifier(packageName, 'extraneous')) {
+                dbg3.warn('ignored (skipped) dependency: %O', packageName);
+                continue;
+              }
+
+              if (
+                !distImportPackages.has(packageName) &&
+                !isRelevantDefinitelyTypedPackage(distImportPackages, packageName)
+              ) {
+                dbg3.error('extraneous production dependency: %O', packageName);
+                distExtraneousDependencies.push([
+                  packageName,
+                  dependencies?.[packageName] ? 'deps' : 'peerDeps'
+                ]);
+              } else {
+                dbg3('production dependency: %O', packageName);
+              }
+            }
+
+            const allImportPackages = distImportPackages.union(otherImportPackages);
+
+            // ? For dev dependencies in package.json, error if any are
+            // ? extraneous with respect to non-dist files
+            for (const packageName of devDeps) {
+              const dbg4 = dbg.extend('4-dev');
+
+              if (shouldSkipCheckForSpecifier(packageName, 'extraneous')) {
+                dbg4.warn('ignored (skipped) dependency: %O', packageName);
+                continue;
+              }
+
+              if (
+                !otherImportPackages.has(packageName) &&
+                !isRelevantDefinitelyTypedPackage(allImportPackages, packageName)
+              ) {
+                dbg4.warn('extraneous development dependency: %O', packageName);
+                otherExtraneousDependencies.push([packageName, 'devDeps']);
+              } else {
+                dbg4('development dependency: %O', packageName);
+              }
+            }
+
+            function isRelevantDefinitelyTypedPackage(
+              packages: Set<string>,
+              packageName: string
+            ) {
+              if (packageName.startsWith('@types/')) {
+                const isScoped = packageName.includes('__');
+                const typedPackageName =
+                  (isScoped ? '@' : '') + packageName.slice(7).replace('__', '/');
+
+                dbg(
+                  `saw "${packageName}"; looking for corresponding package "${typedPackageName}"`
+                );
+
+                return packages.has(typedPackageName);
+              }
+
+              return false;
+            }
+
+            // * Errors
+
+            const hasErrors =
+              distInaccessibleLocalImports.length +
+              distLocalImportsOutsideDist.length +
+              distMissingDependencies.length +
+              distExtraneousDependencies.length;
+
+            if (hasErrors) {
+              if (distInaccessibleLocalImports.length) {
+                genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+                genericLogger.error(
+                  [LogTag.IF_NOT_SILENCED],
+                  ErrorMessage.DistributablesSpecifiersPointToInaccessible(
+                    distInaccessibleLocalImports
+                  )
+                );
+              }
+
+              if (distLocalImportsOutsideDist.length) {
+                genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+                genericLogger.error(
+                  [LogTag.IF_NOT_SILENCED],
+                  ErrorMessage.DistributablesSpecifiersPointOutsideDist(
+                    distLocalImportsOutsideDist
+                  )
+                );
+              }
+
+              if (distMissingDependencies.length) {
+                genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+                genericLogger.error(
+                  [LogTag.IF_NOT_SILENCED],
+                  ErrorMessage.DistributablesSpecifiersDependenciesMissing(
+                    distMissingDependencies
+                  )
+                );
+              }
+
+              if (distExtraneousDependencies.length) {
+                genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+                genericLogger.error(
+                  [LogTag.IF_NOT_SILENCED],
+                  ErrorMessage.DependenciesExtraneous(distExtraneousDependencies)
+                );
+              }
+
+              throw new CliError(ErrorMessage.BuildOutputChecksFailed());
+            }
+
+            // * Warnings
+
+            if (otherMissingDependencies.length) {
+              genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+              genericLogger.warn(
+                [LogTag.IF_NOT_SILENCED],
+                ErrorMessage.OthersSpecifiersDependenciesMissing(otherMissingDependencies)
+              );
+            }
+
+            if (otherExtraneousDependencies.length) {
+              genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+              genericLogger.warn(
+                [LogTag.IF_NOT_SILENCED],
+                ErrorMessage.DependenciesExtraneous(otherExtraneousDependencies)
+              );
+            }
+          }
+
+          /**
+           * Check `package.json` `exports` entries against dist files for
+           * existence.
+           */
+          async function checkDistEntryPoints() {
+            const dbg = debug.extend('checkDistEntryPoints');
+
+            const {
+              json: { exports: cwdPackageExports }
+            } = cwdPackage;
+
+            dbg('cwdPackageExports: %O', cwdPackageExports);
+
+            if (cwdPackageExports) {
+              const flattenedExports = flattenPackageJsonSubpathMap({
+                map: cwdPackageExports
+              });
+
+              const badExports: [subpath: string, target: string][] = [];
+
+              dbg('flattenedExports: %O', flattenedExports);
+
+              for (const { subpath, conditions } of flattenedExports) {
+                dbg('resolving subpath: %O %O', subpath, conditions);
+
+                const targets = resolveExportsTargetsFromEntryPoint({
+                  flattenedExports,
+                  entryPoint: subpath,
+                  conditions
+                });
+
+                dbg('saw targets: %O', targets);
+
+                for (const target of targets) {
+                  if (target.includes('*')) {
+                    const realTarget = target
+                      .replaceAll(/\/\*(?!\*)/g, '/**/*')
+                      .replaceAll(/(?<!\*)\*\//g, '*/**/');
+
+                    const realTargets = await glob(realTarget, {
+                      dot: true,
+                      nodir: true
+                    });
+
+                    dbg('checking real wildcard target: %O', realTarget);
+
+                    if (!realTargets.length) {
+                      dbg.error(
+                        'entry point with wildcard target leads to no accessible files: %O',
+                        target
+                      );
+
+                      badExports.push([subpath, target]);
+                    }
+                  } else {
+                    dbg('checking target: %O', target);
+
+                    if (!(await isAccessible({ path: target }))) {
+                      dbg.error('entry point leads to inaccessible file: %O', target);
+                      badExports.push([subpath, target]);
+                    }
+                  }
+                }
+              }
+
+              if (badExports.length) {
+                genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+                genericLogger.error(
+                  [LogTag.IF_NOT_SILENCED],
+                  ErrorMessage.ExportSubpathsPointsToInaccessible(badExports)
+                );
+
+                throw new CliError(ErrorMessage.BuildOutputChecksFailed());
+              }
+            } else {
+              throw new CliError(ErrorMessage.BadPackageExportsInPackageJson());
+            }
+          }
+
+          /**
+           * **Note that `skipOutputValidityCheckFor` and
+           * `skipOutputExtraneityCheckFor` (on which this function relies) are
+           * incomplete and are only finalized in the body of
+           * `checkImportsDependenciesValidBijection`!**
+           */
+          function shouldSkipCheckForSpecifier(
+            specifier: string,
+            filter: 'invalid' | 'extraneous'
+          ) {
+            const targetSet =
+              filter === 'invalid'
+                ? skipOutputValidityCheckFor
+                : skipOutputExtraneityCheckFor;
+
+            return targetSet
+              .values()
+              .some((matcher) =>
+                typeof matcher === 'string'
+                  ? matcher === specifier
+                  : !!specifier.match(matcher)
+              );
+          }
         }
       }
 

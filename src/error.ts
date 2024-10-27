@@ -1,6 +1,10 @@
 import { ErrorMessage as UpstreamErrorMessage } from 'multiverse#cli-utils error.ts';
 
-import type { ProjectAttribute, RootPackage } from 'multiverse#project-utils';
+import type {
+  ImportSpecifier,
+  ProjectAttribute,
+  RootPackage
+} from 'multiverse#project-utils';
 
 export { TaskError } from 'multiverse#cli-utils error.ts';
 
@@ -68,6 +72,9 @@ export const ErrorMessage = {
   BadProjectNameInPackageJson() {
     return `a package.json file must contain a valid "name" field`;
   },
+  BadPackageExportsInPackageJson() {
+    return `a distributable package.json file must contain a valid "exports" field`;
+  },
   MustChooseDeployEnvironment() {
     return 'must choose either --preview or --production deployment environment';
   },
@@ -90,7 +97,7 @@ export const ErrorMessage = {
     return 'one or more linters returned a bad exit code';
   },
   BuildOutputChecksFailed() {
-    return 'one or more build output integrity checks returned a bad exit code';
+    return 'the build succeeded and is available, but one or more build output integrity checks failed';
   },
   RetrievalFailed(path: string) {
     return `failed to retrieve asset at ${path}`;
@@ -112,5 +119,70 @@ export const ErrorMessage = {
   },
   TranspilationReturnedNothing(sourcePath: string, outputPath: string) {
     return `transpilation of the following file returned an empty result: ${sourcePath} => ${outputPath}`;
+  },
+  ExportSubpathsPointsToInaccessible(subpaths: [subpath: string, target: string][]) {
+    return (
+      'bad package.json::exports configuration: one or more entry points targets inaccessible or non-existent files:' +
+      subpaths.reduce(
+        (result, [subpath, target]) => result + `\n  - ${subpath} =!=> ${target}`,
+        ''
+      )
+    );
+  },
+  DistributablesSpecifiersPointToInaccessible(specifiers: ImportSpecifier[]) {
+    return (
+      'bad distributables specifiers: invalid import of inaccessible or non-existent files:' +
+      specifiers.reduce(
+        (result, [filepath, specifier]) =>
+          result + `\n  - "${specifier}" found in file ${filepath}`,
+        ''
+      )
+    );
+  },
+  DistributablesSpecifiersPointOutsideDist(specifiers: ImportSpecifier[]) {
+    return (
+      'bad distributables specifiers: invalid import of files located outside distributables directory:' +
+      specifiers.reduce(
+        (result, [filepath, specifier]) =>
+          result + `\n  - "${specifier}" found in file ${filepath}`,
+        ''
+      )
+    );
+  },
+  DistributablesSpecifiersDependenciesMissing(
+    packageSpecifiers: [...ImportSpecifier, packageName: string][]
+  ) {
+    return (
+      'bad distributables specifiers: one or more packages were imported without a corresponding "dependencies" or "peerDependencies" entry in package.json:' +
+      packageSpecifiers.reduce(
+        (result, [filepath, specifier, packageName]) =>
+          result +
+          `\n  - package "${packageName}" from "${specifier}" found in file ${filepath}`,
+        ''
+      )
+    );
+  },
+  DependenciesExtraneous(packagesMeta: [name: string, type: string][]) {
+    return (
+      'extraneous dependencies detected: the following packages are included in package.json unnecessarily and should be removed to reduce build size:' +
+      packagesMeta.reduce(
+        (result, [packageName, packageType]) =>
+          result + `\n  - package "${packageName}" in package.json::${packageType}`,
+        ''
+      )
+    );
+  },
+  OthersSpecifiersDependenciesMissing(
+    packageSpecifiers: [...ImportSpecifier, packageName: string][]
+  ) {
+    return (
+      'bad non-distributables specifiers: one or more packages were imported without a corresponding "devDependencies" entry in package.json:' +
+      packageSpecifiers.reduce(
+        (result, [filepath, specifier, packageName]) =>
+          result +
+          `\n  - package "${packageName}" from "${specifier}" found in file ${filepath}`,
+        ''
+      )
+    );
   }
 };
