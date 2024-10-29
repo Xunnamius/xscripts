@@ -162,7 +162,7 @@
     "eslint-plugin-jest": "^28.8.3",
     "eslint-plugin-n": "^17.11.1",
     "eslint-plugin-unicorn": "^56.0.0",
-    "execa": "^9.5.0",
+    "execa": "npm:@-xun/no-hoist",
     "find-up~5": "npm:find-up@^5.0.0",
     "glob": "^11.0.0",
     "glob-gitignore": "^1.0.15",
@@ -252,7 +252,8 @@
   },
   "devDependencies": {
     "@-xun/scripts": "^1.23.0",
-    "@types/conventional-commits-parser": "^5.0.0"
+    "@types/conventional-commits-parser": "^5.0.0",
+    "execa-root": "npm:execa@^9.5.1"
   },
   "engines": {
     "node": "18.20.0 || ^20.15.0 || >=22.5.0"
