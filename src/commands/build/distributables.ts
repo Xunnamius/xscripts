@@ -350,6 +350,7 @@ Finally, note that, when attempting to build a Next.js package, this command wil
       cleanOutputDir,
       hush: isHushed,
       quiet: isQuieted,
+      silent: isSilenced,
       generateIntermediatesFor,
       outputExtension,
       // TODO: could probably make this easier by using a discriminated union
@@ -921,15 +922,17 @@ distrib root: ${absoluteOutputDirPath}
 
           genericLogger.newline([LogTag.IF_NOT_SILENCED]);
 
-          if (attwExitCode !== 0) {
-            genericLogger.error(
-              [LogTag.IF_NOT_SILENCED],
-              attwOutput
-                ? [attwOutput].flat().join('\n')
-                : '%O returned exit code %O but generated no output',
-              '@arethetypeswrong/cli',
-              attwExitCode
-            );
+          if (attwExitCode !== 0 && !isSilenced) {
+            if (attwOutput) {
+              process.stdout.write([attwOutput].flat().join('\n'));
+            } else {
+              genericLogger.error(
+                [LogTag.IF_NOT_SILENCED],
+                '%O returned exit code %O but generated no output',
+                '@arethetypeswrong/cli',
+                attwExitCode
+              );
+            }
           } else {
             genericLogger([LogTag.IF_NOT_SILENCED], `${TAB}@attw/cli test succeeded`);
           }
