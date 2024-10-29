@@ -23,7 +23,7 @@ import {
   version as rootPackageJsonVersion
 } from '# package.json';
 
-import type { Options as ExecaOptions } from 'execa' with { 'resolution-mode': 'import' };
+import type { Options as ExecaOptions } from 'execa-root' with { 'resolution-mode': 'import' };
 import type { LiteralUnion, Promisable } from 'type-fest';
 
 const globalDebug = createDebugLogger({ namespace: `${rootPackageJsonName}:jest-setup` });
@@ -1015,7 +1015,7 @@ async function getTreeOutput(context: FixtureContext) {
     return '(this platform does not support the `tree` command)';
   } else {
     const { stdout } = await (
-      await import('execa')
+      await import('execa-root')
     ).execa('tree', ['-a', '-L', '2'], {
       cwd: context.root,
       reject: false

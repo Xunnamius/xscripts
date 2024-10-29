@@ -86,7 +86,7 @@ void (async () => {
           ...splitOutWords(
             (
               await (
-                await import('execa')
+                await import('execa-root')
               ).execa('git', ['log', '--format="%B"', 'HEAD~1'])
             ).stdout
           ).slice(0, -1)
