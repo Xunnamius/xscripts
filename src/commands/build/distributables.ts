@@ -642,7 +642,10 @@ distrib root: ${absoluteOutputDirPath}
           // * Grab and cache babel's config so that all transformations reuse the
           // * same plugins
           const babelDTsOptions =
-            loadBabelOptions({ filename: '[xscripts-internal-types].tsx' }) || undefined;
+            loadBabelOptions({
+              rootMode: 'upward',
+              filename: '[xscripts-internal-types].tsx'
+            }) || undefined;
 
           debug('babel options: %O', babelDTsOptions);
 
@@ -719,7 +722,10 @@ distrib root: ${absoluteOutputDirPath}
         // * Grab and cache babel's config so that all transformations reuse the
         // * same plugins
         const babelOptions =
-          loadBabelOptions({ filename: '[xscripts-internal].tsx' }) || undefined;
+          loadBabelOptions({
+            rootMode: 'upward',
+            filename: '[xscripts-internal].tsx'
+          }) || undefined;
 
         debug('babel options: %O', babelOptions);
 
