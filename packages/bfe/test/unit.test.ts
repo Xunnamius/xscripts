@@ -11,6 +11,7 @@ import {
   type ExecutionContext
 } from '@black-flag/core/util';
 
+// TODO: switch to es-toolkit over lodash
 import isEqual from 'lodash.isequal';
 import deepMerge from 'lodash.merge';
 

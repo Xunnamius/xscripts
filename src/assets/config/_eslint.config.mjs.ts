@@ -341,6 +341,8 @@ export const globals = {
 
 // TODO: needs proper typings (are "any" warnings working properly?!)
 export async function moduleExport(
+  // TODO: instead of accepting projectMetadata, just accept projectRootDir and
+  // TODO: avoid the expense of a full structural analysis
   /**
    * An optional {@link ProjectMetadata} instance that, if given, will be used
    * instead of calling {@link analyzeProjectStructure}.
