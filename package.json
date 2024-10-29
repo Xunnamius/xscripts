@@ -5,8 +5,14 @@
   "keywords": [
     "Xunnamius"
   ],
-  "homepage": "https://github.com/Xunnamius/xscripts",
-  "repository": "https://github.com/Xunnamius/xscripts",
+  "homepage": "https://github.com/Xunnamius/xscripts#readme",
+  "bugs": {
+    "url": "https://github.com/Xunnamius/no-hoist/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xunnamius/xscripts.git"
+  },
   "license": "MIT",
   "author": "Xunnamius",
   "sideEffects": false,
