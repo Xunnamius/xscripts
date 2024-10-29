@@ -86,7 +86,7 @@
     "clean": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js clean",
     "format": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js format --hush",
     "info": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js project info",
-    "lint": "npm run lint:package --",
+    "lint": "npm run lint:package:source --",
     "lint:package:all": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js lint",
     "lint:package:source": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js lint --scope this-package-source",
     "lint:packages:all": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js lint --scope unlimited",
