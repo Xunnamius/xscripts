@@ -25,8 +25,8 @@ import {
 
 import { overwriteProperty } from '@-xun/scripts/assets/config/eslint.config.mjs';
 
-import { Tsconfig } from './node_modules/@-xun/scripts/dist/packages/project-utils/src/fs/index.js';
-import { analyzeProjectStructure } from './node_modules/@-xun/scripts/dist/packages/project-utils/src/index.js';
+import { Tsconfig } from './node_modules/@-xun/scripts/dist/packages/project-utils/src/fs.js';
+
 import packageJson from './package.json' with { type: 'json' };
 
 const $verse = Symbol('verse');
@@ -478,10 +478,6 @@ const globals = {
   ...jsGlobals.node
 };
 
-const {
-  rootPackage: { root: projectRootDir }
-} = analyzeProjectStructure.sync();
-
 if (process.env.XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS !== 'true') {
   genericRules['no-warning-comments'] = 'warn';
 } else {
@@ -546,7 +542,7 @@ const config = makeTsEslintConfig(
         sourceType: 'module',
         parser: eslintTsParser,
         parserOptions: {
-          tsconfigRootDir: projectRootDir,
+          tsconfigRootDir: import.meta.dirname,
           project: Tsconfig.ProjectLintUnlimited,
           ecmaFeatures: {
             impliedStrict: true,
