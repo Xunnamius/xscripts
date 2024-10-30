@@ -149,7 +149,7 @@ export namespace gatherImportEntriesFromFiles {
 function getBabel() {
   try {
     // ? Ensure these are importable
-    void require('@babel/plugin-syntax-import-attributes');
+    //void require('@babel/plugin-syntax-import-attributes');
     void require('@babel/plugin-syntax-typescript');
     // ? Return what we're really interested in
     return require('@babel/core') as typeof import('@babel/core');
@@ -167,8 +167,9 @@ function makeMinimalBabelConfigObject(
 ): TransformOptions {
   return {
     configFile: false,
+    generatorOpts: { importAttributesKeyword: 'with' },
     plugins: [
-      '@babel/plugin-syntax-import-attributes',
+      //'@babel/plugin-syntax-import-attributes',
       [
         '@babel/plugin-syntax-typescript',
         { disallowAmbiguousJSXLike: false, isTSX: true }

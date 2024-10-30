@@ -74,8 +74,6 @@ export function moduleExport() {
     },
     plugins: [
       '@babel/plugin-proposal-export-default-from',
-      // ? This is required until tc39 makes up its mind
-      '@babel/plugin-syntax-import-attributes',
       [
         'module-resolver',
         {

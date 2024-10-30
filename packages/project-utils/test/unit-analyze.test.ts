@@ -1380,21 +1380,6 @@ describe('::gatherImportEntriesFromFiles', () => {
       jest.dontMock('@babel/core');
     });
 
-    it('throws if @babel/plugin-syntax-import-attributes is not available', () => {
-      expect.hasAssertions();
-
-      // eslint-disable-next-line jest/no-untyped-mock-factory
-      jest.doMock('@babel/plugin-syntax-import-attributes', () => {
-        throw new Error('fake import failure!');
-      });
-
-      expect(() => gatherImportEntriesFromFiles.sync([])).toThrow(
-        ErrorMessage.MissingOptionalBabelDependency('gatherImportEntriesFromFiles')
-      );
-
-      jest.dontMock('@babel/plugin-syntax-import-attributes');
-    });
-
     it('throws if @babel/plugin-syntax-typescript is not available', () => {
       expect.hasAssertions();
 
@@ -1585,21 +1570,6 @@ describe('::gatherImportEntriesFromFiles', () => {
       );
 
       jest.dontMock('@babel/core');
-    });
-
-    it('throws if @babel/plugin-syntax-import-attributes is not available', async () => {
-      expect.hasAssertions();
-
-      // eslint-disable-next-line jest/no-untyped-mock-factory
-      jest.doMock('@babel/plugin-syntax-import-attributes', () => {
-        throw new Error('fake import failure!');
-      });
-
-      await expect(gatherImportEntriesFromFiles([])).rejects.toThrow(
-        ErrorMessage.MissingOptionalBabelDependency('gatherImportEntriesFromFiles')
-      );
-
-      jest.dontMock('@babel/plugin-syntax-import-attributes');
     });
 
     it('throws if @babel/plugin-syntax-typescript is not available', async () => {

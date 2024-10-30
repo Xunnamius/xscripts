@@ -330,7 +330,7 @@ export const ErrorMessage = {
     return `encountered illegal alias "${key}": when the alias value (path) is configured with \`{ suffix: 'open' }\`, the alias key must also be configured with \`{ suffix: 'open' }\``;
   },
   MissingOptionalBabelDependency(caller: string) {
-    return `invoking \`${caller}\` requires the "@babel/core", "@babel/plugin-syntax-import-attributes", and "@babel/plugin-syntax-typescript" packages. Run \`npm install --save-dev @babel/core @babel/plugin-syntax-import-attributes @babel/plugin-syntax-typescript\` and then try again`;
+    return `invoking \`${caller}\` requires the "@babel/core" and "@babel/plugin-syntax-typescript" packages. Run \`npm install --save-dev @babel/core @babel/plugin-syntax-typescript\` and then try again`;
   },
   AssertionFailedWantedPathIsNotSeenPath() {
     return 'assertion failed: wantedPath does not map cleanly to seenPath';
