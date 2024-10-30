@@ -1,5 +1,7 @@
 import { debugFactory } from 'multiverse+debug';
 
+import { globalDebuggerNamespace } from 'rootverse+run:src/constant.ts';
+
 import type {
   Options,
   Result,
@@ -8,7 +10,7 @@ import type {
 
 import type { Merge, Promisable } from 'type-fest';
 
-const debug = debugFactory('@-xun/run:runtime');
+const debug = debugFactory(globalDebuggerNamespace);
 
 export type { Subprocess } from 'execa' with { 'resolution-mode': 'import' };
 
