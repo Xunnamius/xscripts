@@ -12,11 +12,14 @@ const tryToRead = async (
   /** @type {import("fs").PathLike | import("fs/promises").FileHandle} */ path
 ) => {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     debug(`attempting to read ${String(path)}`);
     const data = await read(path, 'utf8');
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     debug(`successfully read ${String(path)}`);
     return data;
   } catch {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     debug(`failed to read ${String(path)}`);
     return '';
   }
