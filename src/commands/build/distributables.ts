@@ -963,10 +963,21 @@ distrib root: ${absoluteOutputDirPath}
            */
           async function checkDistAreTheTypesWrong() {
             // {@xscripts/notExtraneous @arethetypeswrong/cli}
-            return runNoRejectOnBadExit('npx', ['attw', '--pack', '.'], {
-              env: { FORCE_COLOR: '1' },
-              all: true
-            });
+            return runNoRejectOnBadExit(
+              'npx',
+              [
+                'attw',
+                '--pack',
+                '.',
+                // ? We handle internal resolution checks in xscripts instead
+                '--ignore-rules',
+                'internal-resolution-error'
+              ],
+              {
+                env: { FORCE_COLOR: '1' },
+                all: true
+              }
+            );
           }
 
           /**
