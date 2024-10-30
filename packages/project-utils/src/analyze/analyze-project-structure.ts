@@ -14,7 +14,7 @@ import { toss } from 'toss-expression';
 import {
   _internalProjectMetadataCache,
   cacheDebug
-} from '#project-utils src/analyze/cache.ts';
+} from 'rootverse+project-utils:src/analyze/cache.ts';
 
 import {
   debug as debug_,
@@ -26,9 +26,9 @@ import {
   type RootPackage,
   type WorkspacePackage,
   type WorkspacePackageId
-} from '#project-utils src/analyze/common.ts';
+} from 'rootverse+project-utils:src/analyze/common.ts';
 
-import { packageRootToId } from '#project-utils src/analyze/package-root-to-id.ts';
+import { packageRootToId } from 'rootverse+project-utils:src/analyze/package-root-to-id.ts';
 
 import {
   DuplicatePackageIdError,
@@ -36,7 +36,7 @@ import {
   ErrorMessage,
   NotAGitRepositoryError,
   ProjectError
-} from '#project-utils src/error.ts';
+} from 'rootverse+project-utils:src/error.ts';
 import {
   deriveVirtualGitignoreLines,
   ensurePathIsAbsolute,
@@ -46,9 +46,12 @@ import {
   webpackConfigProjectBase,
   type AbsolutePath,
   type RelativePath
-} from '#project-utils src/fs.ts';
+} from 'rootverse+project-utils:src/fs.ts';
 
-import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
+import {
+  type ParametersNoFirst,
+  type SyncVersionOf
+} from 'rootverse+project-utils:src/util.ts';
 
 import type { PackageJson, Promisable } from 'type-fest';
 

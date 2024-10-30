@@ -2,33 +2,33 @@ import { type ChildConfiguration } from '@black-flag/core';
 import askPassword from 'askpassword';
 import uniqueFilename from 'unique-filename';
 
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
-import { softAssert } from 'multiverse#cli-utils error.ts';
+import { type AsStrictExecutionContext } from 'multiverse+bfe';
+import { softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   logStartTime,
   LogTag,
   standardSuccessMessage
-} from 'multiverse#cli-utils logging.ts';
+} from 'multiverse+cli-utils:logging.ts';
 
-import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { ProjectAttribute } from 'multiverse#project-utils';
-import { run } from 'multiverse#run';
+import { scriptBasename } from 'multiverse+cli-utils:util.ts';
+import { ProjectAttribute } from 'multiverse+project-utils';
+import { run } from 'multiverse+run';
 
 import {
   ThisPackageGlobalScope as DeployScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { ErrorMessage } from 'universe error.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 import {
   checkIsNotNil,
   runGlobalPreChecks,
   withGlobalBuilder,
   withGlobalUsage
-} from 'universe util.ts';
+} from 'universe:util.ts';
 
 export enum DeployTarget {
   Vercel = 'vercel',

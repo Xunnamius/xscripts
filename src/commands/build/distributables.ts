@@ -25,16 +25,16 @@ import { glob } from 'glob';
 import { rimraf as forceDeletePaths } from 'rimraf';
 import uniqueFilename from 'unique-filename';
 
-import { type AsStrictExecutionContext, type BfeBuilderObject } from 'multiverse#bfe';
-import { hardAssert, softAssert } from 'multiverse#cli-utils error.ts';
+import { type AsStrictExecutionContext, type BfeBuilderObject } from 'multiverse+bfe';
+import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   logStartTime,
   LogTag,
   standardSuccessMessage
-} from 'multiverse#cli-utils logging.ts';
+} from 'multiverse+cli-utils:logging.ts';
 
-import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
   gatherImportEntriesFromFiles,
@@ -44,50 +44,52 @@ import {
   PseudodecoratorTag,
   WorkspaceAttribute,
   type ImportSpecifier
-} from 'multiverse#project-utils';
+} from 'multiverse+project-utils';
 
 import {
   generateRawAliasMap,
+  isRelativePathRegExp,
   mapRawSpecifierToPath,
   mapRawSpecifierToRawAliasMapping
-} from 'multiverse#project-utils alias.ts';
+} from 'multiverse+project-utils:alias.ts';
+
 import {
   assetPrefix,
   gatherPackageBuildTargets,
   specifierToPackageName
-} from 'multiverse#project-utils analyze/gather-package-build-targets.ts';
+} from 'multiverse+project-utils:analyze/gather-package-build-targets.ts';
 
-import { gatherPackageFiles } from 'multiverse#project-utils analyze/gather-package-files.ts';
+import { gatherPackageFiles } from 'multiverse+project-utils:analyze/gather-package-files.ts';
 
 import {
   isAccessible,
   Tsconfig,
   type AbsolutePath,
   type RelativePath
-} from 'multiverse#project-utils fs.ts';
+} from 'multiverse+project-utils:fs.ts';
 
 import {
   flattenPackageJsonSubpathMap,
   resolveExportsTargetsFromEntryPoint
-} from 'multiverse#project-utils resolver.ts';
+} from 'multiverse+project-utils:resolver.ts';
 
-import { SHORT_TAB, TAB } from 'multiverse#rejoinder';
-import { run, runNoRejectOnBadExit } from 'multiverse#run';
+import { SHORT_TAB, TAB } from 'multiverse+rejoinder';
+import { run, runNoRejectOnBadExit } from 'multiverse+run';
 
 import {
   extensionsTypescript,
   hasTypescriptExtension
-} from 'universe assets/config/_babel.config.js.ts';
+} from 'universe:assets/config/_babel.config.js.ts';
 
-import { TesterScope } from 'universe commands/test.ts';
+import { TesterScope } from 'universe:commands/test.ts';
 
 import {
   ThisPackageGlobalScope as DistributablesBuilderScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { ErrorMessage } from 'universe error.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 import {
   checkIsNotNil,
@@ -98,7 +100,7 @@ import {
   withGlobalBuilder,
   withGlobalUsage,
   writeFile
-} from 'universe util.ts';
+} from 'universe:util.ts';
 
 const standardNodeShebang = '#!/usr/bin/env node\n';
 const nodeModulesRelativeBinDir = `node_modules/.bin`;
@@ -106,9 +108,6 @@ const transpiledDirBase = '.transpiled';
 const distDirBase = 'dist';
 
 const collator = new Intl.Collator(undefined, { numeric: true });
-
-// TODO: move to util/constant
-const isRelativePathRegExp = /^\.\.?(\/|$)/;
 
 /**
  * Possible intermediate transpilation targets (non-production

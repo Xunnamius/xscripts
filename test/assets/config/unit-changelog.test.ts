@@ -8,13 +8,13 @@ import conventionalChangelogCore, {
   type Options as ConventionalChangelogOptions
 } from 'conventional-changelog-core';
 
-import { toSentenceCase } from 'multiverse#cli-utils util.ts';
+import { toSentenceCase } from 'multiverse+cli-utils:util.ts';
 
 import {
   moduleExport,
   noteTitleForBreakingChange,
   wellKnownCommitTypes
-} from 'universe assets/config/_conventional.config.js.ts';
+} from 'universe:assets/config/_conventional.config.js.ts';
 
 import {
   dummyNpmPackageFixture,
@@ -23,7 +23,7 @@ import {
   withMockedFixture,
   type FixtureContext,
   type WithMockedFixtureOptions
-} from 'testverse setup';
+} from 'testverse:setup';
 
 import type { Merge, Promisable, SetParameterType } from 'type-fest';
 

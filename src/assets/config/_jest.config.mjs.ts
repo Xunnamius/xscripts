@@ -12,8 +12,8 @@
 
 import { type Config } from 'jest';
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
-import { globalDebuggerNamespace } from 'universe constant.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { globalDebuggerNamespace } from 'universe:constant.ts';
 
 import type { EmptyObject } from 'type-fest';
 

@@ -9,9 +9,9 @@ import {
 
 import { type Binding, type Scope } from '@babel/traverse';
 
-import { type AbsolutePath } from 'multiverse#project-utils fs/common.ts';
+import { type AbsolutePath } from 'multiverse+project-utils:fs/common.ts';
 
-import { ErrorMessage } from '#babel-plugin-metadata-accumulator src/error.ts';
+import { ErrorMessage } from 'rootverse+babel-plugin-metadata-accumulator:src/error.ts';
 
 // TODO: turn this into an actual plugin package with tests
 

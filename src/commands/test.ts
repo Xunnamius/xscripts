@@ -3,26 +3,26 @@ import { setTimeout as delay } from 'node:timers/promises';
 
 import { type ChildConfiguration } from '@black-flag/core';
 
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { type AsStrictExecutionContext } from 'multiverse+bfe';
 
 import {
   logStartTime,
   LogTag,
   standardSuccessMessage
-} from 'multiverse#cli-utils logging.ts';
+} from 'multiverse+cli-utils:logging.ts';
 
-import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { ProjectAttribute } from 'multiverse#project-utils analyze/common.ts';
-import { jestConfigProjectBase } from 'multiverse#project-utils fs.ts';
-import { run } from 'multiverse#run';
+import { scriptBasename } from 'multiverse+cli-utils:util.ts';
+import { ProjectAttribute } from 'multiverse+project-utils:analyze/common.ts';
+import { jestConfigProjectBase } from 'multiverse+project-utils:fs.ts';
+import { run } from 'multiverse+run';
 
-import { baseConfig } from 'universe assets/config/_jest.config.mjs.ts';
+import { baseConfig } from 'universe:assets/config/_jest.config.mjs.ts';
 
 import {
   DefaultGlobalScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
 import {
   checkAllChoiceIfGivenIsByItself,
@@ -30,7 +30,7 @@ import {
   checkIsNotNegative,
   runGlobalPreChecks,
   withGlobalBuilder
-} from 'universe util.ts';
+} from 'universe:util.ts';
 
 /**
  * Which type of test to run.

@@ -16,36 +16,36 @@ import {
   type VerifyConditionsContext
 } from 'semantic-release';
 
-import { getInvocableExtendedHandler } from 'multiverse#bfe';
+import { getInvocableExtendedHandler } from 'multiverse+bfe';
 
 import {
   conventionalChangelogConfigProjectBase,
   releaseConfigProjectBase
-} from 'multiverse#project-utils fs.ts';
+} from 'multiverse+project-utils:fs.ts';
 
-import { createDebugLogger } from 'multiverse#rejoinder';
-import { run } from 'multiverse#run';
+import { createDebugLogger } from 'multiverse+rejoinder';
+import { run } from 'multiverse+run';
 
-import type { ConventionalChangelogCliConfig } from 'universe assets/config/_conventional.config.js.ts';
+import type { ConventionalChangelogCliConfig } from 'universe:assets/config/_conventional.config.js.ts';
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
 
 import {
   default as buildChangelog,
   OutputOrder,
   type CustomCliArguments as BuildChangelogCliArguments
-} from 'universe commands/build/changelog.ts';
+} from 'universe:commands/build/changelog.ts';
 
 import {
   $executionContext,
   configureExecutionContext,
   ThisPackageGlobalScope,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { globalDebuggerNamespace } from 'universe constant.ts';
+import { globalDebuggerNamespace } from 'universe:constant.ts';
 
-import { ErrorMessage } from 'universe error.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 import type { EmptyObject } from 'type-fest';
 

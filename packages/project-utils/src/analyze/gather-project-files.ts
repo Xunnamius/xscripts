@@ -6,7 +6,7 @@ import {
   _internalProjectFilesCache,
   cacheDebug,
   deriveCacheKeyFromPackageAndData
-} from '#project-utils src/analyze/cache.ts';
+} from 'rootverse+project-utils:src/analyze/cache.ts';
 
 import {
   assignResultTo,
@@ -14,16 +14,16 @@ import {
   type Package,
   type ProjectFiles,
   type ProjectMetadata
-} from '#project-utils src/analyze/common.ts';
+} from 'rootverse+project-utils:src/analyze/common.ts';
 
-import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
+import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
 
 import {
   deriveVirtualPrettierignoreLines,
   type AbsolutePath
-} from '#project-utils src/fs.ts';
+} from 'rootverse+project-utils:src/fs.ts';
 
-import { type ParametersNoFirst } from '#project-utils src/util.ts';
+import { type ParametersNoFirst } from 'rootverse+project-utils:src/util.ts';
 
 import type { Promisable } from 'type-fest';
 

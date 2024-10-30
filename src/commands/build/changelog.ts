@@ -8,36 +8,36 @@ import { valid as isValidSemver } from 'semver';
 import {
   getInvocableExtendedHandler,
   type AsStrictExecutionContext
-} from 'multiverse#bfe';
+} from 'multiverse+bfe';
 
-import { softAssert } from 'multiverse#cli-utils error.ts';
+import { softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   logStartTime,
   LogTag,
   standardSuccessMessage
-} from 'multiverse#cli-utils logging.ts';
+} from 'multiverse+cli-utils:logging.ts';
 
-import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
   defaultChangelogTopmatter,
   type ConventionalChangelogCliConfig
-} from 'universe assets/config/_conventional.config.js.ts';
+} from 'universe:assets/config/_conventional.config.js.ts';
 
 import {
   default as format,
   type CustomCliArguments as FormatCliArguments
-} from 'universe commands/format.ts';
+} from 'universe:commands/format.ts';
 
 import {
   DefaultGlobalScope,
   ThisPackageGlobalScope as ChangelogBuilderScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { ErrorMessage } from 'universe error.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 import {
   checkIsNotNil,
@@ -47,7 +47,7 @@ import {
   withGlobalBuilder,
   withGlobalUsage,
   writeFile
-} from 'universe util.ts';
+} from 'universe:util.ts';
 
 import type { Promisable } from 'type-fest';
 

@@ -1,1 +1,1 @@
-export * from '#project-utils src/analyze.ts';
+export * from 'rootverse+project-utils:src/analyze.ts';

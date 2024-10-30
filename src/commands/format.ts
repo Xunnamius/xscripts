@@ -4,42 +4,42 @@ import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { glob } from 'glob-gitignore';
 import { getSupportInfo } from 'prettier';
 
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
-import { $artificiallyInvoked } from 'multiverse#bfe symbols.ts';
-import { hardAssert, softAssert } from 'multiverse#cli-utils error.ts';
+import { type AsStrictExecutionContext } from 'multiverse+bfe';
+import { $artificiallyInvoked } from 'multiverse+bfe:symbols.ts';
+import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   logStartTime,
   LogTag,
   standardSuccessMessage
-} from 'multiverse#cli-utils logging.ts';
+} from 'multiverse+cli-utils:logging.ts';
 
-import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { gatherProjectFiles } from 'multiverse#project-utils';
+import { scriptBasename } from 'multiverse+cli-utils:util.ts';
+import { gatherProjectFiles } from 'multiverse+project-utils';
 
 import {
   deriveVirtualPrettierignoreLines,
   remarkConfigProjectBase,
   type AbsolutePath
-} from 'multiverse#project-utils fs.ts';
+} from 'multiverse+project-utils:fs.ts';
 
-import { SHORT_TAB } from 'multiverse#rejoinder';
-import { run, runNoRejectOnBadExit } from 'multiverse#run';
+import { SHORT_TAB } from 'multiverse+rejoinder';
+import { run, runNoRejectOnBadExit } from 'multiverse+run';
 
 import {
   DefaultGlobalScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { ErrorMessage } from 'universe error.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 import {
   checkArrayNotEmpty,
   runGlobalPreChecks,
   withGlobalBuilder,
   withGlobalUsage
-} from 'universe util.ts';
+} from 'universe:util.ts';
 
 export type CustomCliArguments = GlobalCliArguments & {
   renumberReferences: boolean;

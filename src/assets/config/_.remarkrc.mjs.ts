@@ -1,5 +1,5 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
-import { globalDebuggerNamespace } from 'universe constant.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { globalDebuggerNamespace } from 'universe:constant.ts';
 
 import type { Options as MdastUtilToMarkdownOptions } from 'mdast-util-to-markdown' with { 'resolution-mode': 'import' };
 import type { EmptyObject } from 'type-fest';

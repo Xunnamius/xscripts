@@ -1,12 +1,12 @@
-import { ErrorMessage as UpstreamErrorMessage } from 'multiverse#cli-utils error.ts';
+import { ErrorMessage as UpstreamErrorMessage } from 'multiverse+cli-utils:error.ts';
 
 import type {
   ImportSpecifier,
   ProjectAttribute,
   RootPackage
-} from 'multiverse#project-utils';
+} from 'multiverse+project-utils';
 
-export { TaskError } from 'multiverse#cli-utils error.ts';
+export { TaskError } from 'multiverse+cli-utils:error.ts';
 
 /**
  * A collection of possible error and warning messages.

@@ -3,7 +3,7 @@ import { type PackageJson } from 'type-fest';
 import {
   type SubpathMapping,
   type SubpathMappings
-} from '#project-utils src/resolver/resolvers.ts';
+} from 'rootverse+project-utils:src/resolver/resolvers.ts';
 
 /**
  * Flatten entry points within a `package.json` `imports`/`exports` map into a

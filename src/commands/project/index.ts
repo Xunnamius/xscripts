@@ -1,14 +1,14 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { type AsStrictExecutionContext } from 'multiverse+bfe';
 
 import {
   default as projectInfo,
   type CustomCliArguments
-} from 'universe commands/project/info.ts';
+} from 'universe:commands/project/info.ts';
 
-import { type GlobalExecutionContext } from 'universe configure.ts';
-import { withGlobalUsage } from 'universe util.ts';
+import { type GlobalExecutionContext } from 'universe:configure.ts';
+import { withGlobalUsage } from 'universe:util.ts';
 
 export type { CustomCliArguments };
 

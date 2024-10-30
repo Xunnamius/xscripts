@@ -1,16 +1,16 @@
-import escapeStringRegexp from 'escape-string-regexp~4';
+import escapeStringRegExp from 'escape-string-regexp~4';
 import deepMerge from 'lodash.mergewith';
 import semver from 'semver';
 
-import { softAssert } from 'multiverse#cli-utils error.ts';
-import { interpolateTemplate, toSentenceCase } from 'multiverse#cli-utils util.ts';
-import { analyzeProjectStructure } from 'multiverse#project-utils';
-import { createDebugLogger } from 'multiverse#rejoinder';
+import { softAssert } from 'multiverse+cli-utils:error.ts';
+import { interpolateTemplate, toSentenceCase } from 'multiverse+cli-utils:util.ts';
+import { analyzeProjectStructure } from 'multiverse+project-utils';
+import { createDebugLogger } from 'multiverse+rejoinder';
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
-import { globalDebuggerNamespace } from 'universe constant.ts';
-import { ErrorMessage } from 'universe error.ts';
-import { __read_file_sync } from 'universe util.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { globalDebuggerNamespace } from 'universe:constant.ts';
+import { ErrorMessage } from 'universe:error.ts';
+import { __read_file_sync } from 'universe:util.ts';
 
 // {@xscripts/notInvalid conventional-changelog-config-spec}
 // {@xscripts/notExtraneous @types/conventional-changelog-config-spec}
@@ -636,7 +636,7 @@ export function moduleExport(
 
   const nonHiddenKnownTypesPartialPattern = finalConfig.types
     ?.filter(({ hidden }) => !hidden)
-    .map(({ type }) => escapeStringRegexp(type))
+    .map(({ type }) => escapeStringRegExp(type))
     .join('|');
 
   // TODO: should probably just reuse breakingHeaderPattern, no?
@@ -647,7 +647,7 @@ export function moduleExport(
 
   const issuePattern = finalConfig.issuePrefixes
     ? new RegExp(
-        `(?:\\b([a-z0-9_.-]+)\\/([a-z0-9_.-]+))?(${finalConfig.issuePrefixes.map((str) => escapeStringRegexp(str)).join('|')})([0-9]+)`,
+        `(?:\\b([a-z0-9_.-]+)\\/([a-z0-9_.-]+))?(${finalConfig.issuePrefixes.map((str) => escapeStringRegExp(str)).join('|')})([0-9]+)`,
         'gi'
       )
     : neverMatchAnythingPattern;

@@ -1,6 +1,6 @@
 import { Manager } from '@listr2/manager';
 
-import { type ExtendedDebugger } from 'multiverse#debug';
+import { type ExtendedDebugger } from 'multiverse+debug';
 
 import {
   createDebugLogger,
@@ -16,9 +16,9 @@ import {
   TAB,
   type ExtendedLogger,
   type GenericListrTask
-} from 'multiverse#rejoinder';
+} from 'multiverse+rejoinder';
 
-import { withMockedEnv, withMockedOutput } from 'testverse setup.ts';
+import { withMockedEnv, withMockedOutput } from 'testverse:setup.ts';
 
 const namespace = 'namespace';
 
@@ -92,9 +92,9 @@ describe('::createGenericLogger', () => {
 
       expect(logSpy.mock.calls).toStrictEqual([
         expect.arrayContaining([expect.stringMatching(/namespace.+logged/)]),
-        expect.arrayContaining([expect.stringMatching(/namespace:namespace.+logged/)]),
+        expect.arrayContaining([expect.stringMatching(/namespace::namespace.+logged/)]),
         expect.arrayContaining([
-          expect.stringMatching(/(?:namespace:){2}namespace.+logged/)
+          expect.stringMatching(/(?:namespace::?){2}namespace.+logged/)
         ])
       ]);
     });
@@ -162,30 +162,30 @@ describe('::createGenericLogger', () => {
         ]),
         [''],
         [''],
-        expect.arrayContaining([expect.stringMatching(/namespace:namespace.+logged/)]),
+        expect.arrayContaining([expect.stringMatching(/namespace::namespace.+logged/)]),
         [''],
         ['']
       ]);
 
       expect(errorSpy.mock.calls).toStrictEqual([
         expect.arrayContaining([
-          expect.stringMatching(/namespace:<error>.+logged:.+{.+success:.+true.+}/)
+          expect.stringMatching(/namespace::<error>.+logged:.+{.+success:.+true.+}/)
         ]),
         expect.arrayContaining([
-          expect.stringMatching(/namespace:<message>.+logged:.+{.+success:.+true.+}/)
+          expect.stringMatching(/namespace::<message>.+logged:.+{.+success:.+true.+}/)
         ]),
         expect.arrayContaining([
-          expect.stringMatching(/namespace:<warn>.+logged:.+{.+success:.+true.+}/)
+          expect.stringMatching(/namespace::<warn>.+logged:.+{.+success:.+true.+}/)
         ]),
         [''],
         expect.arrayContaining([
-          expect.stringMatching(/namespace:namespace:<error>.+logged/)
+          expect.stringMatching(/namespace::namespace:<error>.+logged/)
         ]),
         expect.arrayContaining([
-          expect.stringMatching(/namespace:namespace:<message>.+logged/)
+          expect.stringMatching(/namespace::namespace:<message>.+logged/)
         ]),
         expect.arrayContaining([
-          expect.stringMatching(/(?:namespace:){2}<warn>.+logged/)
+          expect.stringMatching(/(?:namespace::?){2}<warn>.+logged/)
         ]),
         ['']
       ]);
@@ -243,12 +243,12 @@ describe('::createListrTaskLogger', () => {
 
     extension1('logged');
     expect(task.output).toStrictEqual(
-      expect.stringMatching(/namespace:namespace.+logged/)
+      expect.stringMatching(/namespace::namespace.+logged/)
     );
 
     extension2('logged');
     expect(task.output).toStrictEqual(
-      expect.stringMatching(/(?:namespace:){2}namespace.+logged/)
+      expect.stringMatching(/(?:namespace::?){2}namespace.+logged/)
     );
   });
 
@@ -279,14 +279,14 @@ describe('::createListrTaskLogger', () => {
 
     expect(outputHistory).toStrictEqual([
       expect.stringMatching(/namespace.+logged:.+{.+success:.+true.+}/),
-      expect.stringMatching(/namespace:<error>.+logged:.+{.+success:.+true.+}/),
-      expect.stringMatching(/namespace:<message>.+logged:.+{.+success:.+true.+}/),
-      expect.stringMatching(/namespace:<warn>.+logged:.+{.+success:.+true.+}/),
+      expect.stringMatching(/namespace::<error>.+logged:.+{.+success:.+true.+}/),
+      expect.stringMatching(/namespace::<message>.+logged:.+{.+success:.+true.+}/),
+      expect.stringMatching(/namespace::<warn>.+logged:.+{.+success:.+true.+}/),
       '',
-      expect.stringMatching(/namespace:namespace.+logged/),
-      expect.stringMatching(/namespace:namespace:<error>.+logged/),
-      expect.stringMatching(/namespace:namespace:<message>.+logged/),
-      expect.stringMatching(/(?:namespace:){2}<warn>.+logged/),
+      expect.stringMatching(/namespace::namespace.+logged/),
+      expect.stringMatching(/namespace::namespace:<error>.+logged/),
+      expect.stringMatching(/namespace::namespace:<message>.+logged/),
+      expect.stringMatching(/(?:namespace::?){2}<warn>.+logged/),
       ''
     ]);
   });
@@ -351,9 +351,9 @@ describe('::createDebugLogger', () => {
 
       expect(errorSpy.mock.calls).toStrictEqual([
         expect.arrayContaining([expect.stringMatching(/namespace.+logged/)]),
-        expect.arrayContaining([expect.stringMatching(/namespace:namespace.+logged/)]),
+        expect.arrayContaining([expect.stringMatching(/namespace::namespace.+logged/)]),
         expect.arrayContaining([
-          expect.stringMatching(/(?:namespace:){2}namespace.+logged/)
+          expect.stringMatching(/(?:namespace::?){2}namespace.+logged/)
         ])
       ]);
     });

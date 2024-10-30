@@ -6,11 +6,14 @@ import isValidNpmPackageName from 'validate-npm-package-name';
 import {
   _internalPseudodecoratorCache,
   cacheDebug
-} from '#project-utils src/analyze/cache.ts';
+} from 'rootverse+project-utils:src/analyze/cache.ts';
 
-import { debug as debug_ } from '#project-utils src/analyze/common.ts';
-import { type AbsolutePath } from '#project-utils src/fs.ts';
-import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
+import { debug as debug_ } from 'rootverse+project-utils:src/analyze/common.ts';
+import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
+import {
+  type ParametersNoFirst,
+  type SyncVersionOf
+} from 'rootverse+project-utils:src/util.ts';
 
 import type { Promisable } from 'type-fest';
 

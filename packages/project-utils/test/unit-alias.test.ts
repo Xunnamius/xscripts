@@ -1,3 +1,5 @@
+/* eslint-disable unicorn/escape-case */
+/* eslint-disable unicorn/no-hex-escape */
 import {
   deriveAliasesForBabel,
   deriveAliasesForEslint,
@@ -15,11 +17,11 @@ import {
   type RawAlias,
   type RawAliasMapping,
   type RawPath
-} from '#project-utils src/alias.ts';
+} from 'rootverse+project-utils:src/alias.ts';
 
-import { ErrorMessage } from '#project-utils src/error.ts';
+import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
 
-import type { ProjectMetadata } from '#project-utils src/index.ts';
+import type { ProjectMetadata } from 'rootverse+project-utils:src/index.ts';
 
 const mockProjectRoot = '/path/to/root';
 
@@ -46,7 +48,7 @@ const mockPolyrepoMappings = [
   ],
   [
     {
-      alias: '#',
+      alias: 'rootverse',
       prefix: 'exact',
       suffix: 'open',
       group: WellKnownImportAlias.Rootverse,
@@ -99,7 +101,7 @@ const mockHybridrepoMappings = [
   ],
   [
     {
-      alias: 'multiverse#pkg-2',
+      alias: 'multiverse+pkg-2',
       prefix: 'exact',
       suffix: 'open',
       group: WellKnownImportAlias.Multiverse,
@@ -114,7 +116,7 @@ const mockHybridrepoMappings = [
   ],
   [
     {
-      alias: 'multiverse#pkg-1',
+      alias: 'multiverse+pkg-1',
       prefix: 'exact',
       suffix: 'open',
       group: WellKnownImportAlias.Multiverse,
@@ -129,7 +131,7 @@ const mockHybridrepoMappings = [
   ],
   [
     {
-      alias: 'multiverse#pkg-2',
+      alias: 'multiverse+pkg-2',
       prefix: 'exact',
       suffix: 'exact',
       group: WellKnownImportAlias.Multiverse,
@@ -144,7 +146,7 @@ const mockHybridrepoMappings = [
   ],
   [
     {
-      alias: 'multiverse#pkg-1',
+      alias: 'multiverse+pkg-1',
       prefix: 'exact',
       suffix: 'exact',
       group: WellKnownImportAlias.Multiverse,
@@ -159,7 +161,7 @@ const mockHybridrepoMappings = [
   ],
   [
     {
-      alias: '#pkg-2',
+      alias: 'rootverse+pkg-2',
       prefix: 'exact',
       suffix: 'open',
       group: WellKnownImportAlias.Rootverse,
@@ -174,7 +176,7 @@ const mockHybridrepoMappings = [
   ],
   [
     {
-      alias: '#pkg-1',
+      alias: 'rootverse+pkg-1',
       prefix: 'exact',
       suffix: 'open',
       group: WellKnownImportAlias.Rootverse,
@@ -189,7 +191,7 @@ const mockHybridrepoMappings = [
   ],
   [
     {
-      alias: '#',
+      alias: 'rootverse',
       prefix: 'exact',
       suffix: 'open',
       group: WellKnownImportAlias.Rootverse,
@@ -199,7 +201,7 @@ const mockHybridrepoMappings = [
   ],
   [
     {
-      alias: 'testverse#pkg-2',
+      alias: 'testverse+pkg-2',
       prefix: 'exact',
       suffix: 'open',
       group: WellKnownImportAlias.Testverse,
@@ -214,7 +216,7 @@ const mockHybridrepoMappings = [
   ],
   [
     {
-      alias: 'testverse#pkg-1',
+      alias: 'testverse+pkg-1',
       prefix: 'exact',
       suffix: 'open',
       group: WellKnownImportAlias.Testverse,
@@ -274,7 +276,7 @@ describe('::makeRawAliasMapping', () => {
         prefix: 'exact',
         suffix: 'open',
         group: WellKnownImportAlias.Universe,
-        regExp: /^alias-1 (.+)$/,
+        regExp: /^alias\x2d1:(.+)$/,
         packageId: undefined
       },
       {
@@ -306,7 +308,7 @@ describe('::makeRawAliasMapping', () => {
         prefix: 'none',
         suffix: 'none',
         group: WellKnownImportAlias.Multiverse,
-        regExp: /alias-1/,
+        regExp: /alias\x2d1/,
         packageId: undefined
       },
       {
@@ -337,7 +339,7 @@ describe('::makeRawAliasMapping', () => {
         prefix: 'exact',
         suffix: 'open',
         group: WellKnownImportAlias.Testverse,
-        regExp: /^alias-1 (.+)$/,
+        regExp: /^alias\x2d1:(.+)$/,
         packageId: undefined
       },
       {
@@ -462,13 +464,40 @@ describe('::makeRawAliasMapping', () => {
     );
   });
 
-  it('throws if path starts with "./" (is explicitly relative)', async () => {
+  it('throws if path is explicitly relative (not resembling a bare specifier)', async () => {
     expect.hasAssertions();
 
     expect(() =>
       makeRawAliasMapping(
         { alias: 'alias-1', group: WellKnownImportAlias.Universe, packageId: undefined },
         { path: './the/path/for/alias-1' }
+      )
+    ).toThrow(
+      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
+    );
+
+    expect(() =>
+      makeRawAliasMapping(
+        { alias: 'alias-1', group: WellKnownImportAlias.Universe, packageId: undefined },
+        { path: '../the/path/for/alias-1' }
+      )
+    ).toThrow(
+      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
+    );
+
+    expect(() =>
+      makeRawAliasMapping(
+        { alias: 'alias-1', group: WellKnownImportAlias.Universe, packageId: undefined },
+        { path: '.' }
+      )
+    ).toThrow(
+      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
+    );
+
+    expect(() =>
+      makeRawAliasMapping(
+        { alias: 'alias-1', group: WellKnownImportAlias.Universe, packageId: undefined },
+        { path: '..' }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
@@ -527,7 +556,7 @@ describe('::generateRawAliasMap', () => {
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Universe,
-          regExp: /^universe (.+)$/,
+          regExp: /^universe:(.+)$/,
           packageId: undefined
         },
         { path: 'src', prefix: 'root', suffix: 'open', extensionless: true }
@@ -545,66 +574,66 @@ describe('::generateRawAliasMap', () => {
       ],
       [
         {
-          alias: 'multiverse#b2',
+          alias: 'multiverse+b2',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Multiverse,
-          regExp: /^multiverse#b2 (.+)$/,
+          regExp: /^multiverse\+b2:(.+)$/,
           packageId: 'b2'
         },
         { path: 'packages/b2/src', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: 'multiverse#aa',
+          alias: 'multiverse+aa',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Multiverse,
-          regExp: /^multiverse#aa (.+)$/,
+          regExp: /^multiverse\+aa:(.+)$/,
           packageId: 'aa'
         },
         { path: 'packages/aa/src', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: 'multiverse#a2',
+          alias: 'multiverse+a2',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Multiverse,
-          regExp: /^multiverse#a2 (.+)$/,
+          regExp: /^multiverse\+a2:(.+)$/,
           packageId: 'a2'
         },
         { path: 'packages/a2/src', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: 'multiverse#a1',
+          alias: 'multiverse+a1',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Multiverse,
-          regExp: /^multiverse#a1 (.+)$/,
+          regExp: /^multiverse\+a1:(.+)$/,
           packageId: 'a1'
         },
         { path: 'packages/a1/src', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: 'multiverse#a',
+          alias: 'multiverse+a',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Multiverse,
-          regExp: /^multiverse#a (.+)$/,
+          regExp: /^multiverse\+a:(.+)$/,
           packageId: 'a'
         },
         { path: 'packages/a/src', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: 'multiverse#b2',
+          alias: 'multiverse+b2',
           prefix: 'exact',
           suffix: 'exact',
           group: WellKnownImportAlias.Multiverse,
-          regExp: /^multiverse#b2$/,
+          regExp: /^multiverse\+b2$/,
           packageId: 'b2'
         },
         {
@@ -616,11 +645,11 @@ describe('::generateRawAliasMap', () => {
       ],
       [
         {
-          alias: 'multiverse#aa',
+          alias: 'multiverse+aa',
           prefix: 'exact',
           suffix: 'exact',
           group: WellKnownImportAlias.Multiverse,
-          regExp: /^multiverse#aa$/,
+          regExp: /^multiverse\+aa$/,
           packageId: 'aa'
         },
         {
@@ -632,11 +661,11 @@ describe('::generateRawAliasMap', () => {
       ],
       [
         {
-          alias: 'multiverse#a2',
+          alias: 'multiverse+a2',
           prefix: 'exact',
           suffix: 'exact',
           group: WellKnownImportAlias.Multiverse,
-          regExp: /^multiverse#a2$/,
+          regExp: /^multiverse\+a2$/,
           packageId: 'a2'
         },
         {
@@ -648,11 +677,11 @@ describe('::generateRawAliasMap', () => {
       ],
       [
         {
-          alias: 'multiverse#a1',
+          alias: 'multiverse+a1',
           prefix: 'exact',
           suffix: 'exact',
           group: WellKnownImportAlias.Multiverse,
-          regExp: /^multiverse#a1$/,
+          regExp: /^multiverse\+a1$/,
           packageId: 'a1'
         },
         {
@@ -664,11 +693,11 @@ describe('::generateRawAliasMap', () => {
       ],
       [
         {
-          alias: 'multiverse#a',
+          alias: 'multiverse+a',
           prefix: 'exact',
           suffix: 'exact',
           group: WellKnownImportAlias.Multiverse,
-          regExp: /^multiverse#a$/,
+          regExp: /^multiverse\+a$/,
           packageId: 'a'
         },
         {
@@ -680,121 +709,121 @@ describe('::generateRawAliasMap', () => {
       ],
       [
         {
-          alias: '#b2',
+          alias: 'rootverse+b2',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Rootverse,
-          regExp: /^#b2 (.+)$/,
+          regExp: /^rootverse\+b2:(.+)$/,
           packageId: 'b2'
         },
         { path: 'packages/b2', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: '#aa',
+          alias: 'rootverse+aa',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Rootverse,
-          regExp: /^#aa (.+)$/,
+          regExp: /^rootverse\+aa:(.+)$/,
           packageId: 'aa'
         },
         { path: 'packages/aa', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: '#a2',
+          alias: 'rootverse+a2',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Rootverse,
-          regExp: /^#a2 (.+)$/,
+          regExp: /^rootverse\+a2:(.+)$/,
           packageId: 'a2'
         },
         { path: 'packages/a2', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: '#a1',
+          alias: 'rootverse+a1',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Rootverse,
-          regExp: /^#a1 (.+)$/,
+          regExp: /^rootverse\+a1:(.+)$/,
           packageId: 'a1'
         },
         { path: 'packages/a1', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: '#a',
+          alias: 'rootverse+a',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Rootverse,
-          regExp: /^#a (.+)$/,
+          regExp: /^rootverse\+a:(.+)$/,
           packageId: 'a'
         },
         { path: 'packages/a', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: '#',
+          alias: 'rootverse',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Rootverse,
-          regExp: /^# (.+)$/,
+          regExp: /^rootverse:(.+)$/,
           packageId: undefined
         },
         { path: '', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: 'testverse#b2',
+          alias: 'testverse+b2',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Testverse,
-          regExp: /^testverse#b2 (.+)$/,
+          regExp: /^testverse\+b2:(.+)$/,
           packageId: 'b2'
         },
         { path: 'packages/b2/test', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: 'testverse#aa',
+          alias: 'testverse+aa',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Testverse,
-          regExp: /^testverse#aa (.+)$/,
+          regExp: /^testverse\+aa:(.+)$/,
           packageId: 'aa'
         },
         { path: 'packages/aa/test', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: 'testverse#a2',
+          alias: 'testverse+a2',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Testverse,
-          regExp: /^testverse#a2 (.+)$/,
+          regExp: /^testverse\+a2:(.+)$/,
           packageId: 'a2'
         },
         { path: 'packages/a2/test', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: 'testverse#a1',
+          alias: 'testverse+a1',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Testverse,
-          regExp: /^testverse#a1 (.+)$/,
+          regExp: /^testverse\+a1:(.+)$/,
           packageId: 'a1'
         },
         { path: 'packages/a1/test', prefix: 'root', suffix: 'open', extensionless: true }
       ],
       [
         {
-          alias: 'testverse#a',
+          alias: 'testverse+a',
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Testverse,
-          regExp: /^testverse#a (.+)$/,
+          regExp: /^testverse\+a:(.+)$/,
           packageId: 'a'
         },
         { path: 'packages/a/test', prefix: 'root', suffix: 'open', extensionless: true }
@@ -805,7 +834,7 @@ describe('::generateRawAliasMap', () => {
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Testverse,
-          regExp: /^testverse (.+)$/,
+          regExp: /^testverse:(.+)$/,
           packageId: undefined
         },
         { path: 'test', prefix: 'root', suffix: 'open', extensionless: true }
@@ -816,7 +845,7 @@ describe('::generateRawAliasMap', () => {
           prefix: 'exact',
           suffix: 'open',
           group: WellKnownImportAlias.Typeverse,
-          regExp: /^typeverse (.+)$/,
+          regExp: /^typeverse:(.+)$/,
           packageId: undefined
         },
         { path: 'types', prefix: 'root', suffix: 'open', extensionless: true }
@@ -830,19 +859,19 @@ describe('::deriveAliasesForBabel', () => {
     expect.hasAssertions();
 
     expect(deriveAliasesForBabel(mockHybridrepoMappings)).toStrictEqual({
-      '^universe (.+)$': String.raw`./src/\1`,
+      '^universe:(.+)$': './src/$1',
       '^universe$': './src/index.js',
-      '^multiverse#pkg-2 (.+)$': String.raw`./path/to/packages/pkg-2/src/\1`,
-      '^multiverse#pkg-1 (.+)$': String.raw`./path/to/packages/pkg-1/src/\1`,
-      '^multiverse#pkg-2$': './path/to/packages/pkg-2/src/index.js',
-      '^multiverse#pkg-1$': './path/to/packages/pkg-1/src/index.js',
-      '^#pkg-2 (.+)$': String.raw`./path/to/packages/pkg-2/\1`,
-      '^#pkg-1 (.+)$': String.raw`./path/to/packages/pkg-1/\1`,
-      '^# (.+)$': String.raw`./\1`,
-      '^testverse#pkg-2 (.+)$': String.raw`./path/to/packages/pkg-2/test/\1`,
-      '^testverse#pkg-1 (.+)$': String.raw`./path/to/packages/pkg-1/test/\1`,
-      '^testverse (.+)$': String.raw`./test/\1`,
-      '^typeverse (.+)$': String.raw`./types/\1`
+      '^multiverse+pkg-2:(.+)$': './path/to/packages/pkg-2/src/$1',
+      '^multiverse+pkg-1:(.+)$': './path/to/packages/pkg-1/src/$1',
+      '^multiverse+pkg-2$': './path/to/packages/pkg-2/src/index.js',
+      '^multiverse+pkg-1$': './path/to/packages/pkg-1/src/index.js',
+      '^rootverse+pkg-2:(.+)$': './path/to/packages/pkg-2/$1',
+      '^rootverse+pkg-1:(.+)$': './path/to/packages/pkg-1/$1',
+      '^rootverse:(.+)$': './$1',
+      '^testverse+pkg-2:(.+)$': './path/to/packages/pkg-2/test/$1',
+      '^testverse+pkg-1:(.+)$': './path/to/packages/pkg-1/test/$1',
+      '^testverse:(.+)$': './test/$1',
+      '^typeverse:(.+)$': './types/$1'
     });
   });
 });
@@ -852,19 +881,19 @@ describe('::deriveAliasesForEslint', () => {
     expect.hasAssertions();
 
     expect(deriveAliasesForEslint(mockHybridrepoMappings)).toStrictEqual([
-      ['universe *', './src/*'],
+      ['universe:*', './src/*'],
       ['universe', './src/index.ts'],
-      ['multiverse#pkg-2 *', './path/to/packages/pkg-2/src/*'],
-      ['multiverse#pkg-1 *', './path/to/packages/pkg-1/src/*'],
-      ['multiverse#pkg-2', './path/to/packages/pkg-2/src/index.ts'],
-      ['multiverse#pkg-1', './path/to/packages/pkg-1/src/index.ts'],
-      ['#pkg-2 *', './path/to/packages/pkg-2/*'],
-      ['#pkg-1 *', './path/to/packages/pkg-1/*'],
-      ['# *', './*'],
-      ['testverse#pkg-2 *', './path/to/packages/pkg-2/test/*'],
-      ['testverse#pkg-1 *', './path/to/packages/pkg-1/test/*'],
-      ['testverse *', './test/*'],
-      ['typeverse *', './types/*']
+      ['multiverse+pkg-2:*', './path/to/packages/pkg-2/src/*'],
+      ['multiverse+pkg-1:*', './path/to/packages/pkg-1/src/*'],
+      ['multiverse+pkg-2', './path/to/packages/pkg-2/src/index.ts'],
+      ['multiverse+pkg-1', './path/to/packages/pkg-1/src/index.ts'],
+      ['rootverse+pkg-2:*', './path/to/packages/pkg-2/*'],
+      ['rootverse+pkg-1:*', './path/to/packages/pkg-1/*'],
+      ['rootverse:*', './*'],
+      ['testverse+pkg-2:*', './path/to/packages/pkg-2/test/*'],
+      ['testverse+pkg-1:*', './path/to/packages/pkg-1/test/*'],
+      ['testverse:*', './test/*'],
+      ['typeverse:*', './types/*']
     ]);
   });
 });
@@ -876,19 +905,19 @@ describe('::deriveAliasesForWebpack', () => {
     expect(
       deriveAliasesForWebpack(mockHybridrepoMappings, mockProjectRoot)
     ).toStrictEqual({
-      'universe ': `${mockProjectRoot}/src/`,
+      'universe:': `${mockProjectRoot}/src/`,
       universe: `${mockProjectRoot}/src/index.ts`,
-      'multiverse#pkg-2 ': `${mockProjectRoot}/path/to/packages/pkg-2/src/`,
-      'multiverse#pkg-1 ': `${mockProjectRoot}/path/to/packages/pkg-1/src/`,
-      'multiverse#pkg-2': `${mockProjectRoot}/path/to/packages/pkg-2/src/index.ts`,
-      'multiverse#pkg-1': `${mockProjectRoot}/path/to/packages/pkg-1/src/index.ts`,
-      '#pkg-2 ': `${mockProjectRoot}/path/to/packages/pkg-2/`,
-      '#pkg-1 ': `${mockProjectRoot}/path/to/packages/pkg-1/`,
-      '# ': `${mockProjectRoot}/`,
-      'testverse#pkg-2 ': `${mockProjectRoot}/path/to/packages/pkg-2/test/`,
-      'testverse#pkg-1 ': `${mockProjectRoot}/path/to/packages/pkg-1/test/`,
-      'testverse ': `${mockProjectRoot}/test/`,
-      'typeverse ': `${mockProjectRoot}/types/`
+      'multiverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/src/`,
+      'multiverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/src/`,
+      'multiverse+pkg-2': `${mockProjectRoot}/path/to/packages/pkg-2/src/index.ts`,
+      'multiverse+pkg-1': `${mockProjectRoot}/path/to/packages/pkg-1/src/index.ts`,
+      'rootverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/`,
+      'rootverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/`,
+      'rootverse:': `${mockProjectRoot}/`,
+      'testverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/test/`,
+      'testverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/test/`,
+      'testverse:': `${mockProjectRoot}/test/`,
+      'typeverse:': `${mockProjectRoot}/types/`
     });
   });
 });
@@ -899,19 +928,19 @@ describe('::deriveAliasesForNextJs', () => {
 
     expect(deriveAliasesForNextJs(mockHybridrepoMappings, mockProjectRoot)).toStrictEqual(
       {
-        'universe ': `${mockProjectRoot}/src/`,
+        'universe:': `${mockProjectRoot}/src/`,
         universe: `${mockProjectRoot}/src/index.ts`,
-        'multiverse#pkg-2 ': `${mockProjectRoot}/path/to/packages/pkg-2/src/`,
-        'multiverse#pkg-1 ': `${mockProjectRoot}/path/to/packages/pkg-1/src/`,
-        'multiverse#pkg-2': `${mockProjectRoot}/path/to/packages/pkg-2/src/index.ts`,
-        'multiverse#pkg-1': `${mockProjectRoot}/path/to/packages/pkg-1/src/index.ts`,
-        '#pkg-2 ': `${mockProjectRoot}/path/to/packages/pkg-2/`,
-        '#pkg-1 ': `${mockProjectRoot}/path/to/packages/pkg-1/`,
-        '# ': `${mockProjectRoot}/`,
-        'testverse#pkg-2 ': `${mockProjectRoot}/path/to/packages/pkg-2/test/`,
-        'testverse#pkg-1 ': `${mockProjectRoot}/path/to/packages/pkg-1/test/`,
-        'testverse ': `${mockProjectRoot}/test/`,
-        'typeverse ': `${mockProjectRoot}/types/`
+        'multiverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/src/`,
+        'multiverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/src/`,
+        'multiverse+pkg-2': `${mockProjectRoot}/path/to/packages/pkg-2/src/index.ts`,
+        'multiverse+pkg-1': `${mockProjectRoot}/path/to/packages/pkg-1/src/index.ts`,
+        'rootverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/`,
+        'rootverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/`,
+        'rootverse:': `${mockProjectRoot}/`,
+        'testverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/test/`,
+        'testverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/test/`,
+        'testverse:': `${mockProjectRoot}/test/`,
+        'typeverse:': `${mockProjectRoot}/types/`
       }
     );
   });
@@ -922,19 +951,19 @@ describe('::deriveAliasesForJest', () => {
     expect.hasAssertions();
 
     expect(deriveAliasesForJest(mockHybridrepoMappings)).toStrictEqual({
-      '^universe (.+)$': '<rootDir>/src/$1',
+      '^universe:(.+)$': '<rootDir>/src/$1',
       '^universe$': '<rootDir>/src/index.ts',
-      '^multiverse#pkg-2 (.+)$': '<rootDir>/path/to/packages/pkg-2/src/$1',
-      '^multiverse#pkg-1 (.+)$': '<rootDir>/path/to/packages/pkg-1/src/$1',
-      '^multiverse#pkg-2$': '<rootDir>/path/to/packages/pkg-2/src/index.ts',
-      '^multiverse#pkg-1$': '<rootDir>/path/to/packages/pkg-1/src/index.ts',
-      '^#pkg-2 (.+)$': '<rootDir>/path/to/packages/pkg-2/$1',
-      '^#pkg-1 (.+)$': '<rootDir>/path/to/packages/pkg-1/$1',
-      '^# (.+)$': '<rootDir>/$1',
-      '^testverse#pkg-2 (.+)$': '<rootDir>/path/to/packages/pkg-2/test/$1',
-      '^testverse#pkg-1 (.+)$': '<rootDir>/path/to/packages/pkg-1/test/$1',
-      '^testverse (.+)$': '<rootDir>/test/$1',
-      '^typeverse (.+)$': '<rootDir>/types/$1'
+      '^multiverse+pkg-2:(.+)$': '<rootDir>/path/to/packages/pkg-2/src/$1',
+      '^multiverse+pkg-1:(.+)$': '<rootDir>/path/to/packages/pkg-1/src/$1',
+      '^multiverse+pkg-2$': '<rootDir>/path/to/packages/pkg-2/src/index.ts',
+      '^multiverse+pkg-1$': '<rootDir>/path/to/packages/pkg-1/src/index.ts',
+      '^rootverse+pkg-2:(.+)$': '<rootDir>/path/to/packages/pkg-2/$1',
+      '^rootverse+pkg-1:(.+)$': '<rootDir>/path/to/packages/pkg-1/$1',
+      '^rootverse:(.+)$': '<rootDir>/$1',
+      '^testverse+pkg-2:(.+)$': '<rootDir>/path/to/packages/pkg-2/test/$1',
+      '^testverse+pkg-1:(.+)$': '<rootDir>/path/to/packages/pkg-1/test/$1',
+      '^testverse:(.+)$': '<rootDir>/test/$1',
+      '^typeverse:(.+)$': '<rootDir>/types/$1'
     });
   });
 });
@@ -944,19 +973,19 @@ describe('::deriveAliasesForTypeScript', () => {
     expect.hasAssertions();
 
     expect(deriveAliasesForTypeScript(mockHybridrepoMappings)).toStrictEqual({
-      'universe *': ['src/*'],
+      'universe:*': ['src/*'],
       universe: ['src/index.ts'],
-      'multiverse#pkg-2 *': ['path/to/packages/pkg-2/src/*'],
-      'multiverse#pkg-1 *': ['path/to/packages/pkg-1/src/*'],
-      'multiverse#pkg-2': ['path/to/packages/pkg-2/src/index.ts'],
-      'multiverse#pkg-1': ['path/to/packages/pkg-1/src/index.ts'],
-      '#pkg-2 *': ['path/to/packages/pkg-2/*'],
-      '#pkg-1 *': ['path/to/packages/pkg-1/*'],
-      '# *': ['*'],
-      'testverse#pkg-2 *': ['path/to/packages/pkg-2/test/*'],
-      'testverse#pkg-1 *': ['path/to/packages/pkg-1/test/*'],
-      'testverse *': ['test/*'],
-      'typeverse *': ['types/*']
+      'multiverse+pkg-2:*': ['path/to/packages/pkg-2/src/*'],
+      'multiverse+pkg-1:*': ['path/to/packages/pkg-1/src/*'],
+      'multiverse+pkg-2': ['path/to/packages/pkg-2/src/index.ts'],
+      'multiverse+pkg-1': ['path/to/packages/pkg-1/src/index.ts'],
+      'rootverse+pkg-2:*': ['path/to/packages/pkg-2/*'],
+      'rootverse+pkg-1:*': ['path/to/packages/pkg-1/*'],
+      'rootverse:*': ['*'],
+      'testverse+pkg-2:*': ['path/to/packages/pkg-2/test/*'],
+      'testverse+pkg-1:*': ['path/to/packages/pkg-1/test/*'],
+      'testverse:*': ['test/*'],
+      'typeverse:*': ['types/*']
     });
   });
 });
@@ -974,7 +1003,7 @@ describe('::mapRawSpecifierToRawAliasMapping', () => {
     ).toBeUndefined();
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockPolyrepoMappings, 'multiverse#a')
+      mapRawSpecifierToRawAliasMapping(mockPolyrepoMappings, 'multiverse+a')
     ).toBeUndefined();
   });
 
@@ -986,19 +1015,19 @@ describe('::mapRawSpecifierToRawAliasMapping', () => {
     ).toStrictEqual(mockPolyrepoMappings[1]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockPolyrepoMappings, 'universe something.ts')
+      mapRawSpecifierToRawAliasMapping(mockPolyrepoMappings, 'universe:something.ts')
     ).toStrictEqual(mockPolyrepoMappings[0]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockPolyrepoMappings, '# something.ts')
+      mapRawSpecifierToRawAliasMapping(mockPolyrepoMappings, 'rootverse:something.ts')
     ).toStrictEqual(mockPolyrepoMappings[2]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockPolyrepoMappings, 'testverse something.ts')
+      mapRawSpecifierToRawAliasMapping(mockPolyrepoMappings, 'testverse:something.ts')
     ).toStrictEqual(mockPolyrepoMappings[3]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockPolyrepoMappings, 'typeverse global.ts')
+      mapRawSpecifierToRawAliasMapping(mockPolyrepoMappings, 'typeverse:global.ts')
     ).toStrictEqual(mockPolyrepoMappings[4]);
   });
 
@@ -1010,7 +1039,7 @@ describe('::mapRawSpecifierToRawAliasMapping', () => {
     ).toStrictEqual(mockHybridrepoMappings[1]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'universe something.ts')
+      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'universe:something.ts')
     ).toStrictEqual(mockHybridrepoMappings[0]);
 
     expect(
@@ -1018,32 +1047,40 @@ describe('::mapRawSpecifierToRawAliasMapping', () => {
     ).toBeUndefined();
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'multiverse#pkg-2')
+      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'multiverse+pkg-2')
     ).toStrictEqual(mockHybridrepoMappings[4]);
 
     expect(
       mapRawSpecifierToRawAliasMapping(
         mockHybridrepoMappings,
-        'multiverse#pkg-2 something/else/over/there.ts'
+        'multiverse+pkg-2:something/else/over/there.ts'
       )
     ).toStrictEqual(mockHybridrepoMappings[2]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'multiverse#pkg-1')
+      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'multiverse+pkg-1')
     ).toStrictEqual(mockHybridrepoMappings[5]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, '#pkg-1 stuff.ts')
+      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'rootverse+pkg-1:stuff.ts')
     ).toStrictEqual(mockHybridrepoMappings[7]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, '#pkg-2 my/stuff.ts')
+      mapRawSpecifierToRawAliasMapping(
+        mockHybridrepoMappings,
+        'rootverse+pkg-2:my/stuff.ts'
+      )
     ).toStrictEqual(mockHybridrepoMappings[6]);
 
-    expect(mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, '#')).toBeUndefined();
+    expect(
+      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'rootverse')
+    ).toBeUndefined();
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, '# stuff/lives/here.ts')
+      mapRawSpecifierToRawAliasMapping(
+        mockHybridrepoMappings,
+        'rootverse:stuff/lives/here.ts'
+      )
     ).toStrictEqual(mockHybridrepoMappings[8]);
 
     expect(
@@ -1051,26 +1088,26 @@ describe('::mapRawSpecifierToRawAliasMapping', () => {
     ).toBeUndefined();
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'testverse#pkg-5')
+      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'testverse+pkg-5')
     ).toBeUndefined();
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'testverse#pkg-2')
+      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'testverse+pkg-2')
     ).toBeUndefined();
 
     expect(
       mapRawSpecifierToRawAliasMapping(
         mockHybridrepoMappings,
-        'testverse#pkg-2 something.ts'
+        'testverse+pkg-2:something.ts'
       )
     ).toStrictEqual(mockHybridrepoMappings[9]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'testverse setup.ts')
+      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'testverse:setup.ts')
     ).toStrictEqual(mockHybridrepoMappings[11]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'typeverse global.ts')
+      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'typeverse:global.ts')
     ).toStrictEqual(mockHybridrepoMappings[12]);
   });
 });
@@ -1083,56 +1120,56 @@ describe('::mapRawSpecifierToPath', () => {
     expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'testverse')).toBeUndefined();
 
     expect(
-      mapRawSpecifierToPath(mockHybridrepoMappings, 'testverse#pkg-1')
+      mapRawSpecifierToPath(mockHybridrepoMappings, 'testverse+pkg-1')
     ).toBeUndefined();
 
-    expect(mapRawSpecifierToPath(mockHybridrepoMappings, '#')).toBeUndefined();
+    expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'rootverse')).toBeUndefined();
     expect(mapRawSpecifierToPath(mockHybridrepoMappings, '')).toBeUndefined();
 
     expect(
-      mapRawSpecifierToPath(mockHybridrepoMappings, 'typeverse#pkg-1 setup.ts')
+      mapRawSpecifierToPath(mockHybridrepoMappings, 'typeverse+pkg-1:setup.ts')
     ).toBeUndefined();
   });
 
   it('maps a raw alias to its theoretical relative filesystem path', async () => {
     expect.hasAssertions();
 
-    expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'universe something.ts')).toBe(
+    expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'universe:something.ts')).toBe(
       'src/something.ts'
     );
 
     expect(
-      mapRawSpecifierToPath(mockHybridrepoMappings, 'multiverse#pkg-1 something.ts')
+      mapRawSpecifierToPath(mockHybridrepoMappings, 'multiverse+pkg-1:something.ts')
     ).toBe('path/to/packages/pkg-1/src/something.ts');
 
     expect(
       mapRawSpecifierToPath(
         mockHybridrepoMappings,
-        'multiverse#pkg-2 some/other/thing.ts'
+        'multiverse+pkg-2:some/other/thing.ts'
       )
     ).toBe('path/to/packages/pkg-2/src/some/other/thing.ts');
 
     expect(
-      mapRawSpecifierToPath(mockHybridrepoMappings, '#pkg-2 some/other/thing.ts')
+      mapRawSpecifierToPath(mockHybridrepoMappings, 'rootverse+pkg-2:some/other/thing.ts')
     ).toBe('path/to/packages/pkg-2/some/other/thing.ts');
 
-    expect(mapRawSpecifierToPath(mockHybridrepoMappings, '# package.json')).toBe(
+    expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'rootverse:package.json')).toBe(
       'package.json'
     );
 
-    expect(mapRawSpecifierToPath(mockHybridrepoMappings, '# some/thing/is/here.ts')).toBe(
-      'some/thing/is/here.ts'
-    );
+    expect(
+      mapRawSpecifierToPath(mockHybridrepoMappings, 'rootverse:some/thing/is/here.ts')
+    ).toBe('some/thing/is/here.ts');
 
-    expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'testverse setup.ts')).toBe(
+    expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'testverse:setup.ts')).toBe(
       'test/setup.ts'
     );
 
     expect(
-      mapRawSpecifierToPath(mockHybridrepoMappings, 'testverse#pkg-1 setup.ts')
+      mapRawSpecifierToPath(mockHybridrepoMappings, 'testverse+pkg-1:setup.ts')
     ).toBe('path/to/packages/pkg-1/test/setup.ts');
 
-    expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'typeverse global.ts')).toBe(
+    expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'typeverse:global.ts')).toBe(
       'types/global.ts'
     );
   });
@@ -1144,12 +1181,12 @@ describe('::mapRawSpecifierToPath', () => {
       'src/index.ts'
     );
 
-    expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'multiverse#pkg-1')).toBe(
+    expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'multiverse+pkg-1')).toBe(
       'path/to/packages/pkg-1/src/index.ts'
     );
 
     expect(
-      mapRawSpecifierToPath(mockHybridrepoMappings, 'multiverse#pkg-1', {
+      mapRawSpecifierToPath(mockHybridrepoMappings, 'multiverse+pkg-1', {
         extensionToAppend: '.new'
       })
     ).toBe('path/to/packages/pkg-1/src/index.new');
@@ -1205,8 +1242,8 @@ describe('::ensureRawSpecifierOk', () => {
       regExp: /fake/
     };
 
-    const testSpecifier1 = 'typeverse global.ts';
-    const testSpecifier2 = 'fake no/ext';
+    const testSpecifier1 = 'typeverse:global.ts';
+    const testSpecifier2 = 'fake:no/ext';
     const fakeMapping: RawAliasMapping = [rawAlias, {} as RawPath];
 
     const typeverseMapping = mapRawSpecifierToRawAliasMapping(
@@ -1222,8 +1259,8 @@ describe('::ensureRawSpecifierOk', () => {
       ErrorMessage.SpecifierNotOkMissingExtension(testSpecifier2)
     );
 
-    expect(() => ensureRawSpecifierOk(typeverseMapping, 'typeverse global')).toThrow(
-      ErrorMessage.SpecifierNotOkMissingExtension('typeverse global')
+    expect(() => ensureRawSpecifierOk(typeverseMapping, 'typeverse:global')).toThrow(
+      ErrorMessage.SpecifierNotOkMissingExtension('typeverse:global')
     );
   });
 
@@ -1305,7 +1342,7 @@ describe('::ensureRawSpecifierOk', () => {
     expect.hasAssertions();
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, '#pkg-1 package.json', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'rootverse+pkg-1:package.json', {
         packageId: 'pkg-1'
       })
     ).not.toThrow();
@@ -1326,19 +1363,19 @@ describe('::ensureRawSpecifierOk', () => {
     );
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe something.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe:something.ts', {
         packageId: 'pkg-1'
       })
-    ).toThrow(ErrorMessage.SpecifierNotOkUniverseNotAllowed('universe something.ts'));
+    ).toThrow(ErrorMessage.SpecifierNotOkUniverseNotAllowed('universe:something.ts'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe something.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe:something.ts', {
         packageId: 'pkg-1',
         path: '/in/some/file.abc'
       })
     ).toThrow(
       ErrorMessage.SpecifierNotOkUniverseNotAllowed(
-        'universe something.ts',
+        'universe:something.ts',
         '/in/some/file.abc'
       )
     );
@@ -1348,19 +1385,19 @@ describe('::ensureRawSpecifierOk', () => {
     expect.hasAssertions();
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, '#pkg-1 package.json', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'rootverse+pkg-1:package.json', {
         errorIfTestverseEncountered: true
       })
     ).not.toThrow();
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'testverse setup.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'testverse:setup.ts', {
         errorIfTestverseEncountered: true,
         path: '/in/some/file.abc'
       })
     ).toThrow(
       ErrorMessage.SpecifierNotOkTestverseNotAllowed(
-        'testverse setup.ts',
+        'testverse:setup.ts',
         '/in/some/file.abc'
       )
     );
@@ -1372,64 +1409,64 @@ describe('::ensureRawSpecifierOk', () => {
     expect(() => ensureRawSpecifierOk(mockHybridrepoMappings, 'universe')).not.toThrow();
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1')
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1')
     ).not.toThrow();
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe some/file')
-    ).toThrow(ErrorMessage.SpecifierNotOkMissingExtension('universe some/file'));
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe:some/file')
+    ).toThrow(ErrorMessage.SpecifierNotOkMissingExtension('universe:some/file'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe some/file', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe:some/file', {
         path: '/in/some/file.abc'
       })
     ).toThrow(
       ErrorMessage.SpecifierNotOkMissingExtension(
-        'universe some/file',
+        'universe:some/file',
         '/in/some/file.abc'
       )
     );
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1 index')
-    ).toThrow(ErrorMessage.SpecifierNotOkMissingExtension('multiverse#pkg-1 index'));
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1:index')
+    ).toThrow(ErrorMessage.SpecifierNotOkMissingExtension('multiverse+pkg-1:index'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1 index', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1:index', {
         path: '/in/some/file.abc'
       })
     ).toThrow(
       ErrorMessage.SpecifierNotOkMissingExtension(
-        'multiverse#pkg-1 index',
+        'multiverse+pkg-1:index',
         '/in/some/file.abc'
       )
     );
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'testverse setup', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'testverse:setup', {
         errorIfTestverseEncountered: false
       })
-    ).toThrow(ErrorMessage.SpecifierNotOkMissingExtension('testverse setup'));
+    ).toThrow(ErrorMessage.SpecifierNotOkMissingExtension('testverse:setup'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'testverse setup', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'testverse:setup', {
         errorIfTestverseEncountered: false,
         path: '/in/some/file.abc'
       })
     ).toThrow(
-      ErrorMessage.SpecifierNotOkMissingExtension('testverse setup', '/in/some/file.abc')
+      ErrorMessage.SpecifierNotOkMissingExtension('testverse:setup', '/in/some/file.abc')
     );
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'typeverse global')
-    ).toThrow(ErrorMessage.SpecifierNotOkMissingExtension('typeverse global'));
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'typeverse:global')
+    ).toThrow(ErrorMessage.SpecifierNotOkMissingExtension('typeverse:global'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'typeverse global', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'typeverse:global', {
         path: '/in/some/file.abc'
       })
     ).toThrow(
-      ErrorMessage.SpecifierNotOkMissingExtension('typeverse global', '/in/some/file.abc')
+      ErrorMessage.SpecifierNotOkMissingExtension('typeverse:global', '/in/some/file.abc')
     );
   });
 
@@ -1437,100 +1474,103 @@ describe('::ensureRawSpecifierOk', () => {
     expect.hasAssertions();
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1 index.js')
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1:index.js')
     ).not.toThrow();
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1 index.js', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1:index.js', {
         extensionToAppend: '.js'
       })
-    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('multiverse#pkg-1 index.js'));
+    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('multiverse+pkg-1:index.js'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1 index.js', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1:index.js', {
         extensionToAppend: '.js',
         path: '/in/some/file.abc'
       })
     ).toThrow(
       ErrorMessage.SpecifierNotOkUnnecessaryIndex(
-        'multiverse#pkg-1 index.js',
+        'multiverse+pkg-1:index.js',
         '/in/some/file.abc'
       )
     );
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1 index.ts')
-    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('multiverse#pkg-1 index.ts'));
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1:index.ts')
+    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('multiverse+pkg-1:index.ts'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1 index.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1:index.ts', {
         path: '/in/some/file.abc'
       })
     ).toThrow(
       ErrorMessage.SpecifierNotOkUnnecessaryIndex(
-        'multiverse#pkg-1 index.ts',
+        'multiverse+pkg-1:index.ts',
         '/in/some/file.abc'
       )
     );
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe index.ts')
-    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('universe index.ts'));
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe:index.ts')
+    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('universe:index.ts'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe index.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe:index.ts', {
         path: '/in/some/file.abc'
       })
     ).toThrow(
       ErrorMessage.SpecifierNotOkUnnecessaryIndex(
-        'universe index.ts',
+        'universe:index.ts',
         '/in/some/file.abc'
       )
     );
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'testverse index.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'testverse:index.ts', {
         errorIfTestverseEncountered: false
       })
-    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('testverse index.ts'));
+    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('testverse:index.ts'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'testverse index.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'testverse:index.ts', {
         errorIfTestverseEncountered: false,
         path: '/in/some/file.abc'
       })
     ).toThrow(
       ErrorMessage.SpecifierNotOkUnnecessaryIndex(
-        'testverse index.ts',
+        'testverse:index.ts',
         '/in/some/file.abc'
       )
     );
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'typeverse index.ts')
-    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('typeverse index.ts'));
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'typeverse:index.ts')
+    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('typeverse:index.ts'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'typeverse index.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'typeverse:index.ts', {
         path: '/in/some/file.abc'
       })
     ).toThrow(
       ErrorMessage.SpecifierNotOkUnnecessaryIndex(
-        'typeverse index.ts',
+        'typeverse:index.ts',
         '/in/some/file.abc'
       )
     );
 
-    expect(() => ensureRawSpecifierOk(mockHybridrepoMappings, '# index.ts')).toThrow(
-      ErrorMessage.SpecifierNotOkUnnecessaryIndex('# index.ts')
-    );
+    expect(() =>
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'rootverse:index.ts')
+    ).toThrow(ErrorMessage.SpecifierNotOkUnnecessaryIndex('rootverse:index.ts'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, '# index.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'rootverse:index.ts', {
         path: '/in/some/file.abc'
       })
     ).toThrow(
-      ErrorMessage.SpecifierNotOkUnnecessaryIndex('# index.ts', '/in/some/file.abc')
+      ErrorMessage.SpecifierNotOkUnnecessaryIndex(
+        'rootverse:index.ts',
+        '/in/some/file.abc'
+      )
     );
   });
 
@@ -1538,42 +1578,42 @@ describe('::ensureRawSpecifierOk', () => {
     expect.hasAssertions();
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-2', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-2', {
         packageId: 'pkg-1'
       })
     ).not.toThrow();
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1', {
         packageId: 'pkg-1'
       })
-    ).toThrow(ErrorMessage.SpecifierNotOkSelfReferential('multiverse#pkg-1'));
+    ).toThrow(ErrorMessage.SpecifierNotOkSelfReferential('multiverse+pkg-1'));
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1', {
         packageId: 'pkg-1',
         path: '/in/some/file.abc'
       })
     ).toThrow(
-      ErrorMessage.SpecifierNotOkSelfReferential('multiverse#pkg-1', '/in/some/file.abc')
+      ErrorMessage.SpecifierNotOkSelfReferential('multiverse+pkg-1', '/in/some/file.abc')
     );
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1 something.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1:something.ts', {
         packageId: 'pkg-1'
       })
     ).toThrow(
-      ErrorMessage.SpecifierNotOkSelfReferential('multiverse#pkg-1 something.ts')
+      ErrorMessage.SpecifierNotOkSelfReferential('multiverse+pkg-1:something.ts')
     );
 
     expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse#pkg-1 something.ts', {
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'multiverse+pkg-1:something.ts', {
         packageId: 'pkg-1',
         path: '/in/some/file.abc'
       })
     ).toThrow(
       ErrorMessage.SpecifierNotOkSelfReferential(
-        'multiverse#pkg-1 something.ts',
+        'multiverse+pkg-1:something.ts',
         '/in/some/file.abc'
       )
     );
@@ -1581,22 +1621,22 @@ describe('::ensureRawSpecifierOk', () => {
     expect(() =>
       ensureRawSpecifierOk(
         mockHybridrepoMappings,
-        'multiverse#pkg-1 something/wrong.ts',
+        'multiverse+pkg-1:something/wrong.ts',
         { packageId: 'pkg-1' }
       )
     ).toThrow(
-      ErrorMessage.SpecifierNotOkSelfReferential('multiverse#pkg-1 something/wrong.ts')
+      ErrorMessage.SpecifierNotOkSelfReferential('multiverse+pkg-1:something/wrong.ts')
     );
 
     expect(() =>
       ensureRawSpecifierOk(
         mockHybridrepoMappings,
-        'multiverse#pkg-1 something/wrong.ts',
+        'multiverse+pkg-1:something/wrong.ts',
         { packageId: 'pkg-1', path: '/in/some/file.abc' }
       )
     ).toThrow(
       ErrorMessage.SpecifierNotOkSelfReferential(
-        'multiverse#pkg-1 something/wrong.ts',
+        'multiverse+pkg-1:something/wrong.ts',
         '/in/some/file.abc'
       )
     );
@@ -1604,7 +1644,7 @@ describe('::ensureRawSpecifierOk', () => {
     expect(() =>
       ensureRawSpecifierOk(
         mockHybridrepoMappings,
-        'multiverse#pkg-2 something/wrong.ts',
+        'multiverse+pkg-2:something/wrong.ts',
         { packageId: 'pkg-1' }
       )
     ).not.toThrow();
@@ -1635,10 +1675,10 @@ describe('::rawAliasToRegExp', () => {
 
     expect(
       rawAliasToRegExp({ prefix: 'exact', alias: 'e', suffix: 'open', ...dummy })
-    ).toStrictEqual(/^e (.+)$/);
+    ).toStrictEqual(/^e:(.+)$/);
 
     expect(
       rawAliasToRegExp({ prefix: 'none', alias: 'f', suffix: 'open', ...dummy })
-    ).toStrictEqual(/f (.+)$/);
+    ).toStrictEqual(/f:(.+)$/);
   });
 });

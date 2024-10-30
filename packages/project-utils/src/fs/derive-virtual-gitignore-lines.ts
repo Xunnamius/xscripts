@@ -1,14 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { readFile as readFileAsync } from 'node:fs/promises';
 
-import { createDebugLogger } from 'multiverse#rejoinder';
-import { runNoRejectOnBadExit } from 'multiverse#run';
+import { createDebugLogger } from 'multiverse+rejoinder';
+import { runNoRejectOnBadExit } from 'multiverse+run';
 
-import { globalDebuggerNamespace } from '#project-utils src/constant.ts';
-import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
-import { ensurePathIsAbsolute } from '#project-utils src/fs/ensure-path-is-absolute.ts';
-import { type AbsolutePath } from '#project-utils src/fs.ts';
-import { type ParametersNoFirst } from '#project-utils src/util.ts';
+import { globalDebuggerNamespace } from 'rootverse+project-utils:src/constant.ts';
+import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
+import { ensurePathIsAbsolute } from 'rootverse+project-utils:src/fs/ensure-path-is-absolute.ts';
+import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
+import { type ParametersNoFirst } from 'rootverse+project-utils:src/util.ts';
 
 import type { Promisable } from 'type-fest';
 

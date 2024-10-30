@@ -17,20 +17,20 @@ import {
   type Config
 } from 'typescript-eslint';
 
-import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse#project-utils';
+import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse+project-utils';
 
 import {
   deriveAliasesForEslint,
   generateRawAliasMap
-} from 'multiverse#project-utils alias.ts';
+} from 'multiverse+project-utils:alias.ts';
 
-import { Tsconfig } from 'multiverse#project-utils fs/well-known-constants.ts';
-import { type AbsolutePath } from 'multiverse#project-utils fs.ts';
+import { Tsconfig } from 'multiverse+project-utils:fs/well-known-constants.ts';
+import { type AbsolutePath } from 'multiverse+project-utils:fs.ts';
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
 
-import { globalDebuggerNamespace } from 'universe constant.ts';
-import { ErrorMessage } from 'universe error.ts';
+import { globalDebuggerNamespace } from 'universe:constant.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 // TODO: update with latest changes from project root eslint.config.mjs
 

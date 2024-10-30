@@ -1,4 +1,4 @@
-import { debugFactory } from 'multiverse#debug';
+import { debugFactory } from 'multiverse+debug';
 
 import type {
   Options,

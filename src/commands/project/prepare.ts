@@ -1,30 +1,30 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { type AsStrictExecutionContext } from 'multiverse+bfe';
 
 import {
   logStartTime,
   LogTag,
   standardSuccessMessage
-} from 'multiverse#cli-utils logging.ts';
+} from 'multiverse+cli-utils:logging.ts';
 
-import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { runWithInheritedIo } from 'multiverse#run';
+import { scriptBasename } from 'multiverse+cli-utils:util.ts';
+import { runWithInheritedIo } from 'multiverse+run';
 
 import {
   UnlimitedGlobalScope as PreparationScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { ErrorMessage } from 'universe error.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 import {
   findOneConfigurationFile,
   runGlobalPreChecks,
   withGlobalBuilder,
   withGlobalUsage
-} from 'universe util.ts';
+} from 'universe:util.ts';
 
 const wellKnownPostNpmInstallFilenames = [
   'post-npm-install.mjs',

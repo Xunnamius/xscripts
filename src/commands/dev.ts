@@ -1,26 +1,26 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
-import { logStartTime, LogTag } from 'multiverse#cli-utils logging.ts';
-import { scriptBasename } from 'multiverse#cli-utils util.ts';
-import { ProjectAttribute } from 'multiverse#project-utils';
-import { run, runWithInheritedIo } from 'multiverse#run';
+import { type AsStrictExecutionContext } from 'multiverse+bfe';
+import { logStartTime, LogTag } from 'multiverse+cli-utils:logging.ts';
+import { scriptBasename } from 'multiverse+cli-utils:util.ts';
+import { ProjectAttribute } from 'multiverse+project-utils';
+import { run, runWithInheritedIo } from 'multiverse+run';
 
 import {
   ThisPackageGlobalScope as DevScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { ErrorMessage } from 'universe error.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 import {
   hasExitCode,
   runGlobalPreChecks,
   withGlobalBuilder,
   withGlobalUsage
-} from 'universe util.ts';
+} from 'universe:util.ts';
 
 /**
  * @see {@link DevScope}

@@ -1,10 +1,10 @@
 import { toss } from 'toss-expression';
 
-import { runNoRejectOnBadExit } from 'multiverse#run';
+import { runNoRejectOnBadExit } from 'multiverse+run';
 
-import { pathToPackage } from '#project-utils src/analyze/path-to-package.ts';
-import { ErrorMessage } from '#project-utils src/error.ts';
-import { type AbsolutePath, type RelativePath } from '#project-utils src/fs.ts';
+import { pathToPackage } from 'rootverse+project-utils:src/analyze/path-to-package.ts';
+import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
+import { type AbsolutePath, type RelativePath } from 'rootverse+project-utils:src/fs.ts';
 
 import {
   analyzeProjectStructure,
@@ -22,16 +22,16 @@ import {
   type PackageBuildTargets,
   type ProjectMetadata,
   type WorkspacePackage
-} from '#project-utils src/index.ts';
+} from 'rootverse+project-utils:src/index.ts';
 
 import {
   fixtures,
   fixtureToProjectMetadata,
   patchReadPackageJsonAtRoot,
   type FixtureName
-} from '#project-utils test/helpers/dummy-repo.ts';
+} from 'rootverse+project-utils:test/helpers/dummy-repo.ts';
 
-import { asMockedFunction } from 'testverse setup.ts';
+import { asMockedFunction } from 'testverse:setup.ts';
 
 jest.mock<typeof import('browserslist')>('browserslist', () => {
   return mockShouldReturnBrowserslistMock
@@ -39,7 +39,7 @@ jest.mock<typeof import('browserslist')>('browserslist', () => {
     : jest.requireActual('browserslist');
 });
 
-jest.mock('multiverse#run');
+jest.mock('multiverse+run');
 
 // eslint-disable-next-line jest/require-hook
 let mockShouldReturnBrowserslistMock = false;
@@ -2227,10 +2227,10 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '#private': 2,
-              '#webpack': 3,
-              'multiverse#cli': 1,
-              'multiverse#private': 3,
+              'rootverse+private': 2,
+              'rootverse+webpack': 3,
+              'multiverse+cli': 1,
+              'multiverse+private': 3,
               universe: 1
             },
             dependencyCounts: {
@@ -2269,9 +2269,9 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '#private': 1,
-              '#webpack': 1,
-              'multiverse#private': 2
+              'rootverse+private': 1,
+              'rootverse+webpack': 1,
+              'multiverse+private': 2
             },
             dependencyCounts: {
               '@black-flag/core': 1,
@@ -2313,7 +2313,7 @@ describe('::gatherPackageBuildTargets', () => {
           metadata: {
             imports: {
               aliasCounts: {
-                '#private': 1
+                'rootverse+private': 1
               },
               dependencyCounts: {
                 'another-package': 1,
@@ -2347,7 +2347,7 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '#pkg-1': 1
+              'rootverse+pkg-1': 1
             },
             dependencyCounts: {
               '@black-flag/core': 1
@@ -2420,7 +2420,7 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '#private': 1
+              'rootverse+private': 1
             },
             dependencyCounts: {
               'some-package': 1,
@@ -2450,7 +2450,7 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '#private': 1
+              'rootverse+private': 1
             },
             dependencyCounts: {
               'some-package': 1,
@@ -2585,7 +2585,7 @@ describe('::gatherPackageBuildTargets', () => {
         gatherPackageBuildTargets.sync(
           fixtureToProjectMetadata('badHybridrepoBadSpecifiers').rootPackage
         )
-      ).toThrow(ErrorMessage.SpecifierNotOkSelfReferential('multiverse#pkg-1 lib.ts'));
+      ).toThrow(ErrorMessage.SpecifierNotOkSelfReferential('multiverse+pkg-1:lib.ts'));
     });
   });
 
@@ -2640,10 +2640,10 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '#private': 2,
-              '#webpack': 3,
-              'multiverse#cli': 1,
-              'multiverse#private': 3,
+              'rootverse+private': 2,
+              'rootverse+webpack': 3,
+              'multiverse+cli': 1,
+              'multiverse+private': 3,
               universe: 1
             },
             dependencyCounts: {
@@ -2682,9 +2682,9 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '#private': 1,
-              '#webpack': 1,
-              'multiverse#private': 2
+              'rootverse+private': 1,
+              'rootverse+webpack': 1,
+              'multiverse+private': 2
             },
             dependencyCounts: {
               '@black-flag/core': 1,
@@ -2726,7 +2726,7 @@ describe('::gatherPackageBuildTargets', () => {
           metadata: {
             imports: {
               aliasCounts: {
-                '#private': 1
+                'rootverse+private': 1
               },
               dependencyCounts: {
                 'another-package': 1,
@@ -2760,7 +2760,7 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '#pkg-1': 1
+              'rootverse+pkg-1': 1
             },
             dependencyCounts: {
               '@black-flag/core': 1
@@ -2835,7 +2835,7 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '#private': 1
+              'rootverse+private': 1
             },
             dependencyCounts: {
               'some-package': 1,
@@ -2865,7 +2865,7 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '#private': 1
+              'rootverse+private': 1
             },
             dependencyCounts: {
               'some-package': 1,
@@ -3001,7 +3001,7 @@ describe('::gatherPackageBuildTargets', () => {
           fixtureToProjectMetadata('badHybridrepoBadSpecifiers').rootPackage
         )
       ).rejects.toThrow(
-        ErrorMessage.SpecifierNotOkSelfReferential('multiverse#pkg-1 lib.ts')
+        ErrorMessage.SpecifierNotOkSelfReferential('multiverse+pkg-1:lib.ts')
       );
     });
   });

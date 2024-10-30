@@ -4,31 +4,31 @@ import { dirname, join, resolve as toAbsolutePath } from 'node:path';
 import { type ConfigureExecutionContext } from '@black-flag/core';
 import { defaultVersionTextDescription } from '@black-flag/core/util';
 
-import { type BfeBuilderObject } from 'multiverse#bfe';
+import { type BfeBuilderObject } from 'multiverse+bfe';
 
 import {
   makeStandardConfigureErrorHandlingEpilogue,
   makeStandardConfigureExecutionContext
-} from 'multiverse#cli-utils configure.ts';
+} from 'multiverse+cli-utils:configure.ts';
 
 import {
   type StandardCommonCliArguments,
   type StandardExecutionContext
-} from 'multiverse#cli-utils extensions.ts';
+} from 'multiverse+cli-utils:extensions.ts';
 
-import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse#project-utils';
-import { isAccessible } from 'multiverse#project-utils fs/is-accessible.ts';
-import { createDebugLogger, createGenericLogger } from 'multiverse#rejoinder';
+import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse+project-utils';
+import { isAccessible } from 'multiverse+project-utils:fs/is-accessible.ts';
+import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
 import {
   globalCliName,
   globalDebuggerNamespace,
   globalLoggerNamespace
-} from 'universe constant.ts';
+} from 'universe:constant.ts';
 
 // ? Used in documentation
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { withGlobalBuilder } from 'universe util.ts';
+import type { withGlobalBuilder } from 'universe:util.ts';
 
 const rootGenericLogger = createGenericLogger({ namespace: globalLoggerNamespace });
 const rootDebugLogger = createDebugLogger({ namespace: globalDebuggerNamespace });

@@ -5,12 +5,12 @@ import {
   TAB,
   type ExtendedDebugger,
   type ExtendedLogger
-} from 'multiverse#rejoinder';
+} from 'multiverse+rejoinder';
 
-import { TaskError } from '#cli-utils src/error.ts';
-import { type StandardExecutionContext } from '#cli-utils src/extensions.ts';
-import { LogTag, MAX_LOG_ERROR_ENTRIES } from '#cli-utils src/logging.ts';
-import { toFirstLowerCase, toSentenceCase } from '#cli-utils src/util.ts';
+import { TaskError } from 'rootverse+cli-utils:src/error.ts';
+import { type StandardExecutionContext } from 'rootverse+cli-utils:src/extensions.ts';
+import { LogTag, MAX_LOG_ERROR_ENTRIES } from 'rootverse+cli-utils:src/logging.ts';
+import { toFirstLowerCase, toSentenceCase } from 'rootverse+cli-utils:src/util.ts';
 
 import type {
   ConfigureErrorHandlingEpilogue,
@@ -169,6 +169,7 @@ function pushMessageIfFinal(
 ): boolean {
   // ? If the next message isn't an Error, it will be the final message
   if (subError.cause && !isNativeError(subError.cause)) {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     const finalMessage = String(subError.cause);
     if (finalMessage !== previousMessage) {
       causalStack.push(`${TAB}⮕  ${finalMessage}`);

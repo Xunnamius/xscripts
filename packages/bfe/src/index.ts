@@ -25,13 +25,18 @@ import { type ParserConfigurationOptions } from 'yargs';
 // {@xscripts/notInvalid yargs}
 import makeVanillaYargs from 'yargs/yargs';
 
-import { hardAssert, softAssert } from 'multiverse#cli-utils error.ts';
-import { createDebugLogger } from 'multiverse#rejoinder';
+import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
+import { createDebugLogger } from 'multiverse+rejoinder';
 
-import { globalDebuggerNamespace } from '#bfe src/constant.ts';
+import { globalDebuggerNamespace } from 'rootverse+bfe:src/constant.ts';
 
-import { ErrorMessage, type KeyValueEntry } from '#bfe src/error.ts';
-import { $artificiallyInvoked, $canonical, $exists, $genesis } from '#bfe src/symbols.ts';
+import { ErrorMessage, type KeyValueEntry } from 'rootverse+bfe:src/error.ts';
+import {
+  $artificiallyInvoked,
+  $canonical,
+  $exists,
+  $genesis
+} from 'rootverse+bfe:src/symbols.ts';
 
 import type {
   Entries,

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
-import { debugFactory } from 'multiverse#debug';
-import { runNoRejectOnBadExit } from 'multiverse#run';
+import { debugFactory } from 'multiverse+debug';
+import { runNoRejectOnBadExit } from 'multiverse+run';
 
 import {
   exports as packageExports,
   name as packageName,
   version as packageVersion
-} from '#project-utils package.json';
+} from 'rootverse+project-utils:package.json';
 
 import {
   dummyDirectoriesFixture,
@@ -17,7 +17,7 @@ import {
   npmLinkSelfFixture,
   reconfigureJestGlobalsToSkipTestsInThisFileIfRequested,
   type FixtureOptions
-} from 'testverse setup.ts';
+} from 'testverse:setup.ts';
 
 import type { PackageJson } from 'type-fest';
 

@@ -1,8 +1,11 @@
 import { isAbsolute } from 'node:path';
 
-import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
-import { type RelativePath } from '#project-utils src/fs/common.ts';
-import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
+import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
+import { type RelativePath } from 'rootverse+project-utils:src/fs/common.ts';
+import {
+  type ParametersNoFirst,
+  type SyncVersionOf
+} from 'rootverse+project-utils:src/util.ts';
 
 import type { Promisable } from 'type-fest';
 
@@ -33,7 +36,7 @@ function ensurePathIsRelative_(
     : Promise.resolve().then(throwIfNotRelative);
 
   function throwIfNotRelative() {
-    if (path && !isAbsolute(path)) {
+    if (path && isAbsolute(path)) {
       throw new ProjectError(ErrorMessage.PathIsNotRelative(path));
     }
 

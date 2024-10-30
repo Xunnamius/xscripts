@@ -1,8 +1,8 @@
 import assert from 'node:assert';
 
-import escapeStringRegexp from 'escape-string-regexp~4';
+import escapeStringRegExp from 'escape-string-regexp~4';
 
-import { ErrorMessage } from '#project-utils src/error.ts';
+import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
 
 type PotentialEntryPoint = {
   subpathActual: string;
@@ -704,7 +704,7 @@ function patternToRegExp(pattern: string) {
   return new RegExp(
     `^${pattern
       .split('*')
-      .map((p) => escapeStringRegexp(p))
+      .map((p) => escapeStringRegExp(p))
       .join('(.+)')}$`
   );
 }

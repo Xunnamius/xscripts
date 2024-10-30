@@ -17,15 +17,15 @@ import {
   type SubpathMapping,
   type SubpathMappings,
   type UnsafeFallbackOption
-} from '#project-utils src/resolver.ts';
+} from 'rootverse+project-utils:src/resolver.ts';
 
 import {
   getDummyPackage,
   resolveTargetWithNodeJs,
   resolveTargetWithResolveExports
-} from '#project-utils test/helpers/dummy-pkg.ts';
+} from 'rootverse+project-utils:test/helpers/dummy-pkg.ts';
 
-import { reconfigureJestGlobalsToSkipTestsInThisFileIfRequested } from 'testverse setup.ts';
+import { reconfigureJestGlobalsToSkipTestsInThisFileIfRequested } from 'testverse:setup.ts';
 
 import type { PackageJson } from 'type-fest';
 

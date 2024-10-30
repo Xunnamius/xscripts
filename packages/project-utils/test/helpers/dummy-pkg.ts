@@ -5,9 +5,9 @@ import { isNativeError } from 'node:util/types';
 import { TrialError } from 'named-app-errors';
 import { resolve as resolverLibrary } from 'resolve.exports';
 
-import { runNoRejectOnBadExit } from 'multiverse#run';
+import { runNoRejectOnBadExit } from 'multiverse+run';
 
-import { type AbsolutePath } from '#project-utils src/fs.ts';
+import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
 
 import type { PackageJson } from 'type-fest';
 

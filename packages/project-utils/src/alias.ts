@@ -1,26 +1,61 @@
 import { extname, join as joinPath, relative as toRelativePath } from 'node:path';
 
 import { type Arrayable } from 'type-fest';
+import escapeStringRegExp from 'escape-string-regexp~4';
 
-import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
-import { type RelativePath } from '#project-utils src/fs.ts';
+import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
+import { type RelativePath } from 'rootverse+project-utils:src/fs.ts';
 
 import {
   type ProjectMetadata,
   type WorkspacePackageId
-} from '#project-utils src/index.ts';
+} from 'rootverse+project-utils:src/index.ts';
 
 /**
- * A regex containing illegal alias key characters. **This regular expression
- * must never have the "global" flag.**
+ * A regex containing illegal alias key characters.
+ *
+ * **This regular expression must never have the "global" flag**, meaning it is
+ * safe to use with `.test()`.
  */
 export const invalidAliasRegExp = /["$*/:<>?[\\\]{|}]+/i;
 
 /**
- * A regex containing illegal alias value characters. **This regular expression
- * must never have the "global" flag.**
+ * A regex containing illegal alias value characters.
+ *
+ * **This regular expression must never have the "global" flag**, meaning it is
+ * safe to use with `.test()`.
  */
 export const invalidPathRegExp = /["*:<>?[\]|]+/i;
+
+/**
+ * A regex that matches any string that looks like a relative path without also looking like a bare specifier.
+ *
+ * **This regular expression must never have the "global" flag**, meaning it is
+ * safe to use with `.test()`.
+ */
+export const isRelativePathRegExp = /^\.\.?(\/|$)/;
+
+/**
+ * ```text
+ *                          v
+ * URI = scheme+sub-scheme ":" ["//" authority] path ["?" query] ["#" fragment]
+ *                          ^
+ * ```
+ *
+ * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Syntax
+ */
+export const uriSchemeDelimiter = ':';
+
+/**
+ * ```text
+ *             v
+ * URI = scheme+sub-scheme ":" ["//" authority] path ["?" query] ["#" fragment]
+ *             ^
+ * ```
+ *
+ * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Syntax
+ */
+export const uriSchemeSubDelimiter = '+';
 
 /**
  * A well-known import alias group, such as "universe" or "multiverse".
@@ -39,8 +74,8 @@ export enum WellKnownImportAlias {
    * This alias always refers to a sub-root package's `./src` directory.
    *
    * Examples of matching aliases:
-   * - `"multiverse#package-id"`              (package ./src/index.js)
-   * - `"multiverse#package-id some/path.js"` (package ./src/some/path.js)
+   * - `"multiverse+package-id"`              (package ./src/index.js)
+   * - `"multiverse+package-id:some/path.js"` (package ./src/some/path.js)
    */
   Multiverse = 'multiverse',
   /**
@@ -48,8 +83,8 @@ export enum WellKnownImportAlias {
    * directory.
    *
    * Examples of matching aliases:
-   * - `"testverse some/path.ts"`             (root ./test/some/path.ts)
-   * - `"testverse#package-id some/path.ts"`  (package ./test/some/path.ts)
+   * - `"testverse:some/path.ts"`             (root ./test/some/path.ts)
+   * - `"testverse+package-id:some/path.ts"`  (package ./test/some/path.ts)
    */
   Testverse = 'testverse',
   /**
@@ -63,8 +98,8 @@ export enum WellKnownImportAlias {
    * This alias always refers to some file relative to the project root.
    *
    * Examples of matching aliases:
-   * - `"# some/path.js"`                     (root ./some/path.js)
-   * - `"#package-id some/path.ts"`           (package ./some/path.ts)
+   * - `"rootverse:some/path.js"`             (root ./some/path.js)
+   * - `"rootverse+package-id some/path.ts"`  (package ./some/path.ts)
    */
   Rootverse = 'rootverse'
 }
@@ -105,15 +140,16 @@ export type RawAlias = {
    */
   group: WellKnownImportAlias;
   /**
-   * A regular expression representing this alias that can be matched against
-   * specifier strings.
+   * A regular expression derived from `alias` that can be matched against
+   * specifier strings. Any RegExp control characters present in `alias` (e.g.
+   * "+", "*", "?") will be escaped.
    *
    * @see {@link rawAliasToRegExp}
    */
   regExp: RegExp;
   /**
    * If this alias contains a reference to a package's id (e.g.
-   * "universe#package-id"), `packageId` must be defined.
+   * "universe+package-id"), `packageId` must be defined.
    */
   packageId: WorkspacePackageId | undefined;
 };
@@ -188,10 +224,11 @@ export function makeRawAliasMapping(
     Pick<RawAlias, 'alias' | 'group' | 'packageId'>,
   rawPath_: Partial<Omit<RawPath, 'path'>> & Pick<RawPath, 'path'>
 ): RawAliasMapping {
-  const rawAlias = { prefix: 'exact', suffix: 'open', ...rawAlias_ } satisfies Omit<
-    RawAlias,
-    'regExp'
-  > as RawAlias;
+  const rawAlias = {
+    prefix: 'exact',
+    suffix: 'open',
+    ...rawAlias_
+  } satisfies Omit<RawAlias, 'regExp'> as RawAlias;
 
   rawAlias.regExp = rawAliasToRegExp(rawAlias);
 
@@ -219,8 +256,7 @@ export function makeRawAliasMapping(
     rawPath.path.startsWith('\\') ||
     rawPath.path.endsWith('/') ||
     rawPath.path.endsWith('\\') ||
-    rawPath.path.startsWith('./') ||
-    rawPath.path.startsWith('.\\')
+    isRelativePathRegExp.test(rawPath.path)
   ) {
     throw new ProjectError(
       ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix(rawAlias.alias)
@@ -243,14 +279,14 @@ export function makeRawAliasMapping(
  *
  * Examples of supported aliases:
  * - `"universe"`                           (root ./index.ts)
- * - `"universe some/path/index.ts"`        (root ./src/some/path/index.ts)
- * - `"multiverse#package-id"`              (package ./src/index.js)
- * - `"multiverse#package-id some/path.js"` (package ./src/some/path.js)
- * - `"testverse some/path.ts"`             (root ./test/some/path.ts)
- * - `"testverse#package-id some/path.ts"`  (package ./test/some/path.ts)
- * - `"typeverse global.ts"`                (root ./types/global.ts)
- * - `"# some/path.js"`                     (root ./some/path.js)
- * - `"#package-id some/path.ts"`           (package ./some/path.ts)
+ * - `"universe:some/path/index.ts"`        (root ./src/some/path/index.ts)
+ * - `"multiverse+package-id"`              (package ./src/index.js)
+ * - `"multiverse+package-id:some/path.js"` (package ./src/some/path.js)
+ * - `"testverse:some/path.ts"`             (root ./test/some/path.ts)
+ * - `"testverse+package-id:some/path.ts"`  (package ./test/some/path.ts)
+ * - `"typeverse:global.ts"`                (root ./types/global.ts)
+ * - `"rootverse:some/path.js"`             (root ./some/path.js)
+ * - `"rootverse+package-id:some/path.ts"`  (package ./some/path.ts)
  *
  * @see https://github.com/Xunnamius/xscripts/wiki/Standard-Aliases
  */
@@ -259,7 +295,8 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
   // TODO: via JS need their own aliases (assetverse) (perhaps this is a concern
   // TODO: best handled at the xscripts project init/renovate level?)
 
-  // * Universe mappings only support root-level aliases (i.e. without "#")
+  // * Universe mappings only support root-level aliases (i.e. without
+  // * uriSchemeDelimiter)
   const universeAliases: RawAliasMapping[] = [
     makeRawAliasMapping(
       {
@@ -281,13 +318,15 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
     )
   ];
 
-  // * Multiverse mappings only support package-level aliases (i.e. with "#")
+  // * Multiverse mappings only support package-level aliases (i.e. with
+  // * uriSchemeDelimiter)
   const multiverseAliases: RawAliasMapping[] = [];
 
   // * Testverse mappings support both root- and package- level aliases
   const testverseAliases: RawAliasMapping[] = [];
 
-  // * Typeverse mappings only support root-level aliases (i.e. without "#")
+  // * Typeverse mappings only support root-level aliases (i.e. without
+  // * uriSchemeDelimiter)
   const typeverseAliases: RawAliasMapping[] = [
     makeRawAliasMapping(
       {
@@ -317,7 +356,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
       multiverseAliases.push(
         makeRawAliasMapping(
           {
-            alias: `${WellKnownImportAlias.Multiverse}#${id}`,
+            alias: `${WellKnownImportAlias.Multiverse}${uriSchemeSubDelimiter}${id}`,
             group: WellKnownImportAlias.Multiverse,
             packageId: id
           },
@@ -328,7 +367,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
       testverseAliases.push(
         makeRawAliasMapping(
           {
-            alias: `${WellKnownImportAlias.Testverse}#${id}`,
+            alias: `${WellKnownImportAlias.Testverse}${uriSchemeSubDelimiter}${id}`,
             group: WellKnownImportAlias.Testverse,
             packageId: id
           },
@@ -338,21 +377,25 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
 
       rootverseAliases.push(
         makeRawAliasMapping(
-          { alias: `#${id}`, group: WellKnownImportAlias.Rootverse, packageId: id },
+          {
+            alias: `${WellKnownImportAlias.Rootverse}${uriSchemeSubDelimiter}${id}`,
+            group: WellKnownImportAlias.Rootverse,
+            packageId: id
+          },
           { path: relativeRoot }
         )
       );
     });
 
-    // ! Order matters here due to string matching. Hence, less-specific goes !
-    // ahead of more-specific.
+    // ! Order matters here due to string matching. Hence, less-specific goes
+    // ! ahead of more-specific.
     projectPackagesReversed.forEach(function ({ id, root: packageRoot }) {
       const relativeRoot = toRelativePath(projectMetadata.rootPackage.root, packageRoot);
 
       multiverseAliases.push(
         makeRawAliasMapping(
           {
-            alias: `${WellKnownImportAlias.Multiverse}#${id}`,
+            alias: `${WellKnownImportAlias.Multiverse}${uriSchemeSubDelimiter}${id}`,
             suffix: 'exact',
             group: WellKnownImportAlias.Multiverse,
             packageId: id
@@ -376,7 +419,11 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
 
   rootverseAliases.push(
     makeRawAliasMapping(
-      { alias: '#', group: WellKnownImportAlias.Rootverse, packageId: undefined },
+      {
+        alias: 'rootverse',
+        group: WellKnownImportAlias.Rootverse,
+        packageId: undefined
+      },
       { path: '' }
     )
   );
@@ -391,20 +438,26 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
 }
 
 /**
- * Returns an object that can be plugged into "module-resolver" Babel plugin
- * configurations at `alias`.
+ * Returns an object that can be plugged into
+ * "babel-plugin-transform-rewrite-imports" Babel plugin configurations at
+ * `replaceExtensions`.
  *
- * See also: https://www.npmjs.com/package/babel-plugin-module-resolver
+ * See also:
+ * https://www.npmjs.com/package/babel-plugin-transform-rewrite-imports
  */
 export function deriveAliasesForBabel(rawAliasMappings: readonly RawAliasMapping[]) {
   return Object.fromEntries(
     rawAliasMappings.map(([rawAlias, rawPath]) => {
       const aliasPrefix = rawAlias.prefix === 'exact' ? '^' : '';
       const aliasSuffix =
-        rawAlias.suffix === 'exact' ? '$' : rawAlias.suffix === 'open' ? ' (.+)$' : '';
+        rawAlias.suffix === 'exact'
+          ? '$'
+          : rawAlias.suffix === 'open'
+            ? `${uriSchemeDelimiter}(.+)$`
+            : '';
+
       const pathSuffix =
-        (rawPath.suffix === 'open' ? String.raw`/\1` : '') +
-        (rawPath.extensionless ? '' : '.js');
+        (rawPath.suffix === 'open' ? '/$1' : '') + (rawPath.extensionless ? '' : '.js');
 
       return [
         aliasPrefix + rawAlias.alias + aliasSuffix,
@@ -422,7 +475,7 @@ export function deriveAliasesForBabel(rawAliasMappings: readonly RawAliasMapping
  */
 export function deriveAliasesForEslint(rawAliasMappings: readonly RawAliasMapping[]) {
   return rawAliasMappings.map(([rawAlias, rawPath]) => {
-    const aliasSuffix = rawAlias.suffix === 'open' ? ' *' : '';
+    const aliasSuffix = rawAlias.suffix === 'open' ? `${uriSchemeDelimiter}*` : '';
     const pathSuffix =
       (rawPath.suffix === 'open' ? '/*' : '') + (rawPath.extensionless ? '' : '.ts');
 
@@ -445,7 +498,7 @@ export function deriveAliasesForWebpack(
 ) {
   return Object.fromEntries(
     rawAliasMappings.map(([rawAlias, rawPath]) => {
-      const aliasSuffix = rawAlias.suffix === 'open' ? ' ' : '';
+      const aliasSuffix = rawAlias.suffix === 'open' ? uriSchemeDelimiter : '';
       const pathSuffix =
         (rawPath.suffix === 'open' ? '/' : '') + (rawPath.extensionless ? '' : '.ts');
 
@@ -471,7 +524,7 @@ export function deriveAliasesForNextJs(
 ) {
   return Object.fromEntries(
     rawAliasMappings.map(([rawAlias, rawPath]) => {
-      const aliasSuffix = rawAlias.suffix === 'open' ? ' ' : '';
+      const aliasSuffix = rawAlias.suffix === 'open' ? uriSchemeDelimiter : '';
       const pathSuffix =
         (rawPath.suffix === 'open' ? '/' : '') + (rawPath.extensionless ? '' : '.ts');
 
@@ -495,7 +548,12 @@ export function deriveAliasesForJest(rawAliasMappings: readonly RawAliasMapping[
     rawAliasMappings.map(([rawAlias, rawPath]) => {
       const aliasPrefix = rawAlias.prefix === 'exact' ? '^' : '';
       const aliasSuffix =
-        rawAlias.suffix === 'exact' ? '$' : rawAlias.suffix === 'open' ? ' (.+)$' : '';
+        rawAlias.suffix === 'exact'
+          ? '$'
+          : rawAlias.suffix === 'open'
+            ? `${uriSchemeDelimiter}(.+)$`
+            : '';
+
       const pathSuffix =
         (rawPath.suffix === 'open' ? '/$1' : '') + (rawPath.extensionless ? '' : '.ts');
 
@@ -516,7 +574,7 @@ export function deriveAliasesForJest(rawAliasMappings: readonly RawAliasMapping[
 export function deriveAliasesForTypeScript(rawAliasMappings: readonly RawAliasMapping[]) {
   return Object.fromEntries(
     rawAliasMappings.map(([rawAlias, rawPath]) => {
-      const aliasSuffix = rawAlias.suffix === 'open' ? ' *' : '';
+      const aliasSuffix = rawAlias.suffix === 'open' ? `${uriSchemeDelimiter}*` : '';
       const pathSuffix =
         (rawPath.suffix === 'open' ? '*' : '') + (rawPath.extensionless ? '' : '.ts');
 
@@ -651,12 +709,7 @@ export function ensureRawSpecifierOk(
   }
 
   // ? Fail if it begins with ./ or ../ or / or is . or ..
-  if (
-    specifier.startsWith('./') ||
-    specifier.startsWith('../') ||
-    specifier.startsWith('/') ||
-    ['.', '..'].includes(specifier)
-  ) {
+  if (specifier.startsWith('/') || isRelativePathRegExp.test(specifier)) {
     throw new ProjectError(
       ErrorMessage.SpecifierNotOkRelativeNotRootverse(specifier, path)
     );
@@ -695,7 +748,7 @@ export function ensureRawSpecifierOk(
   }
 
   //? Fail if the specifier === "index.extensionToAppend"
-  if (specifier.endsWith(` index${extensionToAppend}`)) {
+  if (specifier.endsWith(`${uriSchemeDelimiter}index${extensionToAppend}`)) {
     throw new ProjectError(ErrorMessage.SpecifierNotOkUnnecessaryIndex(specifier, path));
   }
 
@@ -711,7 +764,8 @@ export function ensureRawSpecifierOk(
 
 /**
  * Takes a {@link RawAlias} partial and returns a regular expression that can be
- * matched against specifier strings.
+ * matched against specifier strings. Any RegExp control characters in `alias`
+ * will be escaped.
  */
 export function rawAliasToRegExp({
   prefix,
@@ -719,10 +773,17 @@ export function rawAliasToRegExp({
   suffix
 }: Omit<RawAlias, 'regExp'>): RegExp {
   return new RegExp(
-    `${prefix === 'exact' ? '^' : ''}${alias}${suffix === 'exact' ? '$' : suffix === 'open' ? ' (.+)$' : ''}`
+    `${prefix === 'exact' ? '^' : ''}${escapeStringRegExp(alias)}${suffix === 'exact' ? '$' : suffix === 'open' ? `${uriSchemeDelimiter}(.+)$` : ''}`
   );
 }
 
 function isRawAliasMapping(o: unknown): o is RawAliasMapping {
-  return Array.isArray(o) && o[0] && o[1] && !Array.isArray(o[0]) && !Array.isArray(o[1]);
+  return (
+    Array.isArray(o) &&
+    o.length === 2 &&
+    o[0] &&
+    o[1] &&
+    !Array.isArray(o[0]) &&
+    !Array.isArray(o[1])
+  );
 }

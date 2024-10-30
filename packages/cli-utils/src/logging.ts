@@ -1,5 +1,5 @@
 // ? Used in a comment for LogTag
-import { type ExtendedLogger } from 'multiverse#rejoinder';
+import { type ExtendedLogger } from 'multiverse+rejoinder';
 
 /**
  * Hard-coded maximum reporting depth of the causal stack when fatal errors

@@ -2,7 +2,7 @@ import { isNativeError } from 'node:util/types';
 
 import { makeNamedError } from 'named-app-errors';
 
-import { type WorkspacePackageName } from '#project-utils src/analyze/common.ts';
+import { type WorkspacePackageName } from 'rootverse+project-utils:src/analyze/common.ts';
 
 // TODO: replace a lot of all that follows with the official package(s),
 // TODO: including the symbol use below. Symbols and stuff need to be auto-generated.
@@ -324,7 +324,7 @@ export const ErrorMessage = {
     return `encountered illegal alias "${key}": alias value (path) cannot include any of the following characters: ${toCharacters(invalids)}`;
   },
   IllegalAliasValueInvalidSeparatorAdfix(key: string) {
-    return `encountered illegal alias "${key}": alias value (path) cannot begin or end with the "/" or "\\" character, or begin with "./"`;
+    return `encountered illegal alias "${key}": alias value (path) cannot begin or end with the "/" or "\\" characters, or resemble a relative specifier`;
   },
   IllegalAliasBadSuffix(key: string) {
     return `encountered illegal alias "${key}": when the alias value (path) is configured with \`{ suffix: 'open' }\`, the alias key must also be configured with \`{ suffix: 'open' }\``;

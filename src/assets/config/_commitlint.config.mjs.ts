@@ -1,8 +1,8 @@
-import { wellKnownCommitTypes } from 'universe assets/config/_conventional.config.js.ts';
+import { wellKnownCommitTypes } from 'universe:assets/config/_conventional.config.js.ts';
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
 
-import { globalDebuggerNamespace } from 'universe constant.ts';
+import { globalDebuggerNamespace } from 'universe:constant.ts';
 
 import type { EmptyObject } from 'type-fest';
 

@@ -3,28 +3,29 @@ import { access as accessAsync, readFile as readFileAsync } from 'node:fs/promis
 
 import { toss } from 'toss-expression';
 
-import { runNoRejectOnBadExit } from 'multiverse#run';
+import { runNoRejectOnBadExit } from 'multiverse+run';
 
-import { ErrorMessage } from '#project-utils src/error.ts';
+import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
 
 import {
   deriveVirtualGitignoreLines,
   deriveVirtualPrettierignoreLines,
   ensurePathIsAbsolute,
+  ensurePathIsRelative,
   isAccessible,
   readJson,
   readJsonc,
   readPackageJsonAtRoot,
   type AbsolutePath
-} from '#project-utils src/fs.ts';
+} from 'rootverse+project-utils:src/fs.ts';
 
-import { fixtures } from '#project-utils test/helpers/dummy-repo.ts';
+import { fixtures } from 'rootverse+project-utils:test/helpers/dummy-repo.ts';
 
-import { asMockedFunction } from 'testverse setup.ts';
+import { asMockedFunction } from 'testverse:setup.ts';
 
 jest.mock('node:fs');
 jest.mock('node:fs/promises');
-jest.mock('multiverse#run');
+jest.mock('multiverse+run');
 
 const mockedReadFileSync = asMockedFunction(readFileSync);
 const mockedReadFileAsync = asMockedFunction(readFileAsync);
@@ -55,6 +56,36 @@ describe('::ensurePathIsAbsolute', () => {
 
       await expect(ensurePathIsAbsolute({ path: '/absolute' })).resolves.toBe(
         '/absolute'
+      );
+    });
+  });
+});
+
+describe('::ensurePathIsRelative', () => {
+  describe('<synchronous>', () => {
+    it('throws iff path is absolute', async () => {
+      expect.hasAssertions();
+
+      expect(() => ensurePathIsRelative.sync({ path: '/absolute/path' })).toThrow(
+        ErrorMessage.PathIsNotRelative('/absolute/path')
+      );
+
+      expect(ensurePathIsRelative.sync({ path: '../not/absolute' })).toBe(
+        '../not/absolute'
+      );
+    });
+  });
+
+  describe('<asynchronous>', () => {
+    it('returns a rejected promise iff path is absolute', async () => {
+      expect.hasAssertions();
+
+      await expect(ensurePathIsRelative({ path: '/absolute/path' })).rejects.toThrow(
+        ErrorMessage.PathIsNotRelative('/absolute/path')
+      );
+
+      await expect(ensurePathIsRelative({ path: '../not/absolute' })).resolves.toBe(
+        '../not/absolute'
       );
     });
   });

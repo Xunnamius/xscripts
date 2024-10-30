@@ -8,20 +8,20 @@ import { CliError, FrameworkExitCode } from '@black-flag/core';
 import {
   withStandardBuilder,
   withStandardUsage
-} from 'multiverse#cli-utils extensions.ts';
+} from 'multiverse+cli-utils:extensions.ts';
 
-import { ProjectError } from 'multiverse#project-utils error.ts';
-import { isAccessible, type AbsolutePath } from 'multiverse#project-utils fs.ts';
-import { createDebugLogger } from 'multiverse#rejoinder';
+import { ProjectError } from 'multiverse+project-utils:error.ts';
+import { isAccessible, type AbsolutePath } from 'multiverse+project-utils:fs.ts';
+import { createDebugLogger } from 'multiverse+rejoinder';
 
 import {
   globalCliArguments,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { globalDebuggerNamespace } from 'universe constant.ts';
-import { ErrorMessage } from 'universe error.ts';
+import { globalDebuggerNamespace } from 'universe:constant.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 /**
  * A version of {@link withStandardBuilder} that expects `CustomCliArguments` to

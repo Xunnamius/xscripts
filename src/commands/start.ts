@@ -1,33 +1,33 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
-import { logStartTime, LogTag } from 'multiverse#cli-utils logging.ts';
+import { type AsStrictExecutionContext } from 'multiverse+bfe';
+import { logStartTime, LogTag } from 'multiverse+cli-utils:logging.ts';
 
-import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
   gatherProjectFiles,
   isWorkspacePackage,
   ProjectAttribute,
   WorkspaceAttribute
-} from 'multiverse#project-utils';
+} from 'multiverse+project-utils';
 
-import { runWithInheritedIo } from 'multiverse#run';
+import { runWithInheritedIo } from 'multiverse+run';
 
 import {
   DefaultGlobalScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { ErrorMessage } from 'universe error.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 import {
   hasExitCode,
   runGlobalPreChecks,
   withGlobalBuilder,
   withGlobalUsage
-} from 'universe util.ts';
+} from 'universe:util.ts';
 
 export type CustomCliArguments = GlobalCliArguments;
 

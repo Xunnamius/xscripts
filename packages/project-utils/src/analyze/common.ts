@@ -1,7 +1,10 @@
-import { createDebugLogger } from 'multiverse#rejoinder';
+import { createDebugLogger } from 'multiverse+rejoinder';
 
-import { globalDebuggerNamespace } from '#project-utils src/constant.ts';
-import { type AbsolutePath, type RelativePath } from '#project-utils src/fs/common.ts';
+import { globalDebuggerNamespace } from 'rootverse+project-utils:src/constant.ts';
+import {
+  type AbsolutePath,
+  type RelativePath
+} from 'rootverse+project-utils:src/fs/common.ts';
 
 // @ts-expect-error: used in documentation
 import type {
@@ -11,7 +14,7 @@ import type {
   // ? Used in documentation eslint-disable-next-line
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   webpackConfigProjectBase
-} from '#project-utils src/fs/well-known-constants.ts';
+} from 'rootverse+project-utils:src/fs/well-known-constants.ts';
 
 import type { PackageJson } from 'type-fest';
 

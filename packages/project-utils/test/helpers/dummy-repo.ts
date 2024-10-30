@@ -1,14 +1,14 @@
 import { basename, resolve } from 'node:path';
 
-import { type Package } from '#project-utils src/analyze/common.ts';
-import * as fs from '#project-utils src/fs.ts';
+import { type Package } from 'rootverse+project-utils:src/analyze/common.ts';
+import * as fs from 'rootverse+project-utils:src/fs.ts';
 
 import {
   ProjectAttribute,
   type ProjectMetadata,
   type RootPackage,
   type WorkspacePackage
-} from '#project-utils src/index.ts';
+} from 'rootverse+project-utils:src/index.ts';
 
 import type { PackageJson } from 'type-fest';
 
@@ -38,8 +38,8 @@ export function patchReadPackageJsonAtRoot(
   }
 ) {
   const actualReadPackageJsonAtRoot = jest.requireActual<
-    typeof import('#project-utils src/fs.ts')
-  >('#project-utils src/fs.ts').readPackageJsonAtRoot;
+    typeof import('rootverse+project-utils:src/fs.ts')
+  >('rootverse+project-utils:src/fs.ts').readPackageJsonAtRoot;
 
   jest.spyOn(fs, 'readPackageJsonAtRoot').mockImplementation(async ({ root }) => {
     const packageJson = await actualReadPackageJsonAtRoot({ root });

@@ -4,10 +4,13 @@ import { readFile as readFileAsync } from 'node:fs/promises';
 
 import * as JSONC from 'jsonc-parser';
 
-import { ErrorMessage, ProjectError } from '#project-utils src/error.ts';
-import { ensurePathIsAbsolute } from '#project-utils src/fs/ensure-path-is-absolute.ts';
-import { type AbsolutePath } from '#project-utils src/fs.ts';
-import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
+import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
+import { ensurePathIsAbsolute } from 'rootverse+project-utils:src/fs/ensure-path-is-absolute.ts';
+import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
+import {
+  type ParametersNoFirst,
+  type SyncVersionOf
+} from 'rootverse+project-utils:src/util.ts';
 
 import type { JsonValue, Promisable } from 'type-fest';
 

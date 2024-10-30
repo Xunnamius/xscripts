@@ -1,22 +1,22 @@
 import { type ChildConfiguration } from '@black-flag/core';
 
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { type AsStrictExecutionContext } from 'multiverse+bfe';
 
 import {
   logStartTime,
   LogTag,
   standardSuccessMessage
-} from 'multiverse#cli-utils logging.ts';
+} from 'multiverse+cli-utils:logging.ts';
 
-import { scriptBasename } from 'multiverse#cli-utils util.ts';
+import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
   UnlimitedGlobalScope as ProjectInfoScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe util.ts';
+import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe:util.ts';
 
 /**
  * @see {@link ProjectInfoScope}

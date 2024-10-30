@@ -1,4 +1,4 @@
-import { ErrorMessage as UpstreamErrorMessage } from 'multiverse#project-utils error.ts';
+import { ErrorMessage as UpstreamErrorMessage } from 'multiverse+project-utils:error.ts';
 
 /**
  * A collection of possible error and warning messages.

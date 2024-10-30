@@ -1,4 +1,4 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe assets.ts';
+import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
 
 import type { EmptyObject } from 'type-fest';
 

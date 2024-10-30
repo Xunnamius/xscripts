@@ -10,31 +10,34 @@ import {
   mapRawSpecifierToPath,
   mapRawSpecifierToRawAliasMapping,
   WellKnownImportAlias
-} from '#project-utils src/alias.ts';
+} from 'rootverse+project-utils:src/alias.ts';
 
 import {
   _internalPackageBuildTargetsCache,
   cacheDebug,
   deriveCacheKeyFromPackageAndData
-} from '#project-utils src/analyze/cache.ts';
+} from 'rootverse+project-utils:src/analyze/cache.ts';
 
 import {
   debug as debug_,
   isWorkspacePackage,
   type Package,
   type PackageBuildTargets
-} from '#project-utils src/analyze/common.ts';
+} from 'rootverse+project-utils:src/analyze/common.ts';
 
 import {
   gatherImportEntriesFromFiles,
   type ImportSpecifiersEntry
-} from '#project-utils src/analyze/gather-import-entries-from-files.ts';
+} from 'rootverse+project-utils:src/analyze/gather-import-entries-from-files.ts';
 
-import { gatherPackageFiles } from '#project-utils src/analyze/gather-package-files.ts';
-import { pathToPackage } from '#project-utils src/analyze/path-to-package.ts';
-import { ErrorMessage } from '#project-utils src/error.ts';
-import { type AbsolutePath, type RelativePath } from '#project-utils src/fs.ts';
-import { type ParametersNoFirst, type SyncVersionOf } from '#project-utils src/util.ts';
+import { gatherPackageFiles } from 'rootverse+project-utils:src/analyze/gather-package-files.ts';
+import { pathToPackage } from 'rootverse+project-utils:src/analyze/path-to-package.ts';
+import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
+import { type AbsolutePath, type RelativePath } from 'rootverse+project-utils:src/fs.ts';
+import {
+  type ParametersNoFirst,
+  type SyncVersionOf
+} from 'rootverse+project-utils:src/util.ts';
 
 import type { Promisable } from 'type-fest';
 

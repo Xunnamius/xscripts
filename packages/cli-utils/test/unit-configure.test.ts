@@ -3,16 +3,16 @@ import { type Arguments } from '@black-flag/core';
 import { type ExecutionContext } from '@black-flag/core/util';
 import { ListrErrorTypes } from 'listr2';
 
-import { createDebugLogger, createGenericLogger } from 'multiverse#rejoinder';
+import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
 import {
   makeStandardConfigureErrorHandlingEpilogue,
   makeStandardConfigureExecutionContext
-} from '#cli-utils src/configure.ts';
+} from 'rootverse+cli-utils:src/configure.ts';
 
-import { type StandardExecutionContext } from '#cli-utils src/extensions.ts';
+import { type StandardExecutionContext } from 'rootverse+cli-utils:src/extensions.ts';
 
-import { withMockedOutput } from 'testverse setup.ts';
+import { withMockedOutput } from 'testverse:setup.ts';
 
 import type { PartialDeep } from 'type-fest';
 
@@ -75,15 +75,15 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         await makeStandardConfigureErrorHandlingEpilogue()(meta, argv, context);
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')],
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ Dummy task error')]
         ]);
       });
     }
@@ -95,12 +95,12 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         await makeStandardConfigureErrorHandlingEpilogue()(meta, argv, context);
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')]
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')]
         ]);
       });
     }
@@ -120,15 +120,15 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
 
         expect(errorSpy.mock.calls).toStrictEqual([
           [''],
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')],
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ Dummy task error')]
         ]);
       });
     }
@@ -144,12 +144,12 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
 
         expect(errorSpy.mock.calls).toStrictEqual([
           [''],
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')]
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')]
         ]);
       });
     }
@@ -200,7 +200,7 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         await makeStandardConfigureErrorHandlingEpilogue()(meta, argv, context);
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')]
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')]
         ]);
       });
     }
@@ -215,7 +215,7 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         await makeStandardConfigureErrorHandlingEpilogue()(meta, argv, context);
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')]
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')]
         ]);
       });
     }
@@ -237,12 +237,12 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         await makeStandardConfigureErrorHandlingEpilogue()(meta, argv, context);
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')]
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')]
         ]);
       });
     }
@@ -257,12 +257,12 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         await makeStandardConfigureErrorHandlingEpilogue()(meta, argv, context);
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')]
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')]
         ]);
       });
     }
@@ -312,14 +312,14 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: 1')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: 1')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')],
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ Dummy task error')]
         ]);
       });
     }
@@ -335,11 +335,11 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: 1')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: 1')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')]
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')]
         ]);
       });
     }
@@ -370,17 +370,17 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  3')],
-          [expect.stringContaining(' test:<error>     ⮕  final')],
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  3')],
+          [expect.stringContaining(' test::<error>     ⮕  final')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ Dummy task error')]
         ]);
       });
     }
@@ -396,10 +396,10 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ Dummy task error')]
         ]);
       });
     }
@@ -427,15 +427,15 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: 1')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: 1')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')],
-          [expect.stringContaining(' test:<error>     ⮕  something awful')],
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')],
+          [expect.stringContaining(' test::<error>     ⮕  something awful')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ Dummy task error')]
         ]);
       });
     }
@@ -459,12 +459,12 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: 1')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: 1')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')],
-          [expect.stringContaining(' test:<error>     ⮕  something awful')]
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')],
+          [expect.stringContaining(' test::<error>     ⮕  something awful')]
         ]);
       });
     }
@@ -488,10 +488,10 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: 1')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: 1')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ Dummy task error')]
         ]);
       });
     }
@@ -511,7 +511,7 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: 1')]
+          [expect.stringContaining(' test::<error> ❌ Execution failed: 1')]
         ]);
       });
     }
@@ -532,10 +532,10 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ Dummy task error')]
         ]);
       });
     }
@@ -554,7 +554,7 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')]
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')]
         ]);
       });
     }
@@ -587,17 +587,17 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  3')],
-          [expect.stringContaining(' test:<error>     ⮕  final')],
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  3')],
+          [expect.stringContaining(' test::<error>     ⮕  final')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ Dummy task error')]
         ]);
       });
     }
@@ -646,23 +646,25 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')],
-          [expect.stringContaining(' test:<error>     ⮕  4')],
-          [expect.stringContaining(' test:<error>     ⮕  5')],
-          [expect.stringContaining(' test:<error>     ⮕  6')],
-          [expect.stringContaining(' test:<error>     ⮕  7')],
-          [expect.stringContaining(' test:<error>     ⮕  8')],
-          [expect.stringContaining(' test:<error>     ⮕  9')],
-          [expect.stringContaining(' test:<error>     ⮕  10')],
-          [expect.stringContaining(' test:<error> (remaining entries have been hidden)')],
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')],
+          [expect.stringContaining(' test::<error>     ⮕  4')],
+          [expect.stringContaining(' test::<error>     ⮕  5')],
+          [expect.stringContaining(' test::<error>     ⮕  6')],
+          [expect.stringContaining(' test::<error>     ⮕  7')],
+          [expect.stringContaining(' test::<error>     ⮕  8')],
+          [expect.stringContaining(' test::<error>     ⮕  9')],
+          [expect.stringContaining(' test::<error>     ⮕  10')],
+          [
+            expect.stringContaining(' test::<error> (remaining entries have been hidden)')
+          ],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ Dummy task error')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ Dummy task error')]
         ]);
       });
     }
@@ -709,20 +711,20 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         );
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Causal stack:')],
-          [expect.stringContaining(' test:<error>     ⮕  1')],
-          [expect.stringContaining(' test:<error>     ⮕  2')],
-          [expect.stringContaining(' test:<error>     ⮕  3')],
-          [expect.stringContaining(' test:<error>     ⮕  4')],
-          [expect.stringContaining(' test:<error>     ⮕  5')],
-          [expect.stringContaining(' test:<error>     ⮕  6')],
-          [expect.stringContaining(' test:<error>     ⮕  7')],
-          [expect.stringContaining(' test:<error>     ⮕  8')],
-          [expect.stringContaining(' test:<error>     ⮕  9')],
-          [expect.stringContaining(' test:<error>     ⮕  10')],
-          [expect.stringContaining(' test:<error> (remaining entries have been hidden)')]
+          [expect.stringContaining(' test::<error> ❌ Causal stack:')],
+          [expect.stringContaining(' test::<error>     ⮕  1')],
+          [expect.stringContaining(' test::<error>     ⮕  2')],
+          [expect.stringContaining(' test::<error>     ⮕  3')],
+          [expect.stringContaining(' test::<error>     ⮕  4')],
+          [expect.stringContaining(' test::<error>     ⮕  5')],
+          [expect.stringContaining(' test::<error>     ⮕  6')],
+          [expect.stringContaining(' test::<error>     ⮕  7')],
+          [expect.stringContaining(' test::<error>     ⮕  8')],
+          [expect.stringContaining(' test::<error>     ⮕  9')],
+          [expect.stringContaining(' test::<error>     ⮕  10')],
+          [expect.stringContaining(' test::<error> (remaining entries have been hidden)')]
         ]);
       });
     }
@@ -745,12 +747,12 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
         await makeStandardConfigureErrorHandlingEpilogue()(meta, argv, context);
 
         expect(errorSpy.mock.calls).toStrictEqual([
-          [expect.stringContaining(' test:<error> ❌ Execution failed: message')],
+          [expect.stringContaining(' test::<error> ❌ Execution failed: message')],
           [''],
-          [expect.stringContaining(' test:<error> ❌ Fatal task errors:')],
-          [expect.stringContaining(' test:<error>     ❗ 1')],
-          [expect.stringContaining(' test:<error>     ❗ 2')],
-          [expect.stringContaining(' test:<error>     ❗ 2')]
+          [expect.stringContaining(' test::<error> ❌ Fatal task errors:')],
+          [expect.stringContaining(' test::<error>     ❗ 1')],
+          [expect.stringContaining(' test::<error>     ❗ 2')],
+          [expect.stringContaining(' test::<error>     ❗ 2')]
         ]);
       });
     }

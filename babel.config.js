@@ -59,40 +59,40 @@ const dTsExtensionsToReplaceRegExp = new RegExp(
 // *   - next.config.mjs    (ESM)
 // *   - webpack.config.mjs (ESM)
 const wellKnownAliases = {
-  '^universe (.+)$': String.raw`./src/\1`,
+  '^universe:(.+)$': String.raw`./src/\1`,
   '^universe$': './src/index.ts',
-  '^multiverse#bfe (.+)$': String.raw`./packages/bfe/src/\1`,
-  '^multiverse#babel-plugin-metadata-accumulator (.+)$': String.raw`./packages/babel-plugin-metadata-accumulator/src/\1`,
-  '^multiverse#cli-utils (.+)$': String.raw`./packages/cli-utils/src/\1`,
-  '^multiverse#debug (.+)$': String.raw`./packages/debug/src/\1`,
-  '^multiverse#project-utils (.+)$': String.raw`./packages/project-utils/src/\1`,
-  '^multiverse#rejoinder (.+)$': String.raw`./packages/rejoinder/src/\1`,
-  '^multiverse#run (.+)$': String.raw`./packages/run/src/\1`,
-  '^multiverse#bfe$': './packages/bfe/src/index.ts',
-  '^multiverse#babel-plugin-metadata-accumulator$':
+  '^multiverse\\+bfe:(.+)$': String.raw`./packages/bfe/src/\1`,
+  '^multiverse\\+babel-plugin-metadata-accumulator:(.+)$': String.raw`./packages/babel-plugin-metadata-accumulator/src/\1`,
+  '^multiverse\\+cli-utils:(.+)$': String.raw`./packages/cli-utils/src/\1`,
+  '^multiverse\\+debug:(.+)$': String.raw`./packages/debug/src/\1`,
+  '^multiverse\\+project-utils:(.+)$': String.raw`./packages/project-utils/src/\1`,
+  '^multiverse\\+rejoinder:(.+)$': String.raw`./packages/rejoinder/src/\1`,
+  '^multiverse\\+run:(.+)$': String.raw`./packages/run/src/\1`,
+  '^multiverse\\+bfe$': './packages/bfe/src/index.ts',
+  '^multiverse\\+babel-plugin-metadata-accumulator$':
     './packages/babel-plugin-metadata-accumulator/src/index.ts',
-  '^multiverse#cli-utils$': './packages/cli-utils/src/index.ts',
-  '^multiverse#debug$': './packages/debug/src/index.ts',
-  '^multiverse#project-utils$': './packages/project-utils/src/index.ts',
-  '^multiverse#rejoinder$': './packages/rejoinder/src/index.ts',
-  '^multiverse#run$': './packages/run/src/index.ts',
-  '^testverse (.+)$': String.raw`./test/\1`,
-  '^testverse#bfe (.+)$': String.raw`./packages/bfe/test/\1`,
-  '^testverse#babel-plugin-metadata-accumulator (.+)$': String.raw`./packages/babel-plugin-metadata-accumulator/test/\1`,
-  '^testverse#cli-utils (.+)$': String.raw`./packages/cli-utils/test/\1`,
-  '^testverse#debug (.+)$': String.raw`./packages/debug/test/\1`,
-  '^testverse#project-utils (.+)$': String.raw`./packages/project-utils/test/\1`,
-  '^testverse#rejoinder (.+)$': String.raw`./packages/rejoinder/test/\1`,
-  '^testverse#run (.+)$': String.raw`./packages/run/test/\1`,
-  '^typeverse (.+)$': String.raw`./types/\1`,
-  '^# (.+)$': String.raw`./\1`,
-  '^#bfe (.+)$': String.raw`./packages/bfe/\1`,
-  '^#babel-plugin-metadata-accumulator (.+)$': String.raw`./packages/babel-plugin-metadata-accumulator/\1`,
-  '^#cli-utils (.+)$': String.raw`./packages/cli-utils/\1`,
-  '^#debug (.+)$': String.raw`./packages/debug/\1`,
-  '^#project-utils (.+)$': String.raw`./packages/project-utils/\1`,
-  '^#rejoinder (.+)$': String.raw`./packages/rejoinder/\1`,
-  '^#run (.+)$': String.raw`./packages/run/\1`
+  '^multiverse\\+cli-utils$': './packages/cli-utils/src/index.ts',
+  '^multiverse\\+debug$': './packages/debug/src/index.ts',
+  '^multiverse\\+project-utils$': './packages/project-utils/src/index.ts',
+  '^multiverse\\+rejoinder$': './packages/rejoinder/src/index.ts',
+  '^multiverse\\+run$': './packages/run/src/index.ts',
+  '^testverse:(.+)$': String.raw`./test/\1`,
+  '^testverse\\+bfe:(.+)$': String.raw`./packages/bfe/test/\1`,
+  '^testverse\\+babel-plugin-metadata-accumulator:(.+)$': String.raw`./packages/babel-plugin-metadata-accumulator/test/\1`,
+  '^testverse\\+cli-utils:(.+)$': String.raw`./packages/cli-utils/test/\1`,
+  '^testverse\\+debug:(.+)$': String.raw`./packages/debug/test/\1`,
+  '^testverse\\+project-utils:(.+)$': String.raw`./packages/project-utils/test/\1`,
+  '^testverse\\+rejoinder:(.+)$': String.raw`./packages/rejoinder/test/\1`,
+  '^testverse\\+run:(.+)$': String.raw`./packages/run/test/\1`,
+  '^typeverse:(.+)$': String.raw`./types/\1`,
+  '^rootverse:(.+)$': String.raw`./\1`,
+  '^rootverse\\+bfe:(.+)$': String.raw`./packages/bfe/\1`,
+  '^rootverse\\+babel-plugin-metadata-accumulator:(.+)$': String.raw`./packages/babel-plugin-metadata-accumulator/\1`,
+  '^rootverse\\+cli-utils:(.+)$': String.raw`./packages/cli-utils/\1`,
+  '^rootverse\\+debug:(.+)$': String.raw`./packages/debug/\1`,
+  '^rootverse\\+project-utils:(.+)$': String.raw`./packages/project-utils/\1`,
+  '^rootverse\\+rejoinder:(.+)$': String.raw`./packages/rejoinder/\1`,
+  '^rootverse\\+run:(.+)$': String.raw`./packages/run/\1`
 };
 
 // TODO: import from util/constant
@@ -324,6 +324,9 @@ function makeDistReplacerEntry(
 
       return (isRelativePathRegExp.test(result) ? '' : './') + result;
 
+      /**
+       * @param {string|undefined} path
+       */
       function sliceOffPackageRootPrefix(path) {
         return path?.startsWith(specifierSubRootPrefix)
           ? path.slice((specifierSubRootPrefix.length || -1) + 1)

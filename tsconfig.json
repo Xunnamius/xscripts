@@ -45,47 +45,47 @@
     // *   - next.config.mjs    (ESM)
     // *   - webpack.config.mjs (ESM)
     "paths": {
-      "universe *": ["src/*"],
+      "universe:*": ["src/*"],
       "universe": ["src/index.ts"],
-      "multiverse#bfe *": ["packages/bfe/src/*"],
-      "multiverse#babel-plugin-metadata-accumulator *": [
+      "multiverse+bfe:*": ["packages/bfe/src/*"],
+      "multiverse+babel-plugin-metadata-accumulator:*": [
         "packages/babel-plugin-metadata-accumulator/src/*"
       ],
-      "multiverse#cli-utils *": ["packages/cli-utils/src/*"],
-      "multiverse#debug *": ["packages/debug/src/*"],
-      "multiverse#project-utils *": ["packages/project-utils/src/*"],
-      "multiverse#rejoinder *": ["packages/rejoinder/src/*"],
-      "multiverse#run *": ["packages/run/src/*"],
-      "multiverse#bfe": ["packages/bfe/src/index.ts"],
-      "multiverse#babel-plugin-metadata-accumulator": [
+      "multiverse+cli-utils:*": ["packages/cli-utils/src/*"],
+      "multiverse+debug:*": ["packages/debug/src/*"],
+      "multiverse+project-utils:*": ["packages/project-utils/src/*"],
+      "multiverse+rejoinder:*": ["packages/rejoinder/src/*"],
+      "multiverse+run:*": ["packages/run/src/*"],
+      "multiverse+bfe": ["packages/bfe/src/index.ts"],
+      "multiverse+babel-plugin-metadata-accumulator": [
         "packages/babel-plugin-metadata-accumulator/src/index.ts"
       ],
-      "multiverse#cli-utils": ["packages/cli-utils/src/index.ts"],
-      "multiverse#debug": ["packages/debug/src/index.ts"],
-      "multiverse#project-utils": ["packages/project-utils/src/index.ts"],
-      "multiverse#rejoinder": ["packages/rejoinder/src/index.ts"],
-      "multiverse#run": ["packages/run/src/index.ts"],
-      "testverse *": ["test/*"],
-      "testverse#bfe *": ["packages/bfe/test/*"],
-      "testverse#babel-plugin-metadata-accumulator *": [
+      "multiverse+cli-utils": ["packages/cli-utils/src/index.ts"],
+      "multiverse+debug": ["packages/debug/src/index.ts"],
+      "multiverse+project-utils": ["packages/project-utils/src/index.ts"],
+      "multiverse+rejoinder": ["packages/rejoinder/src/index.ts"],
+      "multiverse+run": ["packages/run/src/index.ts"],
+      "testverse:*": ["test/*"],
+      "testverse+bfe:*": ["packages/bfe/test/*"],
+      "testverse+babel-plugin-metadata-accumulator:*": [
         "packages/babel-plugin-metadata-accumulator/test/*"
       ],
-      "testverse#cli-utils *": ["packages/cli-utils/test/*"],
-      "testverse#debug *": ["packages/debug/test/*"],
-      "testverse#project-utils *": ["packages/project-utils/test/*"],
-      "testverse#rejoinder *": ["packages/rejoinder/test/*"],
-      "testverse#run *": ["packages/run/test/*"],
-      "typeverse *": ["types/*"],
-      "# *": ["*"],
-      "#bfe *": ["packages/bfe/*"],
-      "#babel-plugin-metadata-accumulator *": [
+      "testverse+cli-utils:*": ["packages/cli-utils/test/*"],
+      "testverse+debug:*": ["packages/debug/test/*"],
+      "testverse+project-utils:*": ["packages/project-utils/test/*"],
+      "testverse+rejoinder:*": ["packages/rejoinder/test/*"],
+      "testverse+run:*": ["packages/run/test/*"],
+      "typeverse:*": ["types/*"],
+      "rootverse:*": ["*"],
+      "rootverse+bfe:*": ["packages/bfe/*"],
+      "rootverse+babel-plugin-metadata-accumulator:*": [
         "packages/babel-plugin-metadata-accumulator/*"
       ],
-      "#cli-utils *": ["packages/cli-utils/*"],
-      "#debug *": ["packages/debug/*"],
-      "#project-utils *": ["packages/project-utils/*"],
-      "#rejoinder *": ["packages/rejoinder/*"],
-      "#run *": ["packages/run/*"]
+      "rootverse+cli-utils:*": ["packages/cli-utils/*"],
+      "rootverse+debug:*": ["packages/debug/*"],
+      "rootverse+project-utils:*": ["packages/project-utils/*"],
+      "rootverse+rejoinder:*": ["packages/rejoinder/*"],
+      "rootverse+run:*": ["packages/run/*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,

@@ -26,7 +26,7 @@ import {
   type ExtendedDebugger,
   type InternalDebugger,
   type UnextendableInternalDebugger
-} from 'multiverse#debug';
+} from 'multiverse+debug';
 
 import type { Entry } from 'type-fest';
 

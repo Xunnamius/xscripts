@@ -6,9 +6,9 @@ import {
   type BfeBuilderObject,
   type WithBuilderExtensionsConfig,
   type WithBuilderExtensionsReturnType
-} from 'multiverse#bfe';
+} from 'multiverse+bfe';
 
-import { $artificiallyInvoked } from 'multiverse#bfe symbols.ts';
+import { $artificiallyInvoked } from 'multiverse+bfe:symbols.ts';
 
 import {
   createDebugLogger,
@@ -18,15 +18,15 @@ import {
   type ExtendedDebugger,
   type ExtendedLogger,
   type ListrManager
-} from 'multiverse#rejoinder';
+} from 'multiverse+rejoinder';
 
 // ? Used in a comment for taskManager
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { type makeStandardConfigureExecutionContext } from '#cli-utils src/configure.ts';
-import { globalDebuggerNamespace } from '#cli-utils src/constant.ts';
-import { LogTag } from '#cli-utils src/logging.ts';
+import { type makeStandardConfigureExecutionContext } from 'rootverse+cli-utils:src/configure.ts';
+import { globalDebuggerNamespace } from 'rootverse+cli-utils:src/constant.ts';
+import { LogTag } from 'rootverse+cli-utils:src/logging.ts';
 
-export { withUsageExtensions as withStandardUsage } from 'multiverse#bfe';
+export { withUsageExtensions as withStandardUsage } from 'multiverse+bfe';
 
 /**
  * This {@link ExecutionContext} subtype contains state related to

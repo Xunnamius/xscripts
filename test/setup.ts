@@ -14,14 +14,14 @@ import uniqueFilename from 'unique-filename';
 import 'jest-extended';
 import 'jest-extended/all';
 
-import { webpackConfigProjectBase } from 'multiverse#project-utils fs/well-known-constants.ts';
-import { createDebugLogger, type ExtendedDebugger } from 'multiverse#rejoinder';
-import { run, type RunReturnType } from 'multiverse#run';
+import { webpackConfigProjectBase } from 'multiverse+project-utils:fs/well-known-constants.ts';
+import { createDebugLogger, type ExtendedDebugger } from 'multiverse+rejoinder';
+import { run, type RunReturnType } from 'multiverse+run';
 
 import {
   name as rootPackageJsonName,
   version as rootPackageJsonVersion
-} from '# package.json';
+} from 'rootverse:package.json';
 
 import type { Options as ExecaOptions } from 'execa-root' with { 'resolution-mode': 'import' };
 import type { LiteralUnion, Promisable } from 'type-fest';
@@ -854,7 +854,7 @@ export function npmCopySelfFixture(): MockFixture {
     setup: async (context) => {
       const root = resolvePath(__dirname, '..');
 
-      const { files: patterns } = (await import('# package.json')).default;
+      const { files: patterns } = (await import('rootverse:package.json')).default;
 
       const sourcePaths = patterns.flatMap((p: string) =>
         glob.sync(p, { cwd: root, root })

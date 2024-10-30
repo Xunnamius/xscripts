@@ -1,17 +1,17 @@
 import { type RootConfiguration } from '@black-flag/core';
 import { CommandNotImplementedError } from '@black-flag/core/util';
 
-import { type AsStrictExecutionContext } from 'multiverse#bfe';
+import { type AsStrictExecutionContext } from 'multiverse+bfe';
 
 import {
   UnlimitedGlobalScope as RootScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
-} from 'universe configure.ts';
+} from 'universe:configure.ts';
 
-import { globalCliName } from 'universe constant.ts';
+import { globalCliName } from 'universe:constant.ts';
 
-import { withGlobalBuilder, withGlobalUsage } from 'universe util.ts';
+import { withGlobalBuilder, withGlobalUsage } from 'universe:util.ts';
 
 /**
  * @see {@link RootScope}

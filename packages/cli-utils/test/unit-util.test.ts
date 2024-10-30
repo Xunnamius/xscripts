@@ -3,7 +3,7 @@ import {
   toFirstLowerCase,
   toSentenceCase,
   toSpacedSentenceCase
-} from '#cli-utils src/util.ts';
+} from 'rootverse+cli-utils:src/util.ts';
 
 describe('::toSentenceCase', () => {
   it('upper-cases the first letter of the passed string', async () => {

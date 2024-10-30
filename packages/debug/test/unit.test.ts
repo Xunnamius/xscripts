@@ -5,12 +5,12 @@ import {
   debugFactory,
   extendDebugger,
   finalizeDebugger
-} from 'multiverse#debug';
+} from 'multiverse+debug';
 
 import {
   expectExtendedDebugger,
   expectUnextendableDebugger
-} from '#debug test/helpers.ts';
+} from 'rootverse+debug:test/helpers.ts';
 
 const factoryLogFn = jest.fn();
 debugFactory.log = factoryLogFn;

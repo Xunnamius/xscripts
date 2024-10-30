@@ -1,2 +1,2 @@
 import type { AType } from 'universe';
-import { something } from '#webpack webpack.config.ts';
+import { something } from 'rootverse+webpack:webpack.config.ts';
