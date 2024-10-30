@@ -1,3 +1,83 @@
 {
-  "name": "@-xun/run"
+  "name": "@-xun/run",
+  "version": "1.0.0",
+  "description": "A utility wrapper around execa",
+  "keywords": [
+    "Xunnamius"
+  ],
+  "homepage": "https://github.com/Xunnamius/exec-utils#readme",
+  "bugs": {
+    "url": "https://github.com/Xunnamius/no-hoist/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xunnamius/exec-utils.git"
+  },
+  "license": "MIT",
+  "author": "Xunnamius",
+  "sideEffects": false,
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "types": "./dist/packages/run/src/index.d.ts",
+      "default": "./dist/packages/run/src/index.js"
+    },
+    "./package": "./package.json",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "dist/packages/run/src/index.d.ts"
+      ],
+      "package": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "/dist",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
+  "scripts": {
+    "build": "npm run build:dist --",
+    "build:changelog": "NODE_NO_WARNINGS=1 xscripts build changelog",
+    "build:dist": "NODE_NO_WARNINGS=1 xscripts build distributables",
+    "build:docs": "NODE_NO_WARNINGS=1 xscripts build docs",
+    "build:transpiled": "npm run build:transpiled:test",
+    "build:transpiled:dev": "NODE_NO_WARNINGS=1 xscripts build distributables --generate-intermediates-for development",
+    "build:transpiled:test": "NODE_NO_WARNINGS=1 xscripts build distributables --generate-intermediates-for test",
+    "clean": "NODE_NO_WARNINGS=1 xscripts clean",
+    "format": "NODE_NO_WARNINGS=1 xscripts format --hush",
+    "info": "NODE_NO_WARNINGS=1 xscripts project info",
+    "lint": "npm run lint:package:source --",
+    "lint:package:all": "NODE_NO_WARNINGS=1 xscripts lint",
+    "lint:package:source": "NODE_NO_WARNINGS=1 xscripts lint --scope this-package-source",
+    "lint:packages:all": "cd ../.. && npm run lint:packages:all --",
+    "lint:project": "cd ../.. && npm run lint:project --",
+    "list-tasks": "NODE_NO_WARNINGS=1 xscripts list-tasks",
+    "release": "NODE_NO_WARNINGS=1 xscripts release",
+    "renovate": "NODE_NO_WARNINGS=1 xscripts project renovate",
+    "start": "NODE_NO_WARNINGS=1 xscripts start --",
+    "test": "npm run test:package:unit --",
+    "test:package:all": "NODE_NO_WARNINGS=1 xscripts test --coverage",
+    "test:package:e2e": "NODE_NO_WARNINGS=1 xscripts test --type end-to-end",
+    "test:package:integration": "NODE_NO_WARNINGS=1 xscripts test --type integration",
+    "test:package:unit": "NODE_NO_WARNINGS=1 xscripts test --type unit",
+    "test:packages:all": "cd ../.. && npm run test:packages:all --"
+  },
+  "dependencies": {
+    "core-js": "^3.38.1",
+    "debug": "^4.3.7",
+    "execa": "^9.5.0",
+    "type-fest": "^4.26.1"
+  },
+  "engines": {
+    "node": "18.20.0 || ^20.15.0 || >=22.5.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
