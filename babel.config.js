@@ -4,6 +4,7 @@
 
 const {
   dirname,
+  join: joinPath,
   relative: toRelativePath,
   resolve: toAbsolutePath
 } = require('node:path');
@@ -14,17 +15,29 @@ const {
 // ? https://nodejs.org/en/about/releases
 const NODE_LTS = 'maintained node versions';
 
-const dTsExtensionsToReplace = [
+const tsExtensionsToReplace = [
   // TODO: Replace with the extensions exports
-  '.d.ts',
   '.ts',
   '.tsx',
   '.mts',
-  '.cts',
+  '.cts'
+];
+
+const dTsExtensionsToReplace = [
+  ...tsExtensionsToReplace,
+  // TODO: Replace with the extensions exports
+  '.d.ts',
+  // No .js
   '.jsx',
   '.mjs',
   '.cjs'
 ];
+
+const endsWithPackageJsonRegExp = /(^|\/)package.json/;
+const includesNodeModulesRegExp = /(^|\/)node_modules\//;
+const grabEverythingUpToAndIncludingNodeModulesRegExp = /^(.*\/)?node_modules\//;
+const translateJsExtensionsToTsRegExp = /(.+)\.(c|m)?ts(x)?$/;
+const translateJsExtensionsToTsRegExpReplacer = '$1.$2js$3';
 
 const dTsExtensionsToReplaceRegExp = new RegExp(
   `\\.(${dTsExtensionsToReplace.join('|').replaceAll('.', '')})$`
@@ -85,13 +98,44 @@ const wellKnownAliases = {
 // TODO: import from util/constant
 const isRelativePathRegExp = /^\.\.?(\/|$)/;
 
-const babelPluginModuleResolver = [
-  // {@xscripts/notExtraneous babel-plugin-module-resolver}
-  'babel-plugin-module-resolver',
+const babelPluginTransformRewriteImportsSourceModuleResolver = [
+  // {@xscripts/notExtraneous babel-plugin-transform-rewrite-imports}
+  'babel-plugin-transform-rewrite-imports',
   {
-    root: '.',
-    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
-    alias: wellKnownAliases
+    appendExtension: '.js',
+    recognizedExtensions: ['.js', '.jsx', '.cjs', '.mjs', '.json'],
+    injectDynamicRewriter: 'never',
+    replaceExtensions: {
+      // ? Replace any aliases with their reified filesystem path
+      ...Object.fromEntries(
+        Object.entries(wellKnownAliases).map((alias) =>
+          makeDistReplacerEntry(alias, 'source')
+        )
+      ),
+      // ? Replace any TS extensions with their JS equivalents
+      [translateJsExtensionsToTsRegExp.toString()]:
+        translateJsExtensionsToTsRegExpReplacer
+    }
+  }
+];
+
+const babelPluginTransformRewriteImportsDefinitionModuleResolver = [
+  // {@xscripts/notExtraneous babel-plugin-transform-rewrite-imports}
+  'babel-plugin-transform-rewrite-imports',
+  {
+    appendExtension: '.js',
+    recognizedExtensions: ['.js'],
+    injectDynamicRewriter: 'never',
+    replaceExtensions: {
+      // ? Replace any aliases with their reified filesystem path
+      ...Object.fromEntries(
+        Object.entries(wellKnownAliases).map((alias) =>
+          makeDistReplacerEntry(alias, 'definition')
+        )
+      ),
+      // ? Replace any JS/TS extensions with .js (recognized by/as .d.ts)
+      ...Object.fromEntries(dTsExtensionsToReplace.map((extension) => [extension, '.js']))
+    }
   }
 ];
 
@@ -101,14 +145,11 @@ const babelPluginModuleResolver = [
 module.exports = {
   comments: false,
   parserOpts: { strictMode: true },
-  assumptions: {
-    constantReexports: true
-  },
+  generatorOpts: { importAttributesKeyword: 'with' },
+  assumptions: { constantReexports: true },
   plugins: [
     // {@xscripts/notExtraneous @babel/plugin-proposal-export-default-from}
-    '@babel/plugin-proposal-export-default-from',
-    // {@xscripts/notExtraneous @babel/plugin-syntax-import-attributes}
-    '@babel/plugin-syntax-import-attributes'
+    '@babel/plugin-proposal-export-default-from'
   ],
   // ? Sub-keys under the "env" config key will augment the above
   // ? configuration depending on the value of NODE_ENV and friends. Default
@@ -128,7 +169,8 @@ module.exports = {
         // ? We don't care about minification
       ],
       plugins: [
-        babelPluginModuleResolver
+        // ? Jest handles transforming specifiers on its own
+        //babelPluginTransformRewriteImportsSourceModuleResolver
         // TODO: investigate why this is causing a strange error with coverage
         // ? Only active when testing, the plugin solves the following problem:
         // ? https://stackoverflow.com/q/40771520/1367414
@@ -157,17 +199,7 @@ module.exports = {
         // {@xscripts/notExtraneous @babel/preset-react}
         ['@babel/preset-react', { runtime: 'automatic' }]
       ],
-      plugins: [
-        babelPluginModuleResolver,
-        [
-          // {@xscripts/notExtraneous babel-plugin-transform-rewrite-imports}
-          'babel-plugin-transform-rewrite-imports',
-          {
-            appendExtension: '.js',
-            replaceExtensions: { '(.+)\\.(c|m)?ts(x)?$': '$1.$2js$3' }
-          }
-        ]
-      ]
+      plugins: [babelPluginTransformRewriteImportsSourceModuleResolver]
     },
     // TODO: add production-esm too
     // * Used by `npm run build` for fixing declaration file imports in ./dist
@@ -176,28 +208,7 @@ module.exports = {
       plugins: [
         // {@xscripts/notExtraneous @babel/plugin-syntax-typescript}
         ['@babel/plugin-syntax-typescript', { dts: true }],
-        [
-          // {@xscripts/notExtraneous babel-plugin-transform-rewrite-imports}
-          'babel-plugin-transform-rewrite-imports',
-          {
-            appendExtension: '.js',
-            recognizedExtensions: ['.js'],
-            replaceExtensions:
-              // TODO: 1. rootverse specifiers need to go one level above ./dist
-              // TODO: 2. need to test that rootverse specifiers trigger outsidedist error
-              // TODO: 3. need to test that rootverse specifiers referring to package.json::files do not trigger errors and actually work in non-dts files
-              {
-                // ? Replace any aliases with their reified filesystem path
-                ...Object.fromEntries(
-                  Object.entries(wellKnownAliases).map((a) => makeDTsReplacerEntry(a))
-                ),
-                // ? Replace any JS/TS extensions with .d.ts
-                ...Object.fromEntries(
-                  dTsExtensionsToReplace.map((extension) => [extension, '.js'])
-                )
-              }
-          }
-        ]
+        babelPluginTransformRewriteImportsDefinitionModuleResolver
       ]
     }
   }
@@ -205,40 +216,119 @@ module.exports = {
 
 // TODO: add debug calls in this function
 /**
- * Takes a path relative to the project root and returns a function that, when
- * called, will return a path relative to the file being transpiled by Babel.
+ * Takes a definition file (`.d.ts`) path relative to the project root and
+ * returns a function that, when called, will return a path relative to the file
+ * being transpiled by Babel.
  *
- * @param {[string, string]} wellKnownAliasEntry
- * @returns {[string, import('babel-plugin-transform-rewrite-imports').Callback<string>]}
+ * @param {[specifierRegExp: string, projectRootRelativeReplacerPath: string]} entry
+ * @param {'source' | 'definition'} type
+ * @returns {[string,
+ * import('babel-plugin-transform-rewrite-imports').Callback<string>]}
  */
-function makeDTsReplacerEntry([specifierRegExp, projectRootRelativeReplacerPath]) {
-  // ? Assuming the current file is always at the project root
+function makeDistReplacerEntry(
+  [specifierRegExp, rawProjectRootRelativeReplacerPath],
+  type
+) {
+  // ? Assuming the current working directory is always at a package root, an
+  // ? invariant enforced by xscripts itself
+  const packageRoot = process.cwd();
+  // ? Assuming this file is always at the project root
   const projectRoot = __dirname;
+  // ? Are we at the root package of a hybridrepo?
+  const isCwdPackageTheRootPackage = projectRoot === packageRoot;
+  // ? Remove the leading ./ if it exists
+  const projectRootRelativeReplacerPath = joinPath(rawProjectRootRelativeReplacerPath);
 
   return [
     specifierRegExp,
-    function ({ filepath, capturingGroups }) {
+    function ({ filepath: inputFilepath, capturingGroups }) {
+      const originalSpecifier = capturingGroups[0];
       const specifierTarget = capturingGroups.at(1);
+      const specifierSubRootPrefix =
+        projectRoot === packageRoot ? '' : packageRoot.slice(projectRoot.length + 1);
 
-      if (specifierTarget?.startsWith('package.json')) {
-        // TODO: replace with ErrorMessage.X
-        throw new TypeError('unexpected "package.json" import in definition file');
-      }
+      const transpilationOutputFilepath =
+        type === 'source'
+          ? // ? We need to account for sources being outside /dist while
+            // ? definitions are already inside /dist
+            toAbsolutePath(
+              packageRoot,
+              'dist',
+              inputFilepath.slice(projectRoot.length + 1)
+            )
+          : inputFilepath;
 
-      const target = toAbsolutePath(
-        projectRoot,
-        // ? Importable non-distributables live in the project root's
-        // ? node_modules directory, so we should facilitate access
-        specifierTarget?.startsWith('node_modules/') ? '' : 'dist',
-        projectRootRelativeReplacerPath
-          // ? Ensure proper replacer syntax is used
-          .replace(String.raw`\1`, specifierTarget || '')
-          // ? Ensure proper extension is used
-          .replace(dTsExtensionsToReplaceRegExp, '.js')
+      const importTargetProjectRootRelativeRealFilepath = projectRootRelativeReplacerPath
+        // ? Ensure proper replacer syntax is used
+        .replace(String.raw`\1`, sliceOffPackageRootPrefix(specifierTarget));
+
+      const isImportTargetUnderAPackageRootNodeModules = includesNodeModulesRegExp.test(
+        importTargetProjectRootRelativeRealFilepath
       );
 
-      const result = toRelativePath(dirname(filepath), target);
+      const isImportTargetAPackageJson = endsWithPackageJsonRegExp.test(
+        importTargetProjectRootRelativeRealFilepath
+      );
+
+      const isImportTargetThePackageRootPackageJson =
+        importTargetProjectRootRelativeRealFilepath ===
+        joinPath(specifierSubRootPrefix, 'package.json');
+
+      const isImportTargetTheProjectRootPackageJson =
+        importTargetProjectRootRelativeRealFilepath === 'package.json';
+
+      if (!isCwdPackageTheRootPackage && isImportTargetTheProjectRootPackageJson) {
+        // TODO: replace with ErrorMessage.X
+        throw new Error(
+          `importing "${originalSpecifier}" from "${inputFilepath}" does not make sense in a monorepo`
+        );
+      }
+
+      if (isImportTargetAPackageJson && !isImportTargetThePackageRootPackageJson) {
+        // TODO: replace with rejoinder
+        // eslint-disable-next-line no-console
+        console.warn(
+          `importing "${originalSpecifier}" from "${inputFilepath}" will cause additional package.json files to be included in build output. This may significantly increase the size of distributables`
+        );
+      }
+
+      const importTargetIsValidlyOutsideDistDirectory =
+        isImportTargetUnderAPackageRootNodeModules ||
+        isImportTargetThePackageRootPackageJson;
+
+      const importTargetPackageRootRelativeRealFilepath = isCwdPackageTheRootPackage
+        ? importTargetProjectRootRelativeRealFilepath
+        : sliceOffPackageRootPrefix(importTargetProjectRootRelativeRealFilepath);
+
+      const importTargetOutputFilepath = toAbsolutePath(
+        packageRoot,
+        // ? Importables sometimes live outside the package's root directory
+        // ? (like package.json, or node_modules) so we should facilitate access
+        importTargetIsValidlyOutsideDistDirectory ? '' : 'dist',
+        isImportTargetUnderAPackageRootNodeModules ? 'node_modules' : '',
+        importTargetPackageRootRelativeRealFilepath
+          .replace(grabEverythingUpToAndIncludingNodeModulesRegExp, '')
+          // ? Ensure proper extension is used
+          .replace(
+            type === 'source'
+              ? translateJsExtensionsToTsRegExp
+              : dTsExtensionsToReplaceRegExp,
+            type === 'source' ? translateJsExtensionsToTsRegExpReplacer : '.js'
+          )
+      );
+
+      const result = toRelativePath(
+        dirname(transpilationOutputFilepath),
+        importTargetOutputFilepath
+      );
+
       return (isRelativePathRegExp.test(result) ? '' : './') + result;
+
+      function sliceOffPackageRootPrefix(path) {
+        return path?.startsWith(specifierSubRootPrefix)
+          ? path.slice((specifierSubRootPrefix.length || -1) + 1)
+          : path || '';
+      }
     }
   ];
 }
