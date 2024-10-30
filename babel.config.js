@@ -288,7 +288,7 @@ function makeDistReplacerEntry(
         // TODO: replace with rejoinder
         // eslint-disable-next-line no-console
         console.warn(
-          `importing "${originalSpecifier}" from "${inputFilepath}" will cause additional package.json files to be included in build output. This may significantly increase the size of distributables`
+          `warning: importing "${originalSpecifier}" from "${inputFilepath}" will cause additional package.json files to be included in build output. This may significantly increase the size of distributables`
         );
       }
 
