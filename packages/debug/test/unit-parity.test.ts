@@ -67,7 +67,9 @@ describe('debug-js feature parity', () => {
       log.log = () => undefined;
 
       const logBar = log.extend('bar');
-      expect(logBar.namespace).toBe('foo:bar');
+      // ? Since we differentiate between root namespaces and other namespaces,
+      // ? we expect a double-delimiter as the first delimiter
+      expect(logBar.namespace).toBe('foo::bar');
     });
 
     it('should extend namespace with custom delimiter', () => {
@@ -78,7 +80,9 @@ describe('debug-js feature parity', () => {
       log.log = () => undefined;
 
       const logBar = log.extend('bar', '--');
-      expect(logBar.namespace).toBe('foo--bar');
+      // ? Since we differentiate between root namespaces and other namespaces,
+      // ? we expect to see both delimiters
+      expect(logBar.namespace).toBe('foo:--bar');
     });
 
     it('should extend namespace with empty delimiter', () => {
@@ -89,7 +93,9 @@ describe('debug-js feature parity', () => {
       log.log = () => undefined;
 
       const logBar = log.extend('bar', '');
-      expect(logBar.namespace).toBe('foobar');
+      // ? Since we differentiate between root namespaces and other namespaces,
+      // ? we expect a delimiter appended to the root namespace
+      expect(logBar.namespace).toBe('foo:bar');
     });
 
     it('should keep the log function between extensions', () => {
@@ -109,7 +115,9 @@ describe('debug-js feature parity', () => {
 
       debug.enable('test,abc*,-abc');
       const namespaces = debug.disable();
-      expect(namespaces).toBe('test,abc*,-abc');
+      // ? Since we differentiate between root namespaces and other namespaces,
+      // ? we expect a delimiter appended to the root namespace
+      expect(namespaces).toBe('test:,abc*,-abc:');
     });
 
     it('handles empty', () => {
@@ -145,7 +153,7 @@ describe('debug-js feature parity', () => {
       const oldNames = [...debug.names];
       const oldSkips = [...debug.skips];
       const namespaces = debug.disable();
-      expect(namespaces).toBe('test,abc*,-abc');
+      expect(namespaces).toBe('test:,abc*,-abc:');
       debug.enable(namespaces);
       expect(oldNames.map(String)).toStrictEqual(debug.names.map(String));
       expect(oldSkips.map(String)).toStrictEqual(debug.skips.map(String));
@@ -154,7 +162,7 @@ describe('debug-js feature parity', () => {
     it('handles re-enabling existing instances', () => {
       expect.hasAssertions();
 
-      debug.disable('*');
+      debug.disable();
       const inst = debug('foo');
       const messages: string[] = [];
       inst.log = (str) => messages.push(str.replace(/^[^@]*@([^@]+)@.*$/, '$1'));
@@ -167,7 +175,7 @@ describe('debug-js feature parity', () => {
       expect(messages).toStrictEqual(['test2']);
       inst('@test3@');
       expect(messages).toStrictEqual(['test2', 'test3']);
-      debug.disable('*');
+      debug.disable();
       inst('@test4@');
       expect(messages).toStrictEqual(['test2', 'test3']);
     });

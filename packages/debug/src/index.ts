@@ -31,7 +31,7 @@ export type InstanceKey = keyof ExtendedDebugger[typeof $instances];
  */
 export interface InternalDebug extends _Debug {
   /**
-   * Send an optionally-formatted message to output.
+   * Create and return a new {@link InternalDebugger} instance.
    */
   (...args: Parameters<_Debug>): InternalDebugger;
 }
@@ -48,6 +48,8 @@ export interface InternalDebugger extends __Debugger {
    */
   (...args: Parameters<_Debugger>): void;
 }
+
+// ? Fix a bug in the types (::log is currently optional in the upstream source)
 type __Debugger = Omit<_Debugger, 'log'> & { log?: _Debugger['log'] };
 
 /**
@@ -67,8 +69,6 @@ export interface ExtendedDebug extends InternalDebug {
    * Send an optionally-formatted message to output.
    */
   (...args: Parameters<InternalDebug>): ExtendedDebugger;
-  // ? Fix an error in the official debug package types
-  disable: (namespace?: string) => ReturnType<InternalDebug['disable']>;
 }
 
 /**
@@ -136,11 +136,53 @@ type _DebuggerExtension<T = UnextendableInternalDebugger> = {
 };
 
 /**
+ * We append a colon to the end of root namespaces (namespaces without colons)
+ * to smooth out a wrinkle in the upstream package's functionality where
+ * `DEBUG='my-namespace*'` will activate a debugger with the namespace
+ * "my-namespace" but will NOT activate any nested namespaces, like
+ * "my-namespace:nested". This means if you have a "root" namespace and also
+ * nested namespaces, to see all program output, you have to set `DEBUG` to
+ * something inconvenient like `DEBUG='my-namespace*,my-namespace:*'`.
+ *
+ * However, if we add a colon to "my-namespace" or any other root namespace when
+ * given, we get the more intuitive functionality for free:
+ * `DEBUG='my-namespace*'` is enough to activate all namespaces both nested and
+ * root!
+ *
+ * This function also splits on space/comma and applies the same transform to
+ * each split-off namespace.
+ */
+function maybeAppendColon(str: string, delimiter: string) {
+  return !str
+    ? str
+    : str
+        .split(/[\s,]+/)
+        .map((subStr) => {
+          switch (subStr) {
+            case '':
+            case '*':
+            case '-*': {
+              return subStr;
+            }
+
+            default: {
+              return (
+                subStr +
+                (subStr.includes(delimiter) || subStr.endsWith('*') ? '' : delimiter)
+              );
+            }
+          }
+        })
+        .join(',');
+}
+
+/**
  * An `ExtendedDebug` instance that returns an {@link ExtendedDebugger} instance
  * via {@link extendDebugger}.
  */
 export const debugFactory = new Proxy(getDebugger as unknown as ExtendedDebug, {
   apply(_target, _this: unknown, args: Parameters<InternalDebug>) {
+    args[0] = maybeAppendColon(args[0], ':');
     return extendDebugger(getDebugger(...args));
   },
   get(target, property: PropertyKey, proxy: ExtendedDebug) {
@@ -153,10 +195,19 @@ export const debugFactory = new Proxy(getDebugger as unknown as ExtendedDebug, {
 
     if (isSymbolOrOwnProperty && typeof value === 'function') {
       return function (...args: unknown[]) {
+        if (
+          typeof args[0] === 'string' &&
+          ['enable', 'enabled', 'selectColor'].includes(property)
+        ) {
+          // TODO: if the delimiter ever becomes available on the debug factory
+          // TODO: object, use it here:
+          args[0] = maybeAppendColon(args[0], ':');
+        }
+
         // ? This is "this-recovering" code.
         const returnValue = value.apply(target, args);
-        // ? Whenever we'd return a yargs instance, return the wrapper
-        // ? program instead.
+        // ? Whenever we'd return an InternalDebugger instance, return the proxy
+        // ? instead.
         /* istanbul ignore next */
         return isPromise(returnValue)
           ? returnValue.then((realReturnValue) => maybeReturnProxy(realReturnValue))
