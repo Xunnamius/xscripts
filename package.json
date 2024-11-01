@@ -135,7 +135,7 @@
     "@types/lodash.clonedeepwith": "^4.5.9",
     "@types/lodash.isequal": "^4.5.8",
     "@types/lodash.mergewith": "^4.6.9",
-    "@types/node": "^22.8.4",
+    "@types/node": "^22.8.6",
     "@types/react": "^18.3.12",
     "@types/semver": "^7.5.8",
     "@types/spellchecker": "^3.5.2",
@@ -149,7 +149,7 @@
     "browserslist": "^4.24.2",
     "confusing-browser-globals": "^1.0.11",
     "conventional-changelog-core": "https://xunn.at/conventional-changelog-core@master",
-    "core-js": "3.38.1",
+    "core-js": "3.39.0",
     "debug": "^4.3.7",
     "doctoc": "^2.2.1",
     "dotenv": "^16.4.5",
@@ -244,12 +244,12 @@
     "typedoc-plugin-markdown": "^4.2.9",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.12.2",
-    "unified-engine": "^11.2.1",
+    "unified-engine": "^11.2.2",
     "unique-filename": "^4.0.0",
     "validate-npm-package-name": "^6.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.23.0",
+    "@-xun/scripts": "^1.24.0",
     "@types/conventional-commits-parser": "^5.0.0",
     "execa-root": "npm:execa@^9.5.1"
   },

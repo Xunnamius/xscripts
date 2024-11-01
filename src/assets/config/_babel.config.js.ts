@@ -123,7 +123,8 @@ export function moduleExport() {
               modules: 'cjs',
               targets: NODE_LTS,
               useBuiltIns: 'usage',
-              corejs: '3.38',
+              // TODO: get this value from package.json
+              corejs: '3.39',
               shippedProposals: true,
               exclude: ['transform-dynamic-import']
             }
