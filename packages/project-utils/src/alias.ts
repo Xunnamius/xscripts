@@ -1,8 +1,9 @@
 import { extname, join as joinPath, relative as toRelativePath } from 'node:path';
 
-import { type Arrayable } from 'type-fest';
 import escapeStringRegExp from 'escape-string-regexp~4';
+import { type Arrayable } from 'type-fest';
 
+// eslint-disable-next-line import/no-cycle
 import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
 import { type RelativePath } from 'rootverse+project-utils:src/fs.ts';
 

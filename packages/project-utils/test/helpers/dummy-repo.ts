@@ -41,14 +41,16 @@ export function patchReadPackageJsonAtRoot(
     typeof import('rootverse+project-utils:src/fs.ts')
   >('rootverse+project-utils:src/fs.ts').readPackageJsonAtRoot;
 
-  jest.spyOn(fs, 'readPackageJsonAtRoot').mockImplementation(async ({ root }) => {
-    const packageJson = await actualReadPackageJsonAtRoot({ root });
-    return finalize(root, packageJson);
-  });
+  jest
+    .spyOn(fs, 'readPackageJsonAtRoot')
+    .mockImplementation(async (root, { useCached }) => {
+      const packageJson = await actualReadPackageJsonAtRoot(root, { useCached });
+      return finalize(root, packageJson);
+    });
 
   // @ts-expect-error: we're mocking do we'll do what we like
-  fs.readPackageJsonAtRoot.sync = ({ root }) => {
-    const packageJson = actualReadPackageJsonAtRoot.sync({ root });
+  fs.readPackageJsonAtRoot.sync = (root, { useCached }) => {
+    const packageJson = actualReadPackageJsonAtRoot.sync(root, { useCached });
     return finalize(root, packageJson);
   };
 

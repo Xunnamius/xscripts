@@ -8,8 +8,6 @@ export * from 'rootverse+project-utils:src/analyze/generate-package-json-engine-
 export * from 'rootverse+project-utils:src/analyze/package-root-to-id.ts';
 export * from 'rootverse+project-utils:src/analyze/path-to-package.ts';
 
-export { clearInternalCache } from 'rootverse+project-utils:src/analyze/cache.ts';
-
 export {
   isPackage,
   isRootPackage,
@@ -17,7 +15,9 @@ export {
   ProjectAttribute,
   WorkspaceAttribute,
   type MonorepoMetadata,
+  type Package,
   type PackageBuildTargets as PackageBuildTargets,
+  type PackageFiles,
   type PolyrepoMetadata,
   type ProjectFiles,
   type ProjectMetadata,

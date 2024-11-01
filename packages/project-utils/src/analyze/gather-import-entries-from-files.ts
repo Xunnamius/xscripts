@@ -5,12 +5,15 @@ import { type PluginObj, type TransformOptions } from '@babel/core';
 
 import {
   createMetadataAccumulatorPlugin,
-  type Options as AccumulatorOptions
+  type Options as AccumulatorOptions,
+  type PluginAndAccumulator
 } from 'multiverse+babel-plugin-metadata-accumulator';
 
 import { debug as debug_ } from 'rootverse+project-utils:src/analyze/common.ts';
+import { cache, CacheScope } from 'rootverse+project-utils:src/cache.ts';
 import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
 import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
+
 import {
   type ParametersNoFirst,
   type SyncVersionOf
@@ -37,45 +40,88 @@ export type ImportSpecifiersEntry = [filepath: AbsolutePath, specifiers: Set<str
 /**
  * @see {@link gatherImportEntriesFromFiles}
  */
-export type GatherImportEntriesFromFilesOptions = AccumulatorOptions;
+export type GatherImportEntriesFromFilesOptions = AccumulatorOptions & {
+  /**
+   * Use the internal cached result from a previous run, if available.
+   *
+   * **WARNING: the results returned by this function, while functionally
+   * identical to each other, will _NOT_ strictly equal (`===`) each other.**
+   * However, each {@link ImportSpecifiersEntry} tuple within the returned
+   * results _will_ strictly equal each other, respectively.
+   *
+   * @see {@link cache}
+   */
+  useCached: boolean;
+};
 
 function gatherImportEntriesFromFiles_(
   shouldRunSynchronously: false,
   files: AbsolutePath[],
-  options?: GatherImportEntriesFromFilesOptions
+  options: GatherImportEntriesFromFilesOptions
 ): Promise<ImportSpecifiersEntry[]>;
 function gatherImportEntriesFromFiles_(
   shouldRunSynchronously: true,
   files: AbsolutePath[],
-  options?: GatherImportEntriesFromFilesOptions
+  options: GatherImportEntriesFromFilesOptions
 ): ImportSpecifiersEntry[];
 function gatherImportEntriesFromFiles_(
   shouldRunSynchronously: boolean,
   files: AbsolutePath[],
-  options: GatherImportEntriesFromFilesOptions = {}
+  options: GatherImportEntriesFromFilesOptions
 ): Promisable<ImportSpecifiersEntry[]> {
+  const { useCached, ...cacheIdComponentsObject } = options;
   debug('evaluating files: %O', files);
 
-  if (shouldRunSynchronously) {
-    const babel = getBabel();
-    const { plugin, accumulator } = createMetadataAccumulatorPlugin();
+  let babel: ReturnType<typeof getBabel>;
+  let plugin: PluginAndAccumulator['plugin'];
+  let accumulator: PluginAndAccumulator['accumulator'];
 
+  if (shouldRunSynchronously) {
     const importSpecifiersEntries = files.map((path, index) => {
-      const debug_ = debug.extend(`file-${index}`);
-      debug_('evaluating file: %O', path);
+      const dbg = debug.extend(`file-${index}`);
+      dbg('evaluating file: %O', path);
 
       if (hasExtensionAcceptedByBabel(path)) {
-        debug_('using babel to evaluate source file imports');
+        if (useCached) {
+          const cachedEntry = cache.get(CacheScope.GatherImportEntriesFromFiles, [
+            path,
+            cacheIdComponentsObject
+          ]);
+
+          if (cachedEntry) {
+            dbg('reusing cached resources: %O', cachedEntry);
+            return cachedEntry;
+          }
+        }
+
+        dbg('using babel to evaluate source file imports');
+
+        if (!babel) {
+          babel = getBabel();
+        }
+
+        if (!plugin || !accumulator) {
+          ({ plugin, accumulator } = createMetadataAccumulatorPlugin());
+        }
 
         babel.transformFileSync(path, makeMinimalBabelConfigObject(plugin, options));
 
         const { imports } = accumulator.get(path) || {};
         assert(imports, ErrorMessage.GuruMeditation());
 
-        debug_('imports seen (%O): %O', imports.size, imports);
-        return [path, imports] satisfies ImportSpecifiersEntry;
+        dbg('imports seen (%O): %O', imports.size, imports);
+
+        const entry: ImportSpecifiersEntry = [path, imports];
+
+        cache.set(
+          CacheScope.GatherImportEntriesFromFiles,
+          [path, cacheIdComponentsObject],
+          entry
+        );
+
+        return entry;
       } else {
-        debug_('skipped using babel to evaluate asset');
+        dbg('skipped using babel to evaluate asset');
         return [path, new Set()] satisfies ImportSpecifiersEntry;
       }
     });
@@ -84,16 +130,33 @@ function gatherImportEntriesFromFiles_(
     return importSpecifiersEntries;
   } else {
     return Promise.resolve().then(async () => {
-      const babel = getBabel();
-      const { plugin, accumulator } = createMetadataAccumulatorPlugin();
-
       const importSpecifiersEntries = await Promise.all(
         files.map(async (path, index) => {
-          const debug_ = debug.extend(`file-${index}`);
-          debug_('evaluating file: %O', path);
+          const dbg = debug.extend(`file-${index}`);
+          dbg('evaluating file: %O', path);
 
           if (hasExtensionAcceptedByBabel(path)) {
-            debug_('using babel to evaluate source file imports');
+            if (useCached) {
+              const cachedEntry = cache.get(CacheScope.GatherImportEntriesFromFiles, [
+                path,
+                cacheIdComponentsObject
+              ]);
+
+              if (cachedEntry) {
+                dbg('reusing cached resources: %O', cachedEntry);
+                return cachedEntry;
+              }
+            }
+
+            dbg('using babel to evaluate source file imports');
+
+            if (!babel) {
+              babel = getBabel();
+            }
+
+            if (!plugin || !accumulator) {
+              ({ plugin, accumulator } = createMetadataAccumulatorPlugin());
+            }
 
             await babel.transformFileAsync(
               path,
@@ -103,10 +166,19 @@ function gatherImportEntriesFromFiles_(
             const { imports } = accumulator.get(path) || {};
             assert(imports, ErrorMessage.GuruMeditation());
 
-            debug_('imports seen (%O): %O', imports.size, imports);
-            return [path, imports] satisfies ImportSpecifiersEntry;
+            dbg('imports seen (%O): %O', imports.size, imports);
+
+            const entry: ImportSpecifiersEntry = [path, imports];
+
+            cache.set(
+              CacheScope.GatherImportEntriesFromFiles,
+              [path, cacheIdComponentsObject],
+              entry
+            );
+
+            return entry;
           } else {
-            debug_('skipped using babel to evaluate asset');
+            dbg('skipped using babel to evaluate asset');
             return [path, new Set()] satisfies ImportSpecifiersEntry;
           }
         })
@@ -126,6 +198,11 @@ function gatherImportEntriesFromFiles_(
  * This function relies on Babel internally and ignores all configuration files.
  * All paths passed to this function that cannot be parsed as TSX/TS/JS (via
  * extension check) will be treated as if they have 0 imports.
+ *
+ * **NOTE: the result of this function is memoized! This does NOT _necessarily_
+ * mean results will strictly equal each other. See `useCached` in this specific
+ * function's options for details.** To fetch fresh results, set the `useCached`
+ * option to `false` or clear the internal cache with {@link cache.clear}.
  */
 export function gatherImportEntriesFromFiles(
   ...args: ParametersNoFirst<typeof gatherImportEntriesFromFiles_>
@@ -137,12 +214,18 @@ export function gatherImportEntriesFromFiles(
 export namespace gatherImportEntriesFromFiles {
   /**
    * Accepts zero or more file paths and synchronously returns an array of
-   * {@link ImportSpecifiersEntry}s each mapping a given file path to an array of
-   * import/require specifiers present in said file.
+   * {@link ImportSpecifiersEntry}s each mapping a given file path to an array
+   * of import/require specifiers present in said file.
    *
    * This function relies on Babel internally and ignores all configuration
    * files. All paths passed to this function that cannot be parsed as TSX/TS/JS
    * (via extension check) will be treated as if they have 0 imports.
+   *
+   * **NOTE: the result of this function is memoized! This does NOT
+   * _necessarily_ mean results will strictly equal each other. See `useCached`
+   * in this specific function's options for details.** To fetch fresh results,
+   * set the `useCached` option to `false` or clear the internal cache with
+   * {@link cache.clear}.
    */
   export const sync = function (...args) {
     return gatherImportEntriesFromFiles_(true, ...args);

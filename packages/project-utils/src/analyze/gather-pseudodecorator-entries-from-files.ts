@@ -3,13 +3,10 @@ import { readFile as readFileAsync } from 'node:fs/promises';
 
 import isValidNpmPackageName from 'validate-npm-package-name';
 
-import {
-  _internalPseudodecoratorCache,
-  cacheDebug
-} from 'rootverse+project-utils:src/analyze/cache.ts';
-
 import { debug as debug_ } from 'rootverse+project-utils:src/analyze/common.ts';
+import { cache, CacheScope } from 'rootverse+project-utils:src/cache.ts';
 import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
+
 import {
   type ParametersNoFirst,
   type SyncVersionOf
@@ -154,51 +151,60 @@ export type gatherPseudodecoratorsEntriesFromFilesOptions = {
   /**
    * Use the internal cached result from a previous run, if available.
    *
-   * The result of `gatherPseudodecoratorsEntriesFromFiles` will be cached
-   * regardless of `useCached`. `useCached` determines if the cached result will
-   * be returned or recomputed on subsequent calls.
+   * **WARNING: the results returned by this function, while functionally
+   * identical to each other, will _NOT_ strictly equal (`===`) each other.**
+   * However, each {@link PseudodecoratorsEntry} tuple within the returned
+   * results _will_ strictly equal each other, respectively.
    *
-   * **Note: cached results returned by this function, while functionally
-   * identical to each other, will _NOT_ strictly equal each other.**
-   *
-   * @default true
+   * @see {@link cache}
    */
-  useCached?: boolean;
+  useCached: boolean;
 };
 
 function gatherPseudodecoratorsEntriesFromFiles_(
   shouldRunSynchronously: false,
   files: AbsolutePath[],
-  options?: gatherPseudodecoratorsEntriesFromFilesOptions
+  options: gatherPseudodecoratorsEntriesFromFilesOptions
 ): Promise<PseudodecoratorsEntry[]>;
 function gatherPseudodecoratorsEntriesFromFiles_(
   shouldRunSynchronously: true,
   files: AbsolutePath[],
-  options?: gatherPseudodecoratorsEntriesFromFilesOptions
+  options: gatherPseudodecoratorsEntriesFromFilesOptions
 ): PseudodecoratorsEntry[];
 function gatherPseudodecoratorsEntriesFromFiles_(
   shouldRunSynchronously: boolean,
   files: AbsolutePath[],
-  { useCached = true }: gatherPseudodecoratorsEntriesFromFilesOptions = {}
+  { useCached, ...cacheIdComponentsObject }: gatherPseudodecoratorsEntriesFromFilesOptions
 ): Promisable<PseudodecoratorsEntry[]> {
   debug('evaluating files: %O', files);
 
   if (shouldRunSynchronously) {
     const pseudodecoratorsEntries = files.map((filepath, index) => {
-      const debug_ = debug.extend(`file-${index}`);
-      debug_('evaluating file: %O', filepath);
+      const dbg = debug.extend(`file-${index}`);
+      dbg('evaluating file: %O', filepath);
 
-      const cachedResult = getFromCache(filepath, useCached);
+      if (useCached) {
+        const cachedEntry = cache.get(CacheScope.GatherPseudodecoratorsEntriesFromFiles, [
+          filepath,
+          cacheIdComponentsObject
+        ]);
 
-      if (cachedResult) {
-        return [filepath, cachedResult] satisfies PseudodecoratorsEntry;
+        if (cachedEntry) {
+          dbg('reusing cached resources: %O', cachedEntry);
+          return cachedEntry;
+        }
       }
 
       const decorators = contentsToDecorators(readFileSync(filepath, 'utf8'));
       const entry: PseudodecoratorsEntry = [filepath, decorators];
 
       debug('new pseudodecorator entry: %O', entry);
-      setInCache(entry, useCached);
+
+      cache.set(
+        CacheScope.GatherPseudodecoratorsEntriesFromFiles,
+        [filepath, cacheIdComponentsObject],
+        entry
+      );
 
       return entry;
     });
@@ -208,20 +214,31 @@ function gatherPseudodecoratorsEntriesFromFiles_(
   } else {
     return Promise.all(
       files.map(async (filepath, index) => {
-        const debug_ = debug.extend(`file-${index}`);
-        debug_('evaluating file: %O', filepath);
+        const dbg = debug.extend(`file-${index}`);
+        dbg('evaluating file: %O', filepath);
 
-        const cachedResult = getFromCache(filepath, useCached);
+        if (useCached) {
+          const cachedEntry = cache.get(
+            CacheScope.GatherPseudodecoratorsEntriesFromFiles,
+            [filepath, cacheIdComponentsObject]
+          );
 
-        if (cachedResult) {
-          return [filepath, cachedResult] satisfies PseudodecoratorsEntry;
+          if (cachedEntry) {
+            dbg('reusing cached resources: %O', cachedEntry);
+            return cachedEntry;
+          }
         }
 
         const decorators = contentsToDecorators(await readFileAsync(filepath, 'utf8'));
         const entry: PseudodecoratorsEntry = [filepath, decorators];
 
         debug('new pseudodecorator entry: %O', entry);
-        setInCache(entry, useCached);
+
+        cache.set(
+          CacheScope.GatherPseudodecoratorsEntriesFromFiles,
+          [filepath, cacheIdComponentsObject],
+          entry
+        );
 
         return entry;
       })
@@ -240,7 +257,10 @@ function gatherPseudodecoratorsEntriesFromFiles_(
  * This function does _not_ rely on Babel or any other parsers and accepts any
  * file regardless of type or extension.
  *
- * @see {@link Pseudodecorator}
+ * **NOTE: the result of this function is memoized! This does NOT _necessarily_
+ * mean results will strictly equal each other. See `useCached` in this specific
+ * function's options for details.** To fetch fresh results, set the `useCached`
+ * option to `false` or clear the internal cache with {@link cache.clear}.
  */
 export function gatherPseudodecoratorsEntriesFromFiles(
   ...args: ParametersNoFirst<typeof gatherPseudodecoratorsEntriesFromFiles_>
@@ -258,7 +278,11 @@ export namespace gatherPseudodecoratorsEntriesFromFiles {
    * This function does _not_ rely on Babel or any other parsers and accepts any
    * file regardless of type or extension.
    *
-   * @see {@link Pseudodecorator}
+   * **NOTE: the result of this function is memoized! This does NOT
+   * _necessarily_ mean results will strictly equal each other. See `useCached`
+   * in this specific function's options for details.** To fetch fresh results,
+   * set the `useCached` option to `false` or clear the internal cache with
+   * {@link cache.clear}.
    */
   export const sync = function (...args) {
     return gatherPseudodecoratorsEntriesFromFiles_(true, ...args);
@@ -281,24 +305,4 @@ function contentsToDecorators(contents: string): Pseudodecorator[] {
         } satisfies Pseudodecorator;
       })
   );
-}
-
-function getFromCache(filepath: AbsolutePath, useCached: boolean) {
-  if (useCached && _internalPseudodecoratorCache.has(filepath)) {
-    cacheDebug('cache hit for %O', filepath);
-    const cachedResult = _internalPseudodecoratorCache.get(filepath)!;
-    debug('reusing cached sub-resource: %O', cachedResult);
-    return cachedResult;
-  } else {
-    cacheDebug('cache miss for %O', filepath);
-  }
-}
-
-function setInCache([key, pseudodecorators]: PseudodecoratorsEntry, useCached: boolean) {
-  if (useCached || !_internalPseudodecoratorCache.has(key)) {
-    _internalPseudodecoratorCache.set(key, pseudodecorators);
-    cacheDebug('cache entry %O updated', key);
-  } else {
-    cacheDebug('skipped updating cache entry %O', key);
-  }
 }

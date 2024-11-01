@@ -13,12 +13,6 @@ import {
 } from 'rootverse+project-utils:src/alias.ts';
 
 import {
-  _internalPackageBuildTargetsCache,
-  cacheDebug,
-  deriveCacheKeyFromPackageAndData
-} from 'rootverse+project-utils:src/analyze/cache.ts';
-
-import {
   debug as debug_,
   isWorkspacePackage,
   type Package,
@@ -32,14 +26,18 @@ import {
 
 import { gatherPackageFiles } from 'rootverse+project-utils:src/analyze/gather-package-files.ts';
 import { pathToPackage } from 'rootverse+project-utils:src/analyze/path-to-package.ts';
+import { cache, CacheScope } from 'rootverse+project-utils:src/cache.ts';
 import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
 import { type AbsolutePath, type RelativePath } from 'rootverse+project-utils:src/fs.ts';
+
 import {
   type ParametersNoFirst,
   type SyncVersionOf
 } from 'rootverse+project-utils:src/util.ts';
 
 import type { Promisable } from 'type-fest';
+
+const debug = debug_.extend('gatherPackageBuildTargets');
 
 /**
  * Prefixed to specifiers coming from non-source files.
@@ -53,13 +51,12 @@ export type GatherPackageBuildTargetsOptions = {
   /**
    * Use the internal cached result from a previous run, if available.
    *
-   * The result of `gatherPackageBuildTargets` will be cached regardless of
-   * `useCached`. `useCached` determines if the cached result will be returned
-   * or recomputed on subsequent calls.
+   * Unless `useCached` is `false`, the results returned by this function will
+   * always strictly equal (`===`) each other with respect to call signature.
    *
-   * @default true
+   * @see {@link cache}
    */
-  useCached?: boolean;
+  useCached: boolean;
   /**
    * Exclude paths from the internals result with respect to the patterns in
    * `excludeInternalsPatterns`, which are interpreted according to gitignore
@@ -78,27 +75,20 @@ export type GatherPackageBuildTargetsOptions = {
 function gatherPackageBuildTargets_(
   shouldRunSynchronously: false,
   package_: Package,
-  options?: GatherPackageBuildTargetsOptions
+  options: GatherPackageBuildTargetsOptions
 ): Promise<PackageBuildTargets>;
 function gatherPackageBuildTargets_(
   shouldRunSynchronously: true,
   package_: Package,
-  options?: GatherPackageBuildTargetsOptions
+  options: GatherPackageBuildTargetsOptions
 ): PackageBuildTargets;
 function gatherPackageBuildTargets_(
   shouldRunSynchronously: boolean,
   package_: Package,
-  {
-    excludeInternalsPatterns = [],
-    includeExternalsPatterns = [],
-    useCached = true
-  }: GatherPackageBuildTargetsOptions = {}
+  { useCached, ...cacheIdComponentsObject }: GatherPackageBuildTargetsOptions
 ): Promisable<PackageBuildTargets> {
-  const debug = debug_.extend('gatherPackageBuildTargets');
-  const cacheKey = deriveCacheKeyFromPackageAndData(package_, {
-    excludeInternalsPatterns,
-    includeExternalsPatterns
-  });
+  const { excludeInternalsPatterns = [], includeExternalsPatterns = [] } =
+    cacheIdComponentsObject;
 
   const { projectMetadata } = package_;
   const { rootPackage } = projectMetadata;
@@ -106,13 +96,18 @@ function gatherPackageBuildTargets_(
 
   const packageId_ = isWorkspacePackage(package_) ? package_.id : undefined;
 
-  if (useCached && _internalPackageBuildTargetsCache.has(cacheKey)) {
-    cacheDebug('cache hit for %O', cacheKey);
-    const cachedResult = _internalPackageBuildTargetsCache.get(cacheKey)!;
-    debug('reusing cached resources: %O', cachedResult);
-    return shouldRunSynchronously ? cachedResult : Promise.resolve(cachedResult);
-  } else {
-    cacheDebug('cache miss for %O', cacheKey);
+  if (useCached) {
+    const cachedBuildTargets = cache.get(CacheScope.GatherPackageBuildTargets, [
+      package_,
+      cacheIdComponentsObject
+    ]);
+
+    if (cachedBuildTargets) {
+      debug('reusing cached resources: %O', cachedBuildTargets);
+      return shouldRunSynchronously
+        ? cachedBuildTargets
+        : Promise.resolve(cachedBuildTargets);
+    }
   }
 
   const packageBuildTargets: PackageBuildTargets = {
@@ -139,7 +134,7 @@ function gatherPackageBuildTargets_(
 
   async function runAsynchronously() {
     const [packageSrcPaths, additionalExternalPaths] = await Promise.all([
-      gatherPackageFiles(package_, { ignore: excludeInternalsPatterns }).then(
+      gatherPackageFiles(package_, { ignore: excludeInternalsPatterns, useCached }).then(
         ({ src }) => src
       ),
       globAsync(includeExternalsPatterns, {
@@ -167,9 +162,10 @@ function gatherPackageBuildTargets_(
 
     ) {
       const externalPaths = rawSpecifiersToExternalTargetPaths(
-        true,
         // eslint-disable-next-line no-await-in-loop
-        await gatherImportEntriesFromFiles(Array.from(previousDiff.values()))
+        await gatherImportEntriesFromFiles(Array.from(previousDiff.values()), {
+          useCached
+        })
       );
 
       // * Note that targets.external is relative to the **PROJECT ROOT**
@@ -186,7 +182,10 @@ function gatherPackageBuildTargets_(
 
   function runSynchronously() {
     const [packageSrcPaths, additionalExternalPaths] = [
-      gatherPackageFiles.sync(package_, { ignore: excludeInternalsPatterns }).src,
+      gatherPackageFiles.sync(package_, {
+        ignore: excludeInternalsPatterns,
+        useCached
+      }).src,
       globSync(includeExternalsPatterns, {
         dot: true,
         absolute: true,
@@ -212,8 +211,9 @@ function gatherPackageBuildTargets_(
 
     ) {
       const externalPaths = rawSpecifiersToExternalTargetPaths(
-        true,
-        gatherImportEntriesFromFiles.sync(Array.from(previousDiff.values()))
+        gatherImportEntriesFromFiles.sync(Array.from(previousDiff.values()), {
+          useCached
+        })
       );
 
       // * Note that targets.external is relative to the **PROJECT ROOT**
@@ -231,12 +231,11 @@ function gatherPackageBuildTargets_(
   function finalize() {
     debug('package build targets: %O', packageBuildTargets);
 
-    if (useCached || !_internalPackageBuildTargetsCache.has(cacheKey)) {
-      _internalPackageBuildTargetsCache.set(cacheKey, packageBuildTargets);
-      cacheDebug('cache entry updated');
-    } else {
-      cacheDebug('skipped updating cache entry');
-    }
+    cache.set(
+      CacheScope.GatherPackageBuildTargets,
+      [package_, cacheIdComponentsObject],
+      packageBuildTargets
+    );
   }
 
   /**
@@ -250,49 +249,22 @@ function gatherPackageBuildTargets_(
    * @see {@link PackageBuildTargets}
    */
   function rawSpecifiersToExternalTargetPaths(
-    runSynchronously: false,
     entries: ImportSpecifiersEntry[]
-  ): Promise<Set<AbsolutePath>>;
-  function rawSpecifiersToExternalTargetPaths(
-    runSynchronously: true,
-    entries: ImportSpecifiersEntry[]
-  ): Set<AbsolutePath>;
-  function rawSpecifiersToExternalTargetPaths(
-    runSynchronously: boolean,
-    entries: ImportSpecifiersEntry[]
-  ): Promisable<Set<AbsolutePath>> {
+  ): Set<AbsolutePath> {
     const externalTargets: RelativePath[] = [];
 
-    if (runSynchronously) {
-      for (const [path, specifiers] of entries) {
-        const specifierPackage = pathToPackage.sync({ path, projectMetadata });
+    for (const [path, specifiers] of entries) {
+      const specifierPackage = pathToPackage(path, projectMetadata);
 
-        rawSpecifiersToExternalTargetPaths_(
-          externalTargets,
-          path,
-          specifiers,
-          specifierPackage
-        );
-      }
-
-      return new Set(relativePathsArrayToAbsolute(externalTargets, projectRoot));
-    } else {
-      return Promise.resolve().then(async () => {
-        for (const [path, specifiers] of entries) {
-          // eslint-disable-next-line no-await-in-loop
-          const specifierPackage = await pathToPackage({ path, projectMetadata });
-
-          rawSpecifiersToExternalTargetPaths_(
-            externalTargets,
-            path,
-            specifiers,
-            specifierPackage
-          );
-        }
-
-        return new Set(relativePathsArrayToAbsolute(externalTargets, projectRoot));
-      });
+      rawSpecifiersToExternalTargetPaths_(
+        externalTargets,
+        path,
+        specifiers,
+        specifierPackage
+      );
     }
+
+    return new Set(relativePathsArrayToAbsolute(externalTargets, projectRoot));
   }
 
   function rawSpecifiersToExternalTargetPaths_(
@@ -360,7 +332,10 @@ function gatherPackageBuildTargets_(
  * Also performs a lightweight correctness check of all imports as they're
  * encountered.
  *
- * @see {@link clearInternalCache}
+ * **NOTE: the result of this function is memoized! This does NOT _necessarily_
+ * mean results will strictly equal each other. See `useCached` in this specific
+ * function's options for details.** To fetch fresh results, set the `useCached`
+ * option to `false` or clear the internal cache with {@link cache.clear}.
  */
 export function gatherPackageBuildTargets(
   ...args: ParametersNoFirst<typeof gatherPackageBuildTargets_>
@@ -377,7 +352,11 @@ export namespace gatherPackageBuildTargets {
    * Also performs a lightweight correctness check of all imports as they're
    * encountered.
    *
-   * @see {@link clearInternalCache}
+   * **NOTE: the result of this function is memoized! This does NOT
+   * _necessarily_ mean results will strictly equal each other. See `useCached`
+   * in this specific function's options for details.** To fetch fresh results,
+   * set the `useCached` option to `false` or clear the internal cache with
+   * {@link cache.clear}.
    */
   export const sync = function (...args) {
     return gatherPackageBuildTargets_(true, ...args);

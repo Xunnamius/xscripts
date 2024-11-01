@@ -3,17 +3,13 @@ import { join as joinPath, relative as toRelativePath } from 'node:path';
 import { glob as globAsync, sync as globSync } from 'glob-gitignore';
 
 import {
-  _internalPackageFilesCache,
-  cacheDebug,
-  deriveCacheKeyFromPackageAndData
-} from 'rootverse+project-utils:src/analyze/cache.ts';
-
-import {
   assignResultTo,
   debug as debug_,
   type Package,
   type PackageFiles
 } from 'rootverse+project-utils:src/analyze/common.ts';
+
+import { cache, CacheScope } from 'rootverse+project-utils:src/cache.ts';
 
 import {
   deriveVirtualGitignoreLines,
@@ -27,6 +23,8 @@ import {
 } from 'rootverse+project-utils:src/util.ts';
 
 import type { Promisable } from 'type-fest';
+
+const debug = debug_.extend('gatherPackageFiles');
 
 const rawDistGlob = 'dist/**/*';
 // eslint-disable-next-line unicorn/prevent-abbreviations
@@ -42,13 +40,12 @@ export type GatherPackageFilesOptions = {
   /**
    * Use the internal cached result from a previous run, if available.
    *
-   * The result of `gatherPackageFiles` will be cached regardless of
-   * `useCached`. `useCached` determines if the cached result will be returned
-   * or recomputed on subsequent calls.
+   * Unless `useCached` is `false`, the results returned by this function will
+   * always strictly equal (`===`) each other with respect to call signature.
    *
-   * @default true
+   * @see {@link cache}
    */
-  useCached?: boolean;
+  useCached: boolean;
   /**
    * If `true`, use the project root's `.gitignore` file exclusively to filter
    * out returned project files.
@@ -72,35 +69,33 @@ export type GatherPackageFilesOptions = {
 function gatherPackageFiles_(
   shouldRunSynchronously: false,
   package_: Package,
-  options?: GatherPackageFilesOptions
+  options: GatherPackageFilesOptions
 ): Promise<PackageFiles>;
 function gatherPackageFiles_(
   shouldRunSynchronously: true,
   package_: Package,
-  options?: GatherPackageFilesOptions
+  options: GatherPackageFilesOptions
 ): PackageFiles;
 function gatherPackageFiles_(
   shouldRunSynchronously: boolean,
   package_: Package,
-  {
-    useCached = true,
-    skipGitIgnored: skipIgnored = true,
-    ignore: additionalIgnores = []
-  }: GatherPackageFilesOptions = {}
+  { useCached, ...cacheIdComponentsObject }: GatherPackageFilesOptions
 ): Promisable<PackageFiles> {
-  const debug = debug_.extend('gatherPackageFiles');
-  const cacheKey = deriveCacheKeyFromPackageAndData(package_, {
-    skipIgnored,
-    additionalIgnores
-  });
+  const { skipGitIgnored: skipIgnored = true, ignore: additionalIgnores = [] } =
+    cacheIdComponentsObject;
 
-  if (useCached && _internalPackageFilesCache.has(cacheKey)) {
-    cacheDebug('cache hit for %O', cacheKey);
-    const cachedResult = _internalPackageFilesCache.get(cacheKey)!;
-    debug('reusing cached resources: %O', cachedResult);
-    return shouldRunSynchronously ? cachedResult : Promise.resolve(cachedResult);
-  } else {
-    cacheDebug('cache miss for %O', cacheKey);
+  if (useCached) {
+    const cachedPackageFiles = cache.get(CacheScope.GatherPackageFiles, [
+      package_,
+      cacheIdComponentsObject
+    ]);
+
+    if (cachedPackageFiles) {
+      debug('reusing cached resources: %O', cachedPackageFiles);
+      return shouldRunSynchronously
+        ? cachedPackageFiles
+        : Promise.resolve(cachedPackageFiles);
+    }
   }
 
   const packageRoot = package_.root;
@@ -150,7 +145,9 @@ function gatherPackageFiles_(
   }
 
   async function runAsynchronously() {
-    const ignore = skipIgnored ? await deriveVirtualGitignoreLines({ projectRoot }) : [];
+    const ignore = skipIgnored
+      ? await deriveVirtualGitignoreLines(projectRoot, { useCached })
+      : [];
 
     // * Ignore "packages" + .gitignored'd + custom ignore
     const ignoreAndPackages = ignore.concat(packagesIgnore, additionalIgnores);
@@ -186,7 +183,9 @@ function gatherPackageFiles_(
   }
 
   function runSynchronously() {
-    const ignore = skipIgnored ? deriveVirtualGitignoreLines.sync({ projectRoot }) : [];
+    const ignore = skipIgnored
+      ? deriveVirtualGitignoreLines.sync(projectRoot, { useCached })
+      : [];
 
     // * Ignore "packages" + .gitignored'd + custom ignore
     const ignoreAndPackages = ignore.concat(packagesIgnore, additionalIgnores);
@@ -222,12 +221,11 @@ function gatherPackageFiles_(
   function finalize() {
     debug('package files: %O', packageFiles);
 
-    if (useCached || !_internalPackageFilesCache.has(cacheKey)) {
-      _internalPackageFilesCache.set(cacheKey, packageFiles);
-      cacheDebug('cache entry %O updated', cacheKey);
-    } else {
-      cacheDebug('skipped updating cache entry %O', cacheKey);
-    }
+    cache.set(
+      CacheScope.GatherPackageFiles,
+      [package_, cacheIdComponentsObject],
+      packageFiles
+    );
   }
 }
 
@@ -235,7 +233,10 @@ function gatherPackageFiles_(
  * Asynchronously construct a {@link PackageFiles} instance containing
  * {@link AbsolutePath}s to every file under `package_`'s root.
  *
- * @see {@link clearInternalCache}
+ * **NOTE: the result of this function is memoized! This does NOT _necessarily_
+ * mean results will strictly equal each other. See `useCached` in this specific
+ * function's options for details.** To fetch fresh results, set the `useCached`
+ * option to `false` or clear the internal cache with {@link cache.clear}.
  */
 export function gatherPackageFiles(
   ...args: ParametersNoFirst<typeof gatherPackageFiles_>
@@ -249,7 +250,11 @@ export namespace gatherPackageFiles {
    * Synchronously construct a {@link PackageFiles} instance containing
    * {@link AbsolutePath}s to every file under `package_`'s root.
    *
-   * @see {@link clearInternalCache}
+   * **NOTE: the result of this function is memoized! This does NOT
+   * _necessarily_ mean results will strictly equal each other. See `useCached`
+   * in this specific function's options for details.** To fetch fresh results,
+   * set the `useCached` option to `false` or clear the internal cache with
+   * {@link cache.clear}.
    */
   export const sync = function (...args) {
     return gatherPackageFiles_(true, ...args);

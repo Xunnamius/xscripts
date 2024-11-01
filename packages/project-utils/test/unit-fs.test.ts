@@ -5,13 +5,12 @@ import { toss } from 'toss-expression';
 
 import { runNoRejectOnBadExit } from 'multiverse+run';
 
+import { cache } from 'rootverse+project-utils:src/cache.ts';
 import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
 
 import {
   deriveVirtualGitignoreLines,
   deriveVirtualPrettierignoreLines,
-  ensurePathIsAbsolute,
-  ensurePathIsRelative,
   isAccessible,
   readJson,
   readJsonc,
@@ -33,88 +32,60 @@ const mockedAccessSync = asMockedFunction(accessSync);
 const mockedAccessAsync = asMockedFunction(accessAsync);
 const mockedRun = asMockedFunction(runNoRejectOnBadExit);
 
-describe('::ensurePathIsAbsolute', () => {
-  describe('<synchronous>', () => {
-    it('throws iff path is not absolute', async () => {
-      expect.hasAssertions();
-
-      expect(() => ensurePathIsAbsolute.sync({ path: './not/absolute' })).toThrow(
-        ErrorMessage.PathIsNotAbsolute('./not/absolute')
-      );
-
-      expect(ensurePathIsAbsolute.sync({ path: '/absolute' })).toBe('/absolute');
-    });
-  });
-
-  describe('<asynchronous>', () => {
-    it('returns a rejected promise iff path is not absolute', async () => {
-      expect.hasAssertions();
-
-      await expect(ensurePathIsAbsolute({ path: './not/absolute' })).rejects.toThrow(
-        ErrorMessage.PathIsNotAbsolute('./not/absolute')
-      );
-
-      await expect(ensurePathIsAbsolute({ path: '/absolute' })).resolves.toBe(
-        '/absolute'
-      );
-    });
-  });
-});
-
-describe('::ensurePathIsRelative', () => {
-  describe('<synchronous>', () => {
-    it('throws iff path is absolute', async () => {
-      expect.hasAssertions();
-
-      expect(() => ensurePathIsRelative.sync({ path: '/absolute/path' })).toThrow(
-        ErrorMessage.PathIsNotRelative('/absolute/path')
-      );
-
-      expect(ensurePathIsRelative.sync({ path: '../not/absolute' })).toBe(
-        '../not/absolute'
-      );
-    });
-  });
-
-  describe('<asynchronous>', () => {
-    it('returns a rejected promise iff path is absolute', async () => {
-      expect.hasAssertions();
-
-      await expect(ensurePathIsRelative({ path: '/absolute/path' })).rejects.toThrow(
-        ErrorMessage.PathIsNotRelative('/absolute/path')
-      );
-
-      await expect(ensurePathIsRelative({ path: '../not/absolute' })).resolves.toBe(
-        '../not/absolute'
-      );
-    });
-  });
+afterEach(() => {
+  cache.clear();
 });
 
 describe('::isAccessible', () => {
   describe('<synchronous>', () => {
-    it('returns true for path with default accessibility (R_OK)', async () => {
+    it('returns true for path with default accessibility (R_OK)', () => {
       expect.hasAssertions();
 
-      mockedAccessSync.mockImplementationOnce(() => undefined);
+      mockedAccessSync.mockImplementation(() => undefined);
 
-      expect(isAccessible.sync({ path: '/pretend/it/does/exist' })).toBeTrue();
+      expect(isAccessible.sync('/pretend/it/does/exist', { useCached: true })).toBeTrue();
     });
 
-    it('returns false for path without default accessibility (R_OK)', async () => {
+    it('returns false for path without default accessibility (R_OK)', () => {
       expect.hasAssertions();
 
-      mockedAccessSync.mockImplementationOnce(() => toss(new Error('nope')));
+      mockedAccessSync.mockImplementation(() => toss(new Error('nope')));
 
-      expect(isAccessible.sync({ path: '/pretend/it/does/exist' })).toBeFalse();
+      expect(
+        isAccessible.sync('/pretend/it/does/exist', { useCached: true })
+      ).toBeFalse();
     });
 
-    it('returns false for non-existent path', async () => {
+    it('returns false for non-existent path', () => {
       expect.hasAssertions();
 
-      mockedAccessSync.mockImplementationOnce(() => toss(new Error('no')));
+      mockedAccessSync.mockImplementation(() => toss(new Error('no')));
 
-      expect(isAccessible.sync({ path: '/does/not/exist' })).toBeFalse();
+      expect(isAccessible.sync('/does/not/exist', { useCached: true })).toBeFalse();
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
+      expect.hasAssertions();
+
+      mockedAccessSync.mockImplementation(() => undefined);
+
+      expect(
+        isAccessible.sync('/pretend/it/does/exist', { useCached: false })
+      ).toBeTrue();
+
+      mockedAccessSync.mockImplementation(() => toss(new Error('no')));
+
+      expect(isAccessible.sync('/pretend/it/does/exist', { useCached: true })).toBeTrue();
+
+      mockedAccessSync.mockImplementation(() => toss(new Error('no')));
+
+      expect(
+        isAccessible.sync('/pretend/it/does/exist', { useCached: false })
+      ).toBeFalse();
+
+      mockedAccessSync.mockImplementation(() => undefined);
+
+      expect(isAccessible.sync('/different/path', { useCached: true })).toBeTrue();
     });
   });
 
@@ -122,67 +93,123 @@ describe('::isAccessible', () => {
     it('returns true for path with default accessibility (R_OK)', async () => {
       expect.hasAssertions();
 
-      mockedAccessAsync.mockImplementationOnce(() => Promise.resolve());
+      mockedAccessAsync.mockImplementation(() => Promise.resolve());
 
-      await expect(isAccessible({ path: '/pretend/it/does/exist' })).resolves.toBeTrue();
+      await expect(
+        isAccessible('/pretend/it/does/exist', { useCached: true })
+      ).resolves.toBeTrue();
     });
 
     it('returns false for path without default accessibility (R_OK)', async () => {
       expect.hasAssertions();
 
-      mockedAccessAsync.mockImplementationOnce(() => Promise.reject(new Error('nope')));
+      mockedAccessAsync.mockImplementation(() => Promise.reject(new Error('nope')));
 
-      await expect(isAccessible({ path: '/pretend/it/does/exist' })).resolves.toBeFalse();
+      await expect(
+        isAccessible('/pretend/it/does/exist', { useCached: true })
+      ).resolves.toBeFalse();
     });
 
     it('returns false for non-existent path', async () => {
       expect.hasAssertions();
 
-      mockedAccessAsync.mockImplementationOnce(() => Promise.reject(new Error('no')));
+      mockedAccessAsync.mockImplementation(() => Promise.reject(new Error('no')));
 
-      await expect(isAccessible({ path: '/does/not/exist' })).resolves.toBeFalse();
+      await expect(
+        isAccessible('/does/not/exist', { useCached: true })
+      ).resolves.toBeFalse();
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
+      expect.hasAssertions();
+
+      mockedAccessAsync.mockImplementation(() => Promise.resolve());
+
+      await expect(
+        isAccessible('/pretend/it/does/exist', { useCached: false })
+      ).resolves.toBeTrue();
+
+      mockedAccessAsync.mockImplementation(() => Promise.reject(new Error('no')));
+
+      await expect(
+        isAccessible('/pretend/it/does/exist', { useCached: true })
+      ).resolves.toBeTrue();
+
+      mockedAccessAsync.mockImplementation(() => Promise.reject(new Error('no')));
+
+      await expect(
+        isAccessible('/pretend/it/does/exist', { useCached: false })
+      ).resolves.toBeFalse();
+
+      mockedAccessAsync.mockImplementation(() => Promise.resolve());
+
+      await expect(
+        isAccessible('/different/path', { useCached: true })
+      ).resolves.toBeTrue();
     });
   });
 });
 
 describe('::readJson', () => {
   describe('<synchronous>', () => {
-    it('accepts a package.json path and returns its parsed contents', async () => {
+    it('accepts a package.json path and returns its parsed contents', () => {
       expect.hasAssertions();
 
       const expectedJson = { name: 'good-package-json-name' };
       mockedReadFileSync.mockImplementation(() => JSON.stringify(expectedJson));
 
       expect(
-        readJson.sync({ path: '/fake/path/package.json' as AbsolutePath })
+        readJson.sync('/fake/path/package.json' as AbsolutePath, { useCached: true })
       ).toStrictEqual(expectedJson);
     });
 
-    it('throws if path is not absolute', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        readJson.sync({ path: 'does/not/exist/package.json' as AbsolutePath })
-      ).toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist/package.json'));
-    });
-
-    it('throws on read failure', async () => {
+    it('throws on read failure', () => {
       expect.hasAssertions();
 
       mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
 
       expect(() =>
-        readJson.sync({ path: '/does/not/exist/package.json' as AbsolutePath })
+        readJson.sync('/does/not/exist/package.json' as AbsolutePath, { useCached: true })
       ).toThrow(ErrorMessage.NotReadable('/does/not/exist/package.json'));
     });
 
-    it('throws on parse failure', async () => {
+    it('throws on parse failure', () => {
       expect.hasAssertions();
 
       const path = '/fake/path/package.json' as AbsolutePath;
       mockedReadFileSync.mockImplementation(() => '{{');
 
-      expect(() => readJson.sync({ path })).toThrow(ErrorMessage.NotParsable(path));
+      expect(() => readJson.sync(path, { useCached: true })).toThrow(
+        ErrorMessage.NotParsable(path)
+      );
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
+      expect.hasAssertions();
+
+      const expectedJson = { name: 'good-package-json-name' };
+
+      mockedReadFileSync.mockImplementation(() => JSON.stringify(expectedJson));
+
+      const json = readJson.sync('/fake/path/package.json' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(json).toStrictEqual(expectedJson);
+
+      expect(
+        readJson.sync('/fake/path/package.json' as AbsolutePath, { useCached: true })
+      ).toBe(json);
+
+      const updatedJson = readJson.sync('/fake/path/package.json' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(updatedJson).not.toBe(json);
+
+      expect(
+        readJson.sync('/fake/path/package.json' as AbsolutePath, { useCached: true })
+      ).toBe(updatedJson);
     });
   });
 
@@ -197,16 +224,8 @@ describe('::readJson', () => {
       );
 
       await expect(
-        readJson({ path: '/fake/path/package.json' as AbsolutePath })
+        readJson('/fake/path/package.json' as AbsolutePath, { useCached: true })
       ).resolves.toStrictEqual(expectedJson);
-    });
-
-    it('throws if path is not absolute', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        readJson({ path: 'does/not/exist/package.json' as AbsolutePath })
-      ).rejects.toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist/package.json'));
     });
 
     it('throws on read failure', async () => {
@@ -215,7 +234,7 @@ describe('::readJson', () => {
       mockedReadFileAsync.mockImplementation(() => Promise.reject());
 
       await expect(
-        readJson({ path: '/does/not/exist/package.json' as AbsolutePath })
+        readJson('/does/not/exist/package.json' as AbsolutePath, { useCached: true })
       ).rejects.toThrow(ErrorMessage.NotReadable('/does/not/exist/package.json'));
     });
 
@@ -225,49 +244,105 @@ describe('::readJson', () => {
       const path = '/fake/path/package.json' as AbsolutePath;
       mockedReadFileAsync.mockImplementation(() => Promise.resolve('{{'));
 
-      await expect(readJson({ path })).rejects.toThrow(ErrorMessage.NotParsable(path));
+      await expect(readJson(path, { useCached: true })).rejects.toThrow(
+        ErrorMessage.NotParsable(path)
+      );
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
+      expect.hasAssertions();
+
+      const expectedJson = { name: 'good-package-json-name' };
+
+      mockedReadFileAsync.mockImplementation(() =>
+        Promise.resolve(JSON.stringify(expectedJson))
+      );
+
+      const json = await readJson('/fake/path/package.json' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(json).toStrictEqual(expectedJson);
+
+      await expect(
+        readJson('/fake/path/package.json' as AbsolutePath, { useCached: true })
+      ).resolves.toBe(json);
+
+      const updatedJson = await readJson('/fake/path/package.json' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(updatedJson).not.toBe(json);
+
+      await expect(
+        readJson('/fake/path/package.json' as AbsolutePath, { useCached: true })
+      ).resolves.toBe(updatedJson);
     });
   });
 });
 
 describe('::readJsonc', () => {
   describe('<synchronous>', () => {
-    it('accepts a package.json path and returns its parsed contents', async () => {
+    it('accepts a package.json path and returns its parsed contents', () => {
       expect.hasAssertions();
 
       const expectedJson = { name: 'good-package-json-name' };
       mockedReadFileSync.mockImplementation(() => JSON.stringify(expectedJson));
 
       expect(
-        readJsonc.sync({ path: '/fake/path/package.json' as AbsolutePath })
+        readJsonc.sync('/fake/path/package.json' as AbsolutePath, { useCached: true })
       ).toStrictEqual(expectedJson);
     });
 
-    it('throws if path is not absolute', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        readJsonc.sync({ path: 'does/not/exist/package.json' as AbsolutePath })
-      ).toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist/package.json'));
-    });
-
-    it('throws on read failure', async () => {
+    it('throws on read failure', () => {
       expect.hasAssertions();
 
       mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
 
       expect(() =>
-        readJsonc.sync({ path: '/does/not/exist/package.json' as AbsolutePath })
+        readJsonc.sync('/does/not/exist/package.json' as AbsolutePath, {
+          useCached: true
+        })
       ).toThrow(ErrorMessage.NotReadable('/does/not/exist/package.json'));
     });
 
-    it('throws on parse failure', async () => {
+    it('throws on parse failure', () => {
       expect.hasAssertions();
 
       const path = '/fake/path/package.json' as AbsolutePath;
       mockedReadFileSync.mockImplementation(() => '{{');
 
-      expect(() => readJsonc.sync({ path })).toThrow(ErrorMessage.NotParsable(path));
+      expect(() => readJsonc.sync(path, { useCached: true })).toThrow(
+        ErrorMessage.NotParsable(path)
+      );
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
+      expect.hasAssertions();
+
+      const expectedJson = { name: 'good-package-json-name' };
+
+      mockedReadFileSync.mockImplementation(() => JSON.stringify(expectedJson));
+
+      const json = readJsonc.sync('/fake/path/package.json' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(json).toStrictEqual(expectedJson);
+
+      expect(
+        readJsonc.sync('/fake/path/package.json' as AbsolutePath, { useCached: true })
+      ).toBe(json);
+
+      const updatedJson = readJsonc.sync('/fake/path/package.json' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(updatedJson).not.toBe(json);
+
+      expect(
+        readJsonc.sync('/fake/path/package.json' as AbsolutePath, { useCached: true })
+      ).toBe(updatedJson);
     });
   });
 
@@ -282,16 +357,8 @@ describe('::readJsonc', () => {
       );
 
       await expect(
-        readJsonc({ path: '/fake/path/package.json' as AbsolutePath })
+        readJsonc('/fake/path/package.json' as AbsolutePath, { useCached: true })
       ).resolves.toStrictEqual(expectedJson);
-    });
-
-    it('throws if path is not absolute', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        readJsonc({ path: 'does/not/exist/package.json' as AbsolutePath })
-      ).rejects.toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist/package.json'));
     });
 
     it('throws on read failure', async () => {
@@ -300,7 +367,7 @@ describe('::readJsonc', () => {
       mockedReadFileAsync.mockImplementation(() => Promise.reject('fail'));
 
       await expect(
-        readJsonc({ path: '/does/not/exist/package.json' as AbsolutePath })
+        readJsonc('/does/not/exist/package.json' as AbsolutePath, { useCached: true })
       ).rejects.toThrow(ErrorMessage.NotReadable('/does/not/exist/package.json'));
     });
 
@@ -310,7 +377,39 @@ describe('::readJsonc', () => {
       const path = '/fake/path/package.json' as AbsolutePath;
       mockedReadFileAsync.mockImplementation(() => Promise.resolve('{{'));
 
-      await expect(readJsonc({ path })).rejects.toThrow(ErrorMessage.NotParsable(path));
+      await expect(readJsonc(path, { useCached: true })).rejects.toThrow(
+        ErrorMessage.NotParsable(path)
+      );
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
+      expect.hasAssertions();
+
+      const expectedJson = { name: 'good-package-json-name' };
+
+      mockedReadFileAsync.mockImplementation(() =>
+        Promise.resolve(JSON.stringify(expectedJson))
+      );
+
+      const json = await readJsonc('/fake/path/package.json' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(json).toStrictEqual(expectedJson);
+
+      await expect(
+        readJsonc('/fake/path/package.json' as AbsolutePath, { useCached: true })
+      ).resolves.toBe(json);
+
+      const updatedJson = await readJsonc('/fake/path/package.json' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(updatedJson).not.toBe(json);
+
+      await expect(
+        readJsonc('/fake/path/package.json' as AbsolutePath, { useCached: true })
+      ).resolves.toBe(updatedJson);
     });
   });
 });
@@ -324,36 +423,60 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileSync.mockImplementation(() => JSON.stringify(expectedJson));
 
       expect(
-        readPackageJsonAtRoot.sync({ root: fixtures.goodPolyrepo.root })
+        readPackageJsonAtRoot.sync(fixtures.goodPolyrepo.root, { useCached: true })
       ).toStrictEqual(expectedJson);
     });
 
-    it('throws if path is not absolute', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        readPackageJsonAtRoot.sync({ root: 'does/not/exist' as AbsolutePath })
-      ).toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist/package.json'));
-    });
-
-    it('throws on read failure', async () => {
+    it('throws on read failure', () => {
       expect.hasAssertions();
 
       mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
 
       expect(() =>
-        readPackageJsonAtRoot.sync({ root: '/does/not/exist' as AbsolutePath })
+        readPackageJsonAtRoot.sync('/does/not/exist' as AbsolutePath, { useCached: true })
       ).toThrow('/does/not/exist/package.json');
     });
 
-    it('throws on parse failure', async () => {
+    it('throws on parse failure', () => {
       expect.hasAssertions();
 
       mockedReadFileSync.mockImplementation(() => '{{');
 
       expect(() =>
-        readPackageJsonAtRoot.sync({ root: fixtures.goodPolyrepo.root })
+        readPackageJsonAtRoot.sync(fixtures.goodPolyrepo.root, { useCached: true })
       ).toThrow(`${fixtures.goodPolyrepo.root}/package.json`);
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
+      expect.hasAssertions();
+
+      const expectedJson = { name: 'good-package-json-name' };
+      mockedReadFileSync.mockImplementation(() => JSON.stringify(expectedJson));
+
+      const json = readPackageJsonAtRoot.sync('/fake/path/package.json' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(json).toStrictEqual(expectedJson);
+
+      expect(
+        readPackageJsonAtRoot.sync('/fake/path/package.json' as AbsolutePath, {
+          useCached: true
+        })
+      ).toBe(json);
+
+      const updatedJson = readPackageJsonAtRoot.sync(
+        '/fake/path/package.json' as AbsolutePath,
+        { useCached: false }
+      );
+
+      expect(updatedJson).not.toBe(json);
+
+      expect(
+        readPackageJsonAtRoot.sync('/fake/path/package.json' as AbsolutePath, {
+          useCached: true
+        })
+      ).toBe(updatedJson);
     });
   });
 
@@ -367,16 +490,8 @@ describe('::readPackageJsonAtRoot', () => {
       );
 
       await expect(
-        readPackageJsonAtRoot({ root: fixtures.goodPolyrepo.root })
+        readPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true })
       ).resolves.toStrictEqual(expectedJson);
-    });
-
-    it('throws if path is not absolute', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        readPackageJsonAtRoot({ root: 'does/not/exist' as AbsolutePath })
-      ).rejects.toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist/package.json'));
     });
 
     it('throws on read failure', async () => {
@@ -385,7 +500,7 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileAsync.mockImplementation(() => Promise.reject('fail'));
 
       await expect(
-        readPackageJsonAtRoot({ root: '/does/not/exist' as AbsolutePath })
+        readPackageJsonAtRoot('/does/not/exist' as AbsolutePath, { useCached: true })
       ).rejects.toThrow('/does/not/exist/package.json');
     });
 
@@ -395,18 +510,54 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileAsync.mockImplementation(() => Promise.resolve('{{'));
 
       await expect(
-        readPackageJsonAtRoot({ root: fixtures.goodPolyrepo.root })
+        readPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true })
       ).rejects.toThrow(`${fixtures.goodPolyrepo.root}/package.json`);
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
+      expect.hasAssertions();
+
+      const expectedJson = { name: 'good-package-json-name' };
+
+      mockedReadFileAsync.mockImplementation(() =>
+        Promise.resolve(JSON.stringify(expectedJson))
+      );
+
+      const json = await readPackageJsonAtRoot(
+        '/fake/path/package.json' as AbsolutePath,
+        { useCached: false }
+      );
+
+      expect(json).toStrictEqual(expectedJson);
+
+      await expect(
+        readPackageJsonAtRoot('/fake/path/package.json' as AbsolutePath, {
+          useCached: true
+        })
+      ).resolves.toBe(json);
+
+      const updatedJson = await readPackageJsonAtRoot(
+        '/fake/path/package.json' as AbsolutePath,
+        { useCached: false }
+      );
+
+      expect(updatedJson).not.toBe(json);
+
+      await expect(
+        readPackageJsonAtRoot('/fake/path/package.json' as AbsolutePath, {
+          useCached: true
+        })
+      ).resolves.toBe(updatedJson);
     });
   });
 });
 
 describe('::deriveVirtualPrettierignoreLines', () => {
   describe('<synchronous>', () => {
-    it('returns lines from root .prettierignore file', async () => {
+    it('returns lines from root .prettierignore file', () => {
       expect.hasAssertions();
 
-      mockedReadFileSync.mockImplementationOnce((path) => {
+      mockedReadFileSync.mockImplementation((path) => {
         expect(path).toBe('/fake/root/.prettierignore');
 
         return [
@@ -419,34 +570,75 @@ describe('::deriveVirtualPrettierignoreLines', () => {
       });
 
       expect(
-        deriveVirtualPrettierignoreLines.sync({
-          projectRoot: '/fake/root' as AbsolutePath
+        deriveVirtualPrettierignoreLines.sync('/fake/root' as AbsolutePath, {
+          useCached: true
         })
       ).toStrictEqual(['.git', 'item-1', 'item-2']);
     });
 
-    it('returns base array if .prettierignore does not exist', async () => {
+    it('returns base array if .prettierignore does not exist', () => {
       expect.hasAssertions();
 
-      mockedReadFileSync.mockImplementationOnce(() => toss(new Error('contrived')));
+      mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
 
       expect(
-        deriveVirtualPrettierignoreLines.sync({
-          projectRoot: '/fake/root' as AbsolutePath
+        deriveVirtualPrettierignoreLines.sync('/fake/root' as AbsolutePath, {
+          useCached: true
         })
       ).toStrictEqual(['.git']);
     });
 
-    it('triggers a type error given bad sync options', async () => {
+    it('triggers a type error given bad sync options', () => {
       expect.hasAssertions();
 
       expect(() =>
-        deriveVirtualPrettierignoreLines.sync({
-          projectRoot: '/fake/root' as AbsolutePath,
+        deriveVirtualPrettierignoreLines.sync('/fake/root' as AbsolutePath, {
+          useCached: true,
           // @ts-expect-error: we expect this to fail or something's wrong
           includeUnknownPaths: true
         })
       ).toThrow(ErrorMessage.DeriverAsyncConfigurationConflict());
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
+      expect.hasAssertions();
+
+      mockedReadFileSync.mockImplementation((path) => {
+        expect(path).toBe('/fake/root/.prettierignore');
+
+        return [
+          '# should be ignored',
+          'item-1',
+          '# should be ignored',
+          'item-2',
+          '# should be ignored'
+        ].join('\n');
+      });
+
+      const result = deriveVirtualPrettierignoreLines.sync('/fake/root' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(result).toStrictEqual(['.git', 'item-1', 'item-2']);
+
+      expect(
+        deriveVirtualPrettierignoreLines.sync('/fake/root' as AbsolutePath, {
+          useCached: true
+        })
+      ).toBe(result);
+
+      const updatedResult = deriveVirtualPrettierignoreLines.sync(
+        '/fake/root' as AbsolutePath,
+        { useCached: false }
+      );
+
+      expect(updatedResult).not.toBe(result);
+
+      expect(
+        deriveVirtualPrettierignoreLines.sync('/fake/root' as AbsolutePath, {
+          useCached: true
+        })
+      ).toBe(updatedResult);
     });
   });
 
@@ -454,7 +646,7 @@ describe('::deriveVirtualPrettierignoreLines', () => {
     it('returns lines from root .prettierignore file', async () => {
       expect.hasAssertions();
 
-      mockedReadFileAsync.mockImplementationOnce((path) => {
+      mockedReadFileAsync.mockImplementation((path) => {
         expect(path).toBe('/fake/root/.prettierignore');
 
         return Promise.resolve(
@@ -469,8 +661,8 @@ describe('::deriveVirtualPrettierignoreLines', () => {
       });
 
       await expect(
-        deriveVirtualPrettierignoreLines({
-          projectRoot: '/fake/root' as AbsolutePath
+        deriveVirtualPrettierignoreLines('/fake/root' as AbsolutePath, {
+          useCached: true
         })
       ).resolves.toStrictEqual(['.git', 'item-1', 'item-2']);
     });
@@ -478,11 +670,11 @@ describe('::deriveVirtualPrettierignoreLines', () => {
     it('returns base array if .prettierignore does not exist', async () => {
       expect.hasAssertions();
 
-      mockedReadFileAsync.mockImplementationOnce(() => Promise.reject());
+      mockedReadFileAsync.mockImplementation(() => Promise.reject());
 
       await expect(
-        deriveVirtualPrettierignoreLines({
-          projectRoot: '/fake/root' as AbsolutePath,
+        deriveVirtualPrettierignoreLines('/fake/root' as AbsolutePath, {
+          useCached: true,
           includeUnknownPaths: false
         })
       ).resolves.toStrictEqual(['.git']);
@@ -491,14 +683,14 @@ describe('::deriveVirtualPrettierignoreLines', () => {
     it('returns lines from root .prettierignore file and unknown files from git if requested', async () => {
       expect.hasAssertions();
 
-      mockedRun.mockImplementationOnce(
+      mockedRun.mockImplementation(
         () =>
           Promise.resolve({
             stdout: ['.git', 'item-3', 'item-4'].join('\n')
           }) as ReturnType<typeof runNoRejectOnBadExit>
       );
 
-      mockedReadFileAsync.mockImplementationOnce((path) => {
+      mockedReadFileAsync.mockImplementation((path) => {
         expect(path).toBe('/fake/root/.prettierignore');
 
         return Promise.resolve(
@@ -513,21 +705,65 @@ describe('::deriveVirtualPrettierignoreLines', () => {
       });
 
       await expect(
-        deriveVirtualPrettierignoreLines({
-          projectRoot: '/fake/root' as AbsolutePath,
+        deriveVirtualPrettierignoreLines('/fake/root' as AbsolutePath, {
+          useCached: true,
           includeUnknownPaths: true
         })
       ).resolves.toStrictEqual(['.git', 'item-1', 'item-2', 'item-3', 'item-4']);
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
+      expect.hasAssertions();
+
+      mockedReadFileAsync.mockImplementation((path) => {
+        expect(path).toBe('/fake/root/.prettierignore');
+
+        return Promise.resolve(
+          [
+            '# should be ignored',
+            'item-1',
+            '# should be ignored',
+            'item-2',
+            '# should be ignored'
+          ].join('\n')
+        );
+      });
+
+      const result = await deriveVirtualPrettierignoreLines(
+        '/fake/root' as AbsolutePath,
+        { useCached: false }
+      );
+
+      expect(result).toStrictEqual(['.git', 'item-1', 'item-2']);
+
+      await expect(
+        deriveVirtualPrettierignoreLines('/fake/root' as AbsolutePath, {
+          useCached: true
+        })
+      ).resolves.toBe(result);
+
+      const updatedResult = await deriveVirtualPrettierignoreLines(
+        '/fake/root' as AbsolutePath,
+        { useCached: false }
+      );
+
+      expect(updatedResult).not.toBe(result);
+
+      await expect(
+        deriveVirtualPrettierignoreLines('/fake/root' as AbsolutePath, {
+          useCached: true
+        })
+      ).resolves.toBe(updatedResult);
     });
   });
 });
 
 describe('::deriveVirtualGitignoreLines', () => {
   describe('<synchronous>', () => {
-    it('returns lines from root .gitignore file', async () => {
+    it('returns lines from root .gitignore file', () => {
       expect.hasAssertions();
 
-      mockedReadFileSync.mockImplementationOnce((path) => {
+      mockedReadFileSync.mockImplementation((path) => {
         expect(path).toBe('/fake/root/.gitignore');
 
         return [
@@ -540,30 +776,75 @@ describe('::deriveVirtualGitignoreLines', () => {
       });
 
       expect(
-        deriveVirtualGitignoreLines.sync({ projectRoot: '/fake/root' as AbsolutePath })
+        deriveVirtualGitignoreLines.sync('/fake/root' as AbsolutePath, {
+          useCached: true
+        })
       ).toStrictEqual(['.git', 'item-1', 'item-2']);
     });
 
-    it('returns base array if .gitignore does not exist', async () => {
+    it('returns base array if .gitignore does not exist', () => {
       expect.hasAssertions();
 
-      mockedReadFileSync.mockImplementationOnce(() => toss(new Error('contrived')));
+      mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
 
       expect(
-        deriveVirtualGitignoreLines.sync({ projectRoot: '/fake/root' as AbsolutePath })
+        deriveVirtualGitignoreLines.sync('/fake/root' as AbsolutePath, {
+          useCached: true
+        })
       ).toStrictEqual(['.git']);
     });
 
-    it('triggers a type error given bad sync options', async () => {
+    it('triggers a type error given bad sync options', () => {
       expect.hasAssertions();
 
       expect(() =>
-        deriveVirtualGitignoreLines.sync({
-          projectRoot: '/fake/root' as AbsolutePath,
+        deriveVirtualGitignoreLines.sync('/fake/root' as AbsolutePath, {
+          useCached: true,
           // @ts-expect-error: we expect this to fail or something's wrong
           includeUnknownPaths: true
         })
       ).toThrow(ErrorMessage.DeriverAsyncConfigurationConflict());
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
+      expect.hasAssertions();
+
+      mockedReadFileSync.mockImplementation((path) => {
+        expect(path).toBe('/fake/root/.gitignore');
+
+        return [
+          '# should be ignored',
+          'item-1',
+          '# should be ignored',
+          'item-2',
+          '# should be ignored'
+        ].join('\n');
+      });
+
+      const result = deriveVirtualGitignoreLines.sync('/fake/root' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(result).toStrictEqual(['.git', 'item-1', 'item-2']);
+
+      expect(
+        deriveVirtualGitignoreLines.sync('/fake/root' as AbsolutePath, {
+          useCached: true
+        })
+      ).toBe(result);
+
+      const updatedResult = deriveVirtualGitignoreLines.sync(
+        '/fake/root' as AbsolutePath,
+        { useCached: false }
+      );
+
+      expect(updatedResult).not.toBe(result);
+
+      expect(
+        deriveVirtualGitignoreLines.sync('/fake/root' as AbsolutePath, {
+          useCached: true
+        })
+      ).toBe(updatedResult);
     });
   });
 
@@ -571,7 +852,7 @@ describe('::deriveVirtualGitignoreLines', () => {
     it('returns lines from root .gitignore file', async () => {
       expect.hasAssertions();
 
-      mockedReadFileAsync.mockImplementationOnce((path) => {
+      mockedReadFileAsync.mockImplementation((path) => {
         expect(path).toBe('/fake/root/.gitignore');
 
         return Promise.resolve(
@@ -586,21 +867,19 @@ describe('::deriveVirtualGitignoreLines', () => {
       });
 
       await expect(
-        deriveVirtualGitignoreLines({
-          projectRoot: '/fake/root' as AbsolutePath
-        })
+        deriveVirtualGitignoreLines('/fake/root' as AbsolutePath, { useCached: true })
       ).resolves.toStrictEqual(['.git', 'item-1', 'item-2']);
     });
 
     it('returns base array if .gitignore does not exist', async () => {
       expect.hasAssertions();
 
-      mockedReadFileAsync.mockImplementationOnce(() => Promise.reject());
+      mockedReadFileAsync.mockImplementation(() => Promise.reject());
 
       await expect(
-        deriveVirtualGitignoreLines({
-          projectRoot: '/fake/root' as AbsolutePath,
-          includeUnknownPaths: false
+        deriveVirtualGitignoreLines('/fake/root' as AbsolutePath, {
+          useCached: true,
+          includeUnknownPaths: true
         })
       ).resolves.toStrictEqual(['.git']);
     });
@@ -608,14 +887,14 @@ describe('::deriveVirtualGitignoreLines', () => {
     it('returns lines from root .gitignore file and unknown files from git if requested', async () => {
       expect.hasAssertions();
 
-      mockedRun.mockImplementationOnce(
+      mockedRun.mockImplementation(
         () =>
           Promise.resolve({
             stdout: ['.git', 'item-3', 'item-4'].join('\n')
           }) as ReturnType<typeof runNoRejectOnBadExit>
       );
 
-      mockedReadFileAsync.mockImplementationOnce((path) => {
+      mockedReadFileAsync.mockImplementation((path) => {
         expect(path).toBe('/fake/root/.gitignore');
 
         return Promise.resolve(
@@ -630,11 +909,54 @@ describe('::deriveVirtualGitignoreLines', () => {
       });
 
       await expect(
-        deriveVirtualGitignoreLines({
-          projectRoot: '/fake/root' as AbsolutePath,
+        deriveVirtualGitignoreLines('/fake/root' as AbsolutePath, {
+          useCached: true,
           includeUnknownPaths: true
         })
       ).resolves.toStrictEqual(['.git', 'item-1', 'item-2', 'item-3', 'item-4']);
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
+      expect.hasAssertions();
+
+      mockedReadFileAsync.mockImplementation((path) => {
+        expect(path).toBe('/fake/root/.gitignore');
+
+        return Promise.resolve(
+          [
+            '# should be ignored',
+            'item-1',
+            '# should be ignored',
+            'item-2',
+            '# should be ignored'
+          ].join('\n')
+        );
+      });
+
+      const result = await deriveVirtualGitignoreLines('/fake/root' as AbsolutePath, {
+        useCached: false
+      });
+
+      expect(result).toStrictEqual(['.git', 'item-1', 'item-2']);
+
+      await expect(
+        deriveVirtualGitignoreLines('/fake/root' as AbsolutePath, {
+          useCached: true
+        })
+      ).resolves.toBe(result);
+
+      const updatedResult = await deriveVirtualGitignoreLines(
+        '/fake/root' as AbsolutePath,
+        { useCached: false }
+      );
+
+      expect(updatedResult).not.toBe(result);
+
+      await expect(
+        deriveVirtualGitignoreLines('/fake/root' as AbsolutePath, {
+          useCached: true
+        })
+      ).resolves.toBe(updatedResult);
     });
   });
 });

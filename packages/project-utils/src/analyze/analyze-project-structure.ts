@@ -12,11 +12,6 @@ import {
 import { toss } from 'toss-expression';
 
 import {
-  _internalProjectMetadataCache,
-  cacheDebug
-} from 'rootverse+project-utils:src/analyze/cache.ts';
-
-import {
   debug as debug_,
   ProjectAttribute,
   WorkspaceAttribute,
@@ -29,6 +24,7 @@ import {
 } from 'rootverse+project-utils:src/analyze/common.ts';
 
 import { packageRootToId } from 'rootverse+project-utils:src/analyze/package-root-to-id.ts';
+import { cache, CacheScope } from 'rootverse+project-utils:src/cache.ts';
 
 import {
   DuplicatePackageIdError,
@@ -37,9 +33,9 @@ import {
   NotAGitRepositoryError,
   ProjectError
 } from 'rootverse+project-utils:src/error.ts';
+
 import {
   deriveVirtualGitignoreLines,
-  ensurePathIsAbsolute,
   isAccessible,
   nextjsConfigProjectBase,
   readPackageJsonAtRoot,
@@ -70,29 +66,33 @@ export type AnalyzeProjectStructureOptions = {
   /**
    * Use the internal cached result from a previous run, if available.
    *
-   * The result of `analyzeProjectStructure` will be cached regardless of
-   * `useCached` (unless it has already been cached). `useCached` determines if
-   * the cached result will be returned or recomputed on subsequent calls.
+   * **WARNING: the results returned by this function, while functionally
+   * identical to each other, will _NOT_ strictly equal (`===`) each other.**
+   * However, each {@link Package} instance within the returned results _will_
+   * strictly equal each other, respectively.
    *
-   * @default true
+   * @see {@link cache}
    */
-  useCached?: boolean;
+  useCached: boolean;
 };
 
 function analyzeProjectStructure_(
   shouldRunSynchronously: false,
-  options?: AnalyzeProjectStructureOptions
+  options: AnalyzeProjectStructureOptions
 ): Promise<ProjectMetadata>;
 function analyzeProjectStructure_(
   shouldRunSynchronously: true,
-  options?: AnalyzeProjectStructureOptions
+  options: AnalyzeProjectStructureOptions
 ): ProjectMetadata;
 function analyzeProjectStructure_(
   shouldRunSynchronously: boolean,
-  options: AnalyzeProjectStructureOptions = {}
+  {
+    useCached,
+    cwd = process.cwd() as AbsolutePath,
+    ...incompleteCacheIdComponentsObject
+  }: AnalyzeProjectStructureOptions
 ): Promisable<ProjectMetadata> {
-  const { cwd: cwd_ = process.cwd(), useCached = true } = options;
-  const cwd = cwd_ as AbsolutePath;
+  const cacheIdComponentsObject = { ...incompleteCacheIdComponentsObject, cwd };
 
   debug('cwd: %O', cwd);
   debug('shouldRunSynchronously: %O,', shouldRunSynchronously);
@@ -101,33 +101,33 @@ function analyzeProjectStructure_(
 
   async function runAsynchronously() {
     return Promise.resolve().then(async () => {
-      const projectRoot = await determineProjectRootFromCwd(false, cwd);
+      const projectRoot = determineProjectRootFromCwd(cwd);
       debug('projectRoot: %O', projectRoot);
 
-      if (useCached && _internalProjectMetadataCache.has(projectRoot)) {
-        cacheDebug('cache hit for %O', projectRoot);
+      if (useCached) {
+        const cachedMetadata_ = cache.get(CacheScope.AnalyzeProjectStructure, [
+          cacheIdComponentsObject
+        ]);
 
-        const cachedMetadata_ = _internalProjectMetadataCache.get(projectRoot)!;
-        const cachedMetadata = {
-          ...cachedMetadata_,
-          cwdPackage: await determineCwdPackage(false, cwd, cachedMetadata_)
-        } satisfies ProjectMetadata;
+        if (cachedMetadata_) {
+          const cachedMetadata = {
+            ...cachedMetadata_,
+            cwdPackage: await determineCwdPackage(false, cwd, cachedMetadata_, useCached)
+          } satisfies ProjectMetadata;
 
-        debug('reusing cached resources: %O', cachedMetadata);
-        return cachedMetadata;
-      } else {
-        cacheDebug('cache miss for %O', projectRoot);
+          debug('reusing cached resources: %O', cachedMetadata);
+          return cachedMetadata;
+        }
       }
 
-      const projectJson = await readPackageJsonAtRoot({
-        root: projectRoot
-      });
+      const projectJson = await readPackageJsonAtRoot(projectRoot, { useCached });
 
       const projectAttributes = await getProjectAttributes(
         false,
         projectRoot,
         projectJson,
-        projectJson.workspaces ? ProjectAttribute.Monorepo : ProjectAttribute.Polyrepo
+        projectJson.workspaces ? ProjectAttribute.Monorepo : ProjectAttribute.Polyrepo,
+        useCached
       );
 
       const rootPackage: RootPackage = {
@@ -150,7 +150,7 @@ function analyzeProjectStructure_(
       rootPackage.projectMetadata = finalMetadata;
 
       if (projectAttributes[ProjectAttribute.Monorepo]) {
-        await setSubrootPackagesAndCwdPackage(false, cwd, finalMetadata);
+        await setSubrootPackagesAndCwdPackage(false, cwd, finalMetadata, useCached);
 
         finalMetadata.type = ProjectAttribute.Monorepo;
       }
@@ -161,33 +161,33 @@ function analyzeProjectStructure_(
   }
 
   function runSynchronously() {
-    const projectRoot = determineProjectRootFromCwd(true, cwd);
+    const projectRoot = determineProjectRootFromCwd(cwd);
     debug('projectRoot: %O', projectRoot);
 
-    if (useCached && _internalProjectMetadataCache.has(projectRoot)) {
-      cacheDebug('cache hit for %O', projectRoot);
+    if (useCached) {
+      const cachedMetadata_ = cache.get(CacheScope.AnalyzeProjectStructure, [
+        cacheIdComponentsObject
+      ]);
 
-      const cachedMetadata_ = _internalProjectMetadataCache.get(projectRoot)!;
-      const cachedMetadata = {
-        ...cachedMetadata_,
-        cwdPackage: determineCwdPackage(true, cwd, cachedMetadata_)
-      } satisfies ProjectMetadata;
+      if (cachedMetadata_) {
+        const cachedMetadata = {
+          ...cachedMetadata_,
+          cwdPackage: determineCwdPackage(true, cwd, cachedMetadata_, useCached)
+        } satisfies ProjectMetadata;
 
-      debug('reusing cached resources: %O', cachedMetadata);
-      return cachedMetadata;
-    } else {
-      cacheDebug('cache miss for %O', projectRoot);
+        debug('reusing cached resources: %O', cachedMetadata);
+        return cachedMetadata;
+      }
     }
 
-    const projectJson = readPackageJsonAtRoot.sync({
-      root: projectRoot
-    });
+    const projectJson = readPackageJsonAtRoot.sync(projectRoot, { useCached });
 
     const projectAttributes = getProjectAttributes(
       true,
       projectRoot,
       projectJson,
-      projectJson.workspaces ? ProjectAttribute.Monorepo : ProjectAttribute.Polyrepo
+      projectJson.workspaces ? ProjectAttribute.Monorepo : ProjectAttribute.Polyrepo,
+      useCached
     );
 
     const rootPackage: RootPackage = {
@@ -210,7 +210,7 @@ function analyzeProjectStructure_(
     rootPackage.projectMetadata = finalMetadata;
 
     if (projectAttributes[ProjectAttribute.Monorepo]) {
-      setSubrootPackagesAndCwdPackage(true, cwd, finalMetadata);
+      setSubrootPackagesAndCwdPackage(true, cwd, finalMetadata, useCached);
 
       finalMetadata.type = ProjectAttribute.Monorepo;
     }
@@ -222,14 +222,11 @@ function analyzeProjectStructure_(
   function finalize(projectMetadata: ProjectMetadata) {
     debug('project metadata: %O', projectMetadata);
 
-    const { root: projectRoot } = projectMetadata.rootPackage;
-
-    if (useCached || !_internalProjectMetadataCache.has(projectRoot)) {
-      _internalProjectMetadataCache.set(projectRoot, projectMetadata);
-      cacheDebug('cache entry %O updated', projectRoot);
-    } else {
-      cacheDebug('skipped updating cache entry %O', projectRoot);
-    }
+    cache.set(
+      CacheScope.AnalyzeProjectStructure,
+      [cacheIdComponentsObject],
+      projectMetadata
+    );
   }
 }
 
@@ -237,7 +234,10 @@ function analyzeProjectStructure_(
  * Asynchronously returns information about the structure of the project at the
  * current working directory.
  *
- * @see {@link clearInternalCache}
+ * **NOTE: the result of this function is memoized! This does NOT _necessarily_
+ * mean results will strictly equal each other. See `useCached` in this specific
+ * function's options for details.** To fetch fresh results, set the `useCached`
+ * option to `false` or clear the internal cache with {@link cache.clear}.
  */
 export function analyzeProjectStructure(
   ...args: ParametersNoFirst<typeof analyzeProjectStructure_>
@@ -251,63 +251,44 @@ export namespace analyzeProjectStructure {
    * Synchronously returns information about the structure of the project at the
    * current working directory.
    *
-   * @see {@link clearInternalCache}
+   * **NOTE: the result of this function is memoized! This does NOT
+   * _necessarily_ mean results will strictly equal each other. See `useCached`
+   * in this specific function's options for details.** To fetch fresh results,
+   * set the `useCached` option to `false` or clear the internal cache with
+   * {@link cache.clear}.
    */
   export const sync = function (...args) {
     return analyzeProjectStructure_(true, ...args);
   } as SyncVersionOf<typeof analyzeProjectStructure>;
 }
 
-function determineProjectRootFromCwd(
-  runSynchronously: false,
-  cwd: string
-): Promise<AbsolutePath>;
-function determineProjectRootFromCwd(runSynchronously: true, cwd: string): AbsolutePath;
-function determineProjectRootFromCwd(
-  runSynchronously: boolean,
-  cwd_: string
-): Promisable<AbsolutePath> {
-  if (runSynchronously) {
-    const cwd = ensurePathIsAbsolute.sync({ path: cwd_ });
-
-    let root: string;
-    try {
-      root = dirname(findUp('.git', { cwd, type: 'directory' })!);
-    } catch {
-      throw new NotAGitRepositoryError();
-    }
-
-    return ensurePathIsAbsolute.sync({ path: root });
-  } else {
-    return ensurePathIsAbsolute({ path: cwd_ }).then(async (cwd) => {
-      let root: string;
-      try {
-        root = dirname(findUp('.git', { cwd, type: 'directory' })!);
-      } catch {
-        throw new NotAGitRepositoryError();
-      }
-
-      return ensurePathIsAbsolute({ path: root });
-    });
+function determineProjectRootFromCwd(cwd: AbsolutePath): AbsolutePath {
+  try {
+    return dirname(findUp('.git', { cwd, type: 'directory' })!) as AbsolutePath;
+  } catch {
+    throw new NotAGitRepositoryError();
   }
 }
 
 function setSubrootPackagesAndCwdPackage(
   runSynchronously: false,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata
+  projectMetadata: ProjectMetadata,
+  useCached: boolean
 ): Promise<void>;
 function setSubrootPackagesAndCwdPackage(
   runSynchronously: true,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata
+  projectMetadata: ProjectMetadata,
+  useCached: boolean
 ): void;
 function setSubrootPackagesAndCwdPackage(
   runSynchronously: boolean,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata
+  projectMetadata: ProjectMetadata,
+  useCached: boolean
 ): Promisable<void> {
-  const debug = debug_.extend('getWorkspacePackages');
+  const dbg = debug.extend('subroot');
   const projectRoot = projectMetadata.rootPackage.root;
   const { workspaces: workspaces_ } = projectMetadata.rootPackage.json;
 
@@ -333,7 +314,7 @@ function setSubrootPackagesAndCwdPackage(
   subRootPackages.broken = [];
 
   if (runSynchronously) {
-    globOptions.ignore = deriveVirtualGitignoreLines.sync({ projectRoot });
+    globOptions.ignore = deriveVirtualGitignoreLines.sync(projectRoot, { useCached });
 
     for (const pattern_ of workspaces) {
       const [pattern, negate] = normalizePattern(pattern_);
@@ -343,18 +324,23 @@ function setSubrootPackagesAndCwdPackage(
 
         const packageJson = (() => {
           try {
-            return readPackageJsonAtRoot.sync({ root: packageRoot });
+            return readPackageJsonAtRoot.sync(packageRoot, { useCached });
           } catch (error) {
-            debug.warn('encountered broken package at %O: %O', packageRoot, error);
+            dbg.warn('encountered broken package at %O: %O', packageRoot, error);
             subRootPackages.broken.push(packageRoot);
             return undefined;
           }
         })();
 
         if (packageJson) {
-          const attributes = getWorkspaceAttributes(true, packageRoot, packageJson);
+          const attributes = getWorkspaceAttributes(
+            true,
+            packageRoot,
+            packageJson,
+            useCached
+          );
           addWorkspacePackage({
-            packageId: packageRootToId.sync(packageRoot),
+            packageId: packageRootToId(packageRoot),
             attributes,
             negate,
             packageJson,
@@ -364,7 +350,7 @@ function setSubrootPackagesAndCwdPackage(
       }
     }
 
-    finalize(determineCwdPackage(true, cwd, projectMetadata));
+    finalize(determineCwdPackage(true, cwd, projectMetadata, useCached));
   } else {
     return Promise.resolve().then(async () => {
       const workspacesAddFunctionsToCall: {
@@ -372,8 +358,8 @@ function setSubrootPackagesAndCwdPackage(
         fn: () => Promisable<void>;
       }[] = [];
 
-      globOptions.ignore = await deriveVirtualGitignoreLines({
-        projectRoot,
+      globOptions.ignore = await deriveVirtualGitignoreLines(projectRoot, {
+        useCached,
         includeUnknownPaths: false
       });
 
@@ -389,15 +375,9 @@ function setSubrootPackagesAndCwdPackage(
 
                 const packageJson = await (async () => {
                   try {
-                    return await readPackageJsonAtRoot({
-                      root: packageRoot
-                    });
+                    return await readPackageJsonAtRoot(packageRoot, { useCached });
                   } catch (error) {
-                    debug.warn(
-                      'encountered broken package at %O: %O',
-                      packageRoot,
-                      error
-                    );
+                    dbg.warn('encountered broken package at %O: %O', packageRoot, error);
                     subRootPackages.broken.push(packageRoot);
                     return undefined;
                   }
@@ -407,18 +387,19 @@ function setSubrootPackagesAndCwdPackage(
                   const attributes = await getWorkspaceAttributes(
                     false,
                     packageRoot,
-                    packageJson
+                    packageJson,
+                    useCached
                   );
 
-                  // ? Negation relies on addWorkspacePackage being called in
-                  // ? a specific order, so we need to preserve that order.
-                  // ? We'll execute these functions in a synchronization step
-                  // ? later.
+                  // ? Negation relies on addWorkspacePackage being called in ?
+                  // a specific order, so we need to preserve that order. ?
+                  // We'll execute these functions in a synchronization step ?
+                  // later.
                   workspacesAddFunctionsToCall.push({
                     patternIndex,
                     fn: async () =>
                       addWorkspacePackage({
-                        packageId: await packageRootToId(packageRoot),
+                        packageId: packageRootToId(packageRoot),
                         attributes,
                         negate,
                         packageJson,
@@ -442,7 +423,7 @@ function setSubrootPackagesAndCwdPackage(
         await fn();
       }
 
-      finalize(await determineCwdPackage(false, cwd, projectMetadata));
+      finalize(await determineCwdPackage(false, cwd, projectMetadata, useCached));
     });
   }
 
@@ -536,17 +517,20 @@ function setSubrootPackagesAndCwdPackage(
 function determineCwdPackage(
   runSynchronously: false,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata
+  projectMetadata: ProjectMetadata,
+  useCached: boolean
 ): Promise<Package>;
 function determineCwdPackage(
   runSynchronously: true,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata
+  projectMetadata: ProjectMetadata,
+  useCached: boolean
 ): Package;
 function determineCwdPackage(
   runSynchronously: boolean,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata
+  projectMetadata: ProjectMetadata,
+  useCached: boolean
 ): Promisable<Package> {
   const { subRootPackages, rootPackage } = projectMetadata;
   const { root: projectRoot } = rootPackage;
@@ -564,16 +548,19 @@ function determineCwdPackage(
     let cwdPackage: Package = rootPackage;
 
     if (runSynchronously) {
-      const cwdPackageName = readPackageJsonAtRoot.sync({ root: cwdPackageRoot }).name;
-      finalize(cwdPackageName, packageRootToId.sync(cwdPackageRoot));
+      const cwdPackageName = readPackageJsonAtRoot.sync(cwdPackageRoot, {
+        useCached
+      }).name;
+
+      finalize(cwdPackageName, packageRootToId(cwdPackageRoot));
       return cwdPackage;
     } else {
-      return readPackageJsonAtRoot({
-        root: cwdPackageRoot
-      }).then(async ({ name: cwdPackageName }) => {
-        finalize(cwdPackageName, await packageRootToId(cwdPackageRoot));
-        return cwdPackage;
-      });
+      return readPackageJsonAtRoot(cwdPackageRoot, { useCached }).then(
+        async ({ name: cwdPackageName }) => {
+          finalize(cwdPackageName, packageRootToId(cwdPackageRoot));
+          return cwdPackage;
+        }
+      );
     }
 
     function finalize(cwdPackageName: string | undefined, packageId: string) {
@@ -589,42 +576,54 @@ function getProjectAttributes(
   runSynchronously: false,
   root: AbsolutePath,
   projectJson: PackageJson,
-  repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo
+  repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo,
+  useCached: boolean
 ): Promise<RootPackage['attributes']>;
 function getProjectAttributes(
   runSynchronously: true,
   root: AbsolutePath,
   projectJson: PackageJson,
-  repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo
+  repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo,
+  useCached: boolean
 ): RootPackage['attributes'];
 function getProjectAttributes(
   runSynchronously: boolean,
   root: AbsolutePath,
   projectJson: PackageJson,
-  repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo
+  repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo,
+  useCached: boolean
 ): Promisable<RootPackage['attributes']> {
   const attributes: RootPackage['attributes'] = { [repoType]: true };
   const { type = 'commonjs', bin, private: private_ } = projectJson;
 
   if (runSynchronously) {
-    if (isAccessibleFromRoot(true, nextjsConfigProjectBase as RelativePath, root)) {
+    if (
+      isAccessibleFromRoot(true, nextjsConfigProjectBase as RelativePath, root, useCached)
+    ) {
       attributes[ProjectAttribute.Next] = true;
     }
 
-    if (isAccessibleFromRoot(true, webpackConfigProjectBase as RelativePath, root)) {
+    if (
+      isAccessibleFromRoot(
+        true,
+        webpackConfigProjectBase as RelativePath,
+        root,
+        useCached
+      )
+    ) {
       attributes[ProjectAttribute.Webpack] = true;
     }
 
     if (
       repoType === ProjectAttribute.Monorepo &&
-      isAccessibleFromRoot(true, 'src' as RelativePath, root)
+      isAccessibleFromRoot(true, 'src' as RelativePath, root, useCached)
     ) {
       attributes[ProjectAttribute.Hybridrepo] = true;
     }
 
     if (
-      isAccessibleFromRoot(true, 'vercel.json' as RelativePath, root) ||
-      isAccessibleFromRoot(true, '.vercel/project.json' as RelativePath, root)
+      isAccessibleFromRoot(true, 'vercel.json' as RelativePath, root, useCached) ||
+      isAccessibleFromRoot(true, '.vercel/project.json' as RelativePath, root, useCached)
     ) {
       attributes[ProjectAttribute.Vercel] = true;
     }
@@ -635,14 +634,29 @@ function getProjectAttributes(
   } else {
     return Promise.resolve().then(async () => {
       const [hasNext, hasWebpack, isHybridrepo, hasVercel] = await Promise.all([
-        isAccessibleFromRoot(false, nextjsConfigProjectBase as RelativePath, root),
-        isAccessibleFromRoot(false, webpackConfigProjectBase as RelativePath, root),
-        isAccessibleFromRoot(false, 'src' as RelativePath, root),
-        isAccessibleFromRoot(false, 'vercel.json' as RelativePath, root).then(
+        isAccessibleFromRoot(
+          false,
+          nextjsConfigProjectBase as RelativePath,
+          root,
+          useCached
+        ),
+        isAccessibleFromRoot(
+          false,
+          webpackConfigProjectBase as RelativePath,
+          root,
+          useCached
+        ),
+        isAccessibleFromRoot(false, 'src' as RelativePath, root, useCached),
+        isAccessibleFromRoot(false, 'vercel.json' as RelativePath, root, useCached).then(
           async (result) => {
             return (
               result ||
-              isAccessibleFromRoot(false, '.vercel/project.json' as RelativePath, root)
+              isAccessibleFromRoot(
+                false,
+                '.vercel/project.json' as RelativePath,
+                root,
+                useCached
+              )
             );
           }
         )
@@ -700,17 +714,20 @@ function getProjectAttributes(
 function getWorkspaceAttributes(
   runSynchronously: false,
   root: AbsolutePath,
-  workspaceJson: PackageJson
+  workspaceJson: PackageJson,
+  useCached: boolean
 ): Promise<WorkspacePackage['attributes']>;
 function getWorkspaceAttributes(
   runSynchronously: true,
   root: AbsolutePath,
-  workspaceJson: PackageJson
+  workspaceJson: PackageJson,
+  useCached: boolean
 ): WorkspacePackage['attributes'];
 function getWorkspaceAttributes(
   runSynchronously: boolean,
   root: AbsolutePath,
-  workspaceJson: PackageJson
+  workspaceJson: PackageJson,
+  useCached: boolean
 ): Promisable<WorkspacePackage['attributes']> {
   const attributes: WorkspacePackage['attributes'] = {};
   const { type = 'commonjs', bin, private: private_ } = workspaceJson;
@@ -736,7 +753,14 @@ function getWorkspaceAttributes(
   }
 
   if (runSynchronously) {
-    if (isAccessibleFromRoot(true, webpackConfigProjectBase as RelativePath, root)) {
+    if (
+      isAccessibleFromRoot(
+        true,
+        webpackConfigProjectBase as RelativePath,
+        root,
+        useCached
+      )
+    ) {
       attributes[WorkspaceAttribute.Webpack] = true;
     }
 
@@ -744,7 +768,12 @@ function getWorkspaceAttributes(
   } else {
     return Promise.resolve().then(async () => {
       if (
-        await isAccessibleFromRoot(false, webpackConfigProjectBase as RelativePath, root)
+        await isAccessibleFromRoot(
+          false,
+          webpackConfigProjectBase as RelativePath,
+          root,
+          useCached
+        )
       ) {
         attributes[WorkspaceAttribute.Webpack] = true;
       }
@@ -757,20 +786,23 @@ function getWorkspaceAttributes(
 function isAccessibleFromRoot(
   runSynchronously: false,
   path: RelativePath,
-  root: AbsolutePath
+  root: AbsolutePath,
+  useCached: boolean
 ): Promise<boolean>;
 function isAccessibleFromRoot(
   runSynchronously: true,
   path: RelativePath,
-  root: AbsolutePath
+  root: AbsolutePath,
+  useCached: boolean
 ): boolean;
 function isAccessibleFromRoot(
   runSynchronously: boolean,
   path: RelativePath,
-  root: AbsolutePath
+  root: AbsolutePath,
+  useCached: boolean
 ): Promisable<boolean> {
-  return (runSynchronously ? isAccessible.sync : isAccessible)({
-    path: joinPath(root, path)
+  return (runSynchronously ? isAccessible.sync : isAccessible)(joinPath(root, path), {
+    useCached
   });
 }
 
@@ -785,12 +817,12 @@ function normalizePattern(pattern: string) {
   // TODO: hoist the negation logic up to @-xun/glob-gitignore; note in the
   // TODO: documentation that negations only apply to the glob paths that
   // TODO: came before it and the later globs can re-add previously ignored
-  // TODO: entries.
+  // TODO: entries. ? Is hoisting this necessary or is this once-off
+  // TODO: functionality?
 
   // * This pattern sanitization logic comes from @npmcli/map-workspaces
 
-  // ? Normalize path separators (not like backslashes should be in
-  // globs...)
+  // ? Normalize path separators (not like backslashes should be in globs...)
   pattern = pattern.replaceAll('\\', '/');
 
   // ? Strip off any / from the start of the pattern: /foo ==> foo

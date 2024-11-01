@@ -2,6 +2,12 @@ import { isNativeError } from 'node:util/types';
 
 import { makeNamedError } from 'named-app-errors';
 
+// eslint-disable-next-line import/no-cycle
+import {
+  uriSchemeDelimiter,
+  uriSchemeSubDelimiter
+} from 'rootverse+project-utils:src/alias.ts';
+
 import { type WorkspacePackageName } from 'rootverse+project-utils:src/analyze/common.ts';
 
 // TODO: replace a lot of all that follows with the official package(s),
@@ -286,7 +292,7 @@ export const ErrorMessage = {
     return `"${path}" cannot be written to and/or does not exist`;
   },
   NotParsable(path: string, type = 'json') {
-    return `"${path}" cannot be parsed as it is not valid ${type}`;
+    return `${path} cannot be parsed as it does not contain valid ${type}`;
   },
   NotAGitRepositoryError() {
     return 'unable to locate git repository root';
@@ -357,10 +363,10 @@ export const ErrorMessage = {
     return `encountered illegal import specifier "${specifier}": all non-exact aliases must end with an extension${path ? ` in ${path}` : ''}`;
   },
   SpecifierNotOkUnnecessaryIndex(specifier: string, path?: string) {
-    return `encountered illegal import specifier "${specifier}": this specifier should be replaced with "${specifier.split(' ')[0]}" or the "index.ts" file renamed to something else${path ? ` in ${path}` : ''}`;
+    return `encountered illegal import specifier "${specifier}": this specifier should be replaced with "${specifier.split(uriSchemeDelimiter)[0]}" or the "index.ts" file renamed to something else${path ? ` in ${path}` : ''}`;
   },
   SpecifierNotOkSelfReferential(specifier: string, path?: string) {
-    return `encountered illegal import specifier "${specifier}": this specifier should be replaced with "#${specifier.split('#').at(-1)!.replace(' ', ' src/')}"${path ? ` in ${path}` : ''}`;
+    return `encountered illegal import specifier "${specifier}": this specifier should be replaced with "rootverse${uriSchemeSubDelimiter}${specifier.split(uriSchemeSubDelimiter).at(-1)!.replace(uriSchemeDelimiter, `${uriSchemeDelimiter}src/`)}"${path ? ` in ${path}` : ''}`;
   },
   UnknownWorkspacePackageName(name: WorkspacePackageName) {
     return `this project has no workspace package named "${name}"`;

@@ -3,13 +3,13 @@ import { toss } from 'toss-expression';
 import { runNoRejectOnBadExit } from 'multiverse+run';
 
 import { pathToPackage } from 'rootverse+project-utils:src/analyze/path-to-package.ts';
+import { cache } from 'rootverse+project-utils:src/cache.ts';
 import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
 import { type AbsolutePath, type RelativePath } from 'rootverse+project-utils:src/fs.ts';
 
 import {
   analyzeProjectStructure,
   assetPrefix,
-  clearInternalCache,
   gatherImportEntriesFromFiles,
   gatherPackageBuildTargets,
   gatherPackageFiles,
@@ -54,7 +54,7 @@ beforeEach(() => {
 
 afterEach(() => {
   mockShouldReturnBrowserslistMock = false;
-  clearInternalCache();
+  cache.clear();
 });
 
 describe('::generatePackageJsonEngineMaintainedNodeVersions', () => {
@@ -114,298 +114,106 @@ describe('::generatePackageJsonEngineMaintainedNodeVersions', () => {
 });
 
 describe('::packageRootToId', () => {
-  describe('<synchronous>', () => {
-    it('translates a path to a package id', async () => {
-      expect.hasAssertions();
+  it('translates a path to a package id', async () => {
+    expect.hasAssertions();
 
-      expect(packageRootToId.sync('/repo/path/packages/pkg-1' as AbsolutePath)).toBe(
-        'pkg-1'
-      );
-    });
-
-    it('replaces non-alphanumeric characters with hyphens', async () => {
-      expect.hasAssertions();
-
-      expect(
-        packageRootToId.sync('/repo/path/packages/bad& pack@g3!d' as AbsolutePath)
-      ).toBe('bad--pack-g3-d');
-    });
-
-    it('throws if path is not absolute', async () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        packageRootToId.sync('repo/path/packages/pkg-1' as AbsolutePath)
-      ).toThrow(ErrorMessage.PathIsNotAbsolute('repo/path/packages/pkg-1'));
-    });
+    expect(packageRootToId('/repo/path/packages/pkg-1' as AbsolutePath)).toBe('pkg-1');
   });
 
-  describe('<asynchronous>', () => {
-    it('translates a path to a package id', async () => {
-      expect.hasAssertions();
+  it('replaces non-alphanumeric characters with hyphens', async () => {
+    expect.hasAssertions();
 
-      await expect(
-        packageRootToId('/repo/path/packages/pkg-1' as AbsolutePath)
-      ).resolves.toBe('pkg-1');
-    });
-
-    it('replaces non-alphanumeric characters with hyphens', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        packageRootToId('/repo/path/packages/bad& pack@g3!d' as AbsolutePath)
-      ).resolves.toBe('bad--pack-g3-d');
-    });
-
-    it('throws if path is not absolute', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        packageRootToId('repo/path/packages/pkg-1' as AbsolutePath)
-      ).rejects.toThrow(ErrorMessage.PathIsNotAbsolute('repo/path/packages/pkg-1'));
-    });
+    expect(packageRootToId('/repo/path/packages/bad& pack@g3!d' as AbsolutePath)).toBe(
+      'bad--pack-g3-d'
+    );
   });
 });
 
 describe('::pathToPackage', () => {
-  describe('<synchronous>', () => {
-    it('translates a path to the root package in a polyrepo', () => {
-      expect.hasAssertions();
+  it('translates a path to the root package in a polyrepo', () => {
+    expect.hasAssertions();
 
-      const projectMetadata = fixtureToProjectMetadata('goodPolyrepo');
+    const projectMetadata = fixtureToProjectMetadata('goodPolyrepo');
 
-      expect(
-        pathToPackage.sync({
-          path: fixtures.goodPolyrepo.root,
-          projectMetadata
-        })
-      ).toStrictEqual(projectMetadata.rootPackage);
+    expect(pathToPackage(fixtures.goodPolyrepo.root, projectMetadata)).toStrictEqual(
+      projectMetadata.rootPackage
+    );
 
-      expect(
-        pathToPackage.sync({
-          path: (fixtures.goodPolyrepo.root +
-            '/some/path/to/somewhere.ts') as AbsolutePath,
-          projectMetadata
-        })
-      ).toStrictEqual(projectMetadata.rootPackage);
-    });
-
-    it('translates a path to the root package in a hybridrepo', () => {
-      expect.hasAssertions();
-
-      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
-
-      expect(
-        pathToPackage.sync({
-          path: fixtures.goodHybridrepo.root,
-          projectMetadata
-        })
-      ).toStrictEqual(projectMetadata.rootPackage);
-
-      expect(
-        pathToPackage.sync({
-          path: (fixtures.goodHybridrepo.root + '/package.json') as AbsolutePath,
-          projectMetadata
-        })
-      ).toStrictEqual(projectMetadata.rootPackage);
-    });
-
-    it('translates a path to a sub-root package in a monorepo', () => {
-      expect.hasAssertions();
-
-      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
-      const firstPackage = fixtures.goodHybridrepo.namedPackageMapData[0][1];
-      const secondPackage = fixtures.goodHybridrepo.unnamedPackageMapData[0][1];
-
-      expect(
-        pathToPackage.sync({
-          path: firstPackage.root,
-          projectMetadata
-        })
-      ).toStrictEqual(firstPackage);
-
-      expect(
-        pathToPackage.sync({
-          path: (firstPackage.root + '/package.json') as AbsolutePath,
-          projectMetadata
-        })
-      ).toStrictEqual(firstPackage);
-
-      expect(
-        pathToPackage.sync({
-          path: (firstPackage.root + '/some/path/to/somewhere.ts') as AbsolutePath,
-          projectMetadata
-        })
-      ).toStrictEqual(firstPackage);
-
-      expect(
-        pathToPackage.sync({
-          path: secondPackage.root,
-          projectMetadata
-        })
-      ).toStrictEqual(secondPackage);
-
-      expect(
-        pathToPackage.sync({
-          path: (secondPackage.root + '/package.json') as AbsolutePath,
-          projectMetadata
-        })
-      ).toStrictEqual(secondPackage);
-
-      expect(
-        pathToPackage.sync({
-          path: (secondPackage.root + '/some/path/to/somewhere.ts') as AbsolutePath,
-          projectMetadata
-        })
-      ).toStrictEqual(secondPackage);
-    });
-
-    it('throws if path is not absolute', () => {
-      expect.hasAssertions();
-
-      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
-
-      expect(() =>
-        pathToPackage.sync({
-          // * A convenient lie
-          path: './src' as AbsolutePath,
-          projectMetadata
-        })
-      ).toThrow(ErrorMessage.PathIsNotAbsolute('./src'));
-    });
-
-    it('throws if path is not within project', () => {
-      expect.hasAssertions();
-
-      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
-
-      expect(() =>
-        pathToPackage.sync({
-          path: '/dev/null' as AbsolutePath,
-          projectMetadata
-        })
-      ).toThrow(ErrorMessage.PathOutsideRoot('/'));
-    });
+    expect(
+      pathToPackage(
+        (fixtures.goodPolyrepo.root + '/some/path/to/somewhere.ts') as AbsolutePath,
+        projectMetadata
+      )
+    ).toStrictEqual(projectMetadata.rootPackage);
   });
 
-  describe('<asynchronous>', () => {
-    it('translates a path to the root package in a polyrepo', async () => {
-      expect.hasAssertions();
+  it('translates a path to the root package in a hybridrepo', () => {
+    expect.hasAssertions();
 
-      const projectMetadata = fixtureToProjectMetadata('goodPolyrepo');
+    const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
 
-      await expect(
-        pathToPackage({
-          path: fixtures.goodPolyrepo.root,
-          projectMetadata
-        })
-      ).resolves.toStrictEqual(projectMetadata.rootPackage);
+    expect(pathToPackage(fixtures.goodHybridrepo.root, projectMetadata)).toStrictEqual(
+      projectMetadata.rootPackage
+    );
 
-      await expect(
-        pathToPackage({
-          path: (fixtures.goodPolyrepo.root +
-            '/some/path/to/somewhere.ts') as AbsolutePath,
-          projectMetadata
-        })
-      ).resolves.toStrictEqual(projectMetadata.rootPackage);
-    });
+    expect(
+      pathToPackage(
+        (fixtures.goodHybridrepo.root + '/package.json') as AbsolutePath,
+        projectMetadata
+      )
+    ).toStrictEqual(projectMetadata.rootPackage);
+  });
 
-    it('translates a path to the root package in a hybridrepo', async () => {
-      expect.hasAssertions();
+  it('translates a path to a sub-root package in a monorepo', () => {
+    expect.hasAssertions();
 
-      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
+    const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
+    const firstPackage = fixtures.goodHybridrepo.namedPackageMapData[0][1];
+    const secondPackage = fixtures.goodHybridrepo.unnamedPackageMapData[0][1];
 
-      await expect(
-        pathToPackage({
-          path: fixtures.goodHybridrepo.root,
-          projectMetadata
-        })
-      ).resolves.toStrictEqual(projectMetadata.rootPackage);
+    expect(pathToPackage(firstPackage.root, projectMetadata)).toStrictEqual(firstPackage);
 
-      await expect(
-        pathToPackage({
-          path: (fixtures.goodHybridrepo.root + '/package.json') as AbsolutePath,
-          projectMetadata
-        })
-      ).resolves.toStrictEqual(projectMetadata.rootPackage);
-    });
+    expect(
+      pathToPackage(
+        (firstPackage.root + '/package.json') as AbsolutePath,
+        projectMetadata
+      )
+    ).toStrictEqual(firstPackage);
 
-    it('translates a path to a sub-root package in a monorepo', async () => {
-      expect.hasAssertions();
+    expect(
+      pathToPackage(
+        (firstPackage.root + '/some/path/to/somewhere.ts') as AbsolutePath,
+        projectMetadata
+      )
+    ).toStrictEqual(firstPackage);
 
-      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
-      const firstPackage = fixtures.goodHybridrepo.namedPackageMapData[0][1];
-      const secondPackage = fixtures.goodHybridrepo.unnamedPackageMapData[0][1];
+    expect(pathToPackage(secondPackage.root, projectMetadata)).toStrictEqual(
+      secondPackage
+    );
 
-      await expect(
-        pathToPackage({
-          path: firstPackage.root,
-          projectMetadata
-        })
-      ).resolves.toStrictEqual(firstPackage);
+    expect(
+      pathToPackage(
+        (secondPackage.root + '/package.json') as AbsolutePath,
+        projectMetadata
+      )
+    ).toStrictEqual(secondPackage);
 
-      await expect(
-        pathToPackage({
-          path: (firstPackage.root + '/package.json') as AbsolutePath,
-          projectMetadata
-        })
-      ).resolves.toStrictEqual(firstPackage);
+    expect(
+      pathToPackage(
+        (secondPackage.root + '/some/path/to/somewhere.ts') as AbsolutePath,
+        projectMetadata
+      )
+    ).toStrictEqual(secondPackage);
+  });
 
-      await expect(
-        pathToPackage({
-          path: (firstPackage.root + '/some/path/to/somewhere.ts') as AbsolutePath,
-          projectMetadata
-        })
-      ).resolves.toStrictEqual(firstPackage);
+  it('throws if path is not within project', () => {
+    expect.hasAssertions();
 
-      await expect(
-        pathToPackage({
-          path: secondPackage.root,
-          projectMetadata
-        })
-      ).resolves.toStrictEqual(secondPackage);
+    const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
 
-      await expect(
-        pathToPackage({
-          path: (secondPackage.root + '/package.json') as AbsolutePath,
-          projectMetadata
-        })
-      ).resolves.toStrictEqual(secondPackage);
-
-      await expect(
-        pathToPackage({
-          path: (secondPackage.root + '/some/path/to/somewhere.ts') as AbsolutePath,
-          projectMetadata
-        })
-      ).resolves.toStrictEqual(secondPackage);
-    });
-
-    it('throws if path is not absolute', async () => {
-      expect.hasAssertions();
-
-      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
-
-      await expect(
-        pathToPackage({
-          // * A convenient lie
-          path: './src' as AbsolutePath,
-          projectMetadata
-        })
-      ).rejects.toThrow(ErrorMessage.PathIsNotAbsolute('./src'));
-    });
-
-    it('throws if path is not within project', async () => {
-      expect.hasAssertions();
-
-      const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
-
-      await expect(
-        pathToPackage({
-          path: '/dev/null' as AbsolutePath,
-          projectMetadata
-        })
-      ).rejects.toThrow(ErrorMessage.PathOutsideRoot('/'));
-    });
+    expect(() => pathToPackage('/dev/null' as AbsolutePath, projectMetadata)).toThrow(
+      ErrorMessage.PathOutsideRoot('/')
+    );
   });
 });
 
@@ -417,7 +225,9 @@ describe('::gatherProjectFiles', () => {
       const root = fixtures.goodPolyrepo.root;
 
       expect(
-        gatherProjectFiles.sync(fixtureToProjectMetadata('goodPolyrepo'))
+        gatherProjectFiles.sync(fixtureToProjectMetadata('goodPolyrepo'), {
+          useCached: true
+        })
       ).toStrictEqual({
         mainBinFiles: {
           atAnyRoot: [],
@@ -467,7 +277,9 @@ describe('::gatherProjectFiles', () => {
       const root = fixtures.goodMonorepo.root;
 
       expect(
-        gatherProjectFiles.sync(fixtureToProjectMetadata('goodMonorepo'))
+        gatherProjectFiles.sync(fixtureToProjectMetadata('goodMonorepo'), {
+          useCached: true
+        })
       ).toStrictEqual({
         mainBinFiles: {
           atAnyRoot: [
@@ -537,7 +349,9 @@ describe('::gatherProjectFiles', () => {
       const root = fixtures.goodHybridrepo.root;
 
       expect(
-        gatherProjectFiles.sync(fixtureToProjectMetadata('goodHybridrepo'))
+        gatherProjectFiles.sync(fixtureToProjectMetadata('goodHybridrepo'), {
+          useCached: true
+        })
       ).toStrictEqual({
         mainBinFiles: {
           atAnyRoot: [`${root}/dist/src/cli.js`, `${root}/packages/cli/dist/index.js`],
@@ -620,13 +434,21 @@ describe('::gatherProjectFiles', () => {
       expect.hasAssertions();
 
       const dummyMetadata = fixtureToProjectMetadata('goodPolyrepo');
-      const projectFiles = gatherProjectFiles.sync(dummyMetadata);
+      const projectFiles = gatherProjectFiles.sync(dummyMetadata, { useCached: false });
 
-      expect(projectFiles).not.toBe(
-        gatherProjectFiles.sync(dummyMetadata, { useCached: false })
+      expect(projectFiles).toBe(
+        gatherProjectFiles.sync(dummyMetadata, { useCached: true })
       );
 
-      expect(gatherProjectFiles.sync(dummyMetadata)).toBe(projectFiles);
+      const updatedProjectFiles = gatherProjectFiles.sync(dummyMetadata, {
+        useCached: false
+      });
+
+      expect(updatedProjectFiles).not.toBe(projectFiles);
+
+      expect(gatherProjectFiles.sync(dummyMetadata, { useCached: true })).toBe(
+        updatedProjectFiles
+      );
     });
 
     it('uses entire call signature when constructing internal cache key', () => {
@@ -635,11 +457,13 @@ describe('::gatherProjectFiles', () => {
       const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
 
       const result1 = gatherProjectFiles.sync(projectMetadata, {
-        ignoreUnsupportedFeatures: true
+        ignoreUnsupportedFeatures: true,
+        useCached: true
       });
 
       const result2 = gatherProjectFiles.sync(projectMetadata, {
-        ignoreUnsupportedFeatures: false
+        ignoreUnsupportedFeatures: false,
+        useCached: true
       });
 
       expect(result1).not.toBe(result2);
@@ -652,7 +476,8 @@ describe('::gatherProjectFiles', () => {
 
       expect(
         gatherProjectFiles.sync(fixtureToProjectMetadata('goodPolyrepo'), {
-          skipPrettierIgnored: false
+          skipPrettierIgnored: false,
+          useCached: true
         })
       ).toStrictEqual({
         mainBinFiles: {
@@ -703,7 +528,7 @@ describe('::gatherProjectFiles', () => {
       });
     });
 
-    it('throws given bad sync options', async () => {
+    it('throws given bad sync options', () => {
       expect.hasAssertions();
 
       expect(() =>
@@ -711,7 +536,8 @@ describe('::gatherProjectFiles', () => {
           { projectMetadata: {}, rootPackage: {} } as unknown as ProjectMetadata,
           {
             // @ts-expect-error: we expect this to fail or something's wrong
-            skipUnknown: true
+            skipUnknown: true,
+            useCached: true
           }
         )
       ).toThrow(ErrorMessage.DeriverAsyncConfigurationConflict());
@@ -721,53 +547,65 @@ describe('::gatherProjectFiles', () => {
       expect.hasAssertions();
 
       expect(() =>
-        gatherProjectFiles.sync({
-          rootPackage: {
-            root: '/fake',
-            json: { directories: { bin: 'bad' } }
-          },
-          subRootPackages: undefined
-        } as ProjectMetadata)
+        gatherProjectFiles.sync(
+          {
+            rootPackage: {
+              root: '/fake',
+              json: { directories: { bin: 'bad' } }
+            },
+            subRootPackages: undefined
+          } as ProjectMetadata,
+          { useCached: true }
+        )
       ).toThrow(ErrorMessage.UnsupportedFeature(''));
 
       expect(() =>
-        gatherProjectFiles.sync({
-          rootPackage: {
-            root: '/fake',
-            json: {}
-          },
-          subRootPackages: new Map([
-            [
-              'id',
-              {
-                root: 'fake/package',
-                json: { directories: { bin: 'bad' } }
-              } as WorkspacePackage
-            ]
-          ])
-        } as ProjectMetadata)
+        gatherProjectFiles.sync(
+          {
+            rootPackage: {
+              root: '/fake',
+              json: {}
+            },
+            subRootPackages: new Map([
+              [
+                'id',
+                {
+                  root: 'fake/package',
+                  json: { directories: { bin: 'bad' } }
+                } as WorkspacePackage
+              ]
+            ])
+          } as ProjectMetadata,
+          { useCached: true }
+        )
       ).toThrow(ErrorMessage.UnsupportedFeature(''));
 
       expect(() =>
-        gatherProjectFiles.sync({
-          rootPackage: {
-            root: '/fake',
-            json: {}
-          },
-          subRootPackages: undefined
-        } as ProjectMetadata)
+        gatherProjectFiles.sync(
+          {
+            rootPackage: {
+              root: '/fake',
+              json: {}
+            },
+            subRootPackages: undefined
+          } as ProjectMetadata,
+          { useCached: true }
+        )
       ).not.toThrow(ErrorMessage.UnsupportedFeature(''));
 
       expect(() =>
-        gatherProjectFiles.sync({
-          rootPackage: {
-            root: '/fake',
-            json: {}
-          },
-          subRootPackages: new Map([
-            ['id', { root: 'fake/package', json: {} } as WorkspacePackage]
-          ])
-        } as ProjectMetadata)
+        gatherProjectFiles.sync(
+          {
+            rootPackage: {
+              root: '/fake',
+              json: {}
+            },
+            subRootPackages: new Map([
+              ['id', { root: 'fake/package', json: {} } as WorkspacePackage]
+            ])
+          } as ProjectMetadata,
+          { useCached: true }
+        )
       ).not.toThrow(ErrorMessage.UnsupportedFeature(''));
     });
   });
@@ -779,7 +617,7 @@ describe('::gatherProjectFiles', () => {
       const root = fixtures.goodPolyrepo.root;
 
       await expect(
-        gatherProjectFiles(fixtureToProjectMetadata('goodPolyrepo'))
+        gatherProjectFiles(fixtureToProjectMetadata('goodPolyrepo'), { useCached: true })
       ).resolves.toStrictEqual({
         mainBinFiles: {
           atAnyRoot: [],
@@ -829,7 +667,7 @@ describe('::gatherProjectFiles', () => {
       const root = fixtures.goodMonorepo.root;
 
       await expect(
-        gatherProjectFiles(fixtureToProjectMetadata('goodMonorepo'))
+        gatherProjectFiles(fixtureToProjectMetadata('goodMonorepo'), { useCached: true })
       ).resolves.toStrictEqual({
         mainBinFiles: {
           atAnyRoot: [
@@ -899,7 +737,9 @@ describe('::gatherProjectFiles', () => {
       const root = fixtures.goodHybridrepo.root;
 
       await expect(
-        gatherProjectFiles(fixtureToProjectMetadata('goodHybridrepo'))
+        gatherProjectFiles(fixtureToProjectMetadata('goodHybridrepo'), {
+          useCached: true
+        })
       ).resolves.toStrictEqual({
         mainBinFiles: {
           atAnyRoot: [`${root}/dist/src/cli.js`, `${root}/packages/cli/dist/index.js`],
@@ -982,13 +822,21 @@ describe('::gatherProjectFiles', () => {
       expect.hasAssertions();
 
       const dummyMetadata = fixtureToProjectMetadata('goodPolyrepo');
-      const projectFiles = await gatherProjectFiles(dummyMetadata);
+      const projectFiles = await gatherProjectFiles(dummyMetadata, { useCached: false });
 
-      expect(projectFiles).not.toBe(
-        gatherProjectFiles(dummyMetadata, { useCached: false })
+      expect(projectFiles).toBe(
+        await gatherProjectFiles(dummyMetadata, { useCached: true })
       );
 
-      await expect(gatherProjectFiles(dummyMetadata)).resolves.toBe(projectFiles);
+      const updatedProjectFiles = await gatherProjectFiles(dummyMetadata, {
+        useCached: false
+      });
+
+      expect(updatedProjectFiles).not.toBe(projectFiles);
+
+      await expect(gatherProjectFiles(dummyMetadata, { useCached: true })).resolves.toBe(
+        updatedProjectFiles
+      );
     });
 
     it('uses entire call signature when constructing internal cache key', async () => {
@@ -997,11 +845,13 @@ describe('::gatherProjectFiles', () => {
       const projectMetadata = fixtureToProjectMetadata('goodHybridrepo');
 
       const result1 = await gatherProjectFiles(projectMetadata, {
-        ignoreUnsupportedFeatures: true
+        ignoreUnsupportedFeatures: true,
+        useCached: true
       });
 
       const result2 = await gatherProjectFiles(projectMetadata, {
-        ignoreUnsupportedFeatures: false
+        ignoreUnsupportedFeatures: false,
+        useCached: true
       });
 
       expect(result1).not.toBe(result2);
@@ -1014,7 +864,8 @@ describe('::gatherProjectFiles', () => {
 
       await expect(
         gatherProjectFiles(fixtureToProjectMetadata('goodPolyrepo'), {
-          skipPrettierIgnored: false
+          skipPrettierIgnored: false,
+          useCached: true
         })
       ).resolves.toStrictEqual({
         mainBinFiles: {
@@ -1077,7 +928,8 @@ describe('::gatherProjectFiles', () => {
 
       await expect(
         gatherProjectFiles(fixtureToProjectMetadata('goodPolyrepo'), {
-          skipUnknown: true
+          skipUnknown: true,
+          useCached: true
         })
       ).resolves.toStrictEqual({
         mainBinFiles: {
@@ -1126,10 +978,11 @@ describe('::gatherProjectFiles', () => {
             },
             subRootPackages: undefined
           } as ProjectMetadata,
+          // @ts-expect-error: if this doesn't cause an error, something's wrong
           {
             skipPrettierIgnored: false,
-            // @ts-expect-error: if this doesn't cause an error, something's wrong
-            skipUnknown: true
+            skipUnknown: true,
+            useCached: true
           }
         )
       ).resolves.toBeDefined();
@@ -1139,53 +992,65 @@ describe('::gatherProjectFiles', () => {
       expect.hasAssertions();
 
       await expect(
-        gatherProjectFiles({
-          rootPackage: {
-            root: '/fake',
-            json: { directories: { bin: 'bad' } }
-          },
-          subRootPackages: undefined
-        } as ProjectMetadata)
+        gatherProjectFiles(
+          {
+            rootPackage: {
+              root: '/fake',
+              json: { directories: { bin: 'bad' } }
+            },
+            subRootPackages: undefined
+          } as ProjectMetadata,
+          { useCached: true }
+        )
       ).rejects.toThrow(ErrorMessage.UnsupportedFeature(''));
 
       await expect(
-        gatherProjectFiles({
-          rootPackage: {
-            root: '/fake',
-            json: {}
-          },
-          subRootPackages: new Map([
-            [
-              'id',
-              {
-                root: 'fake/package',
-                json: { directories: { bin: 'bad' } }
-              } as WorkspacePackage
-            ]
-          ])
-        } as ProjectMetadata)
+        gatherProjectFiles(
+          {
+            rootPackage: {
+              root: '/fake',
+              json: {}
+            },
+            subRootPackages: new Map([
+              [
+                'id',
+                {
+                  root: 'fake/package',
+                  json: { directories: { bin: 'bad' } }
+                } as WorkspacePackage
+              ]
+            ])
+          } as ProjectMetadata,
+          { useCached: true }
+        )
       ).rejects.toThrow(ErrorMessage.UnsupportedFeature(''));
 
       await expect(
-        gatherProjectFiles({
-          rootPackage: {
-            root: '/fake',
-            json: {}
-          },
-          subRootPackages: undefined
-        } as ProjectMetadata)
+        gatherProjectFiles(
+          {
+            rootPackage: {
+              root: '/fake',
+              json: {}
+            },
+            subRootPackages: undefined
+          } as ProjectMetadata,
+          { useCached: true }
+        )
       ).resolves.toBeDefined();
 
       await expect(
-        gatherProjectFiles({
-          rootPackage: {
-            root: '/fake',
-            json: {}
-          },
-          subRootPackages: new Map([
-            ['id', { root: 'fake/package', json: {} } as WorkspacePackage]
-          ])
-        } as ProjectMetadata)
+        gatherProjectFiles(
+          {
+            rootPackage: {
+              root: '/fake',
+              json: {}
+            },
+            subRootPackages: new Map([
+              ['id', { root: 'fake/package', json: {} } as WorkspacePackage]
+            ])
+          } as ProjectMetadata,
+          { useCached: true }
+        )
       ).resolves.toBeDefined();
     });
   });
@@ -1225,30 +1090,27 @@ describe('::gatherImportEntriesFromFiles', () => {
       const fileThreeResult = fileTwoResult;
       const fileFourResult = fileOneResult;
 
-      expect(gatherImportEntriesFromFiles.sync([fileOne])).toStrictEqual([
-        [fileOne, fileOneResult]
-      ]);
-
-      expect(gatherImportEntriesFromFiles.sync([fileTwo])).toStrictEqual([
-        [fileTwo, fileTwoResult]
-      ]);
-
-      expect(gatherImportEntriesFromFiles.sync([fileThree])).toStrictEqual([
-        [fileThree, fileThreeResult]
-      ]);
-
-      expect(gatherImportEntriesFromFiles.sync([fileFour])).toStrictEqual([
-        [fileFour, fileFourResult]
-      ]);
+      expect(
+        gatherImportEntriesFromFiles.sync([fileOne], { useCached: true })
+      ).toStrictEqual([[fileOne, fileOneResult]]);
 
       expect(
-        gatherImportEntriesFromFiles.sync([
-          fileOne,
-          fileTwo,
-          fileOne,
-          fileThree,
-          fileFour
-        ])
+        gatherImportEntriesFromFiles.sync([fileTwo], { useCached: true })
+      ).toStrictEqual([[fileTwo, fileTwoResult]]);
+
+      expect(
+        gatherImportEntriesFromFiles.sync([fileThree], { useCached: true })
+      ).toStrictEqual([[fileThree, fileThreeResult]]);
+
+      expect(
+        gatherImportEntriesFromFiles.sync([fileFour], { useCached: true })
+      ).toStrictEqual([[fileFour, fileFourResult]]);
+
+      expect(
+        gatherImportEntriesFromFiles.sync(
+          [fileOne, fileTwo, fileOne, fileThree, fileFour],
+          { useCached: true }
+        )
       ).toStrictEqual([
         [fileOne, fileOneResult],
         [fileTwo, fileTwoResult],
@@ -1286,11 +1148,17 @@ describe('::gatherImportEntriesFromFiles', () => {
       ]);
 
       expect(
-        gatherImportEntriesFromFiles.sync([fileOne], { excludeTypeImports: false })
+        gatherImportEntriesFromFiles.sync([fileOne], {
+          excludeTypeImports: false,
+          useCached: true
+        })
       ).toStrictEqual([[fileOne, fileOneResult]]);
 
       expect(
-        gatherImportEntriesFromFiles.sync([fileFour], { excludeTypeImports: false })
+        gatherImportEntriesFromFiles.sync([fileFour], {
+          excludeTypeImports: false,
+          useCached: true
+        })
       ).toStrictEqual([[fileFour, fileOneResult]]);
     });
 
@@ -1315,30 +1183,27 @@ describe('::gatherImportEntriesFromFiles', () => {
         'string-literal'
       ]);
 
-      expect(gatherImportEntriesFromFiles.sync([fileOne])).toStrictEqual([
-        [fileOne, fileResult]
-      ]);
-
-      expect(gatherImportEntriesFromFiles.sync([fileTwo])).toStrictEqual([
-        [fileTwo, fileResult]
-      ]);
-
-      expect(gatherImportEntriesFromFiles.sync([fileThree])).toStrictEqual([
-        [fileThree, fileResult]
-      ]);
-
-      expect(gatherImportEntriesFromFiles.sync([fileFour])).toStrictEqual([
-        [fileFour, fileResult]
-      ]);
+      expect(
+        gatherImportEntriesFromFiles.sync([fileOne], { useCached: true })
+      ).toStrictEqual([[fileOne, fileResult]]);
 
       expect(
-        gatherImportEntriesFromFiles.sync([
-          fileOne,
-          fileTwo,
-          fileOne,
-          fileThree,
-          fileFour
-        ])
+        gatherImportEntriesFromFiles.sync([fileTwo], { useCached: true })
+      ).toStrictEqual([[fileTwo, fileResult]]);
+
+      expect(
+        gatherImportEntriesFromFiles.sync([fileThree], { useCached: true })
+      ).toStrictEqual([[fileThree, fileResult]]);
+
+      expect(
+        gatherImportEntriesFromFiles.sync([fileFour], { useCached: true })
+      ).toStrictEqual([[fileFour, fileResult]]);
+
+      expect(
+        gatherImportEntriesFromFiles.sync(
+          [fileOne, fileTwo, fileOne, fileThree, fileFour],
+          { useCached: true }
+        )
       ).toStrictEqual([
         [fileOne, fileResult],
         [fileTwo, fileResult],
@@ -1353,12 +1218,14 @@ describe('::gatherImportEntriesFromFiles', () => {
 
       const fileOne = `${__dirname}/fixtures/dummy-imports/package.json` as AbsolutePath;
 
-      expect(gatherImportEntriesFromFiles.sync([fileOne])).toStrictEqual([
-        [fileOne, new Set()]
-      ]);
+      expect(
+        gatherImportEntriesFromFiles.sync([fileOne], { useCached: true })
+      ).toStrictEqual([[fileOne, new Set()]]);
 
       expect(
-        gatherImportEntriesFromFiles.sync([fileOne, fileOne, fileOne])
+        gatherImportEntriesFromFiles.sync([fileOne, fileOne, fileOne], {
+          useCached: true
+        })
       ).toStrictEqual([
         [fileOne, new Set()],
         [fileOne, new Set()],
@@ -1373,7 +1240,11 @@ describe('::gatherImportEntriesFromFiles', () => {
         throw new Error('fake import failure!');
       });
 
-      expect(() => gatherImportEntriesFromFiles.sync([])).toThrow(
+      expect(() =>
+        gatherImportEntriesFromFiles.sync(['/file.ts' as AbsolutePath], {
+          useCached: true
+        })
+      ).toThrow(
         ErrorMessage.MissingOptionalBabelDependency('gatherImportEntriesFromFiles')
       );
 
@@ -1388,11 +1259,39 @@ describe('::gatherImportEntriesFromFiles', () => {
         throw new Error('fake import failure!');
       });
 
-      expect(() => gatherImportEntriesFromFiles.sync([])).toThrow(
+      expect(() =>
+        gatherImportEntriesFromFiles.sync(['/file.ts' as AbsolutePath], {
+          useCached: true
+        })
+      ).toThrow(
         ErrorMessage.MissingOptionalBabelDependency('gatherImportEntriesFromFiles')
       );
 
       jest.dontMock('@babel/plugin-syntax-typescript');
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
+      expect.hasAssertions();
+
+      const fileOne = `${__dirname}/fixtures/dummy-imports/1.ts` as AbsolutePath;
+
+      const importEntries = gatherImportEntriesFromFiles.sync([fileOne], {
+        useCached: false
+      });
+
+      expect(importEntries[0][1]).toBe(
+        gatherImportEntriesFromFiles.sync([fileOne], { useCached: true })[0][1]
+      );
+
+      const updatedImportEntries = gatherImportEntriesFromFiles.sync([fileOne], {
+        useCached: false
+      });
+
+      expect(updatedImportEntries[0][1]).not.toBe(importEntries[0][1]);
+
+      expect(
+        gatherImportEntriesFromFiles.sync([fileOne], { useCached: true })[0][1]
+      ).toBe(updatedImportEntries[0][1]);
     });
   });
 
@@ -1429,24 +1328,26 @@ describe('::gatherImportEntriesFromFiles', () => {
       const fileThreeResult = fileTwoResult;
       const fileFourResult = fileOneResult;
 
-      await expect(gatherImportEntriesFromFiles([fileOne])).resolves.toStrictEqual([
-        [fileOne, fileOneResult]
-      ]);
-
-      await expect(gatherImportEntriesFromFiles([fileTwo])).resolves.toStrictEqual([
-        [fileTwo, fileTwoResult]
-      ]);
-
-      await expect(gatherImportEntriesFromFiles([fileThree])).resolves.toStrictEqual([
-        [fileThree, fileThreeResult]
-      ]);
-
-      await expect(gatherImportEntriesFromFiles([fileFour])).resolves.toStrictEqual([
-        [fileFour, fileFourResult]
-      ]);
+      await expect(
+        gatherImportEntriesFromFiles([fileOne], { useCached: true })
+      ).resolves.toStrictEqual([[fileOne, fileOneResult]]);
 
       await expect(
-        gatherImportEntriesFromFiles([fileOne, fileTwo, fileOne, fileThree, fileFour])
+        gatherImportEntriesFromFiles([fileTwo], { useCached: true })
+      ).resolves.toStrictEqual([[fileTwo, fileTwoResult]]);
+
+      await expect(
+        gatherImportEntriesFromFiles([fileThree], { useCached: true })
+      ).resolves.toStrictEqual([[fileThree, fileThreeResult]]);
+
+      await expect(
+        gatherImportEntriesFromFiles([fileFour], { useCached: true })
+      ).resolves.toStrictEqual([[fileFour, fileFourResult]]);
+
+      await expect(
+        gatherImportEntriesFromFiles([fileOne, fileTwo, fileOne, fileThree, fileFour], {
+          useCached: true
+        })
       ).resolves.toStrictEqual([
         [fileOne, fileOneResult],
         [fileTwo, fileTwoResult],
@@ -1484,11 +1385,17 @@ describe('::gatherImportEntriesFromFiles', () => {
       ]);
 
       await expect(
-        gatherImportEntriesFromFiles([fileOne], { excludeTypeImports: false })
+        gatherImportEntriesFromFiles([fileOne], {
+          excludeTypeImports: false,
+          useCached: true
+        })
       ).resolves.toStrictEqual([[fileOne, fileOneResult]]);
 
       await expect(
-        gatherImportEntriesFromFiles([fileFour], { excludeTypeImports: false })
+        gatherImportEntriesFromFiles([fileFour], {
+          excludeTypeImports: false,
+          useCached: true
+        })
       ).resolves.toStrictEqual([[fileFour, fileOneResult]]);
     });
 
@@ -1513,24 +1420,26 @@ describe('::gatherImportEntriesFromFiles', () => {
         'string-literal'
       ]);
 
-      await expect(gatherImportEntriesFromFiles([fileOne])).resolves.toStrictEqual([
-        [fileOne, fileResult]
-      ]);
-
-      await expect(gatherImportEntriesFromFiles([fileTwo])).resolves.toStrictEqual([
-        [fileTwo, fileResult]
-      ]);
-
-      await expect(gatherImportEntriesFromFiles([fileThree])).resolves.toStrictEqual([
-        [fileThree, fileResult]
-      ]);
-
-      await expect(gatherImportEntriesFromFiles([fileFour])).resolves.toStrictEqual([
-        [fileFour, fileResult]
-      ]);
+      await expect(
+        gatherImportEntriesFromFiles([fileOne], { useCached: true })
+      ).resolves.toStrictEqual([[fileOne, fileResult]]);
 
       await expect(
-        gatherImportEntriesFromFiles([fileOne, fileTwo, fileOne, fileThree, fileFour])
+        gatherImportEntriesFromFiles([fileTwo], { useCached: true })
+      ).resolves.toStrictEqual([[fileTwo, fileResult]]);
+
+      await expect(
+        gatherImportEntriesFromFiles([fileThree], { useCached: true })
+      ).resolves.toStrictEqual([[fileThree, fileResult]]);
+
+      await expect(
+        gatherImportEntriesFromFiles([fileFour], { useCached: true })
+      ).resolves.toStrictEqual([[fileFour, fileResult]]);
+
+      await expect(
+        gatherImportEntriesFromFiles([fileOne, fileTwo, fileOne, fileThree, fileFour], {
+          useCached: true
+        })
       ).resolves.toStrictEqual([
         [fileOne, fileResult],
         [fileTwo, fileResult],
@@ -1545,12 +1454,12 @@ describe('::gatherImportEntriesFromFiles', () => {
 
       const fileOne = `${__dirname}/fixtures/dummy-imports/package.json` as AbsolutePath;
 
-      await expect(gatherImportEntriesFromFiles([fileOne])).resolves.toStrictEqual([
-        [fileOne, new Set()]
-      ]);
+      await expect(
+        gatherImportEntriesFromFiles([fileOne], { useCached: true })
+      ).resolves.toStrictEqual([[fileOne, new Set()]]);
 
       await expect(
-        gatherImportEntriesFromFiles([fileOne, fileOne, fileOne])
+        gatherImportEntriesFromFiles([fileOne, fileOne, fileOne], { useCached: true })
       ).resolves.toStrictEqual([
         [fileOne, new Set()],
         [fileOne, new Set()],
@@ -1565,7 +1474,9 @@ describe('::gatherImportEntriesFromFiles', () => {
         throw new Error('fake import failure!');
       });
 
-      await expect(gatherImportEntriesFromFiles([])).rejects.toThrow(
+      await expect(
+        gatherImportEntriesFromFiles(['/file.ts' as AbsolutePath], { useCached: true })
+      ).rejects.toThrow(
         ErrorMessage.MissingOptionalBabelDependency('gatherImportEntriesFromFiles')
       );
 
@@ -1580,11 +1491,37 @@ describe('::gatherImportEntriesFromFiles', () => {
         throw new Error('fake import failure!');
       });
 
-      await expect(gatherImportEntriesFromFiles([])).rejects.toThrow(
+      await expect(
+        gatherImportEntriesFromFiles(['/file.ts' as AbsolutePath], { useCached: true })
+      ).rejects.toThrow(
         ErrorMessage.MissingOptionalBabelDependency('gatherImportEntriesFromFiles')
       );
 
       jest.dontMock('@babel/plugin-syntax-typescript');
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
+      expect.hasAssertions();
+
+      const fileOne = `${__dirname}/fixtures/dummy-imports/1.ts` as AbsolutePath;
+
+      const importEntries = await gatherImportEntriesFromFiles([fileOne], {
+        useCached: false
+      });
+
+      expect(importEntries[0][1]).toBe(
+        (await gatherImportEntriesFromFiles([fileOne], { useCached: true }))[0][1]
+      );
+
+      const updatedImportEntries = await gatherImportEntriesFromFiles([fileOne], {
+        useCached: false
+      });
+
+      expect(updatedImportEntries[0][1]).not.toBe(importEntries[0][1]);
+
+      expect(
+        (await gatherImportEntriesFromFiles([fileOne], { useCached: true }))[0][1]
+      ).toBe(updatedImportEntries[0][1]);
     });
   });
 });
@@ -1601,16 +1538,38 @@ describe('::gatherPseudodecoratorsEntriesFromFiles', () => {
       expect.hasAssertions();
 
       expect(
-        gatherPseudodecoratorsEntriesFromFiles.sync([
-          tsFile,
-          jsFile,
-          jsonFile,
-          mdFile,
-          ymlFile
-        ])
+        gatherPseudodecoratorsEntriesFromFiles.sync(
+          [tsFile, jsFile, jsonFile, mdFile, ymlFile],
+          { useCached: true }
+        )
       ).toStrictEqual(
         getExpectedPseudodecorators(tsFile, jsFile, jsonFile, mdFile, ymlFile)
       );
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
+      expect.hasAssertions();
+
+      const fileOne = `${__dirname}/fixtures/dummy-imports/1.ts` as AbsolutePath;
+
+      const decoratorEntries = gatherPseudodecoratorsEntriesFromFiles.sync([fileOne], {
+        useCached: false
+      });
+
+      expect(decoratorEntries[0][1]).toBe(
+        gatherPseudodecoratorsEntriesFromFiles.sync([fileOne], { useCached: true })[0][1]
+      );
+
+      const updatedDecoratorEntries = gatherPseudodecoratorsEntriesFromFiles.sync(
+        [fileOne],
+        { useCached: false }
+      );
+
+      expect(updatedDecoratorEntries[0][1]).not.toBe(decoratorEntries[0][1]);
+
+      expect(
+        gatherPseudodecoratorsEntriesFromFiles.sync([fileOne], { useCached: true })[0][1]
+      ).toBe(updatedDecoratorEntries[0][1]);
     });
   });
 
@@ -1619,16 +1578,42 @@ describe('::gatherPseudodecoratorsEntriesFromFiles', () => {
       expect.hasAssertions();
 
       await expect(
-        gatherPseudodecoratorsEntriesFromFiles([
-          tsFile,
-          jsFile,
-          jsonFile,
-          mdFile,
-          ymlFile
-        ])
+        gatherPseudodecoratorsEntriesFromFiles(
+          [tsFile, jsFile, jsonFile, mdFile, ymlFile],
+          { useCached: true }
+        )
       ).resolves.toStrictEqual(
         getExpectedPseudodecorators(tsFile, jsFile, jsonFile, mdFile, ymlFile)
       );
+    });
+
+    it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
+      expect.hasAssertions();
+
+      const fileOne = `${__dirname}/fixtures/dummy-imports/1.ts` as AbsolutePath;
+
+      const decoratorEntries = await gatherPseudodecoratorsEntriesFromFiles([fileOne], {
+        useCached: false
+      });
+
+      expect(decoratorEntries[0][1]).toBe(
+        (
+          await gatherPseudodecoratorsEntriesFromFiles([fileOne], { useCached: true })
+        )[0][1]
+      );
+
+      const updatedDecoratorEntries = await gatherPseudodecoratorsEntriesFromFiles(
+        [fileOne],
+        { useCached: false }
+      );
+
+      expect(updatedDecoratorEntries[0][1]).not.toBe(decoratorEntries[0][1]);
+
+      expect(
+        (
+          await gatherPseudodecoratorsEntriesFromFiles([fileOne], { useCached: true })
+        )[0][1]
+      ).toBe(updatedDecoratorEntries[0][1]);
     });
   });
 });
@@ -1641,7 +1626,7 @@ describe('::gatherPackageFiles', () => {
       const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
       const { root } = rootPackage;
 
-      expect(gatherPackageFiles.sync(rootPackage)).toStrictEqual({
+      expect(gatherPackageFiles.sync(rootPackage, { useCached: true })).toStrictEqual({
         dist: [
           `${root}/dist/index.js`,
           `${root}/dist/package.json`,
@@ -1675,7 +1660,7 @@ describe('::gatherPackageFiles', () => {
       const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
       const { root } = rootPackage;
 
-      expect(gatherPackageFiles.sync(rootPackage)).toStrictEqual({
+      expect(gatherPackageFiles.sync(rootPackage, { useCached: true })).toStrictEqual({
         dist: [],
         docs: [],
         other: [
@@ -1706,7 +1691,9 @@ describe('::gatherPackageFiles', () => {
         const workspacePackage = projectMetadata.subRootPackages!.get('cli')!;
         const { root } = workspacePackage;
 
-        expect(gatherPackageFiles.sync(workspacePackage)).toStrictEqual({
+        expect(
+          gatherPackageFiles.sync(workspacePackage, { useCached: true })
+        ).toStrictEqual({
           dist: [`${root}/dist/index.js`],
           docs: [`${root}/docs/docs.md`],
           other: [`${root}/package.json`, `${root}/README.md`],
@@ -1724,7 +1711,9 @@ describe('::gatherPackageFiles', () => {
           projectMetadata.subRootPackages!.unnamed.get('unnamed-cjs')!;
         const { root } = workspacePackage;
 
-        expect(gatherPackageFiles.sync(workspacePackage)).toStrictEqual({
+        expect(
+          gatherPackageFiles.sync(workspacePackage, { useCached: true })
+        ).toStrictEqual({
           dist: [`${root}/dist/index.js`],
           docs: [],
           other: [`${root}/package.json`, `${root}/README.md`],
@@ -1742,7 +1731,10 @@ describe('::gatherPackageFiles', () => {
         const { root } = rootPackage;
 
         expect(
-          gatherPackageFiles.sync(rootPackage, { ignore: ['*.mts', '/4.tsx', '.vercel'] })
+          gatherPackageFiles.sync(rootPackage, {
+            ignore: ['*.mts', '/4.tsx', '.vercel'],
+            useCached: true
+          })
         ).toStrictEqual({
           dist: [
             `${root}/dist/index.js`,
@@ -1772,7 +1764,10 @@ describe('::gatherPackageFiles', () => {
         const { root } = rootPackage;
 
         expect(
-          gatherPackageFiles.sync(rootPackage, { ignore: ['package.json'] })
+          gatherPackageFiles.sync(rootPackage, {
+            ignore: ['package.json'],
+            useCached: true
+          })
         ).toStrictEqual({
           dist: [],
           docs: [],
@@ -1798,7 +1793,10 @@ describe('::gatherPackageFiles', () => {
         const { root } = rootPackage;
 
         expect(
-          gatherPackageFiles.sync(rootPackage, { ignore: [`!.git-ignored/nope.md`] })
+          gatherPackageFiles.sync(rootPackage, {
+            ignore: [`!.git-ignored/nope.md`],
+            useCached: true
+          })
         ).toStrictEqual({
           dist: [],
           docs: [],
@@ -1830,7 +1828,7 @@ describe('::gatherPackageFiles', () => {
       const { root } = rootPackage;
 
       expect(
-        gatherPackageFiles.sync(rootPackage, { skipGitIgnored: true })
+        gatherPackageFiles.sync(rootPackage, { skipGitIgnored: true, useCached: true })
       ).toStrictEqual({
         dist: [],
         docs: [],
@@ -1853,7 +1851,7 @@ describe('::gatherPackageFiles', () => {
       });
 
       expect(
-        gatherPackageFiles.sync(rootPackage, { skipGitIgnored: false })
+        gatherPackageFiles.sync(rootPackage, { skipGitIgnored: false, useCached: true })
       ).toStrictEqual({
         dist: [],
         docs: [],
@@ -1882,21 +1880,37 @@ describe('::gatherPackageFiles', () => {
       expect.hasAssertions();
 
       const dummyMetadata = fixtureToProjectMetadata('goodPolyrepo');
-      const packageFiles = gatherPackageFiles.sync(dummyMetadata.rootPackage);
+      const packageFiles = gatherPackageFiles.sync(dummyMetadata.rootPackage, {
+        useCached: false
+      });
 
-      expect(packageFiles).not.toBe(
-        gatherPackageFiles.sync(dummyMetadata.rootPackage, { useCached: false })
+      expect(packageFiles).toBe(
+        gatherPackageFiles.sync(dummyMetadata.rootPackage, { useCached: true })
       );
 
-      expect(gatherPackageFiles.sync(dummyMetadata.rootPackage)).toBe(packageFiles);
+      const updatedPackageFiles = gatherPackageFiles.sync(dummyMetadata.rootPackage, {
+        useCached: false
+      });
+
+      expect(updatedPackageFiles).not.toBe(packageFiles);
+
+      expect(
+        gatherPackageFiles.sync(dummyMetadata.rootPackage, { useCached: true })
+      ).toBe(updatedPackageFiles);
     });
 
     it('uses entire call signature when constructing internal cache key', () => {
       expect.hasAssertions();
 
       const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
-      const result1 = gatherPackageFiles.sync(rootPackage, { skipGitIgnored: true });
-      const result2 = gatherPackageFiles.sync(rootPackage, { skipGitIgnored: false });
+      const result1 = gatherPackageFiles.sync(rootPackage, {
+        skipGitIgnored: true,
+        useCached: true
+      });
+      const result2 = gatherPackageFiles.sync(rootPackage, {
+        skipGitIgnored: false,
+        useCached: true
+      });
 
       expect(result1).not.toBe(result2);
     });
@@ -1909,7 +1923,9 @@ describe('::gatherPackageFiles', () => {
       const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
       const { root } = rootPackage;
 
-      await expect(gatherPackageFiles(rootPackage)).resolves.toStrictEqual({
+      await expect(
+        gatherPackageFiles(rootPackage, { useCached: true })
+      ).resolves.toStrictEqual({
         dist: [
           `${root}/dist/index.js`,
           `${root}/dist/package.json`,
@@ -1943,7 +1959,9 @@ describe('::gatherPackageFiles', () => {
       const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
       const { root } = rootPackage;
 
-      await expect(gatherPackageFiles(rootPackage)).resolves.toStrictEqual({
+      await expect(
+        gatherPackageFiles(rootPackage, { useCached: true })
+      ).resolves.toStrictEqual({
         dist: [],
         docs: [],
         other: [
@@ -1974,7 +1992,9 @@ describe('::gatherPackageFiles', () => {
         const workspacePackage = projectMetadata.subRootPackages!.get('cli')!;
         const { root } = workspacePackage;
 
-        await expect(gatherPackageFiles(workspacePackage)).resolves.toStrictEqual({
+        await expect(
+          gatherPackageFiles(workspacePackage, { useCached: true })
+        ).resolves.toStrictEqual({
           dist: [`${root}/dist/index.js`],
           docs: [`${root}/docs/docs.md`],
           other: [`${root}/package.json`, `${root}/README.md`],
@@ -1992,7 +2012,9 @@ describe('::gatherPackageFiles', () => {
           projectMetadata.subRootPackages!.unnamed.get('unnamed-cjs')!;
         const { root } = workspacePackage;
 
-        await expect(gatherPackageFiles(workspacePackage)).resolves.toStrictEqual({
+        await expect(
+          gatherPackageFiles(workspacePackage, { useCached: true })
+        ).resolves.toStrictEqual({
           dist: [`${root}/dist/index.js`],
           docs: [],
           other: [`${root}/package.json`, `${root}/README.md`],
@@ -2010,7 +2032,10 @@ describe('::gatherPackageFiles', () => {
         const { root } = rootPackage;
 
         await expect(
-          gatherPackageFiles(rootPackage, { ignore: ['*.mts', '/4.tsx', '.vercel'] })
+          gatherPackageFiles(rootPackage, {
+            ignore: ['*.mts', '/4.tsx', '.vercel'],
+            useCached: true
+          })
         ).resolves.toStrictEqual({
           dist: [
             `${root}/dist/index.js`,
@@ -2040,7 +2065,7 @@ describe('::gatherPackageFiles', () => {
         const { root } = rootPackage;
 
         await expect(
-          gatherPackageFiles(rootPackage, { ignore: ['package.json'] })
+          gatherPackageFiles(rootPackage, { ignore: ['package.json'], useCached: true })
         ).resolves.toStrictEqual({
           dist: [],
           docs: [],
@@ -2066,7 +2091,10 @@ describe('::gatherPackageFiles', () => {
         const { root } = rootPackage;
 
         await expect(
-          gatherPackageFiles(rootPackage, { ignore: [`!.git-ignored/nope.md`] })
+          gatherPackageFiles(rootPackage, {
+            ignore: [`!.git-ignored/nope.md`],
+            useCached: true
+          })
         ).resolves.toStrictEqual({
           dist: [],
           docs: [],
@@ -2098,7 +2126,7 @@ describe('::gatherPackageFiles', () => {
       const { root } = rootPackage;
 
       await expect(
-        gatherPackageFiles(rootPackage, { skipGitIgnored: true })
+        gatherPackageFiles(rootPackage, { skipGitIgnored: true, useCached: true })
       ).resolves.toStrictEqual({
         dist: [],
         docs: [],
@@ -2121,7 +2149,7 @@ describe('::gatherPackageFiles', () => {
       });
 
       await expect(
-        gatherPackageFiles(rootPackage, { skipGitIgnored: false })
+        gatherPackageFiles(rootPackage, { skipGitIgnored: false, useCached: true })
       ).resolves.toStrictEqual({
         dist: [],
         docs: [],
@@ -2150,23 +2178,37 @@ describe('::gatherPackageFiles', () => {
       expect.hasAssertions();
 
       const dummyMetadata = fixtureToProjectMetadata('goodPolyrepo');
-      const packageFiles = await gatherPackageFiles(dummyMetadata.rootPackage);
+      const projectFiles = await gatherPackageFiles(dummyMetadata.rootPackage, {
+        useCached: false
+      });
 
-      expect(packageFiles).not.toBe(
-        await gatherPackageFiles(dummyMetadata.rootPackage, { useCached: false })
+      expect(projectFiles).toBe(
+        await gatherPackageFiles(dummyMetadata.rootPackage, { useCached: true })
       );
 
-      await expect(gatherPackageFiles(dummyMetadata.rootPackage)).resolves.toBe(
-        packageFiles
-      );
+      const updatedProjectFiles = await gatherPackageFiles(dummyMetadata.rootPackage, {
+        useCached: false
+      });
+
+      expect(updatedProjectFiles).not.toBe(projectFiles);
+
+      await expect(
+        gatherPackageFiles(dummyMetadata.rootPackage, { useCached: true })
+      ).resolves.toBe(updatedProjectFiles);
     });
 
     it('uses entire call signature when constructing internal cache key', async () => {
       expect.hasAssertions();
 
       const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
-      const result1 = await gatherPackageFiles(rootPackage, { skipGitIgnored: true });
-      const result2 = await gatherPackageFiles(rootPackage, { skipGitIgnored: false });
+      const result1 = await gatherPackageFiles(rootPackage, {
+        skipGitIgnored: true,
+        useCached: true
+      });
+      const result2 = await gatherPackageFiles(rootPackage, {
+        skipGitIgnored: false,
+        useCached: true
+      });
 
       expect(result1).not.toBe(result2);
     });
@@ -2180,7 +2222,8 @@ describe('::gatherPackageBuildTargets', () => {
 
       expect(
         gatherPackageBuildTargets.sync(
-          fixtureToProjectMetadata('goodPolyrepo').rootPackage
+          fixtureToProjectMetadata('goodPolyrepo').rootPackage,
+          { useCached: true }
         )
       ).toStrictEqual({
         targets: {
@@ -2208,7 +2251,8 @@ describe('::gatherPackageBuildTargets', () => {
 
       expect(
         gatherPackageBuildTargets.sync(
-          fixtureToProjectMetadata('goodHybridrepoMultiversal').rootPackage
+          fixtureToProjectMetadata('goodHybridrepoMultiversal').rootPackage,
+          { useCached: true }
         )
       ).toStrictEqual({
         targets: {
@@ -2254,7 +2298,8 @@ describe('::gatherPackageBuildTargets', () => {
         gatherPackageBuildTargets.sync(
           fixtureToProjectMetadata('goodHybridrepoMultiversal').subRootPackages!.get(
             'cli'
-          )!
+          )!,
+          { useCached: true }
         )
       ).toStrictEqual({
         targets: {
@@ -2296,7 +2341,8 @@ describe('::gatherPackageBuildTargets', () => {
           gatherPackageBuildTargets.sync(
             fixtureToProjectMetadata('goodHybridrepoMultiversal').subRootPackages!.get(
               'private'
-            )!
+            )!,
+            { useCached: true }
           )
         ).toStrictEqual({
           targets: {
@@ -2334,7 +2380,8 @@ describe('::gatherPackageBuildTargets', () => {
         gatherPackageBuildTargets.sync(
           fixtureToProjectMetadata('goodHybridrepoSelfRef').subRootPackages!.get(
             'package-one'
-          )!
+          )!,
+          { useCached: true }
         )
       ).toStrictEqual({
         targets: {
@@ -2360,23 +2407,38 @@ describe('::gatherPackageBuildTargets', () => {
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
       expect.hasAssertions();
 
-      const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
-      const packageBuildTargets = gatherPackageBuildTargets.sync(rootPackage);
-
-      expect(packageBuildTargets).not.toBe(
-        gatherPackageBuildTargets.sync(rootPackage, { useCached: false })
+      const dummyMetadata = fixtureToProjectMetadata('goodPolyrepo');
+      const packageBuildTargets = gatherPackageBuildTargets.sync(
+        dummyMetadata.rootPackage,
+        {
+          useCached: false
+        }
       );
 
-      expect(gatherPackageBuildTargets.sync(rootPackage)).toBe(packageBuildTargets);
+      expect(packageBuildTargets).toBe(
+        gatherPackageBuildTargets.sync(dummyMetadata.rootPackage, { useCached: true })
+      );
+
+      const updatedPackageBuildTargets = gatherPackageBuildTargets.sync(
+        dummyMetadata.rootPackage,
+        { useCached: false }
+      );
+
+      expect(updatedPackageBuildTargets).not.toBe(packageBuildTargets);
+
+      expect(
+        gatherPackageBuildTargets.sync(dummyMetadata.rootPackage, { useCached: true })
+      ).toBe(updatedPackageBuildTargets);
     });
 
     it('uses entire call signature when constructing internal cache key', () => {
       expect.hasAssertions();
 
       const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
-      const result1 = gatherPackageBuildTargets.sync(rootPackage);
+      const result1 = gatherPackageBuildTargets.sync(rootPackage, { useCached: true });
       const result2 = gatherPackageBuildTargets.sync(rootPackage, {
-        excludeInternalsPatterns: ['/fake/exclude']
+        excludeInternalsPatterns: ['/fake/exclude'],
+        useCached: true
       });
 
       expect(result1).not.toBe(result2);
@@ -2390,9 +2452,10 @@ describe('::gatherPackageBuildTargets', () => {
       expect(
         gatherPackageBuildTargets.sync(rootPackage, {
           excludeInternalsPatterns: [],
-          includeExternalsPatterns: []
+          includeExternalsPatterns: [],
+          useCached: true
         })
-      ).toStrictEqual(gatherPackageBuildTargets.sync(rootPackage));
+      ).toStrictEqual(gatherPackageBuildTargets.sync(rootPackage, { useCached: true }));
     });
 
     it('respects includeExternalsPatterns relative to project root', () => {
@@ -2404,7 +2467,7 @@ describe('::gatherPackageBuildTargets', () => {
       expect(
         gatherPackageBuildTargets.sync(
           subRootPackages.get('@namespaced/webpack-common-config')!,
-          { includeExternalsPatterns: ['packages/private/src/index.ts'] }
+          { includeExternalsPatterns: ['packages/private/src/index.ts'], useCached: true }
         )
       ).toStrictEqual({
         targets: {
@@ -2434,7 +2497,7 @@ describe('::gatherPackageBuildTargets', () => {
       expect(
         gatherPackageBuildTargets.sync(
           subRootPackages.get('@namespaced/webpack-common-config')!,
-          { includeExternalsPatterns: ['**/private/*/index.ts'] }
+          { includeExternalsPatterns: ['**/private/*/index.ts'], useCached: true }
         )
       ).toStrictEqual({
         targets: {
@@ -2475,7 +2538,8 @@ describe('::gatherPackageBuildTargets', () => {
             excludeInternalsPatterns: [
               'packages/webpack/src/webpack-lib.ts',
               'src/webpack-lib2.ts'
-            ]
+            ],
+            useCached: true
           }
         )
       ).toStrictEqual({
@@ -2503,7 +2567,7 @@ describe('::gatherPackageBuildTargets', () => {
       expect(
         gatherPackageBuildTargets.sync(
           subRootPackages.get('@namespaced/webpack-common-config')!,
-          { excludeInternalsPatterns: ['webpack-lib*'] }
+          { excludeInternalsPatterns: ['webpack-lib*'], useCached: true }
         )
       ).toStrictEqual({
         metadata: { imports: { aliasCounts: {}, dependencyCounts: {} } },
@@ -2522,7 +2586,8 @@ describe('::gatherPackageBuildTargets', () => {
           subRootPackages.get('@namespaced/webpack-common-config')!,
           {
             excludeInternalsPatterns: ['packages/webpack/src/webpack-lib2.ts'],
-            includeExternalsPatterns: ['packages/webpack/src/webpack-lib2.ts']
+            includeExternalsPatterns: ['packages/webpack/src/webpack-lib2.ts'],
+            useCached: true
           }
         )
       ).toStrictEqual({
@@ -2551,7 +2616,10 @@ describe('::gatherPackageBuildTargets', () => {
       expect(
         gatherPackageBuildTargets.sync(
           subRootPackages.get('@namespaced/webpack-common-config')!,
-          { includeExternalsPatterns: ['packages/webpack/webpack.config.mjs'] }
+          {
+            includeExternalsPatterns: ['packages/webpack/webpack.config.mjs'],
+            useCached: true
+          }
         )
       ).toStrictEqual({
         targets: {
@@ -2583,7 +2651,8 @@ describe('::gatherPackageBuildTargets', () => {
 
       expect(() =>
         gatherPackageBuildTargets.sync(
-          fixtureToProjectMetadata('badHybridrepoBadSpecifiers').rootPackage
+          fixtureToProjectMetadata('badHybridrepoBadSpecifiers').rootPackage,
+          { useCached: true }
         )
       ).toThrow(ErrorMessage.SpecifierNotOkSelfReferential('multiverse+pkg-1:lib.ts'));
     });
@@ -2594,7 +2663,9 @@ describe('::gatherPackageBuildTargets', () => {
       expect.hasAssertions();
 
       await expect(
-        gatherPackageBuildTargets(fixtureToProjectMetadata('goodPolyrepo').rootPackage)
+        gatherPackageBuildTargets(fixtureToProjectMetadata('goodPolyrepo').rootPackage, {
+          useCached: true
+        })
       ).resolves.toStrictEqual({
         targets: {
           external: new Set(),
@@ -2621,7 +2692,8 @@ describe('::gatherPackageBuildTargets', () => {
 
       await expect(
         gatherPackageBuildTargets(
-          fixtureToProjectMetadata('goodHybridrepoMultiversal').rootPackage
+          fixtureToProjectMetadata('goodHybridrepoMultiversal').rootPackage,
+          { useCached: true }
         )
       ).resolves.toStrictEqual({
         targets: {
@@ -2667,7 +2739,8 @@ describe('::gatherPackageBuildTargets', () => {
         gatherPackageBuildTargets(
           fixtureToProjectMetadata('goodHybridrepoMultiversal').subRootPackages!.get(
             'cli'
-          )!
+          )!,
+          { useCached: true }
         )
       ).resolves.toStrictEqual({
         targets: {
@@ -2709,7 +2782,8 @@ describe('::gatherPackageBuildTargets', () => {
           gatherPackageBuildTargets(
             fixtureToProjectMetadata('goodHybridrepoMultiversal').subRootPackages!.get(
               'private'
-            )!
+            )!,
+            { useCached: true }
           )
         ).resolves.toStrictEqual({
           targets: {
@@ -2747,7 +2821,8 @@ describe('::gatherPackageBuildTargets', () => {
         gatherPackageBuildTargets(
           fixtureToProjectMetadata('goodHybridrepoSelfRef').subRootPackages!.get(
             'package-one'
-          )!
+          )!,
+          { useCached: true }
         )
       ).resolves.toStrictEqual({
         targets: {
@@ -2773,25 +2848,36 @@ describe('::gatherPackageBuildTargets', () => {
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
       expect.hasAssertions();
 
-      const { rootPackage } = fixtureToProjectMetadata('goodPolyrepo');
-      const packageBuildTargets = await gatherPackageBuildTargets(rootPackage);
-
-      expect(packageBuildTargets).not.toBe(
-        gatherPackageBuildTargets(rootPackage, { useCached: false })
+      const dummyMetadata = fixtureToProjectMetadata('goodPolyrepo');
+      const packageBuildTargets = await gatherPackageBuildTargets(
+        dummyMetadata.rootPackage,
+        { useCached: false }
       );
 
-      await expect(gatherPackageBuildTargets(rootPackage)).resolves.toBe(
-        packageBuildTargets
+      expect(packageBuildTargets).toBe(
+        await gatherPackageBuildTargets(dummyMetadata.rootPackage, { useCached: true })
       );
+
+      const updatedPackageBuildTargets = await gatherPackageBuildTargets(
+        dummyMetadata.rootPackage,
+        { useCached: false }
+      );
+
+      expect(updatedPackageBuildTargets).not.toBe(packageBuildTargets);
+
+      await expect(
+        gatherPackageBuildTargets(dummyMetadata.rootPackage, { useCached: true })
+      ).resolves.toBe(updatedPackageBuildTargets);
     });
 
     it('uses entire call signature when constructing internal cache key', async () => {
       expect.hasAssertions();
 
       const { rootPackage } = fixtureToProjectMetadata('goodHybridrepo');
-      const result1 = await gatherPackageBuildTargets(rootPackage);
+      const result1 = await gatherPackageBuildTargets(rootPackage, { useCached: true });
       const result2 = await gatherPackageBuildTargets(rootPackage, {
-        excludeInternalsPatterns: ['/fake/exclude']
+        excludeInternalsPatterns: ['/fake/exclude'],
+        useCached: true
       });
 
       expect(result1).not.toBe(result2);
@@ -2805,9 +2891,12 @@ describe('::gatherPackageBuildTargets', () => {
       await expect(
         gatherPackageBuildTargets(rootPackage, {
           excludeInternalsPatterns: [],
-          includeExternalsPatterns: []
+          includeExternalsPatterns: [],
+          useCached: true
         })
-      ).resolves.toStrictEqual(await gatherPackageBuildTargets(rootPackage));
+      ).resolves.toStrictEqual(
+        await gatherPackageBuildTargets(rootPackage, { useCached: true })
+      );
     });
 
     it('respects includeExternalsPatterns relative to project root', async () => {
@@ -2819,7 +2908,7 @@ describe('::gatherPackageBuildTargets', () => {
       await expect(
         gatherPackageBuildTargets(
           subRootPackages.get('@namespaced/webpack-common-config')!,
-          { includeExternalsPatterns: ['packages/private/src/index.ts'] }
+          { includeExternalsPatterns: ['packages/private/src/index.ts'], useCached: true }
         )
       ).resolves.toStrictEqual({
         targets: {
@@ -2849,7 +2938,7 @@ describe('::gatherPackageBuildTargets', () => {
       await expect(
         gatherPackageBuildTargets(
           subRootPackages.get('@namespaced/webpack-common-config')!,
-          { includeExternalsPatterns: ['**/private/*/index.ts'] }
+          { includeExternalsPatterns: ['**/private/*/index.ts'], useCached: true }
         )
       ).resolves.toStrictEqual({
         targets: {
@@ -2890,7 +2979,8 @@ describe('::gatherPackageBuildTargets', () => {
             excludeInternalsPatterns: [
               'packages/webpack/src/webpack-lib.ts',
               'src/webpack-lib2.ts'
-            ]
+            ],
+            useCached: true
           }
         )
       ).resolves.toStrictEqual({
@@ -2918,7 +3008,7 @@ describe('::gatherPackageBuildTargets', () => {
       await expect(
         gatherPackageBuildTargets(
           subRootPackages.get('@namespaced/webpack-common-config')!,
-          { excludeInternalsPatterns: ['webpack-lib*'] }
+          { excludeInternalsPatterns: ['webpack-lib*'], useCached: true }
         )
       ).resolves.toStrictEqual({
         metadata: { imports: { aliasCounts: {}, dependencyCounts: {} } },
@@ -2937,7 +3027,8 @@ describe('::gatherPackageBuildTargets', () => {
           subRootPackages.get('@namespaced/webpack-common-config')!,
           {
             excludeInternalsPatterns: ['packages/webpack/src/webpack-lib2.ts'],
-            includeExternalsPatterns: ['packages/webpack/src/webpack-lib2.ts']
+            includeExternalsPatterns: ['packages/webpack/src/webpack-lib2.ts'],
+            useCached: true
           }
         )
       ).resolves.toStrictEqual({
@@ -2966,7 +3057,10 @@ describe('::gatherPackageBuildTargets', () => {
       await expect(
         gatherPackageBuildTargets(
           subRootPackages.get('@namespaced/webpack-common-config')!,
-          { includeExternalsPatterns: ['packages/webpack/webpack.config.mjs'] }
+          {
+            includeExternalsPatterns: ['packages/webpack/webpack.config.mjs'],
+            useCached: true
+          }
         )
       ).resolves.toStrictEqual({
         targets: {
@@ -2998,7 +3092,8 @@ describe('::gatherPackageBuildTargets', () => {
 
       await expect(
         gatherPackageBuildTargets(
-          fixtureToProjectMetadata('badHybridrepoBadSpecifiers').rootPackage
+          fixtureToProjectMetadata('badHybridrepoBadSpecifiers').rootPackage,
+          { useCached: true }
         )
       ).rejects.toThrow(
         ErrorMessage.SpecifierNotOkSelfReferential('multiverse+pkg-1:lib.ts')
@@ -3013,7 +3108,10 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       expect(
-        analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepoWeirdYarn.root })
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepoWeirdYarn.root,
+          useCached: true
+        })
       ).toBeDefined();
     });
 
@@ -3021,7 +3119,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodPolyrepo.root
+        cwd: fixtures.goodPolyrepo.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3041,7 +3140,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepo.root
+        cwd: fixtures.goodMonorepo.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3063,7 +3163,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodHybridrepo.root
+        cwd: fixtures.goodHybridrepo.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3086,7 +3187,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const result = analyzeProjectStructure.sync({
-          cwd: fixtures.badMonorepoNextjsProject.root
+          cwd: fixtures.badMonorepoNextjsProject.root,
+          useCached: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3098,7 +3200,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const result = analyzeProjectStructure.sync({
-          cwd: fixtures.badPolyrepoNextjsProject.root
+          cwd: fixtures.badPolyrepoNextjsProject.root,
+          useCached: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3110,7 +3213,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const result = analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepoNextjsProject.root
+          cwd: fixtures.goodMonorepoNextjsProject.root,
+          useCached: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3122,7 +3226,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const result = analyzeProjectStructure.sync({
-          cwd: fixtures.goodPolyrepoNextjsProject.root
+          cwd: fixtures.goodPolyrepoNextjsProject.root,
+          useCached: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3137,7 +3242,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepoWeirdSameNames.root
+        cwd: fixtures.goodMonorepoWeirdSameNames.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3148,7 +3254,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3162,7 +3269,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath
+        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3173,7 +3281,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath
+        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath,
+        useCached: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3187,7 +3296,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: `${fixtures.goodMonorepoSimplePaths.namedPackageMapData[0][1].root}/src` as AbsolutePath
+        cwd: `${fixtures.goodMonorepoSimplePaths.namedPackageMapData[0][1].root}/src` as AbsolutePath,
+        useCached: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3205,7 +3315,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepoWindows.namedPackageMapData[0][1].root
+        cwd: fixtures.goodMonorepoWindows.namedPackageMapData[0][1].root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3219,7 +3330,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: `${fixtures.goodMonorepoWeirdAbsolute.namedPackageMapData[0][1].root}/..` as AbsolutePath
+        cwd: `${fixtures.goodMonorepoWeirdAbsolute.namedPackageMapData[0][1].root}/..` as AbsolutePath,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3230,7 +3342,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepoWeirdBoneless.root
+        cwd: fixtures.goodMonorepoWeirdBoneless.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3241,7 +3354,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepoWeirdOverlap.root
+        cwd: fixtures.goodMonorepoWeirdOverlap.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3252,7 +3366,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepoNegatedPaths.root
+        cwd: fixtures.goodMonorepoNegatedPaths.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3263,7 +3378,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.badMonorepoNonPackageDir.root
+        cwd: fixtures.badMonorepoNonPackageDir.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3272,7 +3388,7 @@ describe('::analyzeProjectStructure', () => {
 
     it('uses process.cwd when given no cwd parameter', () => {
       expect.hasAssertions();
-      expect(() => analyzeProjectStructure.sync()).toThrow(
+      expect(() => analyzeProjectStructure.sync({ useCached: true })).toThrow(
         ErrorMessage.NotAGitRepositoryError()
       );
     });
@@ -3280,13 +3396,15 @@ describe('::analyzeProjectStructure', () => {
     it('correctly determines repository type', () => {
       expect.hasAssertions();
 
-      expect(analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root }).type).toBe(
-        ProjectAttribute.Monorepo
-      );
+      expect(
+        analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root, useCached: true })
+          .type
+      ).toBe(ProjectAttribute.Monorepo);
 
-      expect(analyzeProjectStructure.sync({ cwd: fixtures.goodPolyrepo.root }).type).toBe(
-        ProjectAttribute.Polyrepo
-      );
+      expect(
+        analyzeProjectStructure.sync({ cwd: fixtures.goodPolyrepo.root, useCached: true })
+          .type
+      ).toBe(ProjectAttribute.Polyrepo);
     });
 
     it('returns correct rootPackage regardless of cwd', () => {
@@ -3307,7 +3425,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const { rootPackage } = analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+          cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
+          useCached: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3320,7 +3439,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const { rootPackage } = analyzeProjectStructure.sync({
-          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath
+          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath,
+          useCached: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3333,7 +3453,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const { rootPackage } = analyzeProjectStructure.sync({
-          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath
+          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath,
+          useCached: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3346,7 +3467,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const { rootPackage } = analyzeProjectStructure.sync({
-          cwd: fixtures.goodPolyrepo.root
+          cwd: fixtures.goodPolyrepo.root,
+          useCached: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3359,7 +3481,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const { rootPackage } = analyzeProjectStructure.sync({
-          cwd: `${fixtures.goodPolyrepo.root}/src` as AbsolutePath
+          cwd: `${fixtures.goodPolyrepo.root}/src` as AbsolutePath,
+          useCached: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3375,9 +3498,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       checkForExpectedPackages(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepo.root
-        }).subRootPackages,
+        analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root, useCached: true })
+          .subRootPackages,
         'goodMonorepo'
       );
     });
@@ -3386,43 +3508,53 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       expect(
-        analyzeProjectStructure.sync({
-          cwd: fixtures.goodPolyrepo.root
-        }).subRootPackages
+        analyzeProjectStructure.sync({ cwd: fixtures.goodPolyrepo.root, useCached: true })
+          .subRootPackages
       ).toBeUndefined();
     });
 
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
       expect.hasAssertions();
 
-      const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodPolyrepo.root
+      const dummyMetadata = analyzeProjectStructure.sync({
+        cwd: fixtures.goodPolyrepo.root,
+        useCached: false
       });
 
-      expect(result.rootPackage).not.toBe(
+      expect(dummyMetadata.rootPackage).toBe(
         analyzeProjectStructure.sync({
           cwd: fixtures.goodPolyrepo.root,
-          useCached: false
+          useCached: true
         }).rootPackage
       );
 
+      const updatedDummyMetadata = analyzeProjectStructure.sync({
+        cwd: fixtures.goodPolyrepo.root,
+        useCached: false
+      });
+
+      expect(updatedDummyMetadata.rootPackage).not.toBe(dummyMetadata.rootPackage);
+
       expect(
         analyzeProjectStructure.sync({
-          cwd: fixtures.goodPolyrepo.root
+          cwd: fixtures.goodPolyrepo.root,
+          useCached: true
         }).rootPackage
-      ).toBe(result.rootPackage);
+      ).toBe(updatedDummyMetadata.rootPackage);
     });
 
     it('defines cwdPackage properly when returning project metadata from internal cache and cwd changes from monorepo root to a sub-root of the same monorepo', () => {
       expect.hasAssertions();
 
       expect(
-        analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root }).cwdPackage
+        analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root, useCached: true })
+          .cwdPackage
       ).toStrictEqual(fixtureToProjectMetadata('goodMonorepo').rootPackage);
 
       expect(
         analyzeProjectStructure.sync({
-          cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+          cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
+          useCached: true
         }).cwdPackage
       ).toStrictEqual(fixtures.goodMonorepo.namedPackageMapData[0][1]);
     });
@@ -3431,7 +3563,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
+        useCached: true
       });
 
       expect(result.subRootPackages?.get(result.cwdPackage.json.name!)).toBe(
@@ -3445,7 +3578,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = analyzeProjectStructure.sync({
-        cwd: fixtures.goodMonorepo.unnamedPackageMapData[0][1].root
+        cwd: fixtures.goodMonorepo.unnamedPackageMapData[0][1].root,
+        useCached: true
       });
 
       expect(
@@ -3459,7 +3593,10 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       expect(() =>
-        analyzeProjectStructure.sync({ cwd: '/fake/root' as AbsolutePath })
+        analyzeProjectStructure.sync({
+          cwd: '/fake/root' as AbsolutePath,
+          useCached: true
+        })
       ).toThrow(ErrorMessage.NotAGitRepositoryError());
     });
 
@@ -3467,16 +3604,11 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       expect(() =>
-        analyzeProjectStructure.sync({ cwd: '/does/not/exist' as AbsolutePath })
+        analyzeProjectStructure.sync({
+          cwd: '/does/not/exist' as AbsolutePath,
+          useCached: true
+        })
       ).toThrow(ErrorMessage.NotAGitRepositoryError());
-    });
-
-    it('throws when passed a relative cwd', () => {
-      expect.hasAssertions();
-
-      expect(() =>
-        analyzeProjectStructure.sync({ cwd: 'does/not/exist' as AbsolutePath })
-      ).toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist'));
     });
 
     it('throws when a project has conflicting cli and next attributes', () => {
@@ -3484,7 +3616,8 @@ describe('::analyzeProjectStructure', () => {
 
       expect(() =>
         analyzeProjectStructure.sync({
-          cwd: fixtures.badPolyrepoConflictingAttributes.root
+          cwd: fixtures.badPolyrepoConflictingAttributes.root,
+          useCached: true
         })
       ).toThrow(ErrorMessage.CannotBeCliAndNextJs());
     });
@@ -3493,7 +3626,10 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       expect(() =>
-        analyzeProjectStructure.sync({ cwd: fixtures.badPolyrepoBadType.root })
+        analyzeProjectStructure.sync({
+          cwd: fixtures.badPolyrepoBadType.root,
+          useCached: true
+        })
       ).toThrow(ErrorMessage.BadProjectTypeInPackageJson());
     });
 
@@ -3502,7 +3638,8 @@ describe('::analyzeProjectStructure', () => {
 
       expect(() =>
         analyzeProjectStructure.sync({
-          cwd: fixtures.badMonorepoDuplicateName.root
+          cwd: fixtures.badMonorepoDuplicateName.root,
+          useCached: true
         })
       ).toThrow(ErrorMessage.DuplicatePackageName('pkg', '', '').trim());
     });
@@ -3512,7 +3649,8 @@ describe('::analyzeProjectStructure', () => {
 
       expect(() =>
         analyzeProjectStructure.sync({
-          cwd: fixtures.badMonorepoDuplicateIdUnnamed.root
+          cwd: fixtures.badMonorepoDuplicateIdUnnamed.root,
+          useCached: true
         })
       ).toThrow(
         ErrorMessage.DuplicatePackageId(
@@ -3527,7 +3665,10 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       expect(() =>
-        analyzeProjectStructure.sync({ cwd: fixtures.badMonorepoDuplicateIdNamed.root })
+        analyzeProjectStructure.sync({
+          cwd: fixtures.badMonorepoDuplicateIdNamed.root,
+          useCached: true
+        })
       ).toThrow(
         ErrorMessage.DuplicatePackageId(
           'pkg-1',
@@ -3543,7 +3684,10 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       await expect(
-        analyzeProjectStructure({ cwd: fixtures.goodMonorepoWeirdYarn.root })
+        analyzeProjectStructure({
+          cwd: fixtures.goodMonorepoWeirdYarn.root,
+          useCached: true
+        })
       ).resolves.toBeDefined();
     });
 
@@ -3551,7 +3695,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodPolyrepo.root
+        cwd: fixtures.goodPolyrepo.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3571,7 +3716,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepo.root
+        cwd: fixtures.goodMonorepo.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3593,7 +3739,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodHybridrepo.root
+        cwd: fixtures.goodHybridrepo.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3616,7 +3763,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const result = await analyzeProjectStructure({
-          cwd: fixtures.badMonorepoNextjsProject.root
+          cwd: fixtures.badMonorepoNextjsProject.root,
+          useCached: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3628,7 +3776,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const result = await analyzeProjectStructure({
-          cwd: fixtures.badPolyrepoNextjsProject.root
+          cwd: fixtures.badPolyrepoNextjsProject.root,
+          useCached: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3640,7 +3789,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const result = await analyzeProjectStructure({
-          cwd: fixtures.goodMonorepoNextjsProject.root
+          cwd: fixtures.goodMonorepoNextjsProject.root,
+          useCached: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3652,7 +3802,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const result = await analyzeProjectStructure({
-          cwd: fixtures.goodPolyrepoNextjsProject.root
+          cwd: fixtures.goodPolyrepoNextjsProject.root,
+          useCached: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3667,7 +3818,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepoWeirdSameNames.root
+        cwd: fixtures.goodMonorepoWeirdSameNames.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3678,7 +3830,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3692,7 +3845,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath
+        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3703,7 +3857,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath
+        cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath,
+        useCached: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3717,7 +3872,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: `${fixtures.goodMonorepoSimplePaths.namedPackageMapData[0][1].root}/src` as AbsolutePath
+        cwd: `${fixtures.goodMonorepoSimplePaths.namedPackageMapData[0][1].root}/src` as AbsolutePath,
+        useCached: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3735,7 +3891,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepoWindows.namedPackageMapData[0][1].root
+        cwd: fixtures.goodMonorepoWindows.namedPackageMapData[0][1].root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3749,7 +3906,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: `${fixtures.goodMonorepoWeirdAbsolute.namedPackageMapData[0][1].root}/..` as AbsolutePath
+        cwd: `${fixtures.goodMonorepoWeirdAbsolute.namedPackageMapData[0][1].root}/..` as AbsolutePath,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3760,7 +3918,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepoWeirdBoneless.root
+        cwd: fixtures.goodMonorepoWeirdBoneless.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3771,7 +3930,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepoWeirdOverlap.root
+        cwd: fixtures.goodMonorepoWeirdOverlap.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3782,7 +3942,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepoNegatedPaths.root
+        cwd: fixtures.goodMonorepoNegatedPaths.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3793,7 +3954,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.badMonorepoNonPackageDir.root
+        cwd: fixtures.badMonorepoNonPackageDir.root,
+        useCached: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3802,7 +3964,7 @@ describe('::analyzeProjectStructure', () => {
 
     it('uses process.cwd when given no cwd parameter', async () => {
       expect.hasAssertions();
-      await expect(analyzeProjectStructure()).rejects.toThrow(
+      await expect(analyzeProjectStructure({ useCached: true })).rejects.toThrow(
         ErrorMessage.NotAGitRepositoryError()
       );
     });
@@ -3811,11 +3973,21 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       expect(
-        (await analyzeProjectStructure({ cwd: fixtures.goodMonorepo.root })).type
+        (
+          await analyzeProjectStructure({
+            cwd: fixtures.goodMonorepo.root,
+            useCached: true
+          })
+        ).type
       ).toBe(ProjectAttribute.Monorepo);
 
       expect(
-        (await analyzeProjectStructure({ cwd: fixtures.goodPolyrepo.root })).type
+        (
+          await analyzeProjectStructure({
+            cwd: fixtures.goodPolyrepo.root,
+            useCached: true
+          })
+        ).type
       ).toBe(ProjectAttribute.Polyrepo);
     });
 
@@ -3837,7 +4009,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const { rootPackage } = await analyzeProjectStructure({
-          cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+          cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
+          useCached: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3850,7 +4023,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const { rootPackage } = await analyzeProjectStructure({
-          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath
+          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath,
+          useCached: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3863,7 +4037,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const { rootPackage } = await analyzeProjectStructure({
-          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath
+          cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath,
+          useCached: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3876,7 +4051,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const { rootPackage } = await analyzeProjectStructure({
-          cwd: fixtures.goodPolyrepo.root
+          cwd: fixtures.goodPolyrepo.root,
+          useCached: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3889,7 +4065,8 @@ describe('::analyzeProjectStructure', () => {
 
       {
         const { rootPackage } = await analyzeProjectStructure({
-          cwd: `${fixtures.goodPolyrepo.root}/src` as AbsolutePath
+          cwd: `${fixtures.goodPolyrepo.root}/src` as AbsolutePath,
+          useCached: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3907,7 +4084,8 @@ describe('::analyzeProjectStructure', () => {
       checkForExpectedPackages(
         (
           await analyzeProjectStructure({
-            cwd: fixtures.goodMonorepo.root
+            cwd: fixtures.goodMonorepo.root,
+            useCached: true
           })
         ).subRootPackages,
         'goodMonorepo'
@@ -3920,7 +4098,8 @@ describe('::analyzeProjectStructure', () => {
       expect(
         (
           await analyzeProjectStructure({
-            cwd: fixtures.goodPolyrepo.root
+            cwd: fixtures.goodPolyrepo.root,
+            useCached: true
           })
         ).subRootPackages
       ).toBeUndefined();
@@ -3929,39 +4108,54 @@ describe('::analyzeProjectStructure', () => {
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
       expect.hasAssertions();
 
-      const result = await analyzeProjectStructure({
-        cwd: fixtures.goodPolyrepo.root
+      const dummyMetadata = await analyzeProjectStructure({
+        cwd: fixtures.goodPolyrepo.root,
+        useCached: false
       });
 
-      expect(result.rootPackage).not.toBe(
+      expect(dummyMetadata.rootPackage).toBe(
         (
           await analyzeProjectStructure({
             cwd: fixtures.goodPolyrepo.root,
-            useCached: false
+            useCached: true
           })
         ).rootPackage
       );
 
+      const updatedDummyMetadata = await analyzeProjectStructure({
+        cwd: fixtures.goodPolyrepo.root,
+        useCached: false
+      });
+
+      expect(updatedDummyMetadata.rootPackage).not.toBe(dummyMetadata.rootPackage);
+
       expect(
         (
           await analyzeProjectStructure({
-            cwd: fixtures.goodPolyrepo.root
+            cwd: fixtures.goodPolyrepo.root,
+            useCached: true
           })
         ).rootPackage
-      ).toBe(result.rootPackage);
+      ).toBe(updatedDummyMetadata.rootPackage);
     });
 
     it('defines cwdPackage properly when returning project metadata from internal cache and cwd changes from monorepo root to a sub-root of the same monorepo', async () => {
       expect.hasAssertions();
 
       expect(
-        (await analyzeProjectStructure({ cwd: fixtures.goodMonorepo.root })).cwdPackage
+        (
+          await analyzeProjectStructure({
+            cwd: fixtures.goodMonorepo.root,
+            useCached: true
+          })
+        ).cwdPackage
       ).toStrictEqual(fixtureToProjectMetadata('goodMonorepo').rootPackage);
 
       expect(
         (
           await analyzeProjectStructure({
-            cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+            cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
+            useCached: true
           })
         ).cwdPackage
       ).toStrictEqual(fixtures.goodMonorepo.namedPackageMapData[0][1]);
@@ -3971,7 +4165,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root
+        cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
+        useCached: true
       });
 
       expect(result.subRootPackages?.get(result.cwdPackage.json.name!)).toBe(
@@ -3985,7 +4180,8 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       const result = await analyzeProjectStructure({
-        cwd: fixtures.goodMonorepo.unnamedPackageMapData[0][1].root
+        cwd: fixtures.goodMonorepo.unnamedPackageMapData[0][1].root,
+        useCached: true
       });
 
       expect(
@@ -3999,7 +4195,7 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       await expect(
-        analyzeProjectStructure({ cwd: '/fake/root' as AbsolutePath })
+        analyzeProjectStructure({ cwd: '/fake/root' as AbsolutePath, useCached: true })
       ).rejects.toThrow(ErrorMessage.NotAGitRepositoryError());
     });
 
@@ -4007,23 +4203,21 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       await expect(
-        analyzeProjectStructure({ cwd: '/does/not/exist' as AbsolutePath })
+        analyzeProjectStructure({
+          cwd: '/does/not/exist' as AbsolutePath,
+          useCached: true
+        })
       ).rejects.toThrow(ErrorMessage.NotAGitRepositoryError());
-    });
-
-    it('throws when passed a relative cwd', async () => {
-      expect.hasAssertions();
-
-      await expect(
-        analyzeProjectStructure({ cwd: 'does/not/exist' as AbsolutePath })
-      ).rejects.toThrow(ErrorMessage.PathIsNotAbsolute('does/not/exist'));
     });
 
     it('throws when a project has conflicting cli and next attributes', async () => {
       expect.hasAssertions();
 
       await expect(
-        analyzeProjectStructure({ cwd: fixtures.badPolyrepoConflictingAttributes.root })
+        analyzeProjectStructure({
+          cwd: fixtures.badPolyrepoConflictingAttributes.root,
+          useCached: true
+        })
       ).rejects.toThrow(ErrorMessage.CannotBeCliAndNextJs());
     });
 
@@ -4031,7 +4225,10 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       await expect(
-        analyzeProjectStructure({ cwd: fixtures.badPolyrepoBadType.root })
+        analyzeProjectStructure({
+          cwd: fixtures.badPolyrepoBadType.root,
+          useCached: true
+        })
       ).rejects.toThrow(ErrorMessage.BadProjectTypeInPackageJson());
     });
 
@@ -4040,7 +4237,8 @@ describe('::analyzeProjectStructure', () => {
 
       await expect(
         analyzeProjectStructure({
-          cwd: fixtures.badMonorepoDuplicateName.root
+          cwd: fixtures.badMonorepoDuplicateName.root,
+          useCached: true
         })
       ).rejects.toThrow(ErrorMessage.DuplicatePackageName('pkg', '', '').trim());
     });
@@ -4050,7 +4248,8 @@ describe('::analyzeProjectStructure', () => {
 
       await expect(
         analyzeProjectStructure({
-          cwd: fixtures.badMonorepoDuplicateIdUnnamed.root
+          cwd: fixtures.badMonorepoDuplicateIdUnnamed.root,
+          useCached: true
         })
       ).rejects.toThrow(
         ErrorMessage.DuplicatePackageId(
@@ -4065,7 +4264,10 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       await expect(
-        analyzeProjectStructure({ cwd: fixtures.badMonorepoDuplicateIdNamed.root })
+        analyzeProjectStructure({
+          cwd: fixtures.badMonorepoDuplicateIdNamed.root,
+          useCached: true
+        })
       ).rejects.toThrow(
         ErrorMessage.DuplicatePackageId(
           'pkg-1',

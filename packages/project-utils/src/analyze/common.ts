@@ -1,6 +1,7 @@
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { globalDebuggerNamespace } from 'rootverse+project-utils:src/constant.ts';
+
 import {
   type AbsolutePath,
   type RelativePath
@@ -496,5 +497,25 @@ export function isRootPackage(o: unknown): o is RootPackage {
     'json' in o &&
     'attributes' in o &&
     'projectMetadata' in o
+  );
+}
+
+// TODO: aren't these sentinel functions the use case for Zod? Let's try that!
+/**
+ * Returns `true` if `o` is probably an instance of `ProjectMetadata`.
+ */
+export function isProjectMetadata(o: unknown): o is ProjectMetadata {
+  return (
+    !!o &&
+    typeof o === 'object' &&
+    'type' in o &&
+    [ProjectAttribute.Polyrepo, ProjectAttribute.Monorepo].includes(
+      o.type as ProjectAttribute
+    ) &&
+    'rootPackage' in o &&
+    isRootPackage(o.rootPackage) &&
+    'cwdPackage' in o &&
+    isPackage(o.cwdPackage) &&
+    'subRootPackages' in o
   );
 }

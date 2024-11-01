@@ -1,6 +1,6 @@
 {
   "name": "@-xun/project",
-  "version": "0.0.0-faker",
+  "version": "1.0.0",
   "private": true,
   "description": "this file needs to be updated wrt /repos/project-utils/package.json",
   "exports": {
@@ -12,13 +12,17 @@
       "types": "./dist/src/alias.d.ts",
       "default": "./dist/src/alias.js"
     },
+    "./cache": {
+      "types": "./dist/src/cache.d.ts",
+      "default": "./dist/src/cache.js"
+    },
     "./fs": {
       "types": "./dist/src/fs.d.ts",
-      "default": "./dist/src/fs/index.js"
+      "default": "./dist/src/fs.js"
     },
     "./resolver": {
       "types": "./dist/src/resolver.d.ts",
-      "default": "./dist/src/resolver/index.js"
+      "default": "./dist/src/resolver.js"
     },
     "./package": "./package.json",
     "./package.json": "./package.json"
