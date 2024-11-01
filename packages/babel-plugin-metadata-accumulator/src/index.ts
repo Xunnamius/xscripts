@@ -51,7 +51,10 @@ export type Options = {
   excludeTypeImports?: boolean;
 };
 
-type State = PluginPass & { opts: Options };
+/**
+ * @internal
+ */
+export type State = PluginPass & { opts: Options };
 
 /**
  * Create and return a metadata accumulator plugin and corresponding object
