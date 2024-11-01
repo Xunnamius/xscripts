@@ -450,11 +450,6 @@ Finally, note that, when attempting to build a Next.js package, this command wil
         debug('outputDirName: %O', outputDirName);
         debug('absoluteOutputDirPath: %O', absoluteOutputDirPath);
 
-        if (cleanOutputDir) {
-          debug(`forcefully deleting build output directory: ${absoluteOutputDirPath}`);
-          await forceDeletePaths(absoluteOutputDirPath);
-        }
-
         const { rootPackage, cwdPackage } = projectMetadata;
         const projectRoot = rootPackage.root;
         const packageRoot = cwdPackage.root;
@@ -594,6 +589,11 @@ distrib root: ${absoluteOutputDirPath}
         if (generateTypes) {
           genericLogger.newline([LogTag.IF_NOT_QUIETED]);
           genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Generating types');
+
+          if (cleanOutputDir) {
+            debug(`forcefully deleting build output directory: ${absoluteOutputDirPath}`);
+            await forceDeletePaths(absoluteOutputDirPath);
+          }
           genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
           debug('running tsc');
