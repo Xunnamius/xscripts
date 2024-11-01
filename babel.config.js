@@ -267,6 +267,7 @@ function makeDistReplacerEntry(
         importTargetProjectRootRelativeRealFilepath
       );
 
+      // ? We're assuming all package.json files being imported belong to a root
       const isImportTargetAPackageJson = endsWithPackageJsonRegExp.test(
         importTargetProjectRootRelativeRealFilepath
       );
@@ -281,25 +282,27 @@ function makeDistReplacerEntry(
       if (!isCwdPackageTheRootPackage && isImportTargetTheProjectRootPackageJson) {
         // TODO: replace with ErrorMessage.X
         throw new Error(
-          `importing "${originalSpecifier}" from "${inputFilepath}" does not make sense in a monorepo`
+          `importing "${originalSpecifier}" from "${inputFilepath}" does not make sense in a monorepo sub-root package's distributables`
         );
       }
 
       if (isImportTargetAPackageJson && !isImportTargetThePackageRootPackageJson) {
-        // TODO: replace with rejoinder
+        // TODO: replace with rejoinder and ErrorMessage.X
         // eslint-disable-next-line no-console
         console.warn(
-          `warning: importing "${originalSpecifier}" from "${inputFilepath}" will cause additional package.json files to be included in build output. This may significantly increase the size of distributables`
+          `\nWARNING: importing "${originalSpecifier}" from "${inputFilepath}" will cause additional package.json files to be included in build output. This may SIGNIFICANTLY increase the size of distributables!\n`
         );
       }
 
       const importTargetIsValidlyOutsideDistDirectory =
+        // ? node_modules is always outside the ./dist directory
         isImportTargetUnderAPackageRootNodeModules ||
-        isImportTargetThePackageRootPackageJson;
-
-      const importTargetPackageRootRelativeRealFilepath = isCwdPackageTheRootPackage
-        ? importTargetProjectRootRelativeRealFilepath
-        : sliceOffPackageRootPrefix(importTargetProjectRootRelativeRealFilepath);
+        // ? When cwd is not the root package, any package.json counts as
+        // ? outside the ./dist directory
+        (!isCwdPackageTheRootPackage && isImportTargetAPackageJson) ||
+        // ? When cwd is the root package, sub-root package.json imports, while
+        // ? ill-advised, are not actually outside the ./dist directory
+        (isCwdPackageTheRootPackage && isImportTargetThePackageRootPackageJson);
 
       const importTargetOutputFilepath = toAbsolutePath(
         packageRoot,
@@ -307,15 +310,17 @@ function makeDistReplacerEntry(
         // ? (like package.json, or node_modules) so we should facilitate access
         importTargetIsValidlyOutsideDistDirectory ? '' : 'dist',
         isImportTargetUnderAPackageRootNodeModules ? 'node_modules' : '',
-        importTargetPackageRootRelativeRealFilepath
-          .replace(grabEverythingUpToAndIncludingNodeModulesRegExp, '')
-          // ? Ensure proper extension is used
-          .replace(
-            type === 'source'
-              ? translateJsExtensionsToTsRegExp
-              : dTsExtensionsToReplaceRegExp,
-            type === 'source' ? translateJsExtensionsToTsRegExpReplacer : '.js'
-          )
+        isImportTargetAPackageJson
+          ? sliceOffPackageRootPrefix(importTargetProjectRootRelativeRealFilepath)
+          : importTargetProjectRootRelativeRealFilepath
+              .replace(grabEverythingUpToAndIncludingNodeModulesRegExp, '')
+              // ? Ensure proper extension is used
+              .replace(
+                type === 'source'
+                  ? translateJsExtensionsToTsRegExp
+                  : dTsExtensionsToReplaceRegExp,
+                type === 'source' ? translateJsExtensionsToTsRegExpReplacer : '.js'
+              )
       );
 
       const result = toRelativePath(
