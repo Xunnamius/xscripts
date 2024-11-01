@@ -50,3 +50,13 @@ export const releaseConfigProjectBase = 'release.config.js';
  * The basename of the well-known custom Lint Staged configuration file.
  */
 export const conventionalChangelogConfigProjectBase = 'conventional.config.js';
+
+/**
+ * The basename of the well-known "shared package file". The presence of this
+ * file at a package root signifies that commits scoped to said package will be
+ * included by other packages in the project.
+ *
+ * By default, commits scoped to individual packages are ignored by other
+ * packages.
+ */
+export const sharedConfigPackageBase = '.shared';

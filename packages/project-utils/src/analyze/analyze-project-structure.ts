@@ -39,6 +39,7 @@ import {
   isAccessible,
   nextjsConfigProjectBase,
   readPackageJsonAtRoot,
+  sharedConfigPackageBase,
   webpackConfigProjectBase,
   type AbsolutePath,
   type RelativePath
@@ -764,6 +765,12 @@ function getWorkspaceAttributes(
       attributes[WorkspaceAttribute.Webpack] = true;
     }
 
+    if (
+      isAccessibleFromRoot(true, sharedConfigPackageBase as RelativePath, root, useCached)
+    ) {
+      attributes[WorkspaceAttribute.Shared] = true;
+    }
+
     return attributes;
   } else {
     return Promise.resolve().then(async () => {
@@ -776,6 +783,17 @@ function getWorkspaceAttributes(
         )
       ) {
         attributes[WorkspaceAttribute.Webpack] = true;
+      }
+
+      if (
+        await isAccessibleFromRoot(
+          false,
+          sharedConfigPackageBase as RelativePath,
+          root,
+          useCached
+        )
+      ) {
+        attributes[WorkspaceAttribute.Shared] = true;
       }
 
       return attributes;

@@ -170,7 +170,13 @@ export enum WorkspaceAttribute {
   /**
    * A {@link webpackConfigProjectBase} file exists at the workspace's root.
    */
-  Webpack = 'webpack'
+  Webpack = 'webpack',
+  /**
+   * The workspace root contains the file {@link sharedConfigPackageBase},
+   * signifying that commits scoped to this workspace will be considered by all
+   * workspaces.
+   */
+  Shared = 'shared'
 }
 
 /**
