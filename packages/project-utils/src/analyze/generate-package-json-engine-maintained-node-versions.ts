@@ -3,7 +3,8 @@ import semver from 'semver';
 import type { Arrayable } from 'type-fest';
 
 /**
- * Returns the expected value for `package.json` `engines`/`engines.node` field.
+ * Synchronously returns the expected value for `package.json`
+ * `engines`/`engines.node` field.
  */
 export function generatePackageJsonEngineMaintainedNodeVersions(options?: {
   /**
@@ -16,9 +17,8 @@ export function generatePackageJsonEngineMaintainedNodeVersions(options?: {
    */
   format?: 'engines';
 }): string;
-
 /**
- * Returns an array of the currently maintained node versions.
+ * Synchronously returns an array of the currently maintained node versions.
  */
 export function generatePackageJsonEngineMaintainedNodeVersions(options?: {
   /**
@@ -31,9 +31,8 @@ export function generatePackageJsonEngineMaintainedNodeVersions(options?: {
    */
   format: 'array';
 }): string[];
-
 /**
- * Returns maintained node versions in the given format.
+ * Synchronously returns maintained node versions in the given format.
  */
 export function generatePackageJsonEngineMaintainedNodeVersions(options?: {
   format?: 'engines' | 'array';
