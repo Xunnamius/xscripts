@@ -26,6 +26,7 @@ import {
 
 const internalCache = new Map<CacheScope, InternalScopedCache>();
 const cacheDebug = debug_.extend('cache');
+const cacheDebugHit = cacheDebug.extend('hit');
 
 type DefaultKeysToOmitFromCacheParameters = 'useCached';
 
@@ -195,7 +196,12 @@ function setInCache(
 ): void;
 function setInCache(scope: CacheScope, id: unknown[], value: unknown): void {
   const [cache, cacheKey] = deriveCacheKeyFromIdentifiers(scope, id);
-  cacheDebug(cache.has(cacheKey) ? 'update for key %O' : 'create for key %O', cacheKey);
+
+  cacheDebug(
+    cache.has(cacheKey) ? 'update existing key %O:%O' : 'create new key %O:%O',
+    scope,
+    cacheKey
+  );
 
   externalCache.sets += 1;
   cache.set(cacheKey, value);
@@ -257,7 +263,12 @@ function getFromCache(
 ): FunctionToCacheParameters<typeof readJsonc>[1] | undefined;
 function getFromCache(scope: CacheScope, id: unknown[]): unknown {
   const [cache, cacheKey] = deriveCacheKeyFromIdentifiers(scope, id);
-  cacheDebug(cache.has(cacheKey) ? 'hit for key %O' : 'miss for key %O', cacheKey);
+
+  if (cache.has(cacheKey)) {
+    cacheDebugHit('hit for key %O:%O', scope, cacheKey);
+  } else {
+    cacheDebug('miss for key %O:%O', scope, cacheKey);
+  }
 
   externalCache.gets += 1;
   return cache.get(cacheKey);
