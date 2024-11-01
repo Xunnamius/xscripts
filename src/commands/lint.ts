@@ -229,8 +229,8 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
         );
 
         const { exclude: excludePatterns = [], include: includePatterns = [] } =
-          await readJsonc<{ include?: string[]; exclude?: string[] }>({
-            path: tsconfigFilePath
+          await readJsonc<{ include?: string[]; exclude?: string[] }>(tsconfigFilePath, {
+            useCached: true
           });
 
         debug('tsconfig include patterns: %O', includePatterns);
@@ -273,7 +273,8 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
             inWorkspace: perPackageMarkdownFiles
           }
         } = await gatherProjectFiles(projectMetadata, {
-          skipPrettierIgnored: skipIgnored
+          skipPrettierIgnored: skipIgnored,
+          useCached: true
         });
 
         const targetFiles =
@@ -397,22 +398,34 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
         cwdPackage: { root: packageRoot }
       } = projectMetadata_;
 
-      if (await isAccessible({ path: `${packageRoot}/${Tsconfig.PackageLintSource}` })) {
+      if (
+        await isAccessible(`${packageRoot}/${Tsconfig.PackageLintSource}`, {
+          useCached: true
+        })
+      ) {
         return LinterScope.ThisPackageSource;
       }
 
-      if (await isAccessible({ path: `${packageRoot}/${Tsconfig.ProjectLintSource}` })) {
+      if (
+        await isAccessible(`${packageRoot}/${Tsconfig.ProjectLintSource}`, {
+          useCached: true
+        })
+      ) {
         return LinterScope.UnlimitedSource;
       }
 
       if (
-        await isAccessible({ path: `${packageRoot}/${Tsconfig.PackageLintUnlimited}` })
+        await isAccessible(`${packageRoot}/${Tsconfig.PackageLintUnlimited}`, {
+          useCached: true
+        })
       ) {
         return LinterScope.ThisPackage;
       }
 
       if (
-        await isAccessible({ path: `${packageRoot}/${Tsconfig.ProjectLintUnlimited}` })
+        await isAccessible(`${packageRoot}/${Tsconfig.ProjectLintUnlimited}`, {
+          useCached: true
+        })
       ) {
         return LinterScope.Unlimited;
       }

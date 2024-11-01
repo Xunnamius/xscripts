@@ -298,8 +298,8 @@ Use --import-section-file to add a custom release section to the changelog. The 
         await pipeline(
           changelogSectionStream,
 
-          // ! These generator functions expects commits to arrive in
-          // ! descending release order (latest first).
+          // ! These generator functions expect commits to arrive in descending
+          // ! release order (latest first).
 
           async function* (source) {
             const debug_ = debug.extend('tap1');
@@ -355,7 +355,7 @@ Use --import-section-file to add a custom release section to the changelog. The 
                   );
 
                   if (withheldChangelogPatchSections.length) {
-                    for (const section of withheldChangelogPatchSections.reverse()) {
+                    for (const section of withheldChangelogPatchSections) {
                       yield '<br />\n\n';
                       yield '### 🏗️ Patch ' + section.slice(4);
                     }
@@ -377,7 +377,7 @@ Use --import-section-file to add a custom release section to the changelog. The 
               );
 
               for (const section of withheldChangelogPatchSections) {
-                // ? These are probably pre-1.0.0 sections. Give each of this
+                // ? These are probably pre-1.0.0 sections. Give each of these
                 // ? patches-only changelog's sections -1 heading level (i.e.
                 // ? promote them)
                 yield section.slice(1);

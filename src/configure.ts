@@ -140,7 +140,9 @@ export const configureExecutionContext: ConfigureExecutionContext<GlobalExecutio
       rootDebugLogger
     })(context);
 
-    const projectMetadata = await analyzeProjectStructure().catch(() => undefined);
+    const projectMetadata = await analyzeProjectStructure({ useCached: true }).catch(
+      () => undefined
+    );
 
     if (projectMetadata) {
       const { root: projectRoot } = projectMetadata.rootPackage;
@@ -153,7 +155,7 @@ export const configureExecutionContext: ConfigureExecutionContext<GlobalExecutio
       rootDebugLogger('nodeModulesBinDir: %O', nodeModulesBinDir);
       rootDebugLogger('xscriptsBinFileLink: %O', xscriptsBinFileLink);
 
-      if (await isAccessible({ path: xscriptsBinFileLink })) {
+      if (await isAccessible(xscriptsBinFileLink, { useCached: true })) {
         rootDebugLogger('xscriptsBinFileLink is accessible');
 
         const xscriptsBinFileActual = toAbsolutePath(

@@ -75,7 +75,7 @@ If this command is run with \`--scope=unlimited\` (the default) in a monorepo, a
 
       const {
         mainBinFiles: { atProjectRoot, atWorkspaceRoot, atAnyRoot }
-      } = await gatherProjectFiles(projectMetadata);
+      } = await gatherProjectFiles(projectMetadata, { useCached: true });
 
       const passControlMessage = (runtime: string) =>
         `--- control passed to ${runtime} runtime ---`;

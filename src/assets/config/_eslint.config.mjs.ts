@@ -349,7 +349,7 @@ export async function moduleExport(
    */
   projectMetadata?: ProjectMetadata
 ) {
-  projectMetadata ||= await analyzeProjectStructure();
+  projectMetadata ||= await analyzeProjectStructure({ useCached: true });
 
   const {
     rootPackage: { root: projectRootDir }

@@ -321,7 +321,9 @@ export function moduleExport(
         debug_(`saw version: ${commit.version!}`);
 
         if (commit.version) {
-          const { rootPackage, cwdPackage } = analyzeProjectStructure.sync();
+          const { rootPackage, cwdPackage } = analyzeProjectStructure.sync({
+            useCached: true
+          });
 
           if (cwdPackage === rootPackage) {
             debug_('sub-root package context detected');

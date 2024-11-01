@@ -487,7 +487,8 @@ Finally, note that, when attempting to build a Next.js package, this command wil
         const { targets: buildTargets, metadata: buildMetadata } =
           await gatherPackageBuildTargets(cwdPackage, {
             excludeInternalsPatterns: excludeInternalFiles,
-            includeExternalsPatterns: includeExternalFiles
+            includeExternalsPatterns: includeExternalFiles,
+            useCached: true
           });
 
         debug('initial build targets: %O', buildTargets);
@@ -499,7 +500,9 @@ Finally, note that, when attempting to build a Next.js package, this command wil
 
         if (generateIntermediatesFor === IntermediateTranspilationEnvironment.Test) {
           const { test: testFiles } = await gatherPackageFiles(cwdPackage, {
-            skipGitIgnored: false
+            skipGitIgnored: false,
+            // ! ./dist isn't cleared yet, so the newly cached value is dirty!
+            useCached: true
           });
 
           for (const filepath of testFiles) {
@@ -585,15 +588,15 @@ distrib root: ${absoluteOutputDirPath}
 `
         );
 
+        if (cleanOutputDir) {
+          debug(`forcefully deleting build output directory: ${absoluteOutputDirPath}`);
+          await forceDeletePaths(absoluteOutputDirPath);
+        }
+
         // * Generate types and initial dir structure under ./dist
         if (generateTypes) {
           genericLogger.newline([LogTag.IF_NOT_QUIETED]);
           genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Generating types');
-
-          if (cleanOutputDir) {
-            debug(`forcefully deleting build output directory: ${absoluteOutputDirPath}`);
-            await forceDeletePaths(absoluteOutputDirPath);
-          }
           genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
           debug('running tsc');
@@ -1024,11 +1027,17 @@ distrib root: ${absoluteOutputDirPath}
 
             const [distImportEntries, otherImportEntries, pseudodecoratorEntries] =
               await Promise.all([
-                gatherImportEntriesFromFiles(distFiles, { excludeTypeImports: false }),
-                gatherImportEntriesFromFiles(allOtherFiles, {
-                  excludeTypeImports: false
+                gatherImportEntriesFromFiles(distFiles, {
+                  excludeTypeImports: false,
+                  useCached: true
                 }),
-                gatherPseudodecoratorsEntriesFromFiles(allOtherFilesPlusBuildTargets)
+                gatherImportEntriesFromFiles(allOtherFiles, {
+                  excludeTypeImports: false,
+                  useCached: true
+                }),
+                gatherPseudodecoratorsEntriesFromFiles(allOtherFilesPlusBuildTargets, {
+                  useCached: true
+                })
               ]);
 
             for (const [, pseudodecorators] of pseudodecoratorEntries) {
@@ -1145,7 +1154,7 @@ distrib root: ${absoluteOutputDirPath}
                           })
                         ).length === 0) ||
                       (!isTypescriptDefinitionFile &&
-                        (!(await isAccessible({ path: absoluteSpecifier })) ||
+                        (!(await isAccessible(absoluteSpecifier, { useCached: false })) ||
                           !extname(absoluteSpecifier)))
                     ) {
                       dbg1.error('inaccessible specifier: %O', specifier);
@@ -1433,7 +1442,7 @@ distrib root: ${absoluteOutputDirPath}
                   } else {
                     dbg('checking target: %O', target);
 
-                    if (!(await isAccessible({ path: target }))) {
+                    if (!(await isAccessible(target, { useCached: false }))) {
                       dbg.error('entry point leads to inaccessible file: %O', target);
                       badExports.push([subpath, target]);
                     }

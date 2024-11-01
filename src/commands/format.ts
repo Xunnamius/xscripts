@@ -179,9 +179,9 @@ With respect to .prettierignore being the single source of truth for formatters:
           debug('using --files as targets');
 
           const ignore = skipIgnored
-            ? await deriveVirtualPrettierignoreLines({
-                projectRoot: projectRoot,
-                includeUnknownPaths: skipUnknown
+            ? await deriveVirtualPrettierignoreLines(projectRoot, {
+                includeUnknownPaths: skipUnknown,
+                useCached: true
               })
             : [];
 
@@ -233,7 +233,8 @@ With respect to .prettierignore being the single source of truth for formatters:
             packageJsonFiles: { atAnyRoot: allPackageJsonFiles }
           } = await gatherProjectFiles(projectMetadata, {
             skipIgnored,
-            skipUnknown
+            skipUnknown,
+            useCached: true
             // ? We can safely cast this thanks to the assert above
           } as Parameters<typeof gatherProjectFiles>[1]);
 

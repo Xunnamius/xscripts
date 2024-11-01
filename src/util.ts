@@ -210,7 +210,7 @@ export async function findOneConfigurationFile(
   return Promise.all(
     wellKnownFiles.map(async (filename) => {
       const path = joinPath(configRoot, filename);
-      return [path, await isAccessible({ path: path })] as const;
+      return [path, await isAccessible(path, { useCached: true })] as const;
     })
   ).then((results) => {
     // eslint-disable-next-line unicorn/no-array-reduce
