@@ -67,7 +67,7 @@ export enum WellKnownImportAlias {
    *
    * Examples of matching aliases:
    * - `"universe"`                           (root ./index.ts)
-   * - `"universe some/path/index.ts"`        (root ./src/some/path/index.ts)
+   * - `"universe:some/path/index.ts"`        (root ./src/some/path/index.ts)
    */
   Universe = 'universe',
   /**
@@ -91,7 +91,7 @@ export enum WellKnownImportAlias {
    * This alias always refers to the project root's `./types` directory.
    *
    * Examples of matching aliases:
-   * - `"typeverse global.ts"`                (root ./types/global.ts)
+   * - `"typeverse:global.ts"`                (root ./types/global.ts)
    */
   Typeverse = 'typeverse',
   /**
