@@ -932,4 +932,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:15](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/src/error.ts#L15)
+[src/error.ts:15](https://github.com/Xunnamius/xscripts/blob/ca4900adafe61fe400aec55151e46f5130a666a6/src/error.ts#L15)

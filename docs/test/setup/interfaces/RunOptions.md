@@ -30,7 +30,7 @@ false
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:146
+node\_modules/execa-root/types/arguments/options.d.ts:146
 
 ***
 
@@ -52,7 +52,7 @@ file being executed
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:346
+node\_modules/execa-root/types/arguments/options.d.ts:346
 
 ***
 
@@ -76,7 +76,7 @@ true
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:201
+node\_modules/execa-root/types/arguments/options.d.ts:201
 
 ***
 
@@ -117,7 +117,7 @@ try {
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:282
+node\_modules/execa-root/types/arguments/options.d.ts:282
 
 ***
 
@@ -139,7 +139,7 @@ true
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:325
+node\_modules/execa-root/types/arguments/options.d.ts:325
 
 ***
 
@@ -163,7 +163,7 @@ process.cwd()
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:70
+node\_modules/execa-root/types/arguments/options.d.ts:70
 
 ***
 
@@ -185,7 +185,7 @@ false
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:318
+node\_modules/execa-root/types/arguments/options.d.ts:318
 
 ***
 
@@ -213,7 +213,7 @@ The output is available with `result.stdout`, `result.stderr` and `result.stdio`
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:159
+node\_modules/execa-root/types/arguments/options.d.ts:159
 
 ***
 
@@ -237,7 +237,7 @@ Unless the `extendEnv` option is `false`, the subprocess also uses the current p
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:79
+node\_modules/execa-root/types/arguments/options.d.ts:79
 
 ***
 
@@ -260,7 +260,7 @@ true
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:87
+node\_modules/execa-root/types/arguments/options.d.ts:87
 
 ***
 
@@ -284,7 +284,7 @@ When this happens, `error.isForcefullyTerminated` becomes `true`.
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:302
+node\_modules/execa-root/types/arguments/options.d.ts:302
 
 ***
 
@@ -306,7 +306,7 @@ current group identifier
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:339
+node\_modules/execa-root/types/arguments/options.d.ts:339
 
 ***
 
@@ -332,7 +332,7 @@ false
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:293
+node\_modules/execa-root/types/arguments/options.d.ts:293
 
 ***
 
@@ -350,7 +350,7 @@ See also the `inputFile` and `stdin` options.
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:94
+node\_modules/execa-root/types/arguments/options.d.ts:94
 
 ***
 
@@ -368,7 +368,7 @@ See also the `input` and `stdin` options.
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:101
+node\_modules/execa-root/types/arguments/options.d.ts:101
 
 ***
 
@@ -390,7 +390,7 @@ The subprocess must be a Node.js file.
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:210
+node\_modules/execa-root/types/arguments/options.d.ts:210
 
 ***
 
@@ -408,7 +408,7 @@ The subprocess must be a Node.js file. The value's type depends on the `serializ
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:224
+node\_modules/execa-root/types/arguments/options.d.ts:224
 
 ***
 
@@ -432,7 +432,7 @@ This can be either a name (like `'SIGTERM'`) or a number (like `9`).
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:311
+node\_modules/execa-root/types/arguments/options.d.ts:311
 
 ***
 
@@ -458,7 +458,7 @@ false
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:170
+node\_modules/execa-root/types/arguments/options.d.ts:170
 
 ***
 
@@ -478,7 +478,7 @@ Preferred path to find locally installed binaries, when using the `preferLocal` 
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:23
+node\_modules/execa-root/types/arguments/options.d.ts:23
 
 ***
 
@@ -504,7 +504,7 @@ When reached, `error.isMaxBuffer` becomes `true`.
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:192
+node\_modules/execa-root/types/arguments/options.d.ts:192
 
 ***
 
@@ -526,7 +526,7 @@ The subprocess inherits the current Node.js [CLI flags](https://nodejs.org/api/c
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:32
+node\_modules/execa-root/types/arguments/options.d.ts:32
 
 ***
 
@@ -548,7 +548,7 @@ Requires the `node` option to be `true`.
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:41
+node\_modules/execa-root/types/arguments/options.d.ts:41
 
 ***
 
@@ -570,7 +570,7 @@ Requires the `node` option to be `true`.
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:50
+node\_modules/execa-root/types/arguments/options.d.ts:50
 
 ***
 
@@ -590,7 +590,7 @@ Prefer locally installed binaries when looking for a binary to execute.
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:16
+node\_modules/execa-root/types/arguments/options.d.ts:16
 
 ***
 
@@ -612,7 +612,7 @@ false
 
 #### Defined in
 
-[test/setup.ts:651](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/test/setup.ts#L651)
+[test/setup.ts:651](https://github.com/Xunnamius/xscripts/blob/ca4900adafe61fe400aec55151e46f5130a666a6/test/setup.ts#L651)
 
 ***
 
@@ -634,7 +634,7 @@ Specify the kind of serialization used for sending messages between subprocesses
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:217
+node\_modules/execa-root/types/arguments/options.d.ts:217
 
 ***
 
@@ -660,7 +660,7 @@ false
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:61
+node\_modules/execa-root/types/arguments/options.d.ts:61
 
 ***
 
@@ -684,7 +684,7 @@ This can be an array of values such as `['inherit', 'pipe']` or `[fileUrl, 'pipe
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:128
+node\_modules/execa-root/types/arguments/options.d.ts:128
 
 ***
 
@@ -706,7 +706,7 @@ This can be an array of values such as `['inherit', 'pipe']` or `[fileUrl, 'pipe
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:110
+node\_modules/execa-root/types/arguments/options.d.ts:110
 
 ***
 
@@ -732,7 +732,7 @@ The array can have more than 3 items, to create additional file descriptors beyo
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:139
+node\_modules/execa-root/types/arguments/options.d.ts:139
 
 ***
 
@@ -756,7 +756,7 @@ This can be an array of values such as `['inherit', 'pipe']` or `[fileUrl, 'pipe
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:119
+node\_modules/execa-root/types/arguments/options.d.ts:119
 
 ***
 
@@ -782,7 +782,7 @@ true
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:181
+node\_modules/execa-root/types/arguments/options.d.ts:181
 
 ***
 
@@ -806,7 +806,7 @@ On timeout, `error.timedOut` becomes `true`.
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:253
+node\_modules/execa-root/types/arguments/options.d.ts:253
 
 ***
 
@@ -828,7 +828,7 @@ current user identifier
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:332
+node\_modules/execa-root/types/arguments/options.d.ts:332
 
 ***
 
@@ -856,7 +856,7 @@ By default, this applies to both `stdout` and `stderr`, but different values can
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:237
+node\_modules/execa-root/types/arguments/options.d.ts:237
 
 ***
 
@@ -878,7 +878,7 @@ true
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:353
+node\_modules/execa-root/types/arguments/options.d.ts:353
 
 ***
 
@@ -898,4 +898,4 @@ If `false`, escapes the command arguments on Windows.
 
 #### Defined in
 
-node\_modules/execa/types/arguments/options.d.ts:360
+node\_modules/execa-root/types/arguments/options.d.ts:360

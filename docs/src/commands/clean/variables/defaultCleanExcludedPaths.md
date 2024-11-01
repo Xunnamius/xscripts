@@ -17,4 +17,4 @@ with `(^|/)`. Note that periods must be escaped (i.e. `'\\.'`).
 
 ## Defined in
 
-[src/commands/clean.ts:34](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/src/commands/clean.ts#L34)
+[src/commands/clean.ts:34](https://github.com/Xunnamius/xscripts/blob/ca4900adafe61fe400aec55151e46f5130a666a6/src/commands/clean.ts#L34)

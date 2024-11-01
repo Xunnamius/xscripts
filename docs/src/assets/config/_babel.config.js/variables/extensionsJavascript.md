@@ -12,4 +12,4 @@ All known JavaScript file extensions supported by Babel.
 
 ## Defined in
 
-[src/assets/config/\_babel.config.js.ts:21](https://github.com/Xunnamius/xscripts/blob/b9218ee5f94be5da6a48d961950ed32307ad7f96/src/assets/config/_babel.config.js.ts#L21)
+[src/assets/config/\_babel.config.js.ts:21](https://github.com/Xunnamius/xscripts/blob/ca4900adafe61fe400aec55151e46f5130a666a6/src/assets/config/_babel.config.js.ts#L21)
