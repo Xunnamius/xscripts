@@ -8,6 +8,8 @@ import { ErrorMessage } from 'universe:error.ts';
 
 import type { EmptyObject, Promisable } from 'type-fest';
 
+// TODO: ensure no usage of hardAssert or softAssert in asset configs
+
 /**
  * The `MergeWithCustomizer` type from lodash's {@link mergeWith}.
  */

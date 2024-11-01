@@ -170,6 +170,8 @@ Note: this command will refuse to release a package version below 1.0.0. This is
 
       // TODO: DO NOT USE npx codecov, we need to download the binary (to a consistent location based on its filename) if it isn't in path and use it instead
 
+      // TODO: change it so that even polyrepo root packages are released using the name@version tag syntax instead of the vversion tag syntax. For backwards compat, the olf vversion syntax will interpreted as root-pkg@version
+
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
