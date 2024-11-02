@@ -1,4 +1,5 @@
 import { type ChildConfiguration } from '@black-flag/core';
+import { type PackageJson } from 'type-fest';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
 
@@ -76,16 +77,19 @@ export default function command({
         ...subrootPackagesJson
       ];
 
-      for (const [index, packageJson] of packages.entries()) {
-        const { name, scripts } = packageJson;
+      let savedForLast = '';
 
-        const packageName = name ?? '(unnamed package)';
+      for (const [index, packageJson] of packages.entries()) {
+        const { scripts } = packageJson;
+
+        const isCwdPackage = cwdPackage.json === packageJson;
+        const packageName = getPackageName(packageJson);
         const packageFullName =
           packageName +
           (subrootPackagesJson.length && index === 0 ? ' (root package)' : '') +
-          (cwdPackage.json === packageJson ? ' (current package)' : '');
+          (isCwdPackage ? ' (current package)' : '');
 
-        const packageLogger = genericLogger.extend(`[${packageName}]`);
+        const packageLogger = getPackageLogger(packageName);
 
         const tasks = Object.entries(scripts ?? {})
           .map(([name, script], index_, array) => {
@@ -99,17 +103,34 @@ export default function command({
           })
           .join(frontmatter);
 
-        packageLogger(
-          [LogTag.IF_NOT_QUIETED],
+        const output =
           `${packageFullName}:${full ? '\n' : ''}` +
-            (tasks ? frontmatter + tasks : '\n(none)') +
-            '\n'
-        );
+          (tasks ? frontmatter + tasks : '\n(none)') +
+          '\n';
 
+        if (isCwdPackage) {
+          savedForLast = output;
+        } else {
+          packageLogger([LogTag.IF_NOT_QUIETED], output);
+          genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+        }
+      }
+
+      if (savedForLast) {
+        const packageName = getPackageName(cwdPackage.json);
+        getPackageLogger(packageName)([LogTag.IF_NOT_QUIETED], savedForLast);
         genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       }
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
+
+      function getPackageName({ name }: PackageJson) {
+        return name ?? '(unnamed package)';
+      }
+
+      function getPackageLogger(packageName: string) {
+        return genericLogger.extend(`[${packageName}]`);
+      }
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
 }
