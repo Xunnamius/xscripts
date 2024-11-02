@@ -302,8 +302,8 @@ export type ProjectFiles = {
      */
     atProjectRoot: AbsolutePath;
     /**
-     * A map of zero or more absolute paths to each workspace's root
-     * `package.json` files.
+     * A map of {@link WorkspacePackageId}s to zero or more absolute paths to
+     * each workspace's root `package.json` files.
      */
     atWorkspaceRoot: Map<WorkspacePackageId, AbsolutePath>;
     /**
@@ -329,8 +329,9 @@ export type ProjectFiles = {
      */
     atProjectRoot: AbsolutePath | undefined;
     /**
-     * A map of zero or more absolute executable paths derived from each
-     * workspace's root `package.json` `bin` value (if it exists).
+     * A map of {@link WorkspacePackageId}s to zero or more absolute executable
+     * paths derived from each workspace's root `package.json` `bin` value (if
+     * it exists).
      */
     atWorkspaceRoot: Map<WorkspacePackageId, AbsolutePath | undefined>;
     /**
@@ -348,8 +349,8 @@ export type ProjectFiles = {
      */
     inRoot: AbsolutePath[];
     /**
-     * A map of zero or more absolute paths to Markdown files within the
-     * project's workspaces.
+     * A map of {@link WorkspacePackageId}s to zero or more absolute paths to
+     * Markdown files within the project's workspaces.
      */
     inWorkspace: Map<WorkspacePackageId, AbsolutePath[]>;
     /**
@@ -368,8 +369,8 @@ export type ProjectFiles = {
      */
     inRootSrc: AbsolutePath[];
     /**
-     * A map of zero or more absolute paths to TypeScript files within each
-     * project workspace's `src/` directory.
+     * A map of {@link WorkspacePackageId}s to zero or more absolute paths to
+     * TypeScript files within each project workspace's `src/` directory.
      */
     inWorkspaceSrc: Map<WorkspacePackageId, AbsolutePath[]>;
     /**
@@ -495,6 +496,7 @@ export function isWorkspacePackage(o: unknown): o is WorkspacePackage {
 /**
  * Returns `true` if `o` is probably an instance of `RootPackage`.
  */
+// TODO: unit test these isX functions
 export function isRootPackage(o: unknown): o is RootPackage {
   return (
     !!o &&
