@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+import { relative as toRelativePath } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 
 import { type ChildConfiguration } from '@black-flag/core';
@@ -103,8 +104,6 @@ export default function command({
   state,
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const defaultScope = determineDefaultScope();
-
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
     (blackFlag) => {
       blackFlag.strict(false);
@@ -113,7 +112,7 @@ export default function command({
       return {
         scope: {
           choices: testerScopes,
-          default: defaultScope
+          default: TesterScope.ThisPackage
         },
         type: {
           alias: 'types',
@@ -198,7 +197,7 @@ Provide --collect-coverage to instruct Jest to collect coverage information. --c
 
 For detecting flakiness in tests, which is almost always a sign of deep developer error, provide --repeat; e.g. \`--repeat 100\`.
 
-For running "intermediate" test files transpiled by \`xscripts build\`, provide \`--scope=${TesterScope.ThisPackageIntermediates}\` to set the XSCRIPTS_TEST_JEST_TRANSPILED environment variable in the testing environment. This will be picked up by jest and other relevant tooling causing them to reconfigure themselves to run any transpiled tests under the ./.transpiled directory. Otherwise, the default value for --scope in the current project is${defaultScope ? `: ${defaultScope}` : ' not resolvable (xscripts seems not to be running in a project repository)'}.
+For running "intermediate" test files transpiled by \`xscripts build\`, provide \`--scope=${TesterScope.ThisPackageIntermediates}\` to set the XSCRIPTS_TEST_JEST_TRANSPILED environment variable in the testing environment. This will be picked up by jest and other relevant tooling causing them to reconfigure themselves to run any transpiled tests under the ./.transpiled directory.
 
 Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS environment variable in the testing environment. This will activate the \`reconfigureJestGlobalsToSkipTestsInThisFileIfRequested\` function of the @-xun/jest library, which will force Jest to skip by default all tests within files where said function was invoked. Providing --skip-slow-tests twice (or -xx) has the same effect, with the addition that test files that have "-slow." in their name are skipped entirely (not even looked at by Jest or executed by Node). This can be used in those rare instances where even the mere execution of a test file is too slow, such as a test file with hundreds or even thousands of generated tests that must be skipped.`,
     handler: withGlobalHandler(async function ({
@@ -287,6 +286,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
       debug('env: %O', env);
 
+      // ! Test path patterns should begin with a slash (/)
       const testPathPatterns: string[] = [];
       const { testPathIgnorePatterns = [] } = baseConfig;
       const isMonorepo = projectMetadata.type === ProjectAttribute.Monorepo;
@@ -303,6 +303,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
         // * XSCRIPTS_TEST_JEST_TRANSPILED environment variable.
 
         if (allTypes || types.includes(TestType.Unit)) {
+          // ? These sorts of patterns match at any depth (leading / isn't root)
           testPathPatterns.push(String.raw`/test(/.*)?/unit(-.*)?\.test\.tsx?`);
         }
 
@@ -314,7 +315,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
           testPathPatterns.push(String.raw`/test(/.*)?/e2e(-.*)?\.test\.tsx?`);
         }
 
-        if (scope === TesterScope.ThisPackage && isCwdTheProjectRoot && isMonorepo) {
+        if (isMonorepo && scope === TesterScope.ThisPackage && isCwdTheProjectRoot) {
           testPathIgnorePatterns.push('/packages/');
         }
 
@@ -337,7 +338,17 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       );
 
       if (testPathPatterns) {
-        npxArguments.push(...testPathPatterns);
+        const prefix = isCwdTheProjectRoot
+          ? ''
+          : '/' + toRelativePath(projectRoot, cwdPackage.root);
+
+        const finalTestPathPatterns =
+          scope === TesterScope.ThisPackage
+            ? // ? Assumes all patterns start with a slash (/)
+              testPathPatterns.map((pattern) => prefix + pattern)
+            : testPathPatterns;
+
+        npxArguments.push(...finalTestPathPatterns);
       }
 
       debug('npxArguments: %O', npxArguments);
@@ -372,17 +383,4 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
-
-  function determineDefaultScope(): TesterScope | undefined {
-    if (projectMetadata_) {
-      const { cwdPackage, rootPackage } = projectMetadata_;
-      const isCwdTheProjectRoot = cwdPackage === rootPackage;
-
-      return isCwdTheProjectRoot && rootPackage.attributes[ProjectAttribute.Hybridrepo]
-        ? TesterScope.ThisPackage
-        : TesterScope.Unlimited;
-    }
-
-    return undefined;
-  }
 }
