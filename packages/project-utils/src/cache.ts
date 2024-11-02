@@ -132,17 +132,37 @@ const cacheScopes = Object.values(CacheScope);
 const externalCache = {
   set: setInCache,
   /**
-   * The number of times `this.set` has been called since `this.clear` was last
-   * called. Mostly useful in a testing context.
+   * The number of times `this.set` has been called.
    */
   sets: 0,
+  /**
+   * The number of times `this.set` has been called that resulted in a cache
+   * hit.
+   */
+  setsOverwrites: 0,
+  /**
+   * The number of times `this.set` has been called that resulted in a cache miss.
+   */
+  setsCreated: 0,
   get: getFromCache,
   /**
-   * The number of times `this.get` has been called since `this.clear` was last
-   * called. Mostly useful in a testing context.
+   * The number of times `this.get` has been called.
    */
   gets: 0,
-  clear: clearCacheByScope
+  /**
+   * The number of times `this.get` has been called that resulted in a cache
+   * hit..
+   */
+  getsHits: 0,
+  /**
+   * The number of times `this.get` has been called that resulted in a cache miss.
+   */
+  getsMisses: 0,
+  clear: clearCacheByScope,
+  /**
+   * The number of times `this.clear` has been called.
+   */
+  clears: 0
 };
 
 export { externalCache as cache };
@@ -197,11 +217,13 @@ function setInCache(
 function setInCache(scope: CacheScope, id: unknown[], value: unknown): void {
   const [cache, cacheKey] = deriveCacheKeyFromIdentifiers(scope, id);
 
-  cacheDebug(
-    cache.has(cacheKey) ? 'update existing key %O:%O' : 'create new key %O:%O',
-    scope,
-    cacheKey
-  );
+  if (cache.has(cacheKey)) {
+    externalCache.setsOverwrites += 1;
+    cacheDebug('update existing key %O:%O', scope, cacheKey);
+  } else {
+    externalCache.setsCreated += 1;
+    cacheDebug('create new key %O:%O', scope, cacheKey);
+  }
 
   externalCache.sets += 1;
   cache.set(cacheKey, value);
@@ -266,8 +288,10 @@ function getFromCache(scope: CacheScope, id: unknown[]): unknown {
 
   if (cache.has(cacheKey)) {
     cacheDebugHit('hit for key %O:%O', scope, cacheKey);
+    externalCache.getsHits += 1;
   } else {
     cacheDebug('miss for key %O:%O', scope, cacheKey);
+    externalCache.getsMisses += 1;
   }
 
   externalCache.gets += 1;
@@ -283,6 +307,8 @@ function clearCacheByScope(
     [cacheScope in CacheScope]?: boolean;
   } = {}
 ) {
+  externalCache.clears += 1;
+
   for (const scope of cacheScopes) {
     if (scopesToClear[scope] !== false) {
       const internalScopedCache = internalCache.get(scope);
