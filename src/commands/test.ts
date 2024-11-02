@@ -91,6 +91,7 @@ export type CustomCliArguments = GlobalCliArguments<TesterScope> & {
   skipSlowTests: number;
   nodeOptions: string[];
   baseline: boolean;
+  propagateDebugEnv: boolean;
 };
 
 export default function command({
@@ -147,6 +148,12 @@ export default function command({
             }
           }
         },
+        'propagate-debug-env': {
+          alias: 'debug',
+          boolean: true,
+          description: 'Make the DEBUG environment variable visible to Jest',
+          default: false
+        },
         'skip-slow-tests': {
           alias: 'x',
           count: true,
@@ -181,6 +188,8 @@ Any extra arguments passed to this command, including file globs and unrecognize
 
 By default, this command constructs an execution plan (i.e. the computed arguments and path patterns passed to Jest's CLI) based on project metadata and provided options. Alternatively, you can provide --baseline when you want to construct your own custom Jest execution plan but still wish to make use of the runtime environment provided by this tool.
 
+Also by default, this command prevents the value of the DEBUG environment variable, if given, from propagating down into tests since this can cause strange output-related problems. Provide --propagate-debug-env to allow the value of DEBUG to be seen by Jest and the rest of the test environment, including tests.
+
 Provide --collect-coverage to instruct Jest to collect coverage information. --collect-coverage is false by default unless \`--scope=${TesterScope.Unlimited}\` and \`--type=${TestType.All}\`, in which case it will be true by default.
 
 For detecting flakiness in tests, which is almost always a sign of deep developer error, provide --repeat; e.g. \`--repeat 100\`.
@@ -195,6 +204,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       collectCoverage,
       skipSlowTests,
       nodeOptions,
+      propagateDebugEnv,
       repeat,
       type: types,
       baseline,
@@ -216,6 +226,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       debug('skipSlowTests: %O', skipSlowTests);
       debug('nodeOptions: %O', nodeOptions);
       debug('repeat: %O', repeat);
+      debug('propagateDebugEnv: %O', propagateDebugEnv);
       debug('test scope: %O', scope);
       debug('test type: %O', types);
       debug('baseline: %O', baseline);
@@ -242,7 +253,8 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
         );
       }
 
-      const env: Record<string, string> = {
+      const env: Record<string, string | undefined> = {
+        DEBUG: undefined,
         DEBUG_COLORS: 'false',
         NODE_ENV: 'test',
         // eslint-disable-next-line unicorn/no-array-reduce
@@ -262,6 +274,10 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
       if (isRepeating) {
         env.JEST_SILENT_REPORTER_SHOW_WARNINGS = 'true';
+      }
+
+      if (propagateDebugEnv) {
+        env.DEBUG = process.env.DEBUG;
       }
 
       debug('env: %O', env);
