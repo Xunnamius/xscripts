@@ -499,6 +499,7 @@ export function isRootPackage(o: unknown): o is RootPackage {
   return (
     !!o &&
     typeof o === 'object' &&
+    !('id' in o) &&
     'root' in o &&
     'json' in o &&
     'attributes' in o &&
