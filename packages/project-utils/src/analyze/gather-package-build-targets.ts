@@ -164,6 +164,8 @@ function gatherPackageBuildTargets_(
       const externalPaths = rawSpecifiersToExternalTargetPaths(
         // eslint-disable-next-line no-await-in-loop
         await gatherImportEntriesFromFiles(Array.from(previousDiff.values()), {
+          // ? Ensure specifierOk checks are also performed on type-only imports
+          excludeTypeImports: false,
           useCached
         })
       );
@@ -212,6 +214,8 @@ function gatherPackageBuildTargets_(
     ) {
       const externalPaths = rawSpecifiersToExternalTargetPaths(
         gatherImportEntriesFromFiles.sync(Array.from(previousDiff.values()), {
+          // ? Ensure specifierOk checks are also performed on type-only imports
+          excludeTypeImports: false,
           useCached
         })
       );

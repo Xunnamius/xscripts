@@ -2275,7 +2275,8 @@ describe('::gatherPackageBuildTargets', () => {
               'rootverse+webpack': 3,
               'multiverse+cli': 1,
               'multiverse+private': 3,
-              universe: 1
+              typeverse: 1,
+              universe: 2
             },
             dependencyCounts: {
               '@babel/core': 1,
@@ -2316,7 +2317,8 @@ describe('::gatherPackageBuildTargets', () => {
             aliasCounts: {
               'rootverse+private': 1,
               'rootverse+webpack': 1,
-              'multiverse+private': 2
+              'multiverse+private': 2,
+              typeverse: 1
             },
             dependencyCounts: {
               '@black-flag/core': 1,
@@ -2359,7 +2361,8 @@ describe('::gatherPackageBuildTargets', () => {
           metadata: {
             imports: {
               aliasCounts: {
-                'rootverse+private': 1
+                'rootverse+private': 1,
+                typeverse: 1
               },
               dependencyCounts: {
                 'another-package': 1,
@@ -2716,7 +2719,8 @@ describe('::gatherPackageBuildTargets', () => {
               'rootverse+webpack': 3,
               'multiverse+cli': 1,
               'multiverse+private': 3,
-              universe: 1
+              typeverse: 1,
+              universe: 2
             },
             dependencyCounts: {
               '@babel/core': 1,
@@ -2757,7 +2761,8 @@ describe('::gatherPackageBuildTargets', () => {
             aliasCounts: {
               'rootverse+private': 1,
               'rootverse+webpack': 1,
-              'multiverse+private': 2
+              'multiverse+private': 2,
+              typeverse: 1
             },
             dependencyCounts: {
               '@black-flag/core': 1,
@@ -2800,7 +2805,8 @@ describe('::gatherPackageBuildTargets', () => {
           metadata: {
             imports: {
               aliasCounts: {
-                'rootverse+private': 1
+                'rootverse+private': 1,
+                typeverse: 1
               },
               dependencyCounts: {
                 'another-package': 1,
