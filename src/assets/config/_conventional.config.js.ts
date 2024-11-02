@@ -1,15 +1,18 @@
+import assert from 'node:assert';
+import { relative as toRelativePath } from 'node:path';
+
 import escapeStringRegExp from 'escape-string-regexp~4';
 import deepMerge from 'lodash.mergewith';
 import semver from 'semver';
 
-import { softAssert } from 'multiverse+cli-utils:error.ts';
 import { interpolateTemplate, toSentenceCase } from 'multiverse+cli-utils:util.ts';
-import { analyzeProjectStructure } from 'multiverse+project-utils';
+import { analyzeProjectStructure, WorkspaceAttribute } from 'multiverse+project-utils';
+import { type RelativePath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
-import { ErrorMessage } from 'universe:error.ts';
+
 import { __read_file_sync } from 'universe:util.ts';
 
 // {@xscripts/notInvalid conventional-changelog-config-spec}
@@ -24,6 +27,23 @@ import type { EmptyObject } from 'type-fest';
 const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:conventional`
 });
+
+/**
+ * The Git pathspecs that should be ignored (excluded) when not considering the
+ * root package. Pathspecs should be relative to _project_ root.
+ *
+ * ! DO _NOT_ PREFIX ENTRIES IN THIS ARRAY WITH A LEADING DOT (.) OR ./
+ */
+const rootPackageExcludedDirectories = [
+  'docs',
+  'src',
+  'test',
+  'package.json',
+  'README.md',
+  'CHANGELOG.md',
+  'LICENSE',
+  'tsc.package.*'
+] as RelativePath[];
 
 /**
  * The location of the handlebars templates in relation to this file's location
@@ -55,6 +75,8 @@ const neverMatchAnythingPattern = /(?!)/;
  * with some custom additions. Note that this type is a best effort and may not
  * be perfectly accurate.
  */
+// TODO: xchangelog and xrelease need to iron out the strange and ugly
+// TODO: configuration object known as ConventionalChangelogCliConfig...
 export type ConventionalChangelogCliConfig = ConventionalChangelogConfigSpecOptions &
   ConventionalChangelogCoreOptions.Config.Object & {
     /**
@@ -261,10 +283,17 @@ export function moduleExport(
   // ? in both parserOpts and in finalConfig itself simultaneously
   let sharedIssuePrefixes = defaultIssuePrefixes;
 
+  const { cwdPackage, rootPackage } = analyzeProjectStructure.sync({ useCached: true });
+  const isCwdPackageTheRootPackage = cwdPackage === rootPackage;
+  const cwdPackageName = cwdPackage.json.name;
+
+  assert(cwdPackageName);
+
   const intermediateConfig: ConventionalChangelogCliConfig = {
     // * Core configuration keys * \\
     // ? conventionalChangelog and recommendedBumpOpts keys are redefined below
     conventionalChangelog: {},
+    // ? gitRawCommitsOpts key is redefined below
     gitRawCommitsOpts: {},
 
     // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#options
@@ -318,37 +347,24 @@ export function moduleExport(
         const debug_ = debug.extend('writerOpts:generateOn');
         let decision = false;
 
-        debug_(`saw version: ${commit.version!}`);
+        debug_(`saw version: ${commit.version ?? 'N/A'}`);
 
-        if (commit.version) {
-          const { rootPackage, cwdPackage } = analyzeProjectStructure.sync({
-            useCached: true
-          });
-
-          if (cwdPackage === rootPackage) {
-            debug_('sub-root package context detected');
-
-            const {
-              json: { name: packageName }
-            } = cwdPackage;
-
-            softAssert(packageName, ErrorMessage.BadProjectNameInPackageJson());
-
-            debug_(`monorepo package: ${packageName}`);
-
-            if (new RegExp(`^${packageName}@.+$`).test(commit.version)) {
-              // ? Remove the package name from the version string
-              commit.version = commit.version.split('@').at(-1)!;
-              debug_(`using version: ${commit.version}`);
-            }
-          } else {
-            debug_('root package context detected');
-          }
-
+        if (
+          (isCwdPackageTheRootPackage && isCompatCommitVersion(commit.version)) ||
+          commit.version?.startsWith(`${cwdPackageName}@`)
+        ) {
+          commit.version = commit.version.split('@').at(-1)!;
+          debug_('using updated version: %O', commit.version);
           decision = !!semver.valid(commit.version) && !semver.prerelease(commit.version);
         }
 
-        debug_(`decision: ${decision ? 'NEW block' : 'same block'}`);
+        debug_(
+          `version block decision: %O${
+            commit.version ? " (the version ain't ours)" : ''
+          }`,
+          decision ? 'NEW block' : 'same block'
+        );
+
         return decision;
       },
       transform(commit, context) {
@@ -393,10 +409,12 @@ export function moduleExport(
           commit.header = header;
         }
 
-        // * Xpipeline command suffixes are deleted later
+        // * Xpipeline command suffixes in commit bodies are deleted later
 
         // ? Ignore any commits that have been reverted...
         if (commit.hash) {
+          // TODO: only keep reverter commits that reverted build/feat/fix/perf
+          // TODO: et cetera
           // ? ... but keep reverter commits...
           if (revertedCommitHashesSet.has(commit.hash)) {
             debug_('decision: commit discarded (reverted)');
@@ -623,6 +641,14 @@ export function moduleExport(
     }
   } as typeof intermediateConfig.recommendedBumpOpts;
 
+  //intermediateConfig.recommendedBumpOpts!.lernaPackage = cwdPackage.json.name;
+  //intermediateConfig.options = { lernaPackage: cwdPackage.json.name };
+  intermediateConfig.gitRawCommitsOpts = {
+    // ? Pathspecs passed to git; used to ignore changes in other packages
+    // ? See: https://github.com/sindresorhus/dargs#usage
+    '--': getExcludedDirectoriesRelativeToProjectRoot()
+  };
+
   debug('intermediate config: %O', intermediateConfig);
 
   const finalConfig =
@@ -842,4 +868,56 @@ function mergeCustomizer(
   }
 
   return undefined;
+}
+
+/**
+ * Return directories that should be excluded from consideration depending on
+ * the project structure and the current working directory.
+ *
+ * Useful for narrowing the scope of conventional-changelog and semantic-release
+ * -based tooling like xchangelog and xrelease.
+ */
+export function getExcludedDirectoriesRelativeToProjectRoot() {
+  const { cwdPackage, rootPackage, subRootPackages } = analyzeProjectStructure.sync({
+    useCached: true
+  });
+
+  const projectRoot = rootPackage.root;
+  const isCwdPackageTheRootPackage = cwdPackage === rootPackage;
+  const excludedDirectoriesRelativeToProjectRoot: RelativePath[] = [];
+
+  if (!isCwdPackageTheRootPackage) {
+    excludedDirectoriesRelativeToProjectRoot.push(...rootPackageExcludedDirectories);
+  }
+
+  if (subRootPackages) {
+    for (const {
+      root: packageRoot,
+      attributes: packageAttributes
+    } of subRootPackages.values()) {
+      if (
+        packageRoot !== cwdPackage.root &&
+        !packageAttributes[WorkspaceAttribute.Shared]
+      ) {
+        excludedDirectoriesRelativeToProjectRoot.push(
+          toRelativePath(projectRoot, packageRoot) as RelativePath
+        );
+      }
+    }
+  }
+
+  const result = excludedDirectoriesRelativeToProjectRoot.map(
+    (path) => `:(exclude,top)${path}`
+  );
+
+  debug(
+    'excludedDirectoriesRelativeToProjectRoot: %O',
+    excludedDirectoriesRelativeToProjectRoot
+  );
+
+  return result;
+}
+
+function isCompatCommitVersion(o: string | null | undefined): o is string {
+  return typeof o === 'string';
 }
