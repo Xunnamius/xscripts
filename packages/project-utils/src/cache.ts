@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { createHash } from 'node:crypto';
 
+import {
+  debug as debug_,
+  isPackage,
+  isProjectMetadata
+} from 'rootverse+project-utils:src/analyze/common.ts';
+
 import type {
   analyzeProjectStructure,
   gatherImportEntriesFromFiles,
@@ -8,13 +14,7 @@ import type {
   gatherPackageFiles,
   gatherProjectFiles,
   gatherPseudodecoratorsEntriesFromFiles
-} from 'multiverse+project-utils:analyze';
-
-import {
-  debug as debug_,
-  isPackage,
-  isProjectMetadata
-} from 'rootverse+project-utils:src/analyze/common.ts';
+} from 'rootverse+project-utils:src/analyze.ts';
 
 import {
   type deriveVirtualGitignoreLines,
