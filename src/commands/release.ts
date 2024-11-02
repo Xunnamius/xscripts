@@ -67,7 +67,7 @@ export default function command({
       boolean: true,
       description: 'Only run semantic-release and related tooling',
       default: !!process.env.TURBO_HASH,
-      defaultDescription: '"true" if run using Turbo, "false" otherwise'
+      defaultDescription: 'true if run using Turbo, false otherwise'
     },
     'synchronize-interdependencies': {
       boolean: true,

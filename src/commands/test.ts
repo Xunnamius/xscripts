@@ -156,7 +156,7 @@ export default function command({
           boolean: true,
           description: 'Make the DEBUG environment variable visible to Jest',
           default: !!process.env.CI,
-          defaultDescription: '"true" if in a CI environment, "false" otherwise'
+          defaultDescription: 'true if in a CI environment, false otherwise'
         },
         'skip-slow-tests': {
           alias: 'x',
