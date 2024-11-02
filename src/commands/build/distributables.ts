@@ -39,6 +39,7 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import {
   gatherImportEntriesFromFiles,
   gatherPseudodecoratorsEntriesFromFiles,
+  isRootPackage,
   isWorkspacePackage,
   ProjectAttribute,
   PseudodecoratorTag,
@@ -167,7 +168,7 @@ export default async function command({
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const { attributes: projectAttributes = {} } = projectMetadata_?.rootPackage || {};
   const isCwdTheProjectRoot =
-    projectMetadata_ && projectMetadata_.rootPackage === projectMetadata_.cwdPackage;
+    projectMetadata_ && isRootPackage(projectMetadata_.rootPackage);
   const isCwdANextJsPackage =
     // TODO: consider allowing Next.js projects as sub-roots / workspace packages
     isCwdTheProjectRoot && !!projectAttributes[ProjectAttribute.Next];

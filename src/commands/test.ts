@@ -12,7 +12,10 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
-import { ProjectAttribute } from 'multiverse+project-utils:analyze/common.ts';
+import {
+  isRootPackage,
+  ProjectAttribute
+} from 'multiverse+project-utils:analyze/common.ts';
 import { jestConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 import { run } from 'multiverse+run';
 
@@ -237,7 +240,8 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       debug('extraArguments: %O', extraArguments);
 
       const {
-        rootPackage: { root: projectRoot }
+        rootPackage: { root: projectRoot },
+        cwdPackage
       } = projectMetadata;
 
       debug('projectRoot: %O', projectRoot);
@@ -286,9 +290,8 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       const testPathPatterns: string[] = [];
       const { testPathIgnorePatterns = [] } = baseConfig;
       const isMonorepo = projectMetadata.type === ProjectAttribute.Monorepo;
+      const isCwdTheProjectRoot = isRootPackage(cwdPackage);
       const npxArguments = ['jest'];
-      const isCwdTheProjectRoot =
-        projectMetadata.cwdPackage === projectMetadata.rootPackage;
 
       if (collectCoverage) {
         npxArguments.push('--coverage');

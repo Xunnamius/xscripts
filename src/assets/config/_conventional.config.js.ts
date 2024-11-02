@@ -6,7 +6,11 @@ import deepMerge from 'lodash.mergewith';
 import semver from 'semver';
 
 import { interpolateTemplate, toSentenceCase } from 'multiverse+cli-utils:util.ts';
-import { analyzeProjectStructure, WorkspaceAttribute } from 'multiverse+project-utils';
+import {
+  analyzeProjectStructure,
+  isRootPackage,
+  WorkspaceAttribute
+} from 'multiverse+project-utils';
 import { type RelativePath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
@@ -283,8 +287,8 @@ export function moduleExport(
   // ? in both parserOpts and in finalConfig itself simultaneously
   let sharedIssuePrefixes = defaultIssuePrefixes;
 
-  const { cwdPackage, rootPackage } = analyzeProjectStructure.sync({ useCached: true });
-  const isCwdPackageTheRootPackage = cwdPackage === rootPackage;
+  const { cwdPackage } = analyzeProjectStructure.sync({ useCached: true });
+  const isCwdPackageTheRootPackage = isRootPackage(cwdPackage);
   const cwdPackageName = cwdPackage.json.name;
 
   assert(cwdPackageName);
@@ -878,12 +882,15 @@ function mergeCustomizer(
  * -based tooling like xchangelog and xrelease.
  */
 export function getExcludedDirectoriesRelativeToProjectRoot() {
-  const { cwdPackage, rootPackage, subRootPackages } = analyzeProjectStructure.sync({
+  const {
+    cwdPackage,
+    rootPackage: { root: projectRoot },
+    subRootPackages
+  } = analyzeProjectStructure.sync({
     useCached: true
   });
 
-  const projectRoot = rootPackage.root;
-  const isCwdPackageTheRootPackage = cwdPackage === rootPackage;
+  const isCwdPackageTheRootPackage = isRootPackage(cwdPackage);
   const excludedDirectoriesRelativeToProjectRoot: RelativePath[] = [];
 
   if (!isCwdPackageTheRootPackage) {

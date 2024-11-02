@@ -9,6 +9,7 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
+import { isRootPackage } from 'multiverse+project-utils:analyze.ts';
 import { runWithInheritedIo } from 'multiverse+run';
 
 import {
@@ -118,10 +119,10 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
       debug('parallel: %O', parallel);
       debug('runToCompletion: %O', runToCompletion);
 
-      const { rootPackage, cwdPackage, subRootPackages } = projectMetadata;
+      const { cwdPackage, subRootPackages } = projectMetadata;
 
       const { root: cwdPackageRoot } = cwdPackage;
-      const isCwdTheProjectRoot = cwdPackage === rootPackage;
+      const isCwdTheProjectRoot = isRootPackage(cwdPackage);
       const isInCiEnvironment = !!process.env.CI;
       const isInDevelopmentEnvironment =
         process.env.NODE_ENV === undefined || process.env.NODE_ENV === 'development';
