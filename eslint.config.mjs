@@ -12,6 +12,7 @@ import eslintPluginNode from 'eslint-plugin-n';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import jsGlobals from 'globals';
 
+import { toss } from 'toss-expression';
 import {
   config as makeTsEslintConfig,
   configs as eslintTsConfigs,
@@ -25,7 +26,10 @@ import {
 
 import { overwriteProperty } from '@-xun/scripts/assets/config/eslint.config.mjs';
 
-import { Tsconfig } from './node_modules/@-xun/scripts/dist/packages/project-utils/src/fs.js';
+import {
+  isAccessible,
+  Tsconfig
+} from './node_modules/@-xun/scripts/dist/packages/project-utils/src/fs.js';
 
 import packageJson from './package.json' with { type: 'json' };
 
@@ -518,6 +522,24 @@ assert(eslintPluginNodeRecommendedExtEither);
 assert(eslintPluginNodeRecommendedExtMjs);
 assert(eslintPluginNodeRecommendedExtCjs);
 
+const projectLintUnlimitedPath = `${import.meta.dirname}/${Tsconfig.ProjectLintUnlimited}`;
+const projectLintSourcePath = `${import.meta.dirname}/${Tsconfig.ProjectLintSource}`;
+
+/**
+ ** Despite the scope used by xscripts, we want as broad a configuration file
+ ** as possible and we'll leave the further narrowing of scope to others.
+ */
+const cwdTsconfigFile = isAccessible.sync(projectLintUnlimitedPath, { useCached: true })
+  ? projectLintUnlimitedPath
+  : isAccessible.sync(Tsconfig.PackageLintUnlimited, { useCached: true })
+    ? Tsconfig.PackageLintUnlimited
+    : isAccessible.sync(projectLintSourcePath, { useCached: true })
+      ? projectLintSourcePath
+      : isAccessible.sync(Tsconfig.PackageLintSource, { useCached: true })
+        ? Tsconfig.PackageLintSource
+        : // TODO: make this a ProjectError; use ErrorMessage.X
+          toss(new Error('unable to locate suitable tsconfig file (see --help text)'));
+
 const config = makeTsEslintConfig(
   // * Global ignores applying to all files (any extension)
   // ! Should be the first configuration block (as of 2024)
@@ -553,11 +575,14 @@ const config = makeTsEslintConfig(
         sourceType: 'module',
         parser: eslintTsParser,
         parserOptions: {
-          tsconfigRootDir: import.meta.dirname,
-          project: Tsconfig.ProjectLintUnlimited,
+          //tsconfigRootDir: cwd,
+          project: cwdTsconfigFile,
           ecmaFeatures: {
             impliedStrict: true,
             jsx: true
+          },
+          babelOptions: {
+            rootMode: 'upward'
           }
         },
         globals
@@ -569,6 +594,7 @@ const config = makeTsEslintConfig(
         'import/extensions': extensionsTsAndJs,
         // ? Switch parsers depending on which type of file we're looking at
         'import/parsers': {
+          // ! Note how Babel is NOT being used to transpile TypeScript here!
           // {@xscripts/notExtraneous @typescript-eslint/parser}
           '@typescript-eslint/parser': extensionsTypescript,
           // {@xscripts/notExtraneous @babel/eslint-parser}
@@ -579,7 +605,7 @@ const config = makeTsEslintConfig(
           // {@xscripts/notExtraneous eslint-import-resolver-typescript}
           typescript: {
             alwaysTryTypes: true,
-            project: Tsconfig.ProjectLintUnlimited
+            project: cwdTsconfigFile
           },
           node: true
         },
@@ -591,7 +617,7 @@ const config = makeTsEslintConfig(
         node: {
           // ? Seems eslint-plugin-n is struggling to get engines.node...
           version: packageJsonEnginesNode,
-          tsconfigPath: Tsconfig.ProjectLintUnlimited
+          tsconfigPath: cwdTsconfigFile
         }
       }
     }

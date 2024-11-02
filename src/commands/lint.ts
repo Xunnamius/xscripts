@@ -157,13 +157,15 @@ Passing \`--scope=${LinterScope.ThisPackage}\` will lint all files in the packag
 The default value for --scope is determined by the first of the following tsconfig files that exists in the current working directory:
 
   - ./${scopeToTsconfigFilePath(LinterScope.ThisPackageSource)} (${LinterScope.ThisPackageSource})
-  - ./${scopeToTsconfigFilePath(LinterScope.UnlimitedSource)} (${LinterScope.UnlimitedSource})
   - ./${scopeToTsconfigFilePath(LinterScope.ThisPackage)} (${LinterScope.ThisPackage})
+  - ./${scopeToTsconfigFilePath(LinterScope.UnlimitedSource)} (${LinterScope.UnlimitedSource})
   - ./${scopeToTsconfigFilePath(LinterScope.Unlimited)} (${LinterScope.Unlimited})
 
 The default value for --scope in the current project is${defaultScope ? `: ${defaultScope}` : ' not resolvable (xscripts seems not to be running in a project repository)'}.
 
-Note that the remark linter is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format", .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by "xscripts format".
+Note that, despite the value of --scope, the tsc linter will always report problems in any descendant file imported by those files currently in scope (via the tsconfig "include" property), even if the descendant imports are out of scope.
+
+Also note that the remark linter is configured to respect .remarkignore files only when run by "xscripts lint"; when executing "xscripts format", .remarkignore files are always disregarded. This means you can use .remarkignore files to prevent certain paths from being linted by "xscripts lint" without preventing them from being formatted by "xscripts format".
 
 Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS environment variable in the testing environment. This will be picked up by linters, causing them to ignore any warning comments. This includes warnings about relative imports of @-xun/* packages from /node_modules/.`
     ),
@@ -210,7 +212,7 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
 
       debug('tsconfigFilePath: %O', tsconfigFilePath);
 
-      const { cwdPackage } = projectMetadata;
+      const { cwdPackage, rootPackage } = projectMetadata;
 
       const promisedLinters: Promise<unknown>[] = [];
       const linterSubprocesses: Subprocess[] = [];
@@ -253,6 +255,10 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
                 : ['.'])
             ],
             {
+              cwd:
+                scope === LinterScope.Unlimited || scope === LinterScope.UnlimitedSource
+                  ? rootPackage.root
+                  : cwdPackage.root,
               env: {
                 XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS: allowWarningComments.toString()
               }
@@ -407,19 +413,19 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
       }
 
       if (
-        await isAccessible(`${packageRoot}/${Tsconfig.ProjectLintSource}`, {
-          useCached: true
-        })
-      ) {
-        return LinterScope.UnlimitedSource;
-      }
-
-      if (
         await isAccessible(`${packageRoot}/${Tsconfig.PackageLintUnlimited}`, {
           useCached: true
         })
       ) {
         return LinterScope.ThisPackage;
+      }
+
+      if (
+        await isAccessible(`${packageRoot}/${Tsconfig.ProjectLintSource}`, {
+          useCached: true
+        })
+      ) {
+        return LinterScope.UnlimitedSource;
       }
 
       if (
