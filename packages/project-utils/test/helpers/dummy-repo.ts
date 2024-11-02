@@ -1,4 +1,4 @@
-import { basename, resolve } from 'node:path';
+import { basename, resolve as toAbsolutePath } from 'node:path';
 
 import { type Package } from 'rootverse+project-utils:src/analyze/common.ts';
 import * as fs from 'rootverse+project-utils:src/fs.ts';
@@ -530,7 +530,7 @@ function createFixture({
   unnamedPackageMapData?: PackageMapDatum[];
   brokenPackageRoots?: string[];
 }) {
-  const prototypeRoot = resolve(
+  const prototypeRoot = toAbsolutePath(
     __dirname,
     '../fixtures/dummy-repo',
     prototypeRoot_

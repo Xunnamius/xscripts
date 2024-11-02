@@ -3,7 +3,7 @@
 import assert from 'node:assert';
 import fs from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { basename, join as joinPath, resolve as resolvePath } from 'node:path';
+import { basename, join as joinPath, resolve as toAbsolutePath } from 'node:path';
 
 import glob from 'glob';
 // TODO: make sure to delete this next line when splitting this file up
@@ -183,7 +183,7 @@ async function writeFile({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
-  path = resolvePath(root, path);
+  path = toAbsolutePath(root, path);
 
   if (!noDebugOutput) {
     debug(`writing file: ${path}`);
@@ -202,7 +202,7 @@ async function readFile({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
-  path = resolvePath(root, path);
+  path = toAbsolutePath(root, path);
   if (!noDebugOutput) {
     debug(`reading file: ${path}`);
   }
@@ -224,7 +224,7 @@ async function accessFile({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
-  path = resolvePath(root, path);
+  path = toAbsolutePath(root, path);
 
   if (!noDebugOutput) {
     debug(`determining accessibility of file: ${path}`);
@@ -246,8 +246,8 @@ async function symlink({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
-  actualPath = resolvePath(root, actualPath);
-  linkPath = resolvePath(root, linkPath);
+  actualPath = toAbsolutePath(root, actualPath);
+  linkPath = toAbsolutePath(root, linkPath);
 
   if (!noDebugOutput) {
     debug(
@@ -271,7 +271,7 @@ async function mkdir({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
-  paths = paths.map((path) => resolvePath(root, path));
+  paths = paths.map((path) => toAbsolutePath(root, path));
 
   return Promise.all(
     paths.map((path) => {
@@ -293,7 +293,7 @@ async function remove({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
-  paths = paths.map((path) => resolvePath(root, path));
+  paths = paths.map((path) => toAbsolutePath(root, path));
 
   return Promise.all(
     paths.map((path) => {
@@ -317,8 +317,8 @@ async function copy({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
-  sourcePaths = sourcePaths.map((path) => resolvePath(root, path));
-  destinationPath = resolvePath(root, destinationPath);
+  sourcePaths = sourcePaths.map((path) => toAbsolutePath(root, path));
+  destinationPath = toAbsolutePath(root, destinationPath);
 
   return Promise.all(
     sourcePaths.map((src) => {
@@ -343,8 +343,8 @@ async function rename({
   context: FixtureContext;
   noDebugOutput?: boolean;
 }) {
-  oldPath = resolvePath(root, oldPath);
-  newPath = resolvePath(root, newPath);
+  oldPath = toAbsolutePath(root, oldPath);
+  newPath = toAbsolutePath(root, newPath);
 
   if (!noDebugOutput) {
     debug(`renaming (moving) item: ${oldPath} => ${newPath}`);
@@ -783,7 +783,7 @@ export function rootFixture(): MockFixture {
       // TODO: add the tmpdir suffix to all related debug outputs
       context.root = uniqueFilename(tmpdir(), context.testIdentifier);
 
-      await mkdir({ paths: [resolvePath(context.root, 'src')], context });
+      await mkdir({ paths: [toAbsolutePath(context.root, 'src')], context });
     },
     teardown: async (context) => {
       if (context.options.performCleanup) {
@@ -802,9 +802,9 @@ export function dummyNpmPackageFixture(): MockFixture {
       context.fileContents['package.json'] ||= '{"name":"dummy-pkg"}';
 
       await Promise.all([
-        mkdir({ paths: [resolvePath(context.root, 'node_modules')], context }),
+        mkdir({ paths: [toAbsolutePath(context.root, 'node_modules')], context }),
         writeFile({
-          path: resolvePath(context.root, 'package.json'),
+          path: toAbsolutePath(context.root, 'package.json'),
           data: context.fileContents['package.json'],
           context
         })
@@ -813,7 +813,7 @@ export function dummyNpmPackageFixture(): MockFixture {
       if (rootPackageJsonName.includes('/')) {
         await mkdir({
           paths: [
-            resolvePath(
+            toAbsolutePath(
               context.root,
               joinPath('node_modules', rootPackageJsonName.split('/')[0])
             )
@@ -833,8 +833,8 @@ export function npmLinkSelfFixture(): MockFixture {
       'soft-linking project repo into node_modules to emulate package installation',
     setup: async (context) => {
       await symlink({
-        actualPath: resolvePath(__dirname, '..'),
-        linkPath: resolvePath(
+        actualPath: toAbsolutePath(__dirname, '..'),
+        linkPath: toAbsolutePath(
           context.root,
           joinPath('node_modules', rootPackageJsonName)
         ),
@@ -852,18 +852,18 @@ export function npmCopySelfFixture(): MockFixture {
     description:
       'copying package.json `files` into node_modules to emulate package installation',
     setup: async (context) => {
-      const root = resolvePath(__dirname, '..');
+      const root = toAbsolutePath(__dirname, '..');
 
       const { files: patterns } = (await import('rootverse:package.json')).default;
 
       const sourcePaths = patterns.flatMap((p: string) =>
         glob.sync(p, { cwd: root, root })
       );
-      const destinationPath = resolvePath(
+      const destinationPath = toAbsolutePath(
         context.root,
         joinPath('node_modules', rootPackageJsonName)
       );
-      const destinationPackageJson = resolvePath(destinationPath, 'package.json');
+      const destinationPackageJson = toAbsolutePath(destinationPath, 'package.json');
 
       await mkdir({ paths: [destinationPath], context });
       await copy({ sourcePaths, destinationPath, context });
@@ -1106,7 +1106,7 @@ export function dummyDirectoriesFixture(): MockFixture {
 
       await Promise.all(
         context.options.directoryPaths.map((path) => {
-          const dir = resolvePath(context.root, path);
+          const dir = toAbsolutePath(context.root, path);
           return mkdir({ paths: [dir], context });
         })
       );

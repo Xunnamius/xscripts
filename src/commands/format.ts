@@ -1,4 +1,8 @@
-import { basename, resolve } from 'node:path';
+import {
+  basename,
+  relative as toRelativePath,
+  resolve as toAbsolutePath
+} from 'node:path';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { glob } from 'glob-gitignore';
@@ -187,8 +191,8 @@ With respect to .prettierignore being the single source of truth for formatters:
 
           debug('virtual .prettierignore lines: %O', ignore);
 
-          const sawFilesOutsideProjectRoot = files.some(
-            (path) => !resolve(projectRoot, path).startsWith(projectRoot)
+          const sawFilesOutsideProjectRoot = files_.some(
+            (path) => !toAbsolutePath(projectRoot, path).startsWith(projectRoot)
           );
 
           debug('sawFilesOutsideProjectRoot: %O', sawFilesOutsideProjectRoot);

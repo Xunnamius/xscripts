@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { resolve } from 'node:path';
+import { resolve as toAbsolutePath } from 'node:path';
 import { isNativeError } from 'node:util/types';
 
 import { TrialError } from 'named-app-errors';
@@ -11,7 +11,7 @@ import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
 
 import type { PackageJson } from 'type-fest';
 
-const DUMMY_PACKAGE_DIR = resolve(
+const DUMMY_PACKAGE_DIR = toAbsolutePath(
   __dirname,
   '..',
   'fixtures',
