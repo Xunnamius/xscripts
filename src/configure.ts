@@ -1,7 +1,12 @@
 import { readlink } from 'node:fs/promises';
 import { dirname, join, resolve as toAbsolutePath } from 'node:path';
 
-import { type ConfigureExecutionContext } from '@black-flag/core';
+import {
+  type ConfigureErrorHandlingEpilogue,
+  type ConfigureExecutionContext,
+  type ConfigureExecutionEpilogue
+} from '@black-flag/core';
+
 import { defaultVersionTextDescription } from '@black-flag/core/util';
 
 import { type BfeBuilderObject } from 'multiverse+bfe';
@@ -17,6 +22,7 @@ import {
 } from 'multiverse+cli-utils:extensions.ts';
 
 import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse+project-utils';
+import { cache } from 'multiverse+project-utils:cache.ts';
 import { isAccessible } from 'multiverse+project-utils:fs/is-accessible.ts';
 import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
@@ -133,61 +139,72 @@ export const globalCliArguments = {
   }
 } satisfies BfeBuilderObject<Record<string, unknown>, StandardExecutionContext>;
 
-export const configureExecutionContext: ConfigureExecutionContext<GlobalExecutionContext> =
-  async function (context) {
-    const standardContext = await makeStandardConfigureExecutionContext({
-      rootGenericLogger,
-      rootDebugLogger
-    })(context);
+export const configureExecutionContext = async function (context) {
+  const standardContext = await makeStandardConfigureExecutionContext({
+    rootGenericLogger,
+    rootDebugLogger
+  })(context);
 
-    const projectMetadata = await analyzeProjectStructure({ useCached: true }).catch(
-      () => undefined
-    );
+  const projectMetadata = await analyzeProjectStructure({ useCached: true }).catch(
+    () => undefined
+  );
 
-    if (projectMetadata) {
-      const { root: projectRoot } = projectMetadata.rootPackage;
-      const distDir = join(projectRoot, 'dist');
-      const nodeModulesBinDir = join(projectRoot, 'node_modules', '.bin');
+  if (projectMetadata) {
+    const { root: projectRoot } = projectMetadata.rootPackage;
+    const distDir = join(projectRoot, 'dist');
+    const nodeModulesBinDir = join(projectRoot, 'node_modules', '.bin');
 
-      const xscriptsBinFileLink = join(nodeModulesBinDir, globalCliName);
+    const xscriptsBinFileLink = join(nodeModulesBinDir, globalCliName);
 
-      rootDebugLogger('distDir: %O', distDir);
-      rootDebugLogger('nodeModulesBinDir: %O', nodeModulesBinDir);
-      rootDebugLogger('xscriptsBinFileLink: %O', xscriptsBinFileLink);
+    rootDebugLogger('distDir: %O', distDir);
+    rootDebugLogger('nodeModulesBinDir: %O', nodeModulesBinDir);
+    rootDebugLogger('xscriptsBinFileLink: %O', xscriptsBinFileLink);
 
-      if (await isAccessible(xscriptsBinFileLink, { useCached: true })) {
-        rootDebugLogger('xscriptsBinFileLink is accessible');
+    if (await isAccessible(xscriptsBinFileLink, { useCached: true })) {
+      rootDebugLogger('xscriptsBinFileLink is accessible');
 
-        const xscriptsBinFileActual = toAbsolutePath(
-          dirname(xscriptsBinFileLink),
-          await readlink(xscriptsBinFileLink)
-        );
+      const xscriptsBinFileActual = toAbsolutePath(
+        dirname(xscriptsBinFileLink),
+        await readlink(xscriptsBinFileLink)
+      );
 
-        rootDebugLogger('xscriptsBinFileActual: %O', xscriptsBinFileActual);
+      rootDebugLogger('xscriptsBinFileActual: %O', xscriptsBinFileActual);
 
-        const startsWithDistDir = xscriptsBinFileActual.startsWith(distDir);
-        const selfDirMatchesDistDir = __dirname === dirname(xscriptsBinFileActual);
+      const startsWithDistDir = xscriptsBinFileActual.startsWith(distDir);
+      const selfDirMatchesDistDir = __dirname === dirname(xscriptsBinFileActual);
 
-        rootDebugLogger('startsWithDistDir: %O', startsWithDistDir);
-        rootDebugLogger('selfDirMatchesDistDir: %O', selfDirMatchesDistDir);
+      rootDebugLogger('startsWithDistDir: %O', startsWithDistDir);
+      rootDebugLogger('selfDirMatchesDistDir: %O', selfDirMatchesDistDir);
 
-        // ? Lets us know when we're loading a custom-built "dev" xscripts.
-        const developmentTag = startsWithDistDir && selfDirMatchesDistDir ? ' (dev)' : '';
+      // ? Lets us know when we're loading a custom-built "dev" xscripts.
+      const developmentTag = startsWithDistDir && selfDirMatchesDistDir ? ' (dev)' : '';
 
-        rootDebugLogger('add development tag?: %O', !!developmentTag);
+      rootDebugLogger('add development tag?: %O', !!developmentTag);
 
-        standardContext.state.globalVersionOption = {
-          name: 'version',
-          description: defaultVersionTextDescription,
-          text: String(projectMetadata.rootPackage.json.version) + developmentTag
-        };
-      } else {
-        rootDebugLogger('xscriptsBinFileLink was not accessible');
-      }
+      standardContext.state.globalVersionOption = {
+        name: 'version',
+        description: defaultVersionTextDescription,
+        text: String(projectMetadata.rootPackage.json.version) + developmentTag
+      };
+    } else {
+      rootDebugLogger('xscriptsBinFileLink was not accessible');
     }
+  }
 
-    return { ...standardContext, projectMetadata };
-  };
+  return { ...standardContext, projectMetadata };
+} as ConfigureExecutionContext<GlobalExecutionContext>;
 
-export const configureErrorHandlingEpilogue =
-  makeStandardConfigureErrorHandlingEpilogue();
+export const configureErrorHandlingEpilogue = function (...args) {
+  reportFinalCacheStats();
+  return makeStandardConfigureErrorHandlingEpilogue()(...args);
+} as ConfigureErrorHandlingEpilogue<GlobalExecutionContext>;
+
+export const configureExecutionEpilogue = function (argv) {
+  reportFinalCacheStats();
+  return argv;
+} as ConfigureExecutionEpilogue<GlobalExecutionContext>;
+
+function reportFinalCacheStats() {
+  const { clear: _, get: __, set: ___, ...stats } = cache;
+  rootDebugLogger.extend('cache')('final cache stats: %O', stats);
+}
