@@ -1,5 +1,6 @@
 {
   "name": "rejoinder",
+  "version": "1.0.0",
   "dependencies": {
     "debug": "^4.3.4",
     "supports-color": "^8.1.1"
