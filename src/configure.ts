@@ -1,5 +1,5 @@
 import { readlink } from 'node:fs/promises';
-import { dirname, join, resolve as toAbsolutePath } from 'node:path';
+import { dirname } from 'node:path';
 
 import {
   type ConfigureErrorHandlingEpilogue,
@@ -23,6 +23,7 @@ import {
 
 import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse+project-utils';
 import { cache } from 'multiverse+project-utils:cache.ts';
+import { toAbsolutePath, toPath } from 'multiverse+project-utils:fs';
 import { isAccessible } from 'multiverse+project-utils:fs/is-accessible.ts';
 import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
@@ -151,10 +152,9 @@ export const configureExecutionContext = async function (context) {
 
   if (projectMetadata) {
     const { root: projectRoot } = projectMetadata.rootPackage;
-    const distDir = join(projectRoot, 'dist');
-    const nodeModulesBinDir = join(projectRoot, 'node_modules', '.bin');
-
-    const xscriptsBinFileLink = join(nodeModulesBinDir, globalCliName);
+    const distDir = toPath(projectRoot, 'dist');
+    const nodeModulesBinDir = toPath(projectRoot, 'node_modules', '.bin');
+    const xscriptsBinFileLink = toPath(nodeModulesBinDir, globalCliName);
 
     rootDebugLogger('distDir: %O', distDir);
     rootDebugLogger('nodeModulesBinDir: %O', nodeModulesBinDir);

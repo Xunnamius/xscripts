@@ -1,5 +1,4 @@
 import assert from 'node:assert';
-import { join as joinPath, relative as toRelativePath } from 'node:path';
 
 import { hasTypescriptExtension } from '@-xun/scripts/assets/config/babel.config.js';
 import { glob as globAsync, sync as globSync } from 'glob';
@@ -28,7 +27,12 @@ import { gatherPackageFiles } from 'rootverse+project-utils:src/analyze/gather-p
 import { pathToPackage } from 'rootverse+project-utils:src/analyze/path-to-package.ts';
 import { cache, CacheScope } from 'rootverse+project-utils:src/cache.ts';
 import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
-import { type AbsolutePath, type RelativePath } from 'rootverse+project-utils:src/fs.ts';
+import {
+  toPath,
+  toRelativePath,
+  type AbsolutePath,
+  type RelativePath
+} from 'rootverse+project-utils:src/fs.ts';
 
 import {
   type ParametersNoFirst,
@@ -394,12 +398,9 @@ export function specifierToPackageName(specifier: string) {
 }
 
 function relativePathsArrayToAbsolute(relativePaths: RelativePath[], root: AbsolutePath) {
-  return relativePaths.map((path) => joinPath(root, path) as AbsolutePath);
+  return relativePaths.map((path) => toPath(root, path));
 }
 
 function absolutePathsSetToRelative(set: Set<AbsolutePath>, root: AbsolutePath) {
-  // ? Don't forget the +1 to slice off the initial path separator!
-  return new Set(
-    Array.from(set).map((path) => toRelativePath(root, path) as RelativePath)
-  );
+  return new Set(Array.from(set).map((path) => toRelativePath(root, path)));
 }

@@ -2,15 +2,7 @@
 /* eslint-disable unicorn/no-array-reduce */
 import { chmod, rename, stat, symlink } from 'node:fs/promises';
 import { builtinModules } from 'node:module';
-
-import {
-  dirname,
-  extname,
-  isAbsolute,
-  join as joinPath,
-  relative as toRelativePath,
-  resolve as toAbsolutePath
-} from 'node:path';
+import { dirname, extname } from 'node:path';
 
 import { setTimeout as delay } from 'node:timers/promises';
 import { isNativeError } from 'node:util/types';
@@ -49,7 +41,7 @@ import {
 
 import {
   generateRawAliasMap,
-  isRelativePathRegExp,
+  isDotRelativePathRegExp,
   mapRawSpecifierToPath,
   mapRawSpecifierToRawAliasMapping
 } from 'multiverse+project-utils:alias.ts';
@@ -63,9 +55,13 @@ import {
 import { gatherPackageFiles } from 'multiverse+project-utils:analyze/gather-package-files.ts';
 
 import {
+  isAbsolutePath,
   isAccessible,
+  toAbsolutePath,
+  toPath,
+  toRelativePath,
   Tsconfig,
-  type AbsolutePath,
+  type Path,
   type RelativePath
 } from 'multiverse+project-utils:fs.ts';
 
@@ -153,8 +149,8 @@ export type CustomCliArguments = GlobalCliArguments<DistributablesBuilderScope> 
   moduleSystem?: ModuleSystem;
   generateIntermediatesFor?: IntermediateTranspilationEnvironment;
   outputExtension?: string;
-  includeExternalFiles?: (AbsolutePath | RelativePath)[];
-  excludeInternalFiles?: (AbsolutePath | RelativePath)[];
+  includeExternalFiles?: Path[];
+  excludeInternalFiles?: Path[];
   skipOutputChecks?: boolean;
   skipOutputValidityCheckFor?: (string | RegExp)[];
   skipOutputExtraneityCheckFor?: (string | RegExp)[];
@@ -507,7 +503,7 @@ Finally, note that, when attempting to build a Next.js package, this command wil
           });
 
           for (const filepath of testFiles) {
-            allBuildTargets.push(toRelativePath(projectRoot, filepath) as RelativePath);
+            allBuildTargets.push(toRelativePath(projectRoot, filepath));
           }
         }
 
@@ -704,7 +700,7 @@ distrib root: ${absoluteOutputDirPath}
         // * might not have been mirrored by tsc above
         await Promise.all(
           allBuildTargets.map((target) => {
-            const path = joinPath(absoluteOutputDirPath, dirname(target)) as AbsolutePath;
+            const path = toPath(absoluteOutputDirPath, dirname(target));
             debug('make directory deep structure: %O', path);
 
             return makeDirectory(path);
@@ -737,8 +733,8 @@ distrib root: ${absoluteOutputDirPath}
         await Promise.all([
           // * Copy through all assets as-is
           ...allBuildAssetTargets.map((target) => {
-            const from = joinPath(projectRoot, target) as AbsolutePath;
-            const to = joinPath(absoluteOutputDirPath, target) as AbsolutePath;
+            const from = toPath(projectRoot, target);
+            const to = toPath(absoluteOutputDirPath, target);
 
             debug('copy-through asset: %O => %O', from, to);
             return copyFile(from, to);
@@ -746,11 +742,11 @@ distrib root: ${absoluteOutputDirPath}
 
           // * Transpile internals: ./* => ./dist/* or ./.transpiled/*
           ...allBuildSourceTargets.map(async (target) => {
-            const sourcePath = joinPath(projectRoot, target) as AbsolutePath;
-            const outputPath = joinPath(
+            const sourcePath = toPath(projectRoot, target);
+            const outputPath = toPath(
               absoluteOutputDirPath,
               target.replace(/(?<=[^/])\.[^.]+$/, outputExtension!)
-            ) as AbsolutePath;
+            );
 
             debug('transpile source: %O => %O', sourcePath, outputPath);
 
@@ -1019,9 +1015,7 @@ distrib root: ${absoluteOutputDirPath}
             const allOtherFilesPlusBuildTargets = Array.from(
               new Set(
                 allOtherFiles.concat(
-                  allBuildTargets.map(
-                    (target) => joinPath(projectRoot, target) as AbsolutePath
-                  )
+                  allBuildTargets.map((target) => toPath(projectRoot, target))
                 )
               )
             );
@@ -1104,16 +1098,13 @@ distrib root: ${absoluteOutputDirPath}
                 }
 
                 // ? Is the specifier erroneously an absolute import?
-                if (isAbsolute(specifier)) {
+                if (isAbsolutePath(specifier)) {
                   dbg1.error('absolute specifier: %O', specifier);
                   distLocalImportsOutsideDist.push([filepath, specifier]);
                 }
                 // ? Is the specifier a relative import?
-                else if (isRelativePathRegExp.test(specifier)) {
-                  const absoluteSpecifier = toAbsolutePath(
-                    dirname(filepath),
-                    specifier
-                  ) as AbsolutePath;
+                else if (isDotRelativePathRegExp.test(specifier)) {
+                  const absoluteSpecifier = toAbsolutePath(dirname(filepath), specifier);
 
                   dbg1('relative specifier (+ root): %O', absoluteSpecifier);
 
@@ -1215,8 +1206,8 @@ distrib root: ${absoluteOutputDirPath}
                   (mappedPath ? './' + mappedPath : undefined) ?? specifier_;
 
                 if (
-                  isAbsolute(specifier) ||
-                  isRelativePathRegExp.test(specifier) ||
+                  isAbsolutePath(specifier) ||
+                  isDotRelativePathRegExp.test(specifier) ||
                   shouldSkipCheckForSpecifier(specifier, 'invalid')
                 ) {
                   dbg2.warn('ignored (skipped) specifier: %O', specifier);

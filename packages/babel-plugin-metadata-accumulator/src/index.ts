@@ -9,7 +9,7 @@ import {
 
 import { type Binding, type Scope } from '@babel/traverse';
 
-import { type AbsolutePath } from 'multiverse+project-utils:fs/common.ts';
+import { toAbsolutePath, type AbsolutePath } from 'multiverse+project-utils:fs/common.ts';
 
 import { ErrorMessage } from 'rootverse+babel-plugin-metadata-accumulator:src/error.ts';
 
@@ -164,7 +164,7 @@ export function createMetadataAccumulatorPlugin(): PluginAndAccumulator {
   return pluginAndAccumulator;
 
   function stateToFilename(state: PluginPass) {
-    return (state.filename || '/dev/null') as AbsolutePath;
+    return toAbsolutePath(state.filename || '/dev/null');
   }
 
   function filenameToMetadata(sourceFilePath: AbsolutePath) {

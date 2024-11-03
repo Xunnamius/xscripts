@@ -1,7 +1,6 @@
 /* eslint-disable unicorn/prevent-abbreviations */
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
-import { join as joinPath } from 'node:path';
 
 import { CliError, FrameworkExitCode } from '@black-flag/core';
 
@@ -11,7 +10,12 @@ import {
 } from 'multiverse+cli-utils:extensions.ts';
 
 import { ProjectError } from 'multiverse+project-utils:error.ts';
-import { isAccessible, type AbsolutePath } from 'multiverse+project-utils:fs.ts';
+import {
+  isAccessible,
+  toAbsolutePath,
+  toPath,
+  type AbsolutePath
+} from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import {
@@ -108,7 +112,7 @@ export async function runGlobalPreChecks({
     throw new CliError(ErrorMessage.CannotRunOutsideRoot());
   }
 
-  const cwd = process.cwd() as AbsolutePath;
+  const cwd = toAbsolutePath(process.cwd());
 
   const {
     rootPackage: { root: projectRoot },
@@ -209,7 +213,7 @@ export async function findOneConfigurationFile(
 ) {
   return Promise.all(
     wellKnownFiles.map(async (filename) => {
-      const path = joinPath(configRoot, filename);
+      const path = toPath(configRoot, filename);
       return [path, await isAccessible(path, { useCached: true })] as const;
     })
   ).then((results) => {
@@ -227,7 +231,7 @@ export async function findOneConfigurationFile(
         );
       }
 
-      return (currentPathIsReadable ? currentPath : firstAccessiblePath) as AbsolutePath;
+      return currentPathIsReadable ? currentPath : firstAccessiblePath;
     }, undefined);
   });
 }

@@ -1,16 +1,27 @@
-import { extname, join as joinPath, relative as toRelativePath } from 'node:path';
+import { extname } from 'node:path';
 
 import escapeStringRegExp from 'escape-string-regexp~4';
 import { type Arrayable } from 'type-fest';
 
-// eslint-disable-next-line import/no-cycle
+import {
+  uriSchemeDelimiter,
+  uriSchemeSubDelimiter
+} from 'multiverse+project-utils:constant';
+
 import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
-import { type RelativePath } from 'rootverse+project-utils:src/fs.ts';
+
+import {
+  toPath,
+  toRelativePath,
+  type RelativePath
+} from 'rootverse+project-utils:src/fs.ts';
 
 import {
   type ProjectMetadata,
   type WorkspacePackageId
 } from 'rootverse+project-utils:src/index.ts';
+
+export { uriSchemeDelimiter, uriSchemeSubDelimiter };
 
 /**
  * A regex containing illegal alias key characters.
@@ -29,34 +40,13 @@ export const invalidAliasRegExp = /["$*/:<>?[\\\]{|}]+/i;
 export const invalidPathRegExp = /["*:<>?[\]|]+/i;
 
 /**
- * A regex that matches any string that looks like a relative path without also looking like a bare specifier.
+ * A regex that matches any string that looks like a relative path without also
+ * looking like a bare specifier.
  *
  * **This regular expression must never have the "global" flag**, meaning it is
  * safe to use with `.test()`.
  */
-export const isRelativePathRegExp = /^\.\.?(\/|$)/;
-
-/**
- * ```text
- *                          v
- * URI = scheme+sub-scheme ":" ["//" authority] path ["?" query] ["#" fragment]
- *                          ^
- * ```
- *
- * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Syntax
- */
-export const uriSchemeDelimiter = ':';
-
-/**
- * ```text
- *             v
- * URI = scheme+sub-scheme ":" ["//" authority] path ["?" query] ["#" fragment]
- *             ^
- * ```
- *
- * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Syntax
- */
-export const uriSchemeSubDelimiter = '+';
+export const isDotRelativePathRegExp = /^\.\.?(\/|$)/;
 
 /**
  * A well-known import alias group, such as "universe" or "multiverse".
@@ -188,7 +178,7 @@ export type RawPath = {
    *
    * The path should be thought of as relative to a root or sub-root.
    */
-  path: string;
+  path: RelativePath;
   /**
    * If `false`, an extension will be appended to the path automatically. The
    * extension to be appended depends on which tooling the aliases are being
@@ -257,7 +247,7 @@ export function makeRawAliasMapping(
     rawPath.path.startsWith('\\') ||
     rawPath.path.endsWith('/') ||
     rawPath.path.endsWith('\\') ||
-    isRelativePathRegExp.test(rawPath.path)
+    isDotRelativePathRegExp.test(rawPath.path)
   ) {
     throw new ProjectError(
       ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix(rawAlias.alias)
@@ -305,7 +295,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
         group: WellKnownImportAlias.Universe,
         packageId: undefined
       },
-      { path: 'src' }
+      { path: toRelativePath('src') }
     ),
     // ! Order matters here. Hence, less-specific goes ahead of more-specific.
     makeRawAliasMapping(
@@ -315,7 +305,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
         group: WellKnownImportAlias.Universe,
         packageId: undefined
       },
-      { path: 'src/index', suffix: 'none', extensionless: false }
+      { path: toRelativePath('src/index'), suffix: 'none', extensionless: false }
     )
   ];
 
@@ -335,7 +325,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
         group: WellKnownImportAlias.Typeverse,
         packageId: undefined
       },
-      { path: 'types' }
+      { path: toRelativePath('types') }
     )
   ];
 
@@ -361,7 +351,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
             group: WellKnownImportAlias.Multiverse,
             packageId: id
           },
-          { path: `${relativeRoot}/src` }
+          { path: toPath(relativeRoot, 'src') }
         )
       );
 
@@ -372,7 +362,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
             group: WellKnownImportAlias.Testverse,
             packageId: id
           },
-          { path: `${relativeRoot}/test` }
+          { path: toPath(relativeRoot, 'test') }
         )
       );
 
@@ -401,7 +391,11 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
             group: WellKnownImportAlias.Multiverse,
             packageId: id
           },
-          { path: `${relativeRoot}/src/index`, suffix: 'none', extensionless: false }
+          {
+            path: toPath(relativeRoot, 'src', 'index'),
+            suffix: 'none',
+            extensionless: false
+          }
         )
       );
     });
@@ -414,7 +408,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
         group: WellKnownImportAlias.Testverse,
         packageId: undefined
       },
-      { path: 'test' }
+      { path: toRelativePath('test') }
     )
   );
 
@@ -425,7 +419,7 @@ export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasM
         group: WellKnownImportAlias.Rootverse,
         packageId: undefined
       },
-      { path: '' }
+      { path: toRelativePath('') }
     )
   );
 
@@ -645,7 +639,7 @@ export function mapRawSpecifierToPath(
     const specifierPathComponent =
       pathSuffix === 'open' ? specifier.match(regExp)!.at(-1)! : '';
 
-    return (joinPath(path, specifierPathComponent) + extension) as RelativePath;
+    return (toPath(path, specifierPathComponent) + extension) as RelativePath;
   }
 
   return undefined;
@@ -710,7 +704,7 @@ export function ensureRawSpecifierOk(
   }
 
   // ? Fail if it begins with ./ or ../ or / or is . or ..
-  if (specifier.startsWith('/') || isRelativePathRegExp.test(specifier)) {
+  if (specifier.startsWith('/') || isDotRelativePathRegExp.test(specifier)) {
     throw new ProjectError(
       ErrorMessage.SpecifierNotOkRelativeNotRootverse(specifier, path)
     );

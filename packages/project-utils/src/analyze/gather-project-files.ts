@@ -1,5 +1,3 @@
-import { relative as toRelativePath, resolve as toAbsolutePath } from 'node:path';
-
 import { glob as globAsync, sync as globSync } from 'glob-gitignore';
 
 import {
@@ -21,6 +19,8 @@ import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts
 
 import {
   deriveVirtualPrettierignoreLines,
+  toAbsolutePath,
+  toRelativePath,
   type AbsolutePath
 } from 'rootverse+project-utils:src/fs.ts';
 
@@ -127,13 +127,13 @@ function gatherProjectFiles_(
 
   const projectFiles: ProjectFiles = {
     packageJsonFiles: {
-      atProjectRoot: '/dev/null' as AbsolutePath,
+      atProjectRoot: toAbsolutePath('/dev/null'),
       atWorkspaceRoot: new Map(),
       atAnyRoot: [],
       elsewhere: []
     },
     mainBinFiles: {
-      atProjectRoot: '/dev/null' as AbsolutePath,
+      atProjectRoot: toAbsolutePath('/dev/null'),
       atWorkspaceRoot: new Map(),
       atAnyRoot: []
     },
@@ -323,12 +323,12 @@ function gatherProjectFiles_(
       );
     }
 
-    packageJsonFiles.atProjectRoot = `${projectRoot}/package.json` as AbsolutePath;
+    packageJsonFiles.atProjectRoot = toAbsolutePath(`${projectRoot}/package.json`);
 
     packageJsonFiles.atWorkspaceRoot = new Map(
       subRootPackagesArray.map((package_) => [
         package_.id,
-        `${package_.root}/package.json` as AbsolutePath
+        toAbsolutePath(`${package_.root}/package.json`)
       ])
     );
 
@@ -372,7 +372,7 @@ function gatherProjectFiles_(
     const mainBin =
       typeof bin === 'string' ? bin : Object.values(bin ?? {}).find((path) => !!path);
 
-    return mainBin ? (toAbsolutePath(package_.root, mainBin) as AbsolutePath) : undefined;
+    return mainBin ? toAbsolutePath(package_.root, mainBin) : undefined;
   }
 
   function appendWorkspacesToIgnore(ignore: string[]) {

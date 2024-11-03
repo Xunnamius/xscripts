@@ -2,13 +2,12 @@ import { isNativeError } from 'node:util/types';
 
 import { makeNamedError } from 'named-app-errors';
 
-// eslint-disable-next-line import/no-cycle
+import { type WorkspacePackageName } from 'rootverse+project-utils:src/analyze/common.ts';
+
 import {
   uriSchemeDelimiter,
   uriSchemeSubDelimiter
-} from 'rootverse+project-utils:src/alias.ts';
-
-import { type WorkspacePackageName } from 'rootverse+project-utils:src/analyze/common.ts';
+} from 'rootverse+project-utils:src/constant.ts';
 
 // TODO: replace a lot of all that follows with the official package(s),
 // TODO: including the symbol use below. Symbols and stuff need to be auto-generated.

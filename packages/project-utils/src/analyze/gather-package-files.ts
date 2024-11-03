@@ -1,5 +1,3 @@
-import { join as joinPath, relative as toRelativePath } from 'node:path';
-
 import { glob as globAsync, sync as globSync } from 'glob-gitignore';
 
 import {
@@ -13,6 +11,8 @@ import { cache, CacheScope } from 'rootverse+project-utils:src/cache.ts';
 
 import {
   deriveVirtualGitignoreLines,
+  toPath,
+  toRelativePath,
   type AbsolutePath,
   type RelativePath
 } from 'rootverse+project-utils:src/fs.ts';
@@ -119,12 +119,12 @@ function gatherPackageFiles_(
     cwd: projectRoot
   };
 
-  const distGlob = toRelativePath(projectRoot, joinPath(packageRoot, rawDistGlob));
+  const distGlob = toRelativePath(projectRoot, toPath(packageRoot, rawDistGlob));
   // eslint-disable-next-line unicorn/prevent-abbreviations
-  const docsGlob = toRelativePath(projectRoot, joinPath(packageRoot, rawDocsGlob));
-  const srcGlob = toRelativePath(projectRoot, joinPath(packageRoot, rawSrcGlob));
-  const testGlob = toRelativePath(projectRoot, joinPath(packageRoot, rawTestGlob));
-  const otherGlob = toRelativePath(projectRoot, joinPath(packageRoot, rawOtherGlob));
+  const docsGlob = toRelativePath(projectRoot, toPath(packageRoot, rawDocsGlob));
+  const srcGlob = toRelativePath(projectRoot, toPath(packageRoot, rawSrcGlob));
+  const testGlob = toRelativePath(projectRoot, toPath(packageRoot, rawTestGlob));
+  const otherGlob = toRelativePath(projectRoot, toPath(packageRoot, rawOtherGlob));
 
   debug('distGlob: %O', distGlob);
   debug('docsGlob: %O', docsGlob);
@@ -133,7 +133,7 @@ function gatherPackageFiles_(
   debug('otherGlob: %O', otherGlob);
 
   const packagesIgnore =
-    '/' + toRelativePath(projectRoot, joinPath(packageRoot, 'packages'));
+    '/' + toRelativePath(projectRoot, toPath(packageRoot, 'packages'));
 
   debug('packagesIgnore: %O', packagesIgnore);
 

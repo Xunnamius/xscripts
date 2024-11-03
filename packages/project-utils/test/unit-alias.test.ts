@@ -36,7 +36,7 @@ const mockPolyrepoMappings = [
       group: WellKnownImportAlias.Universe,
       packageId: undefined
     },
-    { path: 'src', prefix: 'root', suffix: 'open', extensionless: true }
+    { path: 'src' as RelativePath, prefix: 'root', suffix: 'open', extensionless: true }
   ],
   [
     {
@@ -46,7 +46,12 @@ const mockPolyrepoMappings = [
       group: WellKnownImportAlias.Universe,
       packageId: undefined
     },
-    { path: 'src/index', prefix: 'root', suffix: 'none', extensionless: false }
+    {
+      path: 'src/index' as RelativePath,
+      prefix: 'root',
+      suffix: 'none',
+      extensionless: false
+    }
   ],
   [
     {
@@ -56,7 +61,7 @@ const mockPolyrepoMappings = [
       group: WellKnownImportAlias.Rootverse,
       packageId: undefined
     },
-    { path: '', prefix: 'root', suffix: 'open', extensionless: true }
+    { path: '' as RelativePath, prefix: 'root', suffix: 'open', extensionless: true }
   ],
   [
     {
@@ -66,7 +71,7 @@ const mockPolyrepoMappings = [
       group: WellKnownImportAlias.Testverse,
       packageId: undefined
     },
-    { path: 'test', prefix: 'root', suffix: 'open', extensionless: true }
+    { path: 'test' as RelativePath, prefix: 'root', suffix: 'open', extensionless: true }
   ],
   [
     {
@@ -76,7 +81,7 @@ const mockPolyrepoMappings = [
       group: WellKnownImportAlias.Typeverse,
       packageId: undefined
     },
-    { path: 'types', prefix: 'root', suffix: 'open', extensionless: true }
+    { path: 'types' as RelativePath, prefix: 'root', suffix: 'open', extensionless: true }
   ]
 ] satisfies [Omit<RawAlias, 'regExp'>, RawPath][] as RawAliasMapping[];
 
@@ -89,7 +94,7 @@ const mockHybridrepoMappings = [
       group: WellKnownImportAlias.Universe,
       packageId: undefined
     },
-    { path: 'src', prefix: 'root', suffix: 'open', extensionless: true }
+    { path: 'src' as RelativePath, prefix: 'root', suffix: 'open', extensionless: true }
   ],
   [
     {
@@ -99,7 +104,12 @@ const mockHybridrepoMappings = [
       group: WellKnownImportAlias.Universe,
       packageId: undefined
     },
-    { path: 'src/index', prefix: 'root', suffix: 'none', extensionless: false }
+    {
+      path: 'src/index' as RelativePath,
+      prefix: 'root',
+      suffix: 'none',
+      extensionless: false
+    }
   ],
   [
     {
@@ -110,7 +120,7 @@ const mockHybridrepoMappings = [
       packageId: 'pkg-2'
     },
     {
-      path: 'path/to/packages/pkg-2/src',
+      path: 'path/to/packages/pkg-2/src' as RelativePath,
       prefix: 'root',
       suffix: 'open',
       extensionless: true
@@ -125,7 +135,7 @@ const mockHybridrepoMappings = [
       packageId: 'pkg-1'
     },
     {
-      path: 'path/to/packages/pkg-1/src',
+      path: 'path/to/packages/pkg-1/src' as RelativePath,
       prefix: 'root',
       suffix: 'open',
       extensionless: true
@@ -140,7 +150,7 @@ const mockHybridrepoMappings = [
       packageId: 'pkg-2'
     },
     {
-      path: 'path/to/packages/pkg-2/src/index',
+      path: 'path/to/packages/pkg-2/src/index' as RelativePath,
       prefix: 'root',
       suffix: 'none',
       extensionless: false
@@ -155,7 +165,7 @@ const mockHybridrepoMappings = [
       packageId: 'pkg-1'
     },
     {
-      path: 'path/to/packages/pkg-1/src/index',
+      path: 'path/to/packages/pkg-1/src/index' as RelativePath,
       prefix: 'root',
       suffix: 'none',
       extensionless: false
@@ -170,7 +180,7 @@ const mockHybridrepoMappings = [
       packageId: 'pkg-2'
     },
     {
-      path: 'path/to/packages/pkg-2',
+      path: 'path/to/packages/pkg-2' as RelativePath,
       prefix: 'root',
       suffix: 'open',
       extensionless: true
@@ -185,7 +195,7 @@ const mockHybridrepoMappings = [
       packageId: 'pkg-1'
     },
     {
-      path: 'path/to/packages/pkg-1',
+      path: 'path/to/packages/pkg-1' as RelativePath,
       prefix: 'root',
       suffix: 'open',
       extensionless: true
@@ -199,7 +209,7 @@ const mockHybridrepoMappings = [
       group: WellKnownImportAlias.Rootverse,
       packageId: undefined
     },
-    { path: '', prefix: 'root', suffix: 'open', extensionless: true }
+    { path: '' as RelativePath, prefix: 'root', suffix: 'open', extensionless: true }
   ],
   [
     {
@@ -210,7 +220,7 @@ const mockHybridrepoMappings = [
       packageId: 'pkg-2'
     },
     {
-      path: 'path/to/packages/pkg-2/test',
+      path: 'path/to/packages/pkg-2/test' as RelativePath,
       prefix: 'root',
       suffix: 'open',
       extensionless: true
@@ -225,7 +235,7 @@ const mockHybridrepoMappings = [
       packageId: 'pkg-1'
     },
     {
-      path: 'path/to/packages/pkg-1/test',
+      path: 'path/to/packages/pkg-1/test' as RelativePath,
       prefix: 'root',
       suffix: 'open',
       extensionless: true
@@ -239,7 +249,7 @@ const mockHybridrepoMappings = [
       group: WellKnownImportAlias.Testverse,
       packageId: undefined
     },
-    { path: 'test', prefix: 'root', suffix: 'open', extensionless: true }
+    { path: 'test' as RelativePath, prefix: 'root', suffix: 'open', extensionless: true }
   ],
   [
     {
@@ -249,7 +259,7 @@ const mockHybridrepoMappings = [
       group: WellKnownImportAlias.Typeverse,
       packageId: undefined
     },
-    { path: 'types', prefix: 'root', suffix: 'open', extensionless: true }
+    { path: 'types' as RelativePath, prefix: 'root', suffix: 'open', extensionless: true }
   ]
 ] satisfies [Omit<RawAlias, 'regExp'>, RawPath][] as RawAliasMapping[];
 
@@ -270,7 +280,7 @@ describe('::makeRawAliasMapping', () => {
     expect(
       makeRawAliasMapping(
         { alias: 'alias-1', group: WellKnownImportAlias.Universe, packageId: undefined },
-        { path: 'the/path/for/alias-1' }
+        { path: 'the/path/for/alias-1' as RelativePath }
       )
     ).toStrictEqual([
       {
@@ -282,7 +292,7 @@ describe('::makeRawAliasMapping', () => {
         packageId: undefined
       },
       {
-        path: 'the/path/for/alias-1',
+        path: 'the/path/for/alias-1' as RelativePath,
         prefix: 'root',
         suffix: 'open',
         extensionless: true
@@ -302,7 +312,11 @@ describe('::makeRawAliasMapping', () => {
           group: WellKnownImportAlias.Multiverse,
           packageId: undefined
         },
-        { path: 'the/path/for/alias-1', suffix: 'none', extensionless: false }
+        {
+          path: 'the/path/for/alias-1' as RelativePath,
+          suffix: 'none',
+          extensionless: false
+        }
       )
     ).toStrictEqual([
       {
@@ -314,7 +328,7 @@ describe('::makeRawAliasMapping', () => {
         packageId: undefined
       },
       {
-        path: 'the/path/for/alias-1',
+        path: 'the/path/for/alias-1' as RelativePath,
         prefix: 'root',
         suffix: 'none',
         extensionless: false
@@ -333,7 +347,7 @@ describe('::makeRawAliasMapping', () => {
           group: WellKnownImportAlias.Testverse,
           packageId: undefined
         },
-        { path: 'the/path/for/alias-1', suffix: 'none' }
+        { path: 'the/path/for/alias-1' as RelativePath, suffix: 'none' }
       )
     ).toStrictEqual([
       {
@@ -345,7 +359,7 @@ describe('::makeRawAliasMapping', () => {
         packageId: undefined
       },
       {
-        path: 'the/path/for/alias-1',
+        path: 'the/path/for/alias-1' as RelativePath,
         prefix: 'root',
         suffix: 'none',
         extensionless: true
@@ -364,7 +378,7 @@ describe('::makeRawAliasMapping', () => {
           group: WellKnownImportAlias.Typeverse,
           packageId: undefined
         },
-        { path: 'the/path/for/alias-1', suffix: 'open' }
+        { path: 'the/path/for/alias-1' as RelativePath, suffix: 'open' }
       )
     ).toThrow(ErrorMessage.IllegalAliasBadSuffix('alias-1'));
   });
@@ -379,7 +393,7 @@ describe('::makeRawAliasMapping', () => {
           group: WellKnownImportAlias.Rootverse,
           packageId: undefined
         },
-        { path: 'the/path/for/alias-1' }
+        { path: 'the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasKeyInvalidCharacters('bad/alias', '').split(':')[0]
@@ -392,7 +406,7 @@ describe('::makeRawAliasMapping', () => {
           group: WellKnownImportAlias.Rootverse,
           packageId: undefined
         },
-        { path: 'the/path/for/alias-1' }
+        { path: 'the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasKeyInvalidCharacters(String.raw`bad\alias`, '').split(
@@ -407,7 +421,7 @@ describe('::makeRawAliasMapping', () => {
           group: WellKnownImportAlias.Rootverse,
           packageId: undefined
         },
-        { path: 'the/path/for/alias-1' }
+        { path: 'the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasKeyInvalidCharacters('bad-alias/', '').split(':')[0]
@@ -424,7 +438,7 @@ describe('::makeRawAliasMapping', () => {
           group: WellKnownImportAlias.Rootverse,
           packageId: undefined
         },
-        { path: 'the/path/for/alias-1' }
+        { path: 'the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasKeyInvalidCharacters('$alias-1', '').split(':')[0]
@@ -437,7 +451,7 @@ describe('::makeRawAliasMapping', () => {
     expect(() =>
       makeRawAliasMapping(
         { alias: 'alias-1', group: WellKnownImportAlias.Rootverse, packageId: undefined },
-        { path: 'the/path:for/alias-1' }
+        { path: 'the/path:for/alias-1' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasValueInvalidCharacters('alias-1', '').split(':')[0]
@@ -450,7 +464,7 @@ describe('::makeRawAliasMapping', () => {
     expect(() =>
       makeRawAliasMapping(
         { alias: 'alias-1', group: WellKnownImportAlias.Rootverse, packageId: undefined },
-        { path: '/the/path/for/alias-1' }
+        { path: '/the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
@@ -459,7 +473,7 @@ describe('::makeRawAliasMapping', () => {
     expect(() =>
       makeRawAliasMapping(
         { alias: 'alias-1', group: WellKnownImportAlias.Rootverse, packageId: undefined },
-        { path: 'the/path/for/alias-1/' }
+        { path: 'the/path/for/alias-1/' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
@@ -472,7 +486,7 @@ describe('::makeRawAliasMapping', () => {
     expect(() =>
       makeRawAliasMapping(
         { alias: 'alias-1', group: WellKnownImportAlias.Universe, packageId: undefined },
-        { path: './the/path/for/alias-1' }
+        { path: './the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
@@ -481,7 +495,7 @@ describe('::makeRawAliasMapping', () => {
     expect(() =>
       makeRawAliasMapping(
         { alias: 'alias-1', group: WellKnownImportAlias.Universe, packageId: undefined },
-        { path: '../the/path/for/alias-1' }
+        { path: '../the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
@@ -490,7 +504,7 @@ describe('::makeRawAliasMapping', () => {
     expect(() =>
       makeRawAliasMapping(
         { alias: 'alias-1', group: WellKnownImportAlias.Universe, packageId: undefined },
-        { path: '.' }
+        { path: '.' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
@@ -499,7 +513,7 @@ describe('::makeRawAliasMapping', () => {
     expect(() =>
       makeRawAliasMapping(
         { alias: 'alias-1', group: WellKnownImportAlias.Universe, packageId: undefined },
-        { path: '..' }
+        { path: '..' as RelativePath }
       )
     ).toThrow(
       ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]

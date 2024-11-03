@@ -1,4 +1,4 @@
-import { basename, resolve as toAbsolutePath } from 'node:path';
+import { basename } from 'node:path';
 
 import { type Package } from 'rootverse+project-utils:src/analyze/common.ts';
 import * as fs from 'rootverse+project-utils:src/fs.ts';
@@ -530,18 +530,20 @@ function createFixture({
   unnamedPackageMapData?: PackageMapDatum[];
   brokenPackageRoots?: string[];
 }) {
-  const prototypeRoot = toAbsolutePath(
+  const prototypeRoot = fs.toAbsolutePath(
     __dirname,
-    '../fixtures/dummy-repo',
+    '..',
+    'fixtures',
+    'dummy-repo',
     prototypeRoot_
-  ) as fs.AbsolutePath;
+  );
 
   fixtures[fixtureName] = {
     root: prototypeRoot,
     json:
       (() => {
         try {
-          return require(`${prototypeRoot}/package.json`);
+          return require(fs.toPath(prototypeRoot, 'package.json'));
         } catch {}
       })() || {},
     attributes,
@@ -549,9 +551,7 @@ function createFixture({
     unnamedPackageMapData: unnamedPackageMapData.map((datum) =>
       expandDatumToEntry(datum)
     ),
-    brokenPackageRoots: brokenPackageRoots.map(
-      (path) => `${prototypeRoot}/${path}` as fs.AbsolutePath
-    )
+    brokenPackageRoots: brokenPackageRoots.map((path) => fs.toPath(prototypeRoot, path))
   };
 
   function expandDatumToEntry({
@@ -563,8 +563,8 @@ function createFixture({
       name,
       {
         id: basename(subRoot),
-        root: `${prototypeRoot}/${subRoot}` as fs.AbsolutePath,
-        json: require(`${prototypeRoot}/${subRoot}/package.json`),
+        root: fs.toPath(prototypeRoot, subRoot),
+        json: require(fs.toPath(prototypeRoot, subRoot, 'package.json')),
         attributes,
         // ? Side-step this whole thing
         projectMetadata: expect.anything()

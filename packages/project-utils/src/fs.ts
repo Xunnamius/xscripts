@@ -6,7 +6,13 @@ export * from 'rootverse+project-utils:src/fs/read-json.ts';
 export * from 'rootverse+project-utils:src/fs/read-jsonc.ts';
 export * from 'rootverse+project-utils:src/fs/read-package-json-at-root.ts';
 
-export type {
-  AbsolutePath,
-  RelativePath
+export {
+  isAbsolutePath,
+  isRelativePath,
+  toAbsolutePath,
+  toPath,
+  toRelativePath,
+  type AbsolutePath,
+  type Path,
+  type RelativePath
 } from 'rootverse+project-utils:src/fs/common.ts';

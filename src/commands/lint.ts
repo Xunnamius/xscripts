@@ -1,5 +1,3 @@
-import { join as joinPath, resolve as toAbsolutePath } from 'node:path';
-
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
@@ -22,8 +20,9 @@ import {
 import {
   isAccessible,
   readJsonc,
-  Tsconfig,
-  type AbsolutePath
+  toAbsolutePath,
+  toPath,
+  Tsconfig
 } from 'multiverse+project-utils:fs.ts';
 
 import { runNoRejectOnBadExit, type run, type Subprocess } from 'multiverse+run';
@@ -205,10 +204,9 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
       const allLinters = linters.includes(Linter.All);
       debug('allLinters: %O', allLinters);
 
-      const tsconfigFilePath = scopeToTsconfigFilePath(
-        scope,
-        projectMetadata
-      ) as AbsolutePath;
+      const tsconfigFilePath = toAbsolutePath(
+        scopeToTsconfigFilePath(scope, projectMetadata)
+      );
 
       debug('tsconfigFilePath: %O', tsconfigFilePath);
 
@@ -459,7 +457,7 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
   }
 
   function fromProjectRoot(path: string, projectMetadata: ProjectMetadata | undefined) {
-    return projectMetadata ? joinPath(projectMetadata.rootPackage.root, path) : path;
+    return projectMetadata ? toPath(projectMetadata.rootPackage.root, path) : path;
   }
 
   function fromCwdRoot(path: string, projectMetadata: ProjectMetadata | undefined) {

@@ -1,5 +1,4 @@
 import assert from 'node:assert';
-import { relative as toRelativePath } from 'node:path';
 
 import escapeStringRegExp from 'escape-string-regexp~4';
 import deepMerge from 'lodash.mergewith';
@@ -11,7 +10,7 @@ import {
   isRootPackage,
   WorkspaceAttribute
 } from 'multiverse+project-utils';
-import { type RelativePath } from 'multiverse+project-utils:fs.ts';
+import { toRelativePath, type RelativePath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
@@ -907,7 +906,7 @@ export function getExcludedDirectoriesRelativeToProjectRoot() {
         !packageAttributes[WorkspaceAttribute.Shared]
       ) {
         excludedDirectoriesRelativeToProjectRoot.push(
-          toRelativePath(projectRoot, packageRoot) as RelativePath
+          toRelativePath(projectRoot, packageRoot)
         );
       }
     }

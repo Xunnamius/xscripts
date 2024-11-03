@@ -1,6 +1,6 @@
-import { join } from 'node:path';
-
 import { runProgram } from '@black-flag/core';
+
+import { toAbsolutePath } from 'multiverse+project-utils:fs';
 
 import type { GlobalExecutionContext } from 'universe:configure.ts';
 
@@ -8,7 +8,7 @@ import type { GlobalExecutionContext } from 'universe:configure.ts';
  * This is the simple CLI entry point executed directly by node.
  */
 export default runProgram<GlobalExecutionContext>(
-  join(__dirname, 'commands'),
+  toAbsolutePath(__dirname, 'commands'),
   require('universe:configure.ts')
 );
 

@@ -1,5 +1,4 @@
 /* eslint-disable no-await-in-loop */
-import { relative as toRelativePath } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 
 import { type ChildConfiguration } from '@black-flag/core';
@@ -17,7 +16,7 @@ import {
   isRootPackage,
   ProjectAttribute
 } from 'multiverse+project-utils:analyze/common.ts';
-import { jestConfigProjectBase } from 'multiverse+project-utils:fs.ts';
+import { jestConfigProjectBase, toRelativePath } from 'multiverse+project-utils:fs.ts';
 import { run } from 'multiverse+run';
 
 import { baseConfig } from 'universe:assets/config/_jest.config.mjs.ts';

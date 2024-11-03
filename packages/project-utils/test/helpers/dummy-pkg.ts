@@ -1,5 +1,4 @@
 import assert from 'node:assert';
-import { resolve as toAbsolutePath } from 'node:path';
 import { isNativeError } from 'node:util/types';
 
 import { TrialError } from 'named-app-errors';
@@ -7,16 +6,11 @@ import { resolve as resolverLibrary } from 'resolve.exports';
 
 import { runNoRejectOnBadExit } from 'multiverse+run';
 
-import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
+import { toAbsolutePath, type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
 
 import type { PackageJson } from 'type-fest';
 
-const DUMMY_PACKAGE_DIR = toAbsolutePath(
-  __dirname,
-  '..',
-  'fixtures',
-  'dummy-pkg'
-) as AbsolutePath;
+const DUMMY_PACKAGE_DIR = toAbsolutePath(__dirname, '..', 'fixtures', 'dummy-pkg');
 
 export const availableDummyPackages = [
   'root',

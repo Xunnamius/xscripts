@@ -1,5 +1,5 @@
 import assert from 'node:assert';
-import { dirname, join as joinPath } from 'node:path';
+import { dirname } from 'node:path';
 
 import { sync as findUp } from 'find-up~5';
 
@@ -40,6 +40,9 @@ import {
   nextjsConfigProjectBase,
   readPackageJsonAtRoot,
   sharedConfigPackageBase,
+  toAbsolutePath,
+  toPath,
+  toRelativePath,
   webpackConfigProjectBase,
   type AbsolutePath,
   type RelativePath
@@ -89,7 +92,7 @@ function analyzeProjectStructure_(
   shouldRunSynchronously: boolean,
   {
     useCached,
-    cwd = process.cwd() as AbsolutePath,
+    cwd = toAbsolutePath(process.cwd()),
     ...incompleteCacheIdComponentsObject
   }: AnalyzeProjectStructureOptions
 ): Promisable<ProjectMetadata> {
@@ -265,7 +268,7 @@ export namespace analyzeProjectStructure {
 
 function determineProjectRootFromCwd(cwd: AbsolutePath): AbsolutePath {
   try {
-    return dirname(findUp('.git', { cwd, type: 'directory' })!) as AbsolutePath;
+    return toAbsolutePath(dirname(findUp('.git', { cwd, type: 'directory' })!));
   } catch {
     throw new NotAGitRepositoryError();
   }
@@ -541,7 +544,7 @@ function determineCwdPackage(
   }
 
   // ? At least the root package.json is guaranteed to exist at this point.
-  const cwdPackageRoot = dirname(findUp('package.json', { cwd })!) as AbsolutePath;
+  const cwdPackageRoot = toAbsolutePath(dirname(findUp('package.json', { cwd })!));
 
   if (cwdPackageRoot === projectRoot) {
     return runSynchronously ? rootPackage : Promise.resolve(rootPackage);
@@ -599,7 +602,7 @@ function getProjectAttributes(
 
   if (runSynchronously) {
     if (
-      isAccessibleFromRoot(true, nextjsConfigProjectBase as RelativePath, root, useCached)
+      isAccessibleFromRoot(true, toRelativePath(nextjsConfigProjectBase), root, useCached)
     ) {
       attributes[ProjectAttribute.Next] = true;
     }
@@ -607,7 +610,7 @@ function getProjectAttributes(
     if (
       isAccessibleFromRoot(
         true,
-        webpackConfigProjectBase as RelativePath,
+        toRelativePath(webpackConfigProjectBase),
         root,
         useCached
       )
@@ -617,14 +620,14 @@ function getProjectAttributes(
 
     if (
       repoType === ProjectAttribute.Monorepo &&
-      isAccessibleFromRoot(true, 'src' as RelativePath, root, useCached)
+      isAccessibleFromRoot(true, toRelativePath('src'), root, useCached)
     ) {
       attributes[ProjectAttribute.Hybridrepo] = true;
     }
 
     if (
-      isAccessibleFromRoot(true, 'vercel.json' as RelativePath, root, useCached) ||
-      isAccessibleFromRoot(true, '.vercel/project.json' as RelativePath, root, useCached)
+      isAccessibleFromRoot(true, toRelativePath('vercel.json'), root, useCached) ||
+      isAccessibleFromRoot(true, toRelativePath('.vercel/project.json'), root, useCached)
     ) {
       attributes[ProjectAttribute.Vercel] = true;
     }
@@ -637,24 +640,24 @@ function getProjectAttributes(
       const [hasNext, hasWebpack, isHybridrepo, hasVercel] = await Promise.all([
         isAccessibleFromRoot(
           false,
-          nextjsConfigProjectBase as RelativePath,
+          toRelativePath(nextjsConfigProjectBase),
           root,
           useCached
         ),
         isAccessibleFromRoot(
           false,
-          webpackConfigProjectBase as RelativePath,
+          toRelativePath(webpackConfigProjectBase),
           root,
           useCached
         ),
-        isAccessibleFromRoot(false, 'src' as RelativePath, root, useCached),
-        isAccessibleFromRoot(false, 'vercel.json' as RelativePath, root, useCached).then(
+        isAccessibleFromRoot(false, toRelativePath('src'), root, useCached),
+        isAccessibleFromRoot(false, toRelativePath('vercel.json'), root, useCached).then(
           async (result) => {
             return (
               result ||
               isAccessibleFromRoot(
                 false,
-                '.vercel/project.json' as RelativePath,
+                toRelativePath('.vercel/project.json'),
                 root,
                 useCached
               )
@@ -757,7 +760,7 @@ function getWorkspaceAttributes(
     if (
       isAccessibleFromRoot(
         true,
-        webpackConfigProjectBase as RelativePath,
+        toRelativePath(webpackConfigProjectBase),
         root,
         useCached
       )
@@ -766,7 +769,7 @@ function getWorkspaceAttributes(
     }
 
     if (
-      isAccessibleFromRoot(true, sharedConfigPackageBase as RelativePath, root, useCached)
+      isAccessibleFromRoot(true, toRelativePath(sharedConfigPackageBase), root, useCached)
     ) {
       attributes[WorkspaceAttribute.Shared] = true;
     }
@@ -777,7 +780,7 @@ function getWorkspaceAttributes(
       if (
         await isAccessibleFromRoot(
           false,
-          webpackConfigProjectBase as RelativePath,
+          toRelativePath(webpackConfigProjectBase),
           root,
           useCached
         )
@@ -788,7 +791,7 @@ function getWorkspaceAttributes(
       if (
         await isAccessibleFromRoot(
           false,
-          sharedConfigPackageBase as RelativePath,
+          toRelativePath(sharedConfigPackageBase),
           root,
           useCached
         )
@@ -819,7 +822,7 @@ function isAccessibleFromRoot(
   root: AbsolutePath,
   useCached: boolean
 ): Promisable<boolean> {
-  return (runSynchronously ? isAccessible.sync : isAccessible)(joinPath(root, path), {
+  return (runSynchronously ? isAccessible.sync : isAccessible)(toPath(root, path), {
     useCached
   });
 }
