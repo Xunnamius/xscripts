@@ -1,8 +1,4 @@
-import {
-  basename,
-  relative as toRelativePath,
-  resolve as toAbsolutePath
-} from 'node:path';
+import { basename } from 'node:path';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { glob } from 'glob-gitignore';
@@ -19,11 +15,14 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
-import { gatherProjectFiles } from 'multiverse+project-utils';
+import { gatherProjectFiles, isRootPackage } from 'multiverse+project-utils';
 
 import {
   deriveVirtualPrettierignoreLines,
   remarkConfigProjectBase,
+  toAbsolutePath,
+  toPath,
+  toRelativePath,
   type AbsolutePath
 } from 'multiverse+project-utils:fs.ts';
 
@@ -139,7 +138,7 @@ With respect to .prettierignore being the single source of truth for formatters:
       renumberReferences,
       skipIgnored,
       skipUnknown,
-      files,
+      files: files_,
       onlyPackageJson,
       onlyMarkdown,
       onlyPrettier,
@@ -161,7 +160,7 @@ With respect to .prettierignore being the single source of truth for formatters:
       debug('renumberReferences: %O', renumberReferences);
       debug('skipIgnored: %O', skipIgnored);
       debug('skipUnknown: %O', skipUnknown);
-      debug('files: %O', files);
+      debug('files: %O', files_);
       debug('onlyPackageJson: %O', onlyPackageJson);
       debug('onlyMarkdown: %O', onlyMarkdown);
       debug('onlyPrettier: %O', onlyPrettier);
@@ -170,92 +169,120 @@ With respect to .prettierignore being the single source of truth for formatters:
 
       const {
         rootPackage: { root: projectRoot },
-        cwdPackage: { root: packageRoot }
+        cwdPackage,
+        subRootPackages
       } = projectMetadata;
 
       debug('projectRoot: %O', projectRoot);
-      debug('packageRoot: %O', packageRoot);
+      debug('packageRoot: %O', cwdPackage.root);
 
-      const [allMarkdownFiles, allPackageJsonFiles] = await (async (): Promise<
-        [string[], string[]]
-      > => {
-        if (files) {
-          debug('using --files as targets');
+      const isCwdTheProjectRoot = isRootPackage(cwdPackage);
+      debug('isCwdTheProjectRoot: %O', isCwdTheProjectRoot);
 
-          const ignore = skipIgnored
-            ? await deriveVirtualPrettierignoreLines(projectRoot, {
-                includeUnknownPaths: skipUnknown,
-                useCached: true
-              })
-            : [];
+      const [targetMarkdownFiles, targetPackageJsonFiles, targetOtherFiles] =
+        await (async (): Promise<[AbsolutePath[], AbsolutePath[], AbsolutePath[]]> => {
+          if (files_) {
+            debug('using --files as targets');
 
-          debug('virtual .prettierignore lines: %O', ignore);
+            const ignore = skipIgnored
+              ? await deriveVirtualPrettierignoreLines(projectRoot, {
+                  includeUnknownPaths: skipUnknown,
+                  useCached: true
+                })
+              : [];
 
-          const sawFilesOutsideProjectRoot = files_.some(
-            (path) => !toAbsolutePath(projectRoot, path).startsWith(projectRoot)
-          );
+            debug('virtual .prettierignore lines: %O', ignore);
 
-          debug('sawFilesOutsideProjectRoot: %O', sawFilesOutsideProjectRoot);
-
-          softAssert(
-            !sawFilesOutsideProjectRoot || ignore.length === 0,
-            ErrorMessage.CannotUseIgnoresWithPathsOutsideProjectRoot()
-          );
-
-          files = await glob(files, {
-            dot: true,
-            absolute: true,
-            nodir: true,
-            // ? This addresses a strange bug with the ignores package as seen
-            // ? here: https://github.com/prettier/prettier-atom/issues/490
-            ...(sawFilesOutsideProjectRoot ? {} : { ignore })
-          });
-
-          debug('files (post-glob): %O', files);
-
-          const markdownFiles = files.filter((path) => path.endsWith('.md'));
-          const packageJsonFiles = files.filter((path) => path.endsWith('/package.json'));
-
-          if (sawFilesOutsideProjectRoot) {
-            sawMarkdownFilesOutsideProjectRoot = markdownFiles.some(
-              (mdPath) => !mdPath.startsWith(projectRoot)
+            const sawFilesOutsideProjectRoot = files_.some(
+              (path) => !toAbsolutePath(projectRoot, path).startsWith(projectRoot)
             );
+
+            debug('sawFilesOutsideProjectRoot: %O', sawFilesOutsideProjectRoot);
+
+            softAssert(
+              !sawFilesOutsideProjectRoot || ignore.length === 0,
+              ErrorMessage.CannotUseIgnoresWithPathsOutsideProjectRoot()
+            );
+
+            const files = (await glob(files_, {
+              dot: true,
+              absolute: true,
+              nodir: true,
+              // ? This addresses a strange bug with the ignores package as seen
+              // ? here: https://github.com/prettier/prettier-atom/issues/490
+              ...(sawFilesOutsideProjectRoot ? {} : { ignore })
+            })) as AbsolutePath[];
+
+            debug('files (post-glob): %O', files);
+
+            const markdownFiles: AbsolutePath[] = [];
+            const packageJsonFiles: AbsolutePath[] = [];
+            const otherFiles: AbsolutePath[] = [];
+
+            for (const path of files) {
+              if (path.endsWith('.md')) {
+                markdownFiles.push(path);
+              } else if (path.endsWith('/package.json')) {
+                packageJsonFiles.push(path);
+              } else {
+                otherFiles.push(path);
+              }
+            }
+
+            if (sawFilesOutsideProjectRoot) {
+              sawMarkdownFilesOutsideProjectRoot = markdownFiles.some(
+                (mdPath) => !mdPath.startsWith(projectRoot)
+              );
+            }
+
+            debug(
+              'sawMarkdownFilesOutsideProjectRoot: %O',
+              sawMarkdownFilesOutsideProjectRoot
+            );
+
+            return [
+              markdownFiles,
+              packageJsonFiles,
+              await filterOutPathsUnsupportedByPrettier(otherFiles)
+            ];
+          } else {
+            debug('running generic project filesystem scan');
+            softAssert(skipIgnored || !skipUnknown, ErrorMessage.BadSkipArgs());
+
+            const projectFiles = await gatherProjectFiles(projectMetadata, {
+              skipIgnored,
+              skipUnknown,
+              useCached: true
+              // ? We can safely cast this thanks to the assert above
+            } as Parameters<typeof gatherProjectFiles>[1]);
+
+            return scope === DefaultGlobalScope.ThisPackage
+              ? [
+                  isCwdTheProjectRoot
+                    ? projectFiles.markdownFiles.inRoot
+                    : projectFiles.markdownFiles.inWorkspace.get(cwdPackage.id)!,
+                  [
+                    isCwdTheProjectRoot
+                      ? projectFiles.packageJsonFiles.atProjectRoot
+                      : projectFiles.packageJsonFiles.atWorkspaceRoot.get(cwdPackage.id)!
+                  ],
+                  []
+                ]
+              : [
+                  projectFiles.markdownFiles.all,
+                  projectFiles.packageJsonFiles.atAnyRoot,
+                  []
+                ];
           }
+        })();
 
-          debug(
-            'sawMarkdownFilesOutsideProjectRoot: %O',
-            sawMarkdownFilesOutsideProjectRoot
-          );
-
-          return [markdownFiles, packageJsonFiles];
-        } else {
-          debug('running generic project filesystem scan');
-          softAssert(skipIgnored || !skipUnknown, ErrorMessage.BadSkipArgs());
-
-          const {
-            markdownFiles: { all: allMarkdownFiles },
-            packageJsonFiles: { atAnyRoot: allPackageJsonFiles }
-          } = await gatherProjectFiles(projectMetadata, {
-            skipIgnored,
-            skipUnknown,
-            useCached: true
-            // ? We can safely cast this thanks to the assert above
-          } as Parameters<typeof gatherProjectFiles>[1]);
-
-          return [
-            maybeFilterOutPathsOutsidePackageScope(allMarkdownFiles),
-            maybeFilterOutPathsOutsidePackageScope(allPackageJsonFiles)
-          ];
-        }
-      })();
-
-      debug('allMarkdownFiles: %O', allMarkdownFiles);
-      debug('allPackageJsonFiles: %O', allPackageJsonFiles);
+      debug('targetMarkdownFiles: %O', targetMarkdownFiles);
+      debug('targetPackageJsonFiles: %O', targetPackageJsonFiles);
 
       const shouldDoPackageJson =
-        !onlyMarkdown && !onlyPrettier && allPackageJsonFiles.length > 0;
+        !onlyMarkdown && !onlyPrettier && targetPackageJsonFiles.length > 0;
       const shouldDoMarkdown =
-        !onlyPackageJson && !onlyPrettier && allMarkdownFiles.length > 0;
+        !onlyPackageJson && !onlyPrettier && targetMarkdownFiles.length > 0;
       const shouldDoPrettier = !onlyPackageJson && !onlyMarkdown;
 
       debug('shouldDoPackageJson: %O', shouldDoPackageJson);
@@ -277,7 +304,7 @@ With respect to .prettierignore being the single source of truth for formatters:
             '--silently-ignore',
             '--ignore-pattern',
             'docs',
-            ...allMarkdownFiles
+            ...targetMarkdownFiles
           ],
           {
             env: { NODE_ENV: 'lint-no-undef' },
@@ -306,6 +333,7 @@ With respect to .prettierignore being the single source of truth for formatters:
       }
 
       genericLogger([LogTag.IF_NOT_HUSHED], 'Formatting target files...');
+      debug.message('cwd override used for all executables: %O', projectRoot);
 
       const status: Record<
         'sort' | 'doctoc' | 'allContrib' | 'remark',
@@ -329,12 +357,12 @@ With respect to .prettierignore being the single source of truth for formatters:
 
         const sortedPackageJsonFiles = shouldDoPackageJson
           ? // {@xscripts/notExtraneous sort-package-json}
-            run('npx', ['sort-package-json', ...allPackageJsonFiles]).catch(
-              (error: unknown) => {
-                status.sort = false;
-                throw error;
-              }
-            )
+            run('npx', ['sort-package-json', ...targetPackageJsonFiles], {
+              cwd: projectRoot
+            }).catch((error: unknown) => {
+              status.sort = false;
+              throw error;
+            })
           : Promise.resolve();
 
         if (shouldDoMarkdown) {
@@ -351,9 +379,10 @@ With respect to .prettierignore being the single source of truth for formatters:
               '--maxlevel',
               '3',
               '--update-only',
-              ...allMarkdownFiles
+              ...targetMarkdownFiles
             ],
             {
+              cwd: projectRoot,
               stdout: isHushed ? 'ignore' : 'inherit',
               stderr: isQuieted ? 'ignore' : 'inherit'
             }
@@ -364,10 +393,10 @@ With respect to .prettierignore being the single source of truth for formatters:
 
           status.doctoc = true;
 
-          const rootReadmeFile = `${projectRoot}/README.md`;
+          const rootReadmeFile = toPath(projectRoot, 'README.md');
           debug('rootReadmeFile: %O', rootReadmeFile);
 
-          if (allMarkdownFiles.includes(rootReadmeFile)) {
+          if (targetMarkdownFiles.includes(rootReadmeFile)) {
             status.allContrib = null;
 
             await run(
@@ -421,9 +450,10 @@ With respect to .prettierignore being the single source of truth for formatters:
               ...(sawMarkdownFilesOutsideProjectRoot
                 ? [`--rc-path=${projectRoot}/${remarkConfigProjectBase}`]
                 : []),
-              ...allMarkdownFiles
+              ...targetMarkdownFiles
             ],
             {
+              cwd: projectRoot,
               env: {
                 NODE_ENV: 'format',
                 XSCRIPTS_FORMAT_RENUMBER_REFERENCES: renumberReferences.toString()
@@ -446,17 +476,22 @@ With respect to .prettierignore being the single source of truth for formatters:
         }
 
         if (shouldDoPrettier) {
-          const prettierTargetFiles = (await filterOutPathsUnsupportedByPrettier(
-            files
-          )) ?? [
-            '.',
-            ...(scope === DefaultGlobalScope.ThisPackage
-              ? [
-                  // TODO: perhaps replace this with package.json::workspaces?
-                  '!packages/**/*'
-                ]
-              : [])
-          ];
+          const prettierTargetFiles = targetOtherFiles.length
+            ? targetOtherFiles
+            : [
+                // ? cwd === projectRoot (with respect to '.')
+                (scope === DefaultGlobalScope.ThisPackage
+                  ? toRelativePath(projectRoot, cwdPackage.root)
+                  : '') || '.',
+                ...(scope === DefaultGlobalScope.ThisPackage
+                  ? Array.from(subRootPackages?.values() || []).map(
+                      ({ root: packageRoot }) => {
+                        // ? cwd === projectRoot
+                        return `!${toRelativePath(projectRoot, packageRoot)}`;
+                      }
+                    )
+                  : [])
+              ];
 
           debug('prettierTargetFiles: %O', prettierTargetFiles);
 
@@ -473,7 +508,7 @@ With respect to .prettierignore being the single source of truth for formatters:
                 ...(skipUnknown ? ['--ignore-unknown'] : []),
                 ...prettierTargetFiles
               ],
-              { all: true }
+              { cwd: projectRoot, all: true }
             ).catch((error: unknown) => {
               status.prettier = false;
               throw error;
@@ -495,9 +530,9 @@ With respect to .prettierignore being the single source of truth for formatters:
       genericLogger(
         [LogTag.IF_NOT_SILENCED],
         [
-          `${shouldDoPackageJson ? 'Processed' : 'Encountered'} package.json files: ${allPackageJsonFiles.length}`,
+          `${shouldDoPackageJson ? 'Processed' : 'Encountered'} package.json files: ${targetPackageJsonFiles.length}`,
           `${SHORT_TAB}Sorted file contents: ${statusToEmoji(status.sort)}`,
-          `${shouldDoMarkdown ? 'Processed' : 'Encountered'} markdown files${skipIgnored ? '' : ' (no files ignored)'}: ${allMarkdownFiles.length}`,
+          `${shouldDoMarkdown ? 'Processed' : 'Encountered'} markdown files${skipIgnored ? '' : ' (no files ignored)'}: ${targetMarkdownFiles.length}`,
           `${SHORT_TAB}Synchronized TOCs: ${statusToEmoji(status.doctoc)}`,
           `${SHORT_TAB}Regenerated contributor table: ${statusToEmoji(status.allContrib)}`,
           `${SHORT_TAB}Reformatted files: ${statusToEmoji(status.remark)}`,
@@ -522,23 +557,6 @@ With respect to .prettierignore being the single source of truth for formatters:
       }
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
-
-      function maybeFilterOutPathsOutsidePackageScope(paths: AbsolutePath[]) {
-        const debug__ = debug.extend('filter');
-
-        return scope === DefaultGlobalScope.ThisPackage
-          ? paths.filter((path) => {
-              // TODO: perhaps use package.json::workspaces instead?
-              const decision = !path.startsWith(`${packageRoot}/packages/`);
-
-              if (!decision) {
-                debug__('removed from consideration due to scope: %O', path);
-              }
-
-              return decision;
-            })
-          : paths;
-      }
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
 }
@@ -567,11 +585,7 @@ function statusToEmoji(status: boolean | null | undefined) {
   }
 }
 
-async function filterOutPathsUnsupportedByPrettier(files: string[] | undefined) {
-  if (files === undefined) {
-    return files;
-  }
-
+async function filterOutPathsUnsupportedByPrettier(files: AbsolutePath[]) {
   const supportedExtensions = new Set(
     (await getSupportInfo()).languages.flatMap((language) => language.extensions ?? [])
   );
