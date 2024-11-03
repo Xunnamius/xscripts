@@ -6,7 +6,7 @@ import { type Arrayable } from 'type-fest';
 import {
   uriSchemeDelimiter,
   uriSchemeSubDelimiter
-} from 'multiverse+project-utils:constant';
+} from 'rootverse+project-utils:src/constant.ts';
 
 import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
 

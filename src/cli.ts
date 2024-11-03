@@ -1,6 +1,6 @@
 import { runProgram } from '@black-flag/core';
 
-import { toAbsolutePath } from 'multiverse+project-utils:fs';
+import { toAbsolutePath } from 'multiverse+project-utils:fs.ts';
 
 import type { GlobalExecutionContext } from 'universe:configure.ts';
 

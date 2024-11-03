@@ -17,8 +17,7 @@ import {
   withMockedFixture,
   type FixtureContext,
   type WithMockedFixtureOptions
-  // TODO: figure out why test files' specifiers are not being checked
-} from 'multiverse+test-utils:index';
+} from 'multiverse+test-utils';
 
 import {
   moduleExport,

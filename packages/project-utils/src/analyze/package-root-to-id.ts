@@ -1,6 +1,6 @@
 import { basename } from 'node:path';
 
-import { type WorkspacePackageId } from 'multiverse+project-utils:analyze';
+import { type WorkspacePackageId } from 'rootverse+project-utils:src/analyze.ts';
 
 import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
 

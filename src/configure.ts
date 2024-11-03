@@ -23,8 +23,8 @@ import {
 
 import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse+project-utils';
 import { cache } from 'multiverse+project-utils:cache.ts';
-import { toAbsolutePath, toPath } from 'multiverse+project-utils:fs';
 import { isAccessible } from 'multiverse+project-utils:fs/is-accessible.ts';
+import { toAbsolutePath, toPath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
 import {
