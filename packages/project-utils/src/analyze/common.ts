@@ -421,8 +421,8 @@ export type PackageFiles = {
    */
   test: AbsolutePath[];
   /**
-   * Every file under the package's root directory that is not ignored by Git,
-   * not contained in any other {@link PackageFiles} property.
+   * Every file under the package's root directory that is not ignored by Git
+   * nor contained in any other {@link PackageFiles} property.
    *
    * Files not owned by the package (such as those belonging to other packages
    * in a monorepo) will never be returned.

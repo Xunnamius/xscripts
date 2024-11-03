@@ -498,7 +498,9 @@ Finally, note that, when attempting to build a Next.js package, this command wil
         if (generateIntermediatesFor === IntermediateTranspilationEnvironment.Test) {
           const { test: testFiles } = await gatherPackageFiles(cwdPackage, {
             skipGitIgnored: false,
-            // ! ./dist isn't cleared yet, so the newly cached value is dirty!
+            // ! ./dist isn't cleared yet, so the value cached by this call to
+            // ! gatherPackageFiles is dirty! This is why we don't use cache
+            // ! later on.
             useCached: true
           });
 
