@@ -6037,6 +6037,264 @@ test('example #2 functions as expected', async () => {
   }
 });
 
+describe('<builder configuration options>', () => {
+  describe('::requires', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+
+  describe('::conflicts', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+
+  describe('::demandThisOptionIf', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+
+  describe('::demandThisOption', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+
+  describe('::demandThisOptionOr', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+
+  describe('::demandThisOptionXor', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+
+  describe('::implies', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+
+  describe('::looseImplications', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+
+  describe('::vacuousImplications', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+
+  describe('::check', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+
+  describe('::subOptionOf', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+
+    it('can self-referentially add ::implies configuration to false flag', async () => {
+      expect.hasAssertions();
+
+      let finalArgv: unknown = undefined;
+
+      const runner = makeMockBuilderRunner({
+        customHandler(argv) {
+          finalArgv = Object.fromEntries(
+            Object.entries(argv).filter(([key]) => !['$0', '_'].includes(key))
+          );
+        },
+        customBuilder: () => {
+          finalArgv = undefined;
+          return {
+            'generate-types': {
+              boolean: true,
+              default: true,
+              conflicts: ['skip-output-checks'],
+              subOptionOf: {
+                'generate-types': {
+                  when: (generateTypes) => !generateTypes,
+                  update: (oldConfig) => {
+                    return {
+                      ...oldConfig,
+                      implies: { 'skip-output-checks': true },
+                      vacuousImplications: true
+                    };
+                  }
+                }
+              }
+            },
+            'skip-output-checks': {
+              alias: 'skip-output-check',
+              boolean: true,
+              default: false
+            }
+          };
+        }
+      });
+
+      {
+        const { secondPassResult, handlerResult } = await runner({
+          'generate-types': true
+        });
+
+        expect(secondPassResult).toStrictEqual({
+          'generate-types': {
+            boolean: true,
+            default: true
+          },
+          'skip-output-checks': {
+            alias: 'skip-output-check',
+            boolean: true,
+            default: false
+          }
+        });
+
+        expect(handlerResult).toBeUndefined();
+
+        expect(finalArgv).toStrictEqual(
+          expect.objectContaining({
+            'generate-types': true,
+            'skip-output-checks': false
+          })
+        );
+      }
+
+      {
+        const { secondPassResult, handlerResult } = await runner({
+          'generate-types': false
+        });
+
+        expect(secondPassResult).toStrictEqual({
+          'generate-types': {
+            boolean: true,
+            default: true
+          },
+          'skip-output-checks': {
+            alias: 'skip-output-check',
+            boolean: true,
+            default: false
+          }
+        });
+
+        expect(handlerResult).toBeUndefined();
+
+        expect(finalArgv).toStrictEqual(
+          expect.objectContaining({
+            'generate-types': false,
+            'skip-output-checks': true
+          })
+        );
+      }
+    });
+
+    it('can add ::choices configuration to boolean-type flag', async () => {
+      expect.hasAssertions();
+
+      let finalArgv: unknown = undefined;
+
+      const runner = makeMockBuilderRunner({
+        customHandler(argv) {
+          finalArgv = Object.fromEntries(
+            Object.entries(argv).filter(([key]) => !['$0', '_'].includes(key))
+          );
+        },
+        customBuilder: () => {
+          finalArgv = undefined;
+          return {
+            'generate-types': {
+              boolean: true,
+              default: true,
+              conflicts: 'skip-output-checks'
+            },
+            'skip-output-checks': {
+              alias: 'skip-output-check',
+              boolean: true,
+              default: false,
+              subOptionOf: {
+                'generate-types': {
+                  when: (generateTypes) => !generateTypes,
+                  update: (oldConfig) => ({ ...oldConfig, default: true })
+                }
+              }
+            }
+          };
+        }
+      });
+
+      {
+        const { secondPassResult, handlerResult } = await runner({
+          'generate-types': true
+        });
+
+        expect(secondPassResult).toStrictEqual({
+          'generate-types': {
+            boolean: true,
+            default: true
+          },
+          'skip-output-checks': {
+            alias: 'skip-output-check',
+            boolean: true,
+            default: false
+          }
+        });
+
+        expect(handlerResult).toBeUndefined();
+
+        expect(finalArgv).toStrictEqual(
+          expect.objectContaining({
+            'generate-types': true,
+            'skip-output-checks': false
+          })
+        );
+      }
+
+      {
+        const { secondPassResult, handlerResult } = await runner({
+          'generate-types': false
+        });
+
+        expect(secondPassResult).toStrictEqual({
+          'generate-types': {
+            boolean: true,
+            default: true
+          },
+          'skip-output-checks': {
+            alias: 'skip-output-check',
+            boolean: true,
+            default: true
+          }
+        });
+
+        expect(handlerResult).toBeUndefined();
+
+        expect(finalArgv).toStrictEqual(
+          expect.objectContaining({
+            'generate-types': false,
+            'skip-output-checks': true
+          })
+        );
+      }
+    });
+  });
+
+  describe('::default', () => {
+    it('todo', async () => {
+      expect.hasAssertions();
+    });
+  });
+});
+
 enum DeployTarget {
   Vercel = 'vercel',
   Ssh = 'ssh'
