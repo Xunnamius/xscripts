@@ -11,19 +11,20 @@ import conventionalChangelogCore, {
 import { toSentenceCase } from 'multiverse+cli-utils:util.ts';
 
 import {
-  moduleExport,
-  noteTitleForBreakingChange,
-  wellKnownCommitTypes
-} from 'universe:assets/config/_conventional.config.js.ts';
-
-import {
   dummyNpmPackageFixture,
   gitRepositoryFixture,
   reconfigureJestGlobalsToSkipTestsInThisFileIfRequested,
   withMockedFixture,
   type FixtureContext,
   type WithMockedFixtureOptions
-} from 'testverse:setup';
+  // TODO: figure out why test files' specifiers are not being checked
+} from 'multiverse+test-utils:index';
+
+import {
+  moduleExport,
+  noteTitleForBreakingChange,
+  wellKnownCommitTypes
+} from 'universe:assets/config/_conventional.config.js.ts';
 
 import type { Merge, Promisable, SetParameterType } from 'type-fest';
 

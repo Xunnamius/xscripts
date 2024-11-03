@@ -4,6 +4,7 @@ import { type ExecutionContext } from '@black-flag/core/util';
 import { ListrErrorTypes } from 'listr2';
 
 import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
+import { withMockedOutput } from 'multiverse+test-utils';
 
 import {
   makeStandardConfigureErrorHandlingEpilogue,
@@ -11,8 +12,6 @@ import {
 } from 'rootverse+cli-utils:src/configure.ts';
 
 import { type StandardExecutionContext } from 'rootverse+cli-utils:src/extensions.ts';
-
-import { withMockedOutput } from 'testverse:setup.ts';
 
 import type { PartialDeep } from 'type-fest';
 

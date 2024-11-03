@@ -1,5 +1,7 @@
 /* eslint-disable unicorn/escape-case */
 /* eslint-disable unicorn/no-hex-escape */
+import { type RelativePath } from 'multiverse+project-utils:fs';
+
 import {
   deriveAliasesForBabel,
   deriveAliasesForEslint,

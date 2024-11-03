@@ -4,6 +4,7 @@ import { access as accessAsync, readFile as readFileAsync } from 'node:fs/promis
 import { toss } from 'toss-expression';
 
 import { runNoRejectOnBadExit } from 'multiverse+run';
+import { asMockedFunction } from 'multiverse+test-utils';
 
 import { cache } from 'rootverse+project-utils:src/cache.ts';
 import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';

@@ -3,12 +3,6 @@ import { debugFactory } from 'multiverse+debug';
 import { runNoRejectOnBadExit } from 'multiverse+run';
 
 import {
-  exports as packageExports,
-  name as packageName,
-  version as packageVersion
-} from 'rootverse+project-utils:package.json';
-
-import {
   dummyDirectoriesFixture,
   dummyFilesFixture,
   dummyNpmPackageFixture,
@@ -17,7 +11,13 @@ import {
   npmLinkSelfFixture,
   reconfigureJestGlobalsToSkipTestsInThisFileIfRequested,
   type FixtureOptions
-} from 'testverse:setup.ts';
+} from 'multiverse+test-utils';
+
+import {
+  exports as packageExports,
+  name as packageName,
+  version as packageVersion
+} from 'rootverse+project-utils:package.json';
 
 import type { PackageJson } from 'type-fest';
 

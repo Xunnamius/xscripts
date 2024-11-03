@@ -82,6 +82,7 @@ const config = deepMergeConfig(moduleExport, {
 // ? Aliases come from tsconfig's paths now, but this is still needed for
 // ? analytical purposes.
 const wellKnownPackageAliases = [
+  ['multiverse+test-utils:*', './packages/test-utils/src/*'],
   ['multiverse+run:*', './packages/run/src/*'],
   ['multiverse+rejoinder:*', './packages/rejoinder/src/*'],
   ['multiverse+project-utils:*', './packages/project-utils/src/*'],
@@ -92,6 +93,7 @@ const wellKnownPackageAliases = [
     'multiverse+babel-plugin-metadata-accumulator:*',
     './packages/babel-plugin-metadata-accumulator/src/*'
   ],
+  ['multiverse+test-utils', './packages/test-utils/src/index.js'],
   ['multiverse+run', './packages/run/src/index.js'],
   ['multiverse+rejoinder', './packages/rejoinder/src/index.js'],
   ['multiverse+project-utils', './packages/project-utils/src/index.js'],
@@ -102,6 +104,7 @@ const wellKnownPackageAliases = [
     'multiverse+babel-plugin-metadata-accumulator',
     './packages/babel-plugin-metadata-accumulator/src/index.js'
   ],
+  ['rootverse+test-utils:*', './packages/test-utils/*'],
   ['rootverse+run:*', './packages/run/*'],
   ['rootverse+rejoinder:*', './packages/rejoinder/*'],
   ['rootverse+project-utils:*', './packages/project-utils/*'],
@@ -115,6 +118,7 @@ const wellKnownPackageAliases = [
   ['rootverse:*', './*'],
   ['universe:*', './src/*'],
   ['universe', './src/index.js'],
+  ['testverse+test-utils:*', './packages/test-utils/test/*'],
   ['testverse+run:*', './packages/run/test/*'],
   ['testverse+rejoinder:*', './packages/rejoinder/test/*'],
   ['testverse+project-utils:*', './packages/project-utils/test/*'],

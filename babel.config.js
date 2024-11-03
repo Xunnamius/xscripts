@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 'use strict';
 
+// TODO: replace with project-utils/fs versions
 const {
   dirname,
   join: joinPath,
@@ -68,6 +69,7 @@ const wellKnownAliases = {
   '^multiverse\\+project-utils:(.+)$': String.raw`./packages/project-utils/src/\1`,
   '^multiverse\\+rejoinder:(.+)$': String.raw`./packages/rejoinder/src/\1`,
   '^multiverse\\+run:(.+)$': String.raw`./packages/run/src/\1`,
+  '^multiverse\\+test-utils:(.+)$': String.raw`./packages/test-utils/src/\1`,
   '^multiverse\\+bfe$': './packages/bfe/src/index.ts',
   '^multiverse\\+babel-plugin-metadata-accumulator$':
     './packages/babel-plugin-metadata-accumulator/src/index.ts',
@@ -76,6 +78,7 @@ const wellKnownAliases = {
   '^multiverse\\+project-utils$': './packages/project-utils/src/index.ts',
   '^multiverse\\+rejoinder$': './packages/rejoinder/src/index.ts',
   '^multiverse\\+run$': './packages/run/src/index.ts',
+  '^multiverse\\+test-utils$': './packages/test-utils/src/index.ts',
   '^testverse:(.+)$': String.raw`./test/\1`,
   '^testverse\\+bfe:(.+)$': String.raw`./packages/bfe/test/\1`,
   '^testverse\\+babel-plugin-metadata-accumulator:(.+)$': String.raw`./packages/babel-plugin-metadata-accumulator/test/\1`,
@@ -84,6 +87,7 @@ const wellKnownAliases = {
   '^testverse\\+project-utils:(.+)$': String.raw`./packages/project-utils/test/\1`,
   '^testverse\\+rejoinder:(.+)$': String.raw`./packages/rejoinder/test/\1`,
   '^testverse\\+run:(.+)$': String.raw`./packages/run/test/\1`,
+  '^testverse\\+test-utils:(.+)$': String.raw`./packages/test-utils/test/\1`,
   '^typeverse:(.+)$': String.raw`./types/\1`,
   '^rootverse:(.+)$': String.raw`./\1`,
   '^rootverse\\+bfe:(.+)$': String.raw`./packages/bfe/\1`,
@@ -92,7 +96,8 @@ const wellKnownAliases = {
   '^rootverse\\+debug:(.+)$': String.raw`./packages/debug/\1`,
   '^rootverse\\+project-utils:(.+)$': String.raw`./packages/project-utils/\1`,
   '^rootverse\\+rejoinder:(.+)$': String.raw`./packages/rejoinder/\1`,
-  '^rootverse\\+run:(.+)$': String.raw`./packages/run/\1`
+  '^rootverse\\+run:(.+)$': String.raw`./packages/run/\1`,
+  '^rootverse\\+test-utils:(.+)$': String.raw`./packages/test-utils/\1`
 };
 
 // TODO: import from util/constant

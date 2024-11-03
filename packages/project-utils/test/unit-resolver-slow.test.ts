@@ -5,6 +5,8 @@ import assert from 'node:assert';
 import { TrialError } from 'named-app-errors';
 import { toss } from 'toss-expression';
 
+import { reconfigureJestGlobalsToSkipTestsInThisFileIfRequested } from 'multiverse+test-utils';
+
 import {
   flattenPackageJsonSubpathMap,
   resolveEntryPointsFromExportsTarget,
@@ -24,8 +26,6 @@ import {
   resolveTargetWithNodeJs,
   resolveTargetWithResolveExports
 } from 'rootverse+project-utils:test/helpers/dummy-pkg.ts';
-
-import { reconfigureJestGlobalsToSkipTestsInThisFileIfRequested } from 'testverse:setup.ts';
 
 import type { PackageJson } from 'type-fest';
 

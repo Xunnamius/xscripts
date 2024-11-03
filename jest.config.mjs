@@ -46,6 +46,7 @@ const config = {
     '^multiverse\\+project-utils:(.+)$': '<rootDir>/packages/project-utils/src/$1',
     '^multiverse\\+rejoinder:(.+)$': '<rootDir>/packages/rejoinder/src/$1',
     '^multiverse\\+run:(.+)$': '<rootDir>/packages/run/src/$1',
+    '^multiverse\\+test-utils:(.+)$': '<rootDir>/packages/test-utils/src/$1',
     '^multiverse\\+bfe$': '<rootDir>/packages/bfe/src/index.ts',
     '^multiverse\\+babel-plugin-metadata-accumulator$':
       '<rootDir>/packages/babel-plugin-metadata-accumulator/src/index.ts',
@@ -54,6 +55,7 @@ const config = {
     '^multiverse\\+project-utils$': '<rootDir>/packages/project-utils/src/index.ts',
     '^multiverse\\+rejoinder$': '<rootDir>/packages/rejoinder/src/index.ts',
     '^multiverse\\+run$': '<rootDir>/packages/run/src/index.ts',
+    '^multiverse\\+test-utils$': '<rootDir>/packages/test-utils/src/index.ts',
     '^testverse:(.+)$': '<rootDir>/test/$1',
     '^testverse\\+bfe:(.+)$': '<rootDir>/packages/bfe/test/$1',
     '^testverse\\+babel-plugin-metadata-accumulator:(.+)$':
@@ -63,6 +65,7 @@ const config = {
     '^testverse\\+project-utils:(.+)$': '<rootDir>/packages/project-utils/test/$1',
     '^testverse\\+rejoinder:(.+)$': '<rootDir>/packages/rejoinder/test/$1',
     '^testverse\\+run:(.+)$': '<rootDir>/packages/run/test/$1',
+    '^testverse\\+test-utils:(.+)$': '<rootDir>/packages/test-utils/test/$1',
     '^typeverse:(.+)$': '<rootDir>/types/$1',
     '^rootverse:(.+)$': '<rootDir>/$1',
     '^rootverse\\+bfe:(.+)$': '<rootDir>/packages/bfe/$1',
@@ -72,7 +75,8 @@ const config = {
     '^rootverse\\+debug:(.+)$': '<rootDir>/packages/debug/$1',
     '^rootverse\\+project-utils:(.+)$': '<rootDir>/packages/project-utils/$1',
     '^rootverse\\+rejoinder:(.+)$': '<rootDir>/packages/rejoinder/$1',
-    '^rootverse\\+run:(.+)$': '<rootDir>/packages/run/$1'
+    '^rootverse\\+run:(.+)$': '<rootDir>/packages/run/$1',
+    '^rootverse\\+test-utils:(.+)$': '<rootDir>/packages/test-utils/$1'
   },
   setupFilesAfterEnv: ['./test/setup.ts'],
   collectCoverageFrom: ['src/**/*.ts?(x)'],

@@ -1,6 +1,7 @@
 import { toss } from 'toss-expression';
 
 import { runNoRejectOnBadExit } from 'multiverse+run';
+import { asMockedFunction } from 'multiverse+test-utils';
 
 import { pathToPackage } from 'rootverse+project-utils:src/analyze/path-to-package.ts';
 import { cache } from 'rootverse+project-utils:src/cache.ts';
@@ -30,8 +31,6 @@ import {
   patchReadPackageJsonAtRoot,
   type FixtureName
 } from 'rootverse+project-utils:test/helpers/dummy-repo.ts';
-
-import { asMockedFunction } from 'testverse:setup.ts';
 
 jest.mock<typeof import('browserslist')>('browserslist', () => {
   return mockShouldReturnBrowserslistMock

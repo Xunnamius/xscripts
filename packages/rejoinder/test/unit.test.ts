@@ -18,7 +18,7 @@ import {
   type GenericListrTask
 } from 'multiverse+rejoinder';
 
-import { withMockedEnv, withMockedOutput } from 'testverse:setup.ts';
+import { withMockedEnv, withMockedOutput } from 'multiverse+test-utils';
 
 const namespace = 'namespace';
 
