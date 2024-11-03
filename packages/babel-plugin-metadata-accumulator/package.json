@@ -1,3 +1,4 @@
 {
-  "name": "@-xun/babel-plugin-metadata-accumulator"
+  "name": "@-xun/babel-plugin-metadata-accumulator",
+  "version": "1.0.0"
 }
