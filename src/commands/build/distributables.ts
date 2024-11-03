@@ -33,6 +33,7 @@ import {
   gatherPseudodecoratorsEntriesFromFiles,
   isRootPackage,
   isWorkspacePackage,
+  pathToPackage,
   ProjectAttribute,
   PseudodecoratorTag,
   WorkspaceAttribute,
@@ -40,6 +41,7 @@ import {
 } from 'multiverse+project-utils';
 
 import {
+  ensureRawSpecifierOk,
   generateRawAliasMap,
   isDotRelativePathRegExp,
   mapRawSpecifierToPath,
@@ -487,6 +489,11 @@ Finally, note that, when attempting to build a Next.js package, this command wil
             includeExternalsPatterns: includeExternalFiles,
             useCached: true
           });
+
+        // TODO: this needs to be split off into xscripts project lint along
+        // TODO: with the other half of the bijection checks below. For now,
+        // TODO: we'll keep them here in this command:
+        await lintAllTypescriptFilesForSpecifierOk();
 
         debug('initial build targets: %O', buildTargets);
         debug('build metadata: %O', buildMetadata);
@@ -1492,6 +1499,46 @@ distrib root: ${absoluteOutputDirPath}
           [LogTag.IF_NOT_QUIETED],
           '(build output consists of intermediate files NOT SUITABLE FOR DISTRIBUTION OR PRODUCTION!)'
         );
+      }
+
+      // TODO: move this into xscripts project lint
+      async function lintAllTypescriptFilesForSpecifierOk() {
+        const { cwdPackage } = projectMetadata;
+        const wellKnownAliases = generateRawAliasMap(projectMetadata);
+
+        const { test: testFiles, other: otherFiles } = await gatherPackageFiles(
+          cwdPackage,
+          { useCached: true }
+        );
+
+        const nonSourceTypescriptFiles = testFiles
+          .concat(otherFiles)
+          .filter((path) => hasTypescriptExtension(path));
+
+        // * From rawSpecifiersToExternalTargetPaths
+        const nonSourceTypescriptEntries = gatherImportEntriesFromFiles.sync(
+          nonSourceTypescriptFiles,
+          {
+            // ? Ensure specifierOk checks are also performed on type-only imports
+            excludeTypeImports: false,
+            useCached: true
+          }
+        );
+
+        for (const [path, specifiers] of nonSourceTypescriptEntries) {
+          const specifierPackage = pathToPackage(path, projectMetadata);
+
+          const specifierPackageId = isWorkspacePackage(specifierPackage)
+            ? specifierPackage.id
+            : undefined;
+
+          for (const specifier of specifiers.values()) {
+            ensureRawSpecifierOk(wellKnownAliases, specifier, {
+              packageId: specifierPackageId,
+              path
+            });
+          }
+        }
       }
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
