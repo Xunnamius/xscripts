@@ -1069,9 +1069,10 @@ export const [builder, withHandlerExtensions] = withBuilderExtensions(
 
 Easy peasy!
 
-For another example, consider a "build" command where we want to set
-`‑‑skip‑output‑checks` to `true` whenever
-`‑‑generate‑types=false`/`‑‑no‑generate‑types` is given:
+For another example, consider a "build" command where we want to ensure
+`‑‑skip‑output‑checks` is `true` whenever
+`‑‑generate‑types=false`/`‑‑no‑generate‑types` is given since the output checks
+are only meaningful if type definition files are available:
 
 ```javascript
 /**
@@ -1082,14 +1083,17 @@ export const [builder, withHandlerExtensions] = withBuilderExtensions({
     boolean: true,
     description: 'Output TypeScript declaration files alongside distributables',
     default: true,
-    conflicts: 'skip-output-checks',
     subOptionOf: {
       'generate-types': {
+        // ▼ If --generate-types=false...
         when: (generateTypes) => !generateTypes,
         update: (oldConfig) => {
           return {
             ...oldConfig,
+            // ▼ ... then --skip-output-checks must be true!
             implies: { 'skip-output-checks': true },
+            // ▼ Since "false" options cannot imply stuff (see "implies" docs)
+            // by default, we need to tell BFE that a false implication is okay
             vacuousImplications: true
           };
         }
@@ -1105,6 +1109,13 @@ export const [builder, withHandlerExtensions] = withBuilderExtensions({
 });
 ```
 
+This configuration allows the following arguments: no arguments (`∅`),
+`‑‑generate‑types=true`, `‑‑generate‑types=false`,
+`‑‑generate‑types=true ‑‑skip‑output‑checks=true`,
+`‑‑generate‑types=true ‑‑skip‑output‑checks=false`,
+`‑‑generate‑types=false ‑‑skip‑output‑checks=true`; and disallows:
+`‑‑generate‑types=false ‑‑skip‑output‑checks=false`.
+
 The same could be accomplished by making `‑‑skip‑output‑checks` a suboption of
 `‑‑generate-types` (essentially the reverse of the above):
 
@@ -1116,8 +1127,7 @@ export const [builder, withHandlerExtensions] = withBuilderExtensions({
   'generate-types': {
     boolean: true,
     description: 'Output TypeScript declaration files alongside distributables',
-    default: true,
-    conflicts: 'skip-output-checks'
+    default: true
   },
   'skip-output-checks': {
     alias: 'skip-output-check',
@@ -1130,17 +1140,35 @@ export const [builder, withHandlerExtensions] = withBuilderExtensions({
         update: (oldConfig) => {
           return {
             ...oldConfig,
-            default: true
-            // If generate-types didn't have { conflicts: 'skip-output-checks' }
-            // then we'd need to include a check here that prevents the user
-            // from overriding the "true" default we set above:
-            //check: ...
+            default: true,
+            // ▼ Similar to using "choices" to limit string-accepting options,
+            // we use one of these kinda wacky-looking self-referential
+            // "implies" to assert --skip-output-checks must be true!
+            implies: { 'skip-output-checks': true },
+            vacuousImplications: true
           };
         }
       }
     }
   }
 });
+```
+
+Though, note that the second example, when the user supplies the disallowed
+arguments `‑‑generate‑types=false ‑‑skip‑output‑checks=false`, they are
+presented with an error message like:
+
+```text
+The following arguments as given conflict with the implications of "skip-output-checks":
+   ➜ skip-output-checks == false
+```
+
+Whereas the first example presents the following error message, which makes more
+sense (because it mentions `‑‑generate‑types`):
+
+```text
+The following arguments as given conflict with the implications of "generate-types":
+   ➜ skip-output-checks == false
 ```
 
 #### Support for `default` with `conflicts`/`requires`/etc
