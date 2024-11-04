@@ -141,6 +141,7 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
         }
 
         if (!parallel) {
+          debug('running task synchronously...');
           await Promise.all(tasks);
         }
 
@@ -187,6 +188,7 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
           });
 
           if (parallel) {
+            debug('running tasks in parallel...');
             await Promise.all(
               subTasks.map(async (task) => {
                 try {
