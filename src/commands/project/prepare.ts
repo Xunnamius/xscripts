@@ -90,7 +90,7 @@ The following file names, when present at a package root, are recognized as post
 
 Each package in a project (including the root package) can contain at most one post-npm-install script. Further note that post-npm-install scripts MUST BE IDEMPOTENT, as they _will_ be invoked multiple times over the lifetime of long-lived projects.
 
-Typically, this command should not not executed manually but by your package manager automatically at "install time," i.e. when running \`npm install\` locally. With respect to NPM, this command should be run whenever NPM would run its "prepare" life cycle operation. See https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-operation-order for details.
+Typically, this command should not be executed manually but by your package manager automatically at "install time," i.e. when running \`npm install\` locally. With respect to NPM, this command should be run whenever NPM would run its "prepare" life cycle operation. See https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-operation-order for details.
 
 This command exits immediately (becomes a no-op) when the CI environment variable is defined or when the NODE_ENV environment variable is either undefined or equal to "development". Provide --force to force this command to perform project initialization without regard for any environment variables.
 
