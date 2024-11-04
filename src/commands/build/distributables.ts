@@ -202,17 +202,14 @@ export default async function command({
           choices: intermediateTranspilationEnvironment,
           description: 'Transpile into non-production-ready non-distributables',
           conflicts: [
-            'generate-types',
-            'link-cli-into-bin',
-            'prepend-shebang',
-            'skip-output-checks',
             'skip-output-validity-checks-for',
             'skip-output-extraneity-checks-for'
           ],
           implies: {
             'generate-types': false,
             'link-cli-into-bin': false,
-            'prepend-shebang': false
+            'prepend-shebang': false,
+            'skip-output-checks': true
           }
         },
         'generate-types': {
@@ -220,12 +217,21 @@ export default async function command({
           description: 'Output TypeScript declaration files alongside distributables',
           default: true,
           conflicts: [
-            'skip-output-checks',
             'skip-output-validity-checks-for',
             'skip-output-extraneity-checks-for'
           ],
-          implies: { 'skip-output-checks': true },
-          vacuousImplications: true
+          subOptionOf: {
+            'generate-types': {
+              when: (generateTypes) => !generateTypes,
+              update: (oldConfig) => {
+                return {
+                  ...oldConfig,
+                  implies: { 'skip-output-checks': true },
+                  vacuousImplications: true
+                };
+              }
+            }
+          }
         },
         'include-external-files': {
           alias: 'include-external-file',
@@ -275,8 +281,7 @@ export default async function command({
           description:
             'Do not warn when a matching package/dependency fails a build output validity check',
           default: [],
-          conflicts: ['generate-types'],
-          implies: { 'skip-output-checks': false },
+          implies: { 'skip-output-checks': false, 'generate-types': true },
           coerce(argument: string[]) {
             return argument.map((a) => {
               return a.startsWith('^') || a.endsWith('$') ? new RegExp(a) : a;
@@ -290,8 +295,7 @@ export default async function command({
           description:
             'Do not warn when a matching package/dependency fails a build output extraneity check',
           default: [],
-          conflicts: ['generate-types'],
-          implies: { 'skip-output-checks': false },
+          implies: { 'skip-output-checks': false, 'generate-types': true },
           coerce(argument: string[]) {
             return argument.map((a) => {
               return a.startsWith('^') || a.endsWith('$') ? new RegExp(a) : a;
@@ -507,7 +511,7 @@ Finally, note that, when attempting to build a Next.js package, this command wil
             skipGitIgnored: false,
             // ! ./dist isn't cleared yet, so the value cached by this call to
             // ! gatherPackageFiles is dirty! This is why we don't use cache
-            // ! later on.
+            // ! when we call this function later on.
             useCached: true
           });
 
