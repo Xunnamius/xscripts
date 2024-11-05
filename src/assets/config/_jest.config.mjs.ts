@@ -21,7 +21,7 @@ export type Context = EmptyObject;
 
 export const baseConfig: Config = {
   // TODO: finish copying over jest.config.mjs
-  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/src/']
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', '/src/', '/.transpiled/']
 };
 
 export function moduleExport() {
