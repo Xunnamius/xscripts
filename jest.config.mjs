@@ -82,7 +82,8 @@ const config = {
   collectCoverageFrom: ['src/**/*.ts?(x)'],
   // ? Tell Jest to transpile node_modules (for ESM interop)
   //transformIgnorePatterns: [],
-  // ? Make sure jest-haste-map doesn't try to parse and cache fixtures
+  // ? Make sure jest-haste-map doesn't try to parse and cache fixtures (which
+  // ? also means snapshot files from these dirs are ignored as well)
   modulePathIgnorePatterns: ['/test/fixtures/', '/.transpiled/']
 };
 
