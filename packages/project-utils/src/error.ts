@@ -64,10 +64,7 @@ export function isNotAGitRepositoryError(
   parameter: unknown
 ): parameter is NotAGitRepositoryError {
   return (
-    isNativeError(parameter) &&
-    $type in parameter &&
-    Array.isArray(parameter[$type]) &&
-    parameter[$type].includes($type_NotAGitRepositoryError)
+    isProjectError(parameter) && parameter[$type].includes($type_NotAGitRepositoryError)
   );
 }
 
@@ -78,9 +75,7 @@ export function isPackageJsonNotParsableError(
   parameter: unknown
 ): parameter is PackageJsonNotParsableError {
   return (
-    isNativeError(parameter) &&
-    $type in parameter &&
-    Array.isArray(parameter[$type]) &&
+    isProjectError(parameter) &&
     parameter[$type].includes($type_PackageJsonNotParsableError)
   );
 }
@@ -92,9 +87,7 @@ export function isDuplicatePackageNameError(
   parameter: unknown
 ): parameter is DuplicatePackageNameError {
   return (
-    isNativeError(parameter) &&
-    $type in parameter &&
-    Array.isArray(parameter[$type]) &&
+    isProjectError(parameter) &&
     parameter[$type].includes($type_DuplicatePackageNameError)
   );
 }
@@ -106,10 +99,7 @@ export function isDuplicatePackageIdError(
   parameter: unknown
 ): parameter is DuplicatePackageIdError {
   return (
-    isNativeError(parameter) &&
-    $type in parameter &&
-    Array.isArray(parameter[$type]) &&
-    parameter[$type].includes($type_DuplicatePackageIdError)
+    isProjectError(parameter) && parameter[$type].includes($type_DuplicatePackageIdError)
   );
 }
 
