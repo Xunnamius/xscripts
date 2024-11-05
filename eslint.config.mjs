@@ -552,7 +552,9 @@ const config = makeTsEslintConfig(
       '**/coverage/**/*',
       '**/dist/**/*',
       '**/bin/**/*',
+      // TODO: delete this after we rename build => dist for Next.js projects
       '**/build/**/*',
+      '**/.transpiled/**/*',
       '!**/src/**/*',
       '**/dummy-repo/**/*',
       // TODO: specific to this project; delete this comment after generalization
