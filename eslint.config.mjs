@@ -542,7 +542,7 @@ const cwdTsconfigFile = isAccessible.sync(projectLintUnlimitedPath, { useCached:
       : isAccessible.sync(Tsconfig.PackageLintSource, { useCached: true })
         ? Tsconfig.PackageLintSource
         : // TODO: make this a ProjectError; use ErrorMessage.X
-          toss(new Error('unable to locate suitable tsconfig file (see --help text)'));
+          toss(new Error('unable to locate suitable tsconfig file'));
 
 const config = makeTsEslintConfig(
   // * Global ignores applying to all files (any extension)
