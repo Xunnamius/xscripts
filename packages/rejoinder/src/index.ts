@@ -35,7 +35,7 @@ import type { Entry } from 'type-fest';
  * https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124?permalink_comment_id=4481079#gistcomment-4481079
  */
 export const ansiRedColorCodes = [1, 9, 52, 88, 124, 160, 196];
-export const ansiOrangeColorCodes = [3, 94, 136, 178, 214, 220];
+export const ansiOrangeColorCodes = [3, 11, 94, 136, 178, 214, 220];
 
 export { debugFactory as extendedDebugFactory, type ExtendedDebugger };
 
