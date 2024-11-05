@@ -27,6 +27,8 @@ import { isAccessible } from 'multiverse+project-utils:fs/is-accessible.ts';
 import { toAbsolutePath, toPath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
+import { version as packageVersion } from 'rootverse:package.json';
+
 import {
   globalCliName,
   globalDebuggerNamespace,
@@ -184,7 +186,7 @@ export const configureExecutionContext = async function (context) {
       standardContext.state.globalVersionOption = {
         name: 'version',
         description: defaultVersionTextDescription,
-        text: String(projectMetadata.rootPackage.json.version) + developmentTag
+        text: String(packageVersion) + developmentTag
       };
     } else {
       rootDebugLogger('xscriptsBinFileLink was not accessible');
