@@ -617,7 +617,6 @@ distrib root: ${absoluteOutputDirPath}
           if (generateTypes) {
             genericLogger.newline([LogTag.IF_NOT_QUIETED]);
             genericLogger([LogTag.IF_NOT_QUIETED], '⮞ Generating types');
-            genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
             debug('running tsc');
             await run(
@@ -1520,7 +1519,10 @@ distrib root: ${absoluteOutputDirPath}
           }
         }
 
-        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+        if (!skipOutputChecks_) {
+          genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+        }
+
         genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
       } catch (error) {
         if (isBuildOutputCheckError(error)) {
