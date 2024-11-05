@@ -55,8 +55,8 @@
     "lint": "npm run lint:package:source --",
     "lint:package:all": "NODE_NO_WARNINGS=1 xscripts lint",
     "lint:package:source": "NODE_NO_WARNINGS=1 xscripts lint --scope this-package-source",
-    "lint:packages:all": "cd ../.. && npm run lint:packages:all --",
-    "lint:project": "cd ../.. && npm run lint:project --",
+    "lint:packages:all": "NODE_NO_WARNINGS=1 xscripts lint --scope unlimited",
+    "lint:project": "NODE_NO_WARNINGS=1 xscripts project lint",
     "list-tasks": "NODE_NO_WARNINGS=1 xscripts list-tasks",
     "release": "NODE_NO_WARNINGS=1 xscripts release",
     "renovate": "NODE_NO_WARNINGS=1 xscripts project renovate",
@@ -66,7 +66,7 @@
     "test:package:e2e": "NODE_NO_WARNINGS=1 xscripts test --type end-to-end",
     "test:package:integration": "NODE_NO_WARNINGS=1 xscripts test --type integration",
     "test:package:unit": "NODE_NO_WARNINGS=1 xscripts test --type unit",
-    "test:packages:all": "cd ../.. && npm run test:packages:all --"
+    "test:packages:all": "NODE_NO_WARNINGS=1 xscripts test --scope unlimited"
   },
   "dependencies": {
     "core-js": "^3.39.0",
