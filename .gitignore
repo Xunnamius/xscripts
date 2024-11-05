@@ -17,6 +17,9 @@ ignore.*
 # Ignore transpiled source in any subdir (used for advanced debugging)
 .transpiled
 
+# Ignore packaged files that probably shouldn't be committed
+*.tgz
+
 # Ignore relevant build artifacts in any subdir (with exceptions)
 *.tsbuildinfo
 # ? Preceding asterisks "**/" are needed to match any build subdir in monorepos
@@ -29,6 +32,12 @@ ignore.*
 !**/docs/**/build/**
 dist
 coverage
+lib-cov
+.nyc_output
+.grunt
+bower_components
+.lock-wscript
+build/Release
 .vercel
 .next
 next-env.d.ts
@@ -37,14 +46,61 @@ next-env.d.ts
 # ? Note that this complex path is relative to this file
 /.wiki
 
-# Ignore local configuration
+# Ignore local vscode configuration
 # ? Note that this complex path is relative to this file
 /.vscode/**
 # ? Note that this complex path is relative to this file
 !/.vscode/*.example.json
 
-# Ignore relevant NPM artifacts in any subdir
+# Ignore relevant NPM and JSPM artifacts in any subdir
+.npm
 node_modules
+jspm_packages
+
+# Ignore logs in any subdir
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Ignore random nothingness in any subdir
-.DS_Store
+.eslintcache
+.node_repl_history
+.yarn-integrity
+*.DS_Store
+.AppleDouble
+.LSOverride
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+pids
+*.pid
+*.seed
+*.pid.lock
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+_book
+CertificateAuthorityCertificate.pem
