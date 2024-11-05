@@ -26,8 +26,11 @@ export const releaseScopes = Object.values(ReleaseScope);
 
 export type CustomCliArguments = GlobalCliArguments<ReleaseScope> & {
   ci: boolean;
+  dryRun: boolean;
+  force: boolean;
   rebuildChangelog: boolean;
   skipPrereleaseTasks: boolean;
+  skipMissingTasks: boolean;
   synchronizeInterdependencies: boolean;
 };
 
@@ -69,6 +72,11 @@ export default function command({
       default: !!process.env.TURBO_HASH,
       defaultDescription: 'true if run using Turbo, false otherwise'
     },
+    'skip-missing-tasks': {
+      boolean: true,
+      description: 'Skip any tasks with missing NPM scripts instead of throwing an error',
+      default: false
+    },
     'synchronize-interdependencies': {
       boolean: true,
       description:
@@ -86,13 +94,13 @@ $1 according to the release procedure described in the MAINTAINING.md file and a
 
 1. Validate environment variables
 2. [prerelease task] Run npm ci
-3. [prerelease task] [npm run lint:package:source] xscripts lint --scope=this-package-source
+3. [prerelease task] [npm run lint] xscripts lint --scope=this-package-source
 4. [prerelease task] [npm run build] xscripts build distributables
 5. [prerelease task] [npm run format] xscripts format
 6. [prerelease task] [npm run build:docs] xscripts build documentation
-7. [prerelease task] [npm run test:package:all] xscripts test --coverage
+7. [prerelease task] [npm run test] xscripts test --coverage
 8. xscripts project renovate --synchronize-interdependencies (affects this package only)
-9. Run semantic-release
+9. Run semantic-release and regenerate CHANGELOG.md
 10. Upload coverage results to Codecov
 
 Provide --ci (--continuous-integration) to enable useful functionality for CI execution environments. Specifically: run task #2, run semantic-release in CI mode, and facilitate package provenance if the runtime environment supports it. If running the release procedure by hand instead of via CI/CD, use --no-ci to disable CI-specific functionality. --no-ci (\`--ci=false\`) is the default when the NODE_ENV environment variable is undefined or "development," otherwise --ci (\`--ci=true\`) is the default.
@@ -100,6 +108,8 @@ Provide --ci (--continuous-integration) to enable useful functionality for CI ex
 Provide --rebuild-changelog to set the XSCRIPTS_RELEASE_UPDATE_CHANGELOG environment variable in the current execution environment. This will be picked up by semantic-release, causing it to rebuild the changelog using \`xscripts build changelog\`. Provide --no-rebuild-changelog to prevent this behavior.
 
 Running \`xscripts release\` will usually execute the tasks listed above. Provide --skip-prerelease-tasks to skip running tasks #2-7, also known as the "prerelease tasks". This is useful for task scheduling tools like Turbo that decide out-of-band if/when/how to run specific prerelease tasks; such a tool only calls \`xscripts release\` when it's ready to trigger semantic-release. Therefore, \`--skip-prerelease-tasks=true\` becomes the default when Turbo is detected in the runtime environment (by checking for the existence of \`process.env.TURBO_HASH\`).
+
+If the package's package.json file is missing the NPM script associated with a task, this command will exit with an error unless \`--skip-missing-tasks\` is provided, in which case any missing scripts (except "release", which must be defined) are noted in a warning but otherwise ignored.
 
 The only available scope is "${ReleaseScope.ThisPackage}"; hence, when invoking this command, only the package at the current working directory will be eligible for release. Use Npm's workspace features, or Turbo's, if your goal is to potentially release multiple packages.
 
@@ -117,8 +127,11 @@ Note: this command will refuse to release a package version below 1.0.0. This is
       $0: scriptFullName,
       scope,
       ci,
+      dryRun,
+      force,
       rebuildChangelog,
       skipPrereleaseTasks,
+      skipMissingTasks,
       synchronizeInterdependencies
     }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
@@ -134,21 +147,14 @@ Note: this command will refuse to release a package version below 1.0.0. This is
 
       debug('scope (unused): %O', scope);
       debug('ci: %O', ci);
+      debug('dryRun: %O', dryRun);
+      debug('force: %O', force);
       debug('rebuildChangelog: %O', rebuildChangelog);
       debug('skipPrereleaseTasks: %O', skipPrereleaseTasks);
+      debug('skipMissingTasks: %O', skipMissingTasks);
       debug('synchronizeInterdependencies: %O', synchronizeInterdependencies);
 
-      // TODO: becomes part of xscripts build distributables (and project lint)
-      // TODO: sanity check built files types are correct using attw
-
-      // TODO: becomes part of xscripts build distributables (and project lint)
-      // TODO: sanity check built files to ensure all require() paths are valid
-
-      // TODO: becomes part of xscripts build distributables (and project lint)
-      // TODO: sanity check exports to ensure all entry points are valid
-
-      // TODO: becomes part of xscripts build distributables (and project lint)
-      // TODO: sanity check all node_modules imports are included among package.json dependencies and no extraneous dependencies (dev or devDep) are included (only issue warning if this last check fails)
+      // TODO: only use basic npm scripts and not nested (":") scripts
 
       // TODO: ensure simultaneous releases are supported (backoff if locked)
 
