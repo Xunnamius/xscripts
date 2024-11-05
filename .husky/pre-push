@@ -16,7 +16,7 @@ if echo "$log" | grep -q -i -e 'mergeme' -e '\[WIP\]' -e '\[NOPUSH\]'; then
   echo 'husky-hook::pre-push: BAD COMMIT(S) DETECTED!'
   echo 'husky-hook::pre-push: merge, delete, reword, or otherwise rectify the following commits before trying again:'
   echo
-  echo "$log"
+  echo "$log" | grep -i -e 'mergeme' -e '\[WIP\]' -e '\[NOPUSH\]'
   echo
   exit 2;
 else
