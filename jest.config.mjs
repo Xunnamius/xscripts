@@ -83,7 +83,7 @@ const config = {
   // ? Tell Jest to transpile node_modules (for ESM interop)
   //transformIgnorePatterns: [],
   // ? Make sure jest-haste-map doesn't try to parse and cache fixtures
-  modulePathIgnorePatterns: ['/test/fixtures/']
+  modulePathIgnorePatterns: ['/test/fixtures/', '/.transpiled/']
 };
 
 if (Number(process.env.XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS) >= 2) {
