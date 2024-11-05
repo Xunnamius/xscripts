@@ -774,14 +774,14 @@ export function withBuilderExtensions<
                     typeof update === 'function' ? update(subOptionConfig, argv) : update;
 
                   debug(
-                    'accepted configuration update #%O to suboption "%O": %O',
+                    'accepted configuration update #%o to suboption %O: %O',
                     index + 1,
                     subOption,
                     subOptionConfig
                   );
                 } else {
                   debug(
-                    'rejected configuration update #%O to suboption "%O": when() returned falsy',
+                    'rejected configuration update #%o to suboption %O: when() returned falsy',
                     index + 1,
                     subOption
                   );
