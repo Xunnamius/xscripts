@@ -1,3 +1,5 @@
+import { makeNamedError } from 'named-app-errors';
+
 import { ErrorMessage as UpstreamErrorMessage } from 'multiverse+cli-utils:error.ts';
 
 import type {
@@ -6,7 +8,51 @@ import type {
   RootPackage
 } from 'multiverse+project-utils';
 
+import {
+  $type,
+  $type_ProjectError,
+  isProjectError,
+  ProjectError
+} from 'multiverse+project-utils:error.ts';
+
 export { TaskError } from 'multiverse+cli-utils:error.ts';
+
+// TODO: replace a lot of all that follows with the official package(s),
+// TODO: including the symbol use below. Symbols and stuff need to be auto-generated.
+
+export const $type_BuildOutputCheckError = Symbol.for('object-type-hint:ProjectError');
+/**
+ * Type guard for {@link ProjectError}.
+ */
+// TODO: make-named-error should create and return this function automatically
+export function isBuildOutputCheckError(
+  parameter: unknown
+): parameter is BuildOutputCheckError {
+  return (
+    isProjectError(parameter) && parameter[$type].includes($type_BuildOutputCheckError)
+  );
+}
+
+/**
+ * Represents encountering a project that is not a git repository.
+ */
+export class BuildOutputCheckError extends ProjectError {
+  // TODO: this prop should be added by makeNamedError or whatever other fn
+  [$type] = [$type_BuildOutputCheckError, $type_ProjectError];
+  /**
+   * Represents encountering a project that is not a git repository.
+   */
+  constructor();
+  /**
+   * This constructor syntax is used by subclasses when calling this constructor
+   * via `super`.
+   */
+  constructor(message: string);
+  constructor(message: string | undefined = undefined) {
+    super(message ?? ErrorMessage.BuildOutputChecksFailed());
+  }
+}
+makeNamedError(BuildOutputCheckError, 'BuildOutputCheckError');
 
 /**
  * A collection of possible error and warning messages.
@@ -97,7 +143,7 @@ export const ErrorMessage = {
     return 'one or more linters returned a bad exit code';
   },
   BuildOutputChecksFailed() {
-    return 'the build succeeded and is available, but one or more build output integrity checks failed';
+    return 'one or more build output integrity checks failed';
   },
   RetrievalFailed(path: string) {
     return `failed to retrieve asset at ${path}`;
@@ -120,69 +166,83 @@ export const ErrorMessage = {
   TranspilationReturnedNothing(sourcePath: string, outputPath: string) {
     return `transpilation of the following file returned an empty result: ${sourcePath} => ${outputPath}`;
   },
-  ExportSubpathsPointsToInaccessible(subpaths: [subpath: string, target: string][]) {
-    return (
-      'bad package.json::exports configuration: one or more entry points targets inaccessible or non-existent files:' +
-      subpaths.reduce(
-        (result, [subpath, target]) => result + `\n  - ${subpath} =!=> ${target}`,
-        ''
-      )
-    );
-  },
-  DistributablesSpecifiersPointToInaccessible(specifiers: ImportSpecifier[]) {
-    return (
-      'bad distributables specifiers: invalid import of inaccessible or non-existent files:' +
-      specifiers.reduce(
-        (result, [filepath, specifier]) =>
-          result + `\n  - "${specifier}" found in file ${filepath}`,
-        ''
-      )
-    );
-  },
-  DistributablesSpecifiersPointOutsideDist(specifiers: ImportSpecifier[]) {
-    return (
-      'bad distributables specifiers: invalid import of files located outside distributables directory:' +
-      specifiers.reduce(
-        (result, [filepath, specifier]) =>
-          result + `\n  - "${specifier}" found in file ${filepath}`,
-        ''
-      )
-    );
-  },
-  DistributablesSpecifiersDependenciesMissing(
-    packageSpecifiers: [...ImportSpecifier, packageName: string][]
-  ) {
-    return (
-      'bad distributables specifiers: one or more packages were imported without a corresponding "dependencies" or "peerDependencies" entry in package.json:' +
-      packageSpecifiers.reduce(
-        (result, [filepath, specifier, packageName]) =>
-          result +
-          `\n  - package "${packageName}" from "${specifier}" found in file ${filepath}`,
-        ''
-      )
-    );
-  },
-  DependenciesExtraneous(packagesMeta: [name: string, type: string][]) {
-    return (
-      'extraneous dependencies detected: the following packages are included in package.json unnecessarily and should be removed to reduce build size:' +
-      packagesMeta.reduce(
-        (result, [packageName, packageType]) =>
-          result + `\n  - package "${packageName}" in package.json::${packageType}`,
-        ''
-      )
-    );
-  },
-  OthersSpecifiersDependenciesMissing(
-    packageSpecifiers: [...ImportSpecifier, packageName: string][]
-  ) {
-    return (
-      'bad non-distributables specifiers: one or more packages were imported without a corresponding "devDependencies" entry in package.json:' +
-      packageSpecifiers.reduce(
-        (result, [filepath, specifier, packageName]) =>
-          result +
-          `\n  - package "${packageName}" from "${specifier}" found in file ${filepath}`,
-        ''
-      )
-    );
+  /**
+   * These are "error" messages that are not necessarily meant to be the message
+   * of an {@link Error} instance, but are reported to the user in other ways
+   * (such as via `rejoinder`). They may not follow the same standard
+   * punctuation and capitalization rules as the other error messages.
+   */
+  specialized: {
+    BuildOutputIntermediates() {
+      return '⚠️🚧 Build output consists of intermediate files NOT SUITABLE FOR DISTRIBUTION OR PRODUCTION!';
+    },
+    BuildOutputChecksFailed() {
+      return '⚠️🚧 The build succeeded and is available, but one or more build output integrity checks failed';
+    },
+    ExportSubpathsPointsToInaccessible(subpaths: [subpath: string, target: string][]) {
+      return (
+        'Bad package.json::exports configuration: one or more entry points targets inaccessible or non-existent files:' +
+        subpaths.reduce(
+          (result, [subpath, target]) => result + `\n  - ${subpath} =!=> ${target}`,
+          ''
+        )
+      );
+    },
+    DistributablesSpecifiersPointToInaccessible(specifiers: ImportSpecifier[]) {
+      return (
+        'Bad distributables specifiers: invalid import of inaccessible or non-existent files:' +
+        specifiers.reduce(
+          (result, [filepath, specifier]) =>
+            result + `\n  - "${specifier}" found in file ${filepath}`,
+          ''
+        )
+      );
+    },
+    DistributablesSpecifiersPointOutsideDist(specifiers: ImportSpecifier[]) {
+      return (
+        'Bad distributables specifiers: invalid import of files located outside distributables directory:' +
+        specifiers.reduce(
+          (result, [filepath, specifier]) =>
+            result + `\n  - "${specifier}" found in file ${filepath}`,
+          ''
+        )
+      );
+    },
+    DistributablesSpecifiersDependenciesMissing(
+      packageSpecifiers: [...ImportSpecifier, packageName: string][]
+    ) {
+      return (
+        'Bad distributables specifiers: one or more packages were imported without a corresponding "dependencies" or "peerDependencies" entry in package.json:' +
+        packageSpecifiers.reduce(
+          (result, [filepath, specifier, packageName]) =>
+            result +
+            `\n  - package "${packageName}" from "${specifier}" found in file ${filepath}`,
+          ''
+        )
+      );
+    },
+    DependenciesExtraneous(packagesMeta: [name: string, type: string][]) {
+      return (
+        'Extraneous dependencies detected: the following packages are included in package.json unnecessarily and should be removed to reduce build size:' +
+        packagesMeta.reduce(
+          (result, [packageName, packageType]) =>
+            result + `\n  - package "${packageName}" in package.json::${packageType}`,
+          ''
+        )
+      );
+    },
+    OthersSpecifiersDependenciesMissing(
+      packageSpecifiers: [...ImportSpecifier, packageName: string][]
+    ) {
+      return (
+        'Bad non-distributables specifiers: one or more packages were imported without a corresponding "devDependencies" entry in package.json:' +
+        packageSpecifiers.reduce(
+          (result, [filepath, specifier, packageName]) =>
+            result +
+            `\n  - package "${packageName}" from "${specifier}" found in file ${filepath}`,
+          ''
+        )
+      );
+    }
   }
 };
