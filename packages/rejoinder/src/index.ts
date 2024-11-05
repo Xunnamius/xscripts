@@ -35,6 +35,7 @@ import type { Entry } from 'type-fest';
  * https://gist.github.com/JBlond/2fea43a3049b38287e5e9cefc87b2124?permalink_comment_id=4481079#gistcomment-4481079
  */
 export const ansiRedColorCodes = [1, 9, 52, 88, 124, 160, 196];
+export const ansiOrangeColorCodes = [3, 94, 136, 178, 214, 220];
 
 export { debugFactory as extendedDebugFactory, type ExtendedDebugger };
 
@@ -542,8 +543,12 @@ function makeExtendedLogger(
       // ? Ensure "error" outputs are always red (color = 1 === red).
       // @ts-expect-error: external types are incongruent
       instance.color = 1;
+    } else if (key === 'warn') {
+      // ? Ensure "error" outputs are always yellow (color = 3 === dark yellow).
+      // @ts-expect-error: external types are incongruent
+      instance.color = 3;
     } else {
-      ensureInstanceHasNonRedColor(instance);
+      ensureInstanceHasNonReservedColor(instance);
     }
 
     // ? Ensure our sub-loggers are using the correct underlying logging
@@ -568,7 +573,7 @@ function makeExtendedLogger(
   // ? Ensure our extendedLogger is enabled (generates output) by default.
   extendedLogger.enabled = true;
 
-  ensureInstanceHasNonRedColor(extendedLogger);
+  ensureInstanceHasNonReservedColor(extendedLogger);
 
   return extendedLogger;
 
@@ -576,18 +581,18 @@ function makeExtendedLogger(
     Omit<(typeof extendedDebugger)[typeof $instances], '$log'>
   >;
 
-  function ensureInstanceHasNonRedColor(
+  function ensureInstanceHasNonReservedColor(
     instance: ExtendedLogger | UnextendableInternalDebugger
   ) {
     if (ansiRedColorCodes.includes(instance.color as unknown as number)) {
-      // ? Ensure only "error" outputs can be red
+      // ? Ensure only "error"/"warn" outputs can be red/orange respectively
 
       const hiddenInternals = debugFactory as typeof debugFactory & { colors: number[] };
       assert(Array.isArray(hiddenInternals.colors));
 
       const oldAvailableColors = hiddenInternals.colors;
       hiddenInternals.colors = oldAvailableColors.filter(
-        (c) => !ansiRedColorCodes.includes(c)
+        (c) => !ansiRedColorCodes.includes(c) && !ansiOrangeColorCodes.includes(c)
       );
 
       try {
