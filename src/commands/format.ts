@@ -476,7 +476,7 @@ With respect to .prettierignore being the single source of truth for formatters:
         }
 
         if (shouldDoPrettier) {
-          const prettierTargetFiles = targetOtherFiles.length
+          const prettierTargetFiles = files_?.length
             ? targetOtherFiles
             : [
                 // ? cwd === projectRoot (with respect to '.')
