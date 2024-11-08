@@ -23,7 +23,7 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import {
   defaultChangelogTopmatter,
   type ConventionalChangelogCliConfig
-} from 'universe:assets/config/_conventional.config.js.ts';
+} from 'universe:assets/config/_conventional.config.cjs.ts';
 
 import {
   default as format,
@@ -59,7 +59,7 @@ const wellKnownChangelogPatcherFilenames = [
   'changelog.patch.js'
 ];
 
-const wellKnownConventionalConfigFilename = 'conventional.config.js';
+const wellKnownConventionalConfigFilename = 'conventional.config.cjs';
 
 /**
  * Determines the output format of the changelog file.

@@ -30,7 +30,7 @@ const config = {
   // ! `--with-alias` parameter.
   // * These aliases appear in:
   // *   - tsconfig.json      (JSON)
-  // *   - babel.config.js    (CJS)
+  // *   - babel.config.cjs   (CJS)
   // *   - eslint.config.mjs  (ESM)
   // *   - jest.config.mjs    (ESM)
   // *   - next.config.mjs    (ESM)

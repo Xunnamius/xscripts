@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 
-import { hasTypescriptExtension } from '@-xun/scripts/assets/config/babel.config.js';
+import { hasTypescriptExtension } from '@-xun/scripts/assets/config/babel.config.cjs';
 import { glob as globAsync, sync as globSync } from 'glob';
 
 import {

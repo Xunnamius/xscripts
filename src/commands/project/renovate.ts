@@ -71,7 +71,7 @@ export default function command({
       // TODO: dependency, that is evident (drop down) and all can be updated
       // TODO: simultaneously.
       // TODO:
-      // TODO:   1. Manually select deps (dep, dev dep, etc; never include peer deps) to attempt to update (takes into account .ncurc.js and unselects any matching deps)
+      // TODO:   1. Manually select deps (dep, dev dep, etc; never include peer deps) to attempt to update (takes into account .ncurc.cjs and unselects any matching deps)
       // TODO:   2. For all deps: update package.json for that single package via npm install (with --force if --dependency-updates-forced=true), run tests (--dependency-update-test unit-only (default) or unit-and-integration), if all is successful (including "npm install" itself) add dep to success list otherwise add to fail list
       // TODO:   3. Afterwards, present user with options: #1 update package.json with working updates but don't install anything, #2 update package.json AND install working updates (each individual update to package.json and package-lock.json after each call to npm install is committed as chore/dev-deps and build/other-deps) and re-output the names of the failing ones at the end, don't do anything (repo left at its initial state), #3 manually select which deps to update (same as the end selections made in #1 but with failing deps unselected and clearly labeled as failing) and then choose between installing them (same as option #2) or not installing anything (same as option #1) (perhaps the installation choice goes at the top before the xo-like list of packages)
       //

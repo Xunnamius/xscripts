@@ -1,4 +1,4 @@
-import { wellKnownCommitTypes } from 'universe:assets/config/_conventional.config.js.ts';
+import { wellKnownCommitTypes } from 'universe:assets/config/_conventional.config.cjs.ts';
 
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
 

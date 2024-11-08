@@ -8,9 +8,9 @@ const path = require('node:path');
 const debug = require('debug')('xscripts:semantic-release-config');
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/config/release.config.js');
+const { moduleExport } = require('@-xun/scripts/assets/config/release.config.cjs');
 
-const { parserOpts, writerOpts } = require('./conventional.config.js');
+const { parserOpts, writerOpts } = require('./conventional.config.cjs');
 
 const releaseSectionPath = path.join(
   os.tmpdir(),

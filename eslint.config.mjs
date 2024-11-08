@@ -22,7 +22,7 @@ import {
 import {
   extensionsJavascript,
   extensionsTypescript
-} from '@-xun/scripts/assets/config/babel.config.js';
+} from '@-xun/scripts/assets/config/babel.config.cjs';
 
 import { overwriteProperty } from '@-xun/scripts/assets/config/eslint.config.mjs';
 
@@ -70,7 +70,7 @@ const config = deepMergeConfig(moduleExport, {
 // ! you can include custom aliases using the `--with-alias` parameter.
 // * These aliases appear in:
 // *   - tsconfig.json      (JSON)
-// *   - babel.config.js    (CJS)
+// *   - babel.config.cjs   (CJS)
 // *   - eslint.config.mjs  (ESM)
 // *   - jest.config.mjs    (ESM)
 // *   - next.config.mjs    (ESM)

@@ -83,7 +83,7 @@ export default function command({
       // TODO (test/setup.ts must exist, and if it does, it should not export anything; test/index.ts must exist, and it is the place where shared test stuff can go)
       // TODO (types/index file not allowed)
       // TODO (package ids should be alphanumeric only (plus hyphens); this should be enforced by project-utils as well; warn if the package id is longer than 20 characters and give a reason why (it's used in imports and should be shorter for better DX))
-      // TODO (warn for every line in .ncurc.js, if it exists, that this should be an aliased install instead (); this warning can be disabled via a flag; also warn if there are any package aliases that do not follow the tilde convention of "package-name~version" where "version" is some combination of numbers and periods)
+      // TODO (warn for every line in .ncurc.cjs, if it exists, that this should be an aliased install instead (); this warning can be disabled via a flag; also warn if there are any package aliases that do not follow the tilde convention of "package-name~version" where "version" is some combination of numbers and periods)
       // TODO (warn when a monorepo root package.json is missing "private: true", though this can be disabled with --disable-warning or the env var that disables all warnings)
       // TODO (warn about .prettierignore files that aren't at the project root)
       // TODO (warn about peer dependencies that aren't semver ranges)

@@ -23,7 +23,7 @@ import {
   moduleExport,
   noteTitleForBreakingChange,
   wellKnownCommitTypes
-} from 'universe:assets/config/_conventional.config.js.ts';
+} from 'universe:assets/config/_conventional.config.cjs.ts';
 
 import type { Merge, Promisable, SetParameterType } from 'type-fest';
 

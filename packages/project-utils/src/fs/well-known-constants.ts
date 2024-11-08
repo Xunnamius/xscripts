@@ -34,7 +34,7 @@ export const eslintConfigProjectBase = 'eslint.config.mjs';
 /**
  * The basename of the well-known custom Babel configuration file.
  */
-export const babelConfigProjectBase = 'babel.config.js';
+export const babelConfigProjectBase = 'babel.config.cjs';
 
 /**
  * The basename of the well-known custom Remark configuration file.
@@ -44,12 +44,12 @@ export const remarkConfigProjectBase = '.remarkrc.mjs';
 /**
  * The basename of the well-known custom Semantic Release configuration file.
  */
-export const releaseConfigProjectBase = 'release.config.js';
+export const releaseConfigProjectBase = 'release.config.cjs';
 
 /**
  * The basename of the well-known custom Lint Staged configuration file.
  */
-export const conventionalChangelogConfigProjectBase = 'conventional.config.js';
+export const conventionalChangelogConfigProjectBase = 'conventional.config.cjs';
 
 /**
  * The basename of the well-known "shared package file". The presence of this

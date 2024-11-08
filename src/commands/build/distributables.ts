@@ -78,7 +78,7 @@ import { run, runNoRejectOnBadExit } from 'multiverse+run';
 import {
   extensionsTypescript,
   hasTypescriptExtension
-} from 'universe:assets/config/_babel.config.js.ts';
+} from 'universe:assets/config/_babel.config.cjs.ts';
 
 import { TesterScope } from 'universe:commands/test.ts';
 
@@ -646,7 +646,7 @@ distrib root: ${absoluteOutputDirPath}
 
             const dTsFiles = prebuildDistFiles.filter((p) => p.endsWith('.d.ts'));
 
-            // TODO: get these NODE_ENV values as imports from _babel.config.js.ts
+            // TODO: get these NODE_ENV values as imports from _babel.config.cjs.ts
             const babelDTsNodeEnvironment = { NODE_ENV: 'production-types' };
 
             // * Modify environment variables for the duration of this promise
