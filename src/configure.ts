@@ -153,43 +153,35 @@ export const configureExecutionContext = async function (context) {
   );
 
   if (projectMetadata) {
-    const { root: projectRoot } = projectMetadata.rootPackage;
-    const distDir = toPath(projectRoot, 'dist');
-    const nodeModulesBinDir = toPath(projectRoot, 'node_modules', '.bin');
-    const xscriptsBinFileLink = toPath(nodeModulesBinDir, globalCliName);
+    const { root: projectRoot, json: rootPackageJson } = projectMetadata.rootPackage;
+    const { name: rootPackageName } = rootPackageJson;
+    const nodeModulesDirTsconfigFilePath = toPath(
+      projectRoot,
+      'node_modules',
+      '@-xun',
+      'scripts',
+      'tsconfig.json'
+    );
 
-    rootDebugLogger('distDir: %O', distDir);
-    rootDebugLogger('nodeModulesBinDir: %O', nodeModulesBinDir);
-    rootDebugLogger('xscriptsBinFileLink: %O', xscriptsBinFileLink);
+    rootDebugLogger('rootPackageName: %O', rootPackageName);
+    rootDebugLogger('nodeModulesDirTsconfigFilePath: %O', nodeModulesDirTsconfigFilePath);
 
-    if (await isAccessible(xscriptsBinFileLink, { useCached: true })) {
-      rootDebugLogger('xscriptsBinFileLink is accessible');
-
-      const xscriptsBinFileActual = toAbsolutePath(
-        dirname(xscriptsBinFileLink),
-        await readlink(xscriptsBinFileLink)
-      );
-
-      rootDebugLogger('xscriptsBinFileActual: %O', xscriptsBinFileActual);
-
-      const startsWithDistDir = xscriptsBinFileActual.startsWith(distDir);
-      const selfDirMatchesDistDir = __dirname === dirname(xscriptsBinFileActual);
-
-      rootDebugLogger('startsWithDistDir: %O', startsWithDistDir);
-      rootDebugLogger('selfDirMatchesDistDir: %O', selfDirMatchesDistDir);
-
-      // ? Lets us know when we're loading a custom-built "dev" xscripts.
-      const developmentTag = startsWithDistDir && selfDirMatchesDistDir ? ' (dev)' : '';
-
-      rootDebugLogger('add development tag?: %O', !!developmentTag);
+    if (
+      // ? Check to see if the name of the project is our name...
+      rootPackageName === '@-xun/scripts' ||
+      // ? ... or look for the existence of a non-distributables file
+      (await isAccessible(nodeModulesDirTsconfigFilePath, { useCached: true }))
+    ) {
+      rootDebugLogger('decision: a dev version is probably running');
 
       standardContext.state.globalVersionOption = {
         name: 'version',
         description: defaultVersionTextDescription,
-        text: String(packageVersion) + developmentTag
+        // ? Lets us know when we're loading a custom-built "dev" xscripts.
+        text: String(packageVersion) + ' (dev)'
       };
     } else {
-      rootDebugLogger('xscriptsBinFileLink was not accessible');
+      rootDebugLogger('decision: a non-dev version is probably running');
     }
   }
 
