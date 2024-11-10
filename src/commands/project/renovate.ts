@@ -56,7 +56,18 @@ export default function command({
 
       debug('scope (unused): %O', scope);
 
+      // !
+      // TODO: all --flags become tasks instead, which are sub-arguments of
+      // TODO: --tasks (alias --task)
+      // !
+      // TODO: all potentially destructive activities require --force or for the
+      // TODO: user to type the package's name for confirmation
+      // !
       // TODO (is idempotent)
+      //
+      //
+      //
+      //
       // TODO (--deprecate --force (requires --force))
       // TODO (like init, can generate missing configs and doesn't overwrite existing configs)
       // TODO (--interactive (default) to trigger an interactive fix of anything from project lint that is fixable (also offer to overwrite/replace, merge, etc; similar to apt) or --no-interactive to do the same but fail if any problem is not automatically resolvable; can also call --no-interactive --force to do the same but force through any changes and overwrite existing configs without regard for their contents (SUPER DANGEROUS))
