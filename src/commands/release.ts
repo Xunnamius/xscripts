@@ -82,6 +82,12 @@ export default function command({
       description:
         'Pull latest package.json dependency versions from other packages in this project',
       default: true
+    },
+    'tag-compatibility-mode': {
+      alias: 'compat',
+      boolean: true,
+      description: 'When cwd is the root package, include polyrepo-style version tags',
+      default: true
     }
   });
 
@@ -115,13 +121,14 @@ The only available scope is "${ReleaseScope.ThisPackage}"; hence, when invoking 
 
 Provide --synchronize-interdependencies to run a version of \`xscripts project renovate --synchronize-interdependencies\`, except the renovation is limited to the current package's package.json rather than every package's package.json across the entire project.
 
-This command was designed to handle concurrent execution in a safe manner. A simple file-based locking mechanism is used to ensure only one instance of this command is performing Git operations and/or running semantic-release at any given moment. If a new instance of this command begins executing before another instance has finished, the new instance will backoff and try again later. If for some reason a deadlock occurs that prevents this command from running, providing --force will forcefully and _dangerously_ take ownership of any existing locks associated with this project. If used recklessly, --force could result in a deeply and unpredictably broken release process.
-
 Uploading test coverage data to Codecov is only performed if any coverage data exists. A warning will be issued if no coverage data exists. Coverage data can be generated using \`xscripts test --coverage\` (which is prerelease task #7). When uploading coverage data, the package's name is used to derive a flag (https://docs.codecov.com/docs/flags). Codecov uses flags to map reports to specific packages in its UI and coverage badges.
 
 Provide --dry-run to ensure no changes are made, no release is cut, and no publishing or git write operations occur. Use --dry-run to test what would happen if you were to cut a release.
 
-Note: this command will refuse to release a package version below 1.0.0. This is because semantic-release does not officially support packages with versions below semver 1.0.0.`.trim()
+Note: this command will refuse to release a package version below 1.0.0. This is because semantic-release does not officially support packages with versions below semver 1.0.0.
+
+WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME GIT REPOSITORY IN A SAFE MANNER. DO NOT run multiple instances of this command on the same repository or project. If using a tool like Turbo, ensure it runs all NPM "release" scripts serially (and topologically).
+`.trim()
     ),
     handler: withGlobalHandler(async function ({
       $0: scriptFullName,
@@ -162,7 +169,9 @@ Note: this command will refuse to release a package version below 1.0.0. This is
 
       // TODO: execute tasks #1-8 wrt --ci, --rebuild-changelog, and --skip-prerelease-tasks
 
+      // TODO: set these before semantic-release runs
       void process.env.XSCRIPTS_RELEASE_REBUILD_CHANGELOG;
+      void process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT;
 
       // TODO: execute task #9 wrt --synchronize-interdependencies
 

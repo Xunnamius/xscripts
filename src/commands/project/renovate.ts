@@ -79,6 +79,7 @@ export default function command({
       // TODO (--regenerate-gpg-key regenerates the project-specific GPG key and automatically find and delete the old one from the appropriate account, all automatically)
       // TODO (need to handle assetverse aliasing concerns (example in quiz-euphoriareign))
       // TODO (xscripts project renovate --synchronize-interdependencies (If monorepo, update all package.json-s dependencies with latest versions from other packages in the monorepo))
+      // TODO: https://gist.github.com/Xunnamius/7f6cd12e09bd46fb59af91a63ddd4dd7
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
