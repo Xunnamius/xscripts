@@ -2,7 +2,6 @@ import { createWriteStream } from 'node:fs';
 import { pipeline } from 'node:stream/promises';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
-import conventionalChangelogCore from 'conventional-changelog-core';
 import { valid as isValidSemver } from 'semver';
 
 import {
@@ -22,7 +21,9 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
   defaultChangelogTopmatter,
-  type ConventionalChangelogCliConfig
+  getLatestCommitWithXpipelineInitCommandSuffix,
+  patchSpawnChild,
+  unpatchSpawnChild
 } from 'universe:assets/config/_conventional.config.cjs.ts';
 
 import {
@@ -49,6 +50,7 @@ import {
   writeFile
 } from 'universe:util.ts';
 
+import type { XchangelogConfig } from '@-xun/changelog' with { 'resolution-mode': 'import' };
 import type { Promisable } from 'type-fest';
 
 const extractVersionRegExp = /^#+\s\[?([^\s\]]+)/;
@@ -199,6 +201,8 @@ Use --import-section-file to add a custom release section to the changelog. The 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Compiling changelog...');
 
+      patchSpawnChild();
+
       const {
         rootPackage: { root: projectRoot },
         cwdPackage: { root: packageRoot }
@@ -224,39 +228,46 @@ Use --import-section-file to add a custom release section to the changelog. The 
 
         const conventionalConfig = await (async () => {
           try {
+            process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT =
+              await getLatestCommitWithXpipelineInitCommandSuffix();
+
             const { default: config } = await import(conventionalConfigPath);
 
             if (!config) {
               throw new Error(ErrorMessage.DefaultImportFalsy());
             }
 
-            return config as ConventionalChangelogCliConfig;
+            return config as XchangelogConfig;
           } catch (error) {
             throw new CliError(
               ErrorMessage.CannotImportConventionalConfig(conventionalConfigPath),
               { cause: error }
             );
+          } finally {
+            delete process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT;
           }
         })();
 
         debug.extend('cc')('conventionalConfig: %O', conventionalConfig);
 
-        const { gitRawCommitsOpts, parserOpts, writerOpts } = conventionalConfig;
-        // TODO: perhaps this can be of use later...
-        const handlebarsTemplateGlobalContext = undefined;
+        const { default: makeChangelogSectionStream } = await import('@-xun/changelog');
+        const { gitRawCommitsOpts, parserOpts, writerOpts, options } = conventionalConfig;
+        const handlebarsTemplateGlobalContext = {};
 
-        const changelogSectionStream = conventionalChangelogCore(
+        const changelogSectionStream = makeChangelogSectionStream(
           {
             config: conventionalConfig,
             releaseCount: 0,
             skipUnstable: true,
             outputUnreleased,
-            warn: genericLogger.extend('cc-core').warn
+            warn: genericLogger.extend('cc-core').warn,
+            ...options
           },
           handlebarsTemplateGlobalContext,
           gitRawCommitsOpts,
           parserOpts,
-          writerOpts
+          writerOpts,
+          {}
         );
 
         const changelogOutputStream = createWriteStream(changelogFile);
@@ -389,6 +400,8 @@ Use --import-section-file to add a custom release section to the changelog. The 
 
           changelogOutputStream
         );
+
+        unpatchSpawnChild();
       }
 
       if (formatChangelog) {

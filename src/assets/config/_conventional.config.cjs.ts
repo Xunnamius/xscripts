@@ -1,30 +1,34 @@
 import assert from 'node:assert';
+import childProcess from 'node:child_process';
 
 import escapeStringRegExp from 'escape-string-regexp~4';
+import cloneDeep from 'lodash.clonedeepwith';
 import deepMerge from 'lodash.mergewith';
 import semver from 'semver';
 
 import { interpolateTemplate, toSentenceCase } from 'multiverse+cli-utils:util.ts';
+
 import {
   analyzeProjectStructure,
   isRootPackage,
   WorkspaceAttribute
 } from 'multiverse+project-utils';
+
 import { toRelativePath, type RelativePath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
+import { runNoRejectOnBadExit } from 'multiverse+run';
 
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
-
+import { ErrorMessage } from 'universe:error.ts';
 import { __read_file_sync } from 'universe:util.ts';
 
-// {@xscripts/notInvalid conventional-changelog-config-spec}
-// {@xscripts/notExtraneous @types/conventional-changelog-config-spec}
-import type { Config as ConventionalChangelogConfigSpecOptions } from 'conventional-changelog-config-spec';
-import type { Options as ConventionalChangelogCoreOptions } from 'conventional-changelog-core';
-// {@xscripts/notInvalid conventional-commits-parser}
-// {@xscripts/notExtraneous @types/conventional-commits-parser}
-import type { Commit } from 'conventional-commits-parser';
+import type {
+  XchangelogCommit,
+  XchangelogConfig,
+  XchangelogSpec
+} from '@-xun/changelog' with { 'resolution-mode': 'import' };
+
 import type { EmptyObject } from 'type-fest';
 
 const debug = createDebugLogger({
@@ -74,24 +78,6 @@ const revertPrefixPattern = /^Revert\s+/;
 const neverMatchAnythingPattern = /(?!)/;
 
 /**
- * What seems to be the shape of a conventional changelog configuration file
- * with some custom additions. Note that this type is a best effort and may not
- * be perfectly accurate.
- */
-// TODO: xchangelog and xrelease need to iron out the strange and ugly
-// TODO: configuration object known as ConventionalChangelogCliConfig...
-export type ConventionalChangelogCliConfig = ConventionalChangelogConfigSpecOptions &
-  ConventionalChangelogCoreOptions.Config.Object & {
-    /**
-     * Conventional Changelog Core options.
-     */
-    // TODO: Last time I scanned its source, it seemed this key was required, so
-    // TODO: it is included here for now. Verify that this key is still
-    // TODO: necessary.
-    conventionalChangelog: ConventionalChangelogCoreOptions.Config.Object;
-  };
-
-/**
  * The inline image HTML element appended to links leading to external
  * repositories. This value is also duplicated in the commit.hbs template file.
  */
@@ -106,6 +92,28 @@ export const inlineExternalImageElement = /*html*/ `
  * the changelog file.
  */
 export const noteTitleForBreakingChange = 'BREAKING CHANGES';
+
+/**
+ * No characters recognized by {@link RegExp}.
+ *
+ * @internal
+ * @see {@link patchSpawnChild}
+ * @see {@link unpatchSpawnChild}
+ */
+export const specialArgumentMarkerForFlags = '_flags_';
+
+/**
+ * No characters recognized by {@link RegExp}.
+ *
+ * @internal
+ * @see {@link patchSpawnChild}
+ * @see {@link unpatchSpawnChild}
+ */
+export const specialArgumentMarkerForPaths = '_paths_';
+
+const specialArgumentRegExp = new RegExp(
+  `^-?-(${specialArgumentMarkerForFlags}|${specialArgumentMarkerForPaths})=?(.*)`
+);
 
 /**
  * The preamble prefixed to any generated the changelog file.
@@ -228,7 +236,7 @@ export const defaultIssuePrefixes = ['#'];
  * Valid commit types are alphanumeric and may contain an underscore (_) or dash
  * (-). Using characters other than these will lead to undefined behavior.
  */
-export const wellKnownCommitTypes: ConventionalChangelogConfigSpecOptions.Type[] = [
+export const wellKnownCommitTypes: NonNullable<XchangelogSpec['types']> = [
   { type: 'feat', section: '✨ Features', hidden: false },
   { type: 'fix', section: '🪄 Fixes', hidden: false },
   { type: 'perf', section: '⚡️ Optimizations', hidden: false },
@@ -261,6 +269,55 @@ export const defaultTemplates = {
   }
 };
 
+const memory = { previousSpawnChild: undefined as undefined | typeof childProcess.spawn };
+
+/**
+ * Part of a hack to get conventional-commits to accept our flags/paths for `git
+ * log`.
+ * @internal
+ */
+export function patchSpawnChild() {
+  assert(!memory.previousSpawnChild);
+  const spawn = (memory.previousSpawnChild = childProcess.spawn);
+  childProcess.spawn = function wrappedSpawnChild(...args: Parameters<typeof spawn>) {
+    if (Array.isArray(args[1])) {
+      const spawnArgs = args[1] as string[];
+      let alreadySawPathsMarker = false;
+
+      // eslint-disable-next-line unicorn/prevent-abbreviations
+      for (const [index, arg] of spawnArgs.entries()) {
+        const [, id, value] = arg.match(specialArgumentRegExp) || [];
+
+        if (id && value) {
+          if (id === specialArgumentMarkerForFlags || alreadySawPathsMarker) {
+            spawnArgs[index] = value;
+          } else {
+            alreadySawPathsMarker = true;
+            spawnArgs[index] = '--';
+            spawnArgs.splice(index + 1, 0, value);
+          }
+        }
+      }
+    }
+
+    return spawn(...args);
+  } as typeof spawn;
+
+  debug('patched child_process.spawn');
+}
+
+/**
+ * Part of a hack to get conventional-commits to accept our flags/paths for `git
+ * log`.
+ * @internal
+ */
+export function unpatchSpawnChild() {
+  assert(memory.previousSpawnChild);
+  childProcess.spawn = memory.previousSpawnChild;
+  memory.previousSpawnChild = undefined;
+  debug('unpatched child_process.spawn');
+}
+
 /**
  * This function returns an "unconventional" conventional-changelog
  * configuration preset. See the documentation for details on the differences
@@ -268,18 +325,32 @@ export const defaultTemplates = {
  * package.
  *
  * `configOverrides`, if an object or undefined, is recursively merged into a
- * partially initialized {@link ConventionalChangelogCliConfig} object
- * (overwriting same keys) using `lodash.mergeWith`.
+ * partially initialized {@link XchangelogConfig} object (overwriting same keys)
+ * using `lodash.mergeWith`.
  *
  * If `configOverrides` is a function, it will be passed said partially
- * initialized {@link ConventionalChangelogCliConfig} object and must return a
- * an object of the same type.
+ * initialized {@link XchangelogConfig} object and must return a an object of
+ * the same type.
+ *
+ * If you are consuming this configuration object with the intent to invoke
+ * `@-xun/changelog` directly (i.e. via its Node.js API), such as in the
+ * `src/commands/build/changelog.ts` file, **you should call
+ * {@link patchSpawnChild} as soon as possible** upon entering the handler and
+ * call {@link unpatchSpawnChild} towards the end of the same scope.
  */
 export function moduleExport(
   configOverrides:
-    | ((config: ConventionalChangelogCliConfig) => ConventionalChangelogCliConfig)
-    | Partial<ConventionalChangelogCliConfig> = {}
+    | ((config: XchangelogConfig) => XchangelogConfig)
+    | Partial<XchangelogConfig> = {}
 ) {
+  const specialInitialCommit = process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT;
+  debug('specialInitialCommit: %O', specialInitialCommit);
+
+  assert(
+    specialInitialCommit && typeof specialInitialCommit === 'string',
+    ErrorMessage.MissingXscriptsEnvironmentVariable('XSCRIPTS_SPECIAL_INITIAL_COMMIT')
+  );
+
   // ? Later on we'll be keep'n reverter commits but discarding reverted commits
   const revertedCommitHashesSet = new Set<string>();
   // ? When issuePrefix is updated in one config area, we use this to update it
@@ -287,17 +358,31 @@ export function moduleExport(
   let sharedIssuePrefixes = defaultIssuePrefixes;
 
   const { cwdPackage } = analyzeProjectStructure.sync({ useCached: true });
-  const isCwdPackageTheRootPackage = isRootPackage(cwdPackage);
   const cwdPackageName = cwdPackage.json.name;
 
   assert(cwdPackageName);
 
-  const intermediateConfig: ConventionalChangelogCliConfig = {
+  const intermediateConfig: XchangelogConfig = {
     // * Core configuration keys * \\
-    // ? conventionalChangelog and recommendedBumpOpts keys are redefined below
-    conventionalChangelog: {},
+    context: {},
+    // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#options
+    options: {
+      tagPrefix: `${cwdPackageName}@`
+    },
+
     // ? gitRawCommitsOpts key is redefined below
-    gitRawCommitsOpts: {},
+    gitRawCommitsOpts: {
+      // ! Order here is important; specialArgumentMarkerForFlags goes first!
+      // ? Flags passed to git log; used to ignore changes at/before init commit
+      // ? See: https://github.com/sindresorhus/dargs#usage
+      [specialArgumentMarkerForFlags]:
+        specialInitialCommit !== noSpecialInitialCommitIndicator
+          ? [`^${specialInitialCommit}`]
+          : [],
+      // ? Pathspecs passed to git log; used to ignore changes in other packages
+      // ? See: https://github.com/sindresorhus/dargs#usage
+      [specialArgumentMarkerForPaths]: getExcludedDirectoriesRelativeToProjectRoot()
+    },
 
     // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#options
     parserOpts: {
@@ -346,31 +431,10 @@ export function moduleExport(
         const b = commitSectionOrder.indexOf(groupB.title || '');
         return a === -1 || b === -1 ? b - a : a - b;
       },
-      generateOn(commit) {
-        const debug_ = debug.extend('writerOpts:generateOn');
-        let decision = false;
-
-        debug_(`saw version: ${commit.version ?? 'N/A'}`);
-
-        if (
-          (isCwdPackageTheRootPackage && isCompatCommitVersion(commit.version)) ||
-          commit.version?.startsWith(`${cwdPackageName}@`)
-        ) {
-          commit.version = commit.version.split('@').at(-1)!;
-          debug_('using updated version: %O', commit.version);
-          decision = !!semver.valid(commit.version) && !semver.prerelease(commit.version);
-        }
-
-        debug_(
-          `version block decision: %O${
-            commit.version ? " (the version ain't ours)" : ''
-          }`,
-          decision ? 'NEW block' : 'same block'
-        );
-
-        return decision;
-      },
-      transform(commit, context) {
+      // ? Note that in recent versions of conventional-commits, the commit
+      // ? object is now immutable (i.e. a Proxy)
+      transform(commit_, context) {
+        const commit = cloneDeep(commit_);
         const debug_ = debug.extend('writerOpts:transform');
         debug_('pre-transform commit: %O', commit);
 
@@ -421,7 +485,7 @@ export function moduleExport(
           // ? ... but keep reverter commits...
           if (revertedCommitHashesSet.has(commit.hash)) {
             debug_('decision: commit discarded (reverted)');
-            return false;
+            return null;
           }
 
           if (commit.revert) {
@@ -436,7 +500,7 @@ export function moduleExport(
               isHeaderOfIrrelevantCommit(commit.revert.header)
             ) {
               debug_('decision: commit discarded (probably irrelevant reverter)');
-              return false;
+              return null;
             }
           }
         }
@@ -483,7 +547,7 @@ export function moduleExport(
             `decision: commit discarded (${typeEntry === undefined ? 'unknown' : 'hidden'} type)`
           );
 
-          return false;
+          return null;
         } else debug_('decision: commit NOT discarded');
 
         if (typeEntry) commit.type = typeEntry.section;
@@ -574,6 +638,19 @@ export function moduleExport(
 
         debug_('transformed commit: %O', commit);
         return commit;
+      },
+      generateOn(commit) {
+        const debug_ = debug.extend('writerOpts:generateOn');
+        debug_(`saw version: ${commit.version ?? 'N/A'}`);
+
+        const decision = !!(
+          commit.version &&
+          semver.valid(commit.version) &&
+          !semver.prerelease(commit.version)
+        );
+
+        debug_('version block decision: %O', decision ? 'NEW block' : 'same block');
+        return decision;
       }
     },
 
@@ -595,13 +672,8 @@ export function moduleExport(
     }
   };
 
-  // TODO: is this still necessary?
-  intermediateConfig.conventionalChangelog = {
-    parserOpts: intermediateConfig.parserOpts,
-    writerOpts: intermediateConfig.writerOpts
-  };
-
   intermediateConfig.recommendedBumpOpts = {
+    tagPrefix: intermediateConfig.options.tagPrefix,
     parserOpts: intermediateConfig.parserOpts,
     whatBump: (commits) => {
       const debug_ = debug.extend('writerOpts:whatBump');
@@ -643,14 +715,6 @@ export function moduleExport(
       return recommendation;
     }
   } as typeof intermediateConfig.recommendedBumpOpts;
-
-  //intermediateConfig.recommendedBumpOpts!.lernaPackage = cwdPackage.json.name;
-  //intermediateConfig.options = { lernaPackage: cwdPackage.json.name };
-  intermediateConfig.gitRawCommitsOpts = {
-    // ? Pathspecs passed to git; used to ignore changes in other packages
-    // ? See: https://github.com/sindresorhus/dargs#usage
-    '--': getExcludedDirectoriesRelativeToProjectRoot()
-  };
 
   debug('intermediate config: %O', intermediateConfig);
 
@@ -736,7 +800,7 @@ export function moduleExport(
    * Adds additional breaking change notes for the special case
    * `test(system)!: hello world` but with no `BREAKING CHANGE:` footer.
    */
-  function addBangNotes({ header, notes }: Commit) {
+  function addBangNotes({ header, notes }: XchangelogCommit) {
     const { breakingHeaderPattern } = finalConfig.parserOpts ?? {};
 
     if (breakingHeaderPattern) {
@@ -847,33 +911,6 @@ module.exports = moduleExport({
 });
 
 /**
- * Custom lodash merge customizer that causes successive `undefined` source
- * values to unset (delete) the destination property if it exists, and to
- * completely overwrite the destination property if the source property is an
- * array.
- *
- * @see https://lodash.com/docs/4.17.15#mergeWith
- */
-function mergeCustomizer(
-  _objValue: unknown,
-  srcValue: unknown,
-  key: string,
-  object: Record<string, unknown> | undefined,
-  source: Record<string, unknown> | undefined
-) {
-  if (object && source) {
-    if (srcValue === undefined && key in source) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-      delete object[key];
-    } else if (Array.isArray(srcValue)) {
-      return srcValue;
-    }
-  }
-
-  return undefined;
-}
-
-/**
  * Return directories that should be excluded from consideration depending on
  * the project structure and the current working directory.
  *
@@ -924,6 +961,58 @@ export function getExcludedDirectoriesRelativeToProjectRoot() {
   return result;
 }
 
-function isCompatCommitVersion(o: string | null | undefined): o is string {
-  return typeof o === 'string';
+/**
+ * The value populating the XSCRIPTS_SPECIAL_INITIAL_COMMIT environment variable
+ * when there was no special initialization commit reference found.
+ */
+// TODO: migrate this into xpipeline
+export const noSpecialInitialCommitIndicator = 'N/A';
+
+/**
+ * Return the commit-ish (SHA hash) of the most recent commit containing the
+ * Xpipeline command suffix `[INIT]`, or {@link noSpecialInitialCommitIndicator}
+ * if no such commit could be found.
+ */
+// TODO: migrate this into xpipeline
+export async function getLatestCommitWithXpipelineInitCommandSuffix() {
+  const { stdout: reference_ } = await runNoRejectOnBadExit('git', [
+    'log',
+    '-1',
+    '--pretty=format:%H',
+    '--fixed-strings',
+    '--grep',
+    '[INIT]'
+  ]);
+
+  const reference = reference_ || noSpecialInitialCommitIndicator;
+  debug('latest commit with Xpipeline "[INIT]" command: %O', reference);
+
+  return reference;
+}
+
+/**
+ * Custom lodash merge customizer that causes successive `undefined` source
+ * values to unset (delete) the destination property if it exists, and to
+ * completely overwrite the destination property if the source property is an
+ * array.
+ *
+ * @see https://lodash.com/docs/4.17.15#mergeWith
+ */
+function mergeCustomizer(
+  _objValue: unknown,
+  srcValue: unknown,
+  key: string,
+  object: Record<string, unknown> | undefined,
+  source: Record<string, unknown> | undefined
+) {
+  if (object && source) {
+    if (srcValue === undefined && key in source) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete object[key];
+    } else if (Array.isArray(srcValue)) {
+      return srcValue;
+    }
+  }
+
+  return undefined;
 }

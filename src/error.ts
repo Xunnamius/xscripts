@@ -124,6 +124,9 @@ export const ErrorMessage = {
   MustChooseDeployEnvironment() {
     return 'must choose either --preview or --production deployment environment';
   },
+  MissingXscriptsEnvironmentVariable(variableName: string) {
+    return `the expected xscripts environment variable "${variableName}" must be defined in process.env`;
+  },
   MultipleConfigsWhenExpectingOnlyOne(filename1: string, filename2: string) {
     return `expected one configuration file but encountered multiple conflicting files: ${filename1} conflicts with ${filename2}`;
   },
