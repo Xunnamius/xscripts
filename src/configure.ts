@@ -1,6 +1,3 @@
-import { readlink } from 'node:fs/promises';
-import { dirname } from 'node:path';
-
 import {
   type ConfigureErrorHandlingEpilogue,
   type ConfigureExecutionContext,
@@ -24,16 +21,12 @@ import {
 import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse+project-utils';
 import { cache } from 'multiverse+project-utils:cache.ts';
 import { isAccessible } from 'multiverse+project-utils:fs/is-accessible.ts';
-import { toAbsolutePath, toPath } from 'multiverse+project-utils:fs.ts';
+import { toPath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
 import { version as packageVersion } from 'rootverse:package.json';
 
-import {
-  globalCliName,
-  globalDebuggerNamespace,
-  globalLoggerNamespace
-} from 'universe:constant.ts';
+import { globalDebuggerNamespace, globalLoggerNamespace } from 'universe:constant.ts';
 
 // ? Used in documentation
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
