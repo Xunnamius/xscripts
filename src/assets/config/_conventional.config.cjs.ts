@@ -979,9 +979,8 @@ export async function getLatestCommitWithXpipelineInitCommandSuffix() {
     'log',
     '-1',
     '--pretty=format:%H',
-    '--fixed-strings',
     '--grep',
-    '[INIT]'
+    String.raw`\[INIT]$`
   ]);
 
   const reference = reference_ || noSpecialInitialCommitIndicator;
