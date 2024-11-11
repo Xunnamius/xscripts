@@ -488,7 +488,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
             if (!isQuieted) {
               if (tstycheOutput) {
-                process.stderr.write(tstycheOutput + '\n\n');
+                process.stderr.write(tstycheOutput + '\n');
               } else {
                 genericLogger.error(
                   [LogTag.IF_NOT_QUIETED],
@@ -515,6 +515,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
         }
 
         if (isTstycheError || jestResult.exitCode !== 0) {
+          genericLogger.newline([LogTag.IF_NOT_HUSHED]);
           throw new ProjectError(ErrorMessage.TestingFailed());
         }
 
