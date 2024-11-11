@@ -362,7 +362,7 @@ export type ProjectFiles = {
    * The project's TypeScript (.ts, .tsx, .mts, .cts) files that are within a
    * `src/` directory.
    */
-  typescriptFiles: {
+  typescriptSrcFiles: {
     /**
      * An array of zero or more absolute paths to TypeScript files within the
      * project's root `src/` directory.
@@ -375,6 +375,29 @@ export type ProjectFiles = {
     inWorkspaceSrc: Map<WorkspacePackageId, AbsolutePath[]>;
     /**
      * Sugar for `inRootSrc + inWorkspaceSrc`.
+     */
+    all: AbsolutePath[];
+  };
+  /**
+   * The project's TypeScript (.ts, .tsx, .mts, .cts) files with names following
+   * the pattern `*.test.{ts,tsx,mts,cts}` that are within a `test/` directory.
+   */
+  typescriptTestFiles: {
+    /**
+     * An array of zero or more absolute paths to TypeScript files with names
+     * following the pattern `*.test.{ts,tsx,mts,cts}` that are within the
+     * project's root `test/` directory.
+     */
+    inRootTest: AbsolutePath[];
+    /**
+     * A map of {@link WorkspacePackageId}s to zero or more absolute paths to
+     * TypeScript files with names following the pattern
+     * `*.test.{ts,tsx,mts,cts}` that are within each project workspace's
+     * `test/` directory.
+     */
+    inWorkspaceTest: Map<WorkspacePackageId, AbsolutePath[]>;
+    /**
+     * Sugar for `inRootTest + inWorkspaceTest`.
      */
     all: AbsolutePath[];
   };

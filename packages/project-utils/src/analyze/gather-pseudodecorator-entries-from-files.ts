@@ -14,7 +14,7 @@ import {
 
 import type { Promisable } from 'type-fest';
 
-const debug = debug_.extend('gatherPseudodecoratorsEntriesFromFiles');
+const debug = debug_.extend('gatherPseudodecoratorEntriesFromFiles');
 
 const whitespace = /\s/;
 // ! Cannot use "g" flag
@@ -45,6 +45,8 @@ export enum PseudodecoratorTag {
   NotInvalid = '@xscripts/notInvalid'
 }
 
+// * Lol, the pseudodecorators in the example text below are being picked up by
+// * gatherPseudodecoratorEntriesFromFiles_() when run on this very project...
 /**
  * A so-called "pseudodecorator" is a decorator-like syntax that can appear
  * anywhere in almost any type of file and is used to pass information to
@@ -132,7 +134,7 @@ export type Pseudodecorator = {
  * An entry mapping an absolute file path to an array of
  * {@link Pseudodecorator}s present in said file.
  *
- * @see {@link gatherPseudodecoratorsEntriesFromFiles}
+ * @see {@link gatherPseudodecoratorEntriesFromFiles}
  */
 export type PseudodecoratorsEntry = [
   filepath: AbsolutePath,
@@ -145,9 +147,9 @@ export type PseudodecoratorsEntry = [
 export const pseudodecoratorTags = Object.values(PseudodecoratorTag);
 
 /**
- * @see {@link gatherPseudodecoratorsEntriesFromFiles}
+ * @see {@link gatherPseudodecoratorEntriesFromFiles}
  */
-export type gatherPseudodecoratorsEntriesFromFilesOptions = {
+export type gatherPseudodecoratorEntriesFromFilesOptions = {
   /**
    * Use the internal cached result from a previous run, if available.
    *
@@ -161,20 +163,20 @@ export type gatherPseudodecoratorsEntriesFromFilesOptions = {
   useCached: boolean;
 };
 
-function gatherPseudodecoratorsEntriesFromFiles_(
+function gatherPseudodecoratorEntriesFromFiles_(
   shouldRunSynchronously: false,
   files: AbsolutePath[],
-  options: gatherPseudodecoratorsEntriesFromFilesOptions
+  options: gatherPseudodecoratorEntriesFromFilesOptions
 ): Promise<PseudodecoratorsEntry[]>;
-function gatherPseudodecoratorsEntriesFromFiles_(
+function gatherPseudodecoratorEntriesFromFiles_(
   shouldRunSynchronously: true,
   files: AbsolutePath[],
-  options: gatherPseudodecoratorsEntriesFromFilesOptions
+  options: gatherPseudodecoratorEntriesFromFilesOptions
 ): PseudodecoratorsEntry[];
-function gatherPseudodecoratorsEntriesFromFiles_(
+function gatherPseudodecoratorEntriesFromFiles_(
   shouldRunSynchronously: boolean,
   files: AbsolutePath[],
-  { useCached, ...cacheIdComponentsObject }: gatherPseudodecoratorsEntriesFromFilesOptions
+  { useCached, ...cacheIdComponentsObject }: gatherPseudodecoratorEntriesFromFilesOptions
 ): Promisable<PseudodecoratorsEntry[]> {
   debug('evaluating files: %O', files);
 
@@ -184,7 +186,7 @@ function gatherPseudodecoratorsEntriesFromFiles_(
       dbg('evaluating file: %O', filepath);
 
       if (useCached) {
-        const cachedEntry = cache.get(CacheScope.GatherPseudodecoratorsEntriesFromFiles, [
+        const cachedEntry = cache.get(CacheScope.GatherPseudodecoratorEntriesFromFiles, [
           filepath,
           cacheIdComponentsObject
         ]);
@@ -201,7 +203,7 @@ function gatherPseudodecoratorsEntriesFromFiles_(
       debug('new pseudodecorator entry: %O', entry);
 
       cache.set(
-        CacheScope.GatherPseudodecoratorsEntriesFromFiles,
+        CacheScope.GatherPseudodecoratorEntriesFromFiles,
         [filepath, cacheIdComponentsObject],
         entry
       );
@@ -219,7 +221,7 @@ function gatherPseudodecoratorsEntriesFromFiles_(
 
         if (useCached) {
           const cachedEntry = cache.get(
-            CacheScope.GatherPseudodecoratorsEntriesFromFiles,
+            CacheScope.GatherPseudodecoratorEntriesFromFiles,
             [filepath, cacheIdComponentsObject]
           );
 
@@ -235,7 +237,7 @@ function gatherPseudodecoratorsEntriesFromFiles_(
         debug('new pseudodecorator entry: %O', entry);
 
         cache.set(
-          CacheScope.GatherPseudodecoratorsEntriesFromFiles,
+          CacheScope.GatherPseudodecoratorEntriesFromFiles,
           [filepath, cacheIdComponentsObject],
           entry
         );
@@ -262,14 +264,14 @@ function gatherPseudodecoratorsEntriesFromFiles_(
  * function's options for details.** To fetch fresh results, set the `useCached`
  * option to `false` or clear the internal cache with {@link cache.clear}.
  */
-export function gatherPseudodecoratorsEntriesFromFiles(
-  ...args: ParametersNoFirst<typeof gatherPseudodecoratorsEntriesFromFiles_>
+export function gatherPseudodecoratorEntriesFromFiles(
+  ...args: ParametersNoFirst<typeof gatherPseudodecoratorEntriesFromFiles_>
 ) {
-  return gatherPseudodecoratorsEntriesFromFiles_(false, ...args);
+  return gatherPseudodecoratorEntriesFromFiles_(false, ...args);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace gatherPseudodecoratorsEntriesFromFiles {
+export namespace gatherPseudodecoratorEntriesFromFiles {
   /**
    * Accepts zero or more file paths and synchronously returns an array of
    * {@link PseudodecoratorsEntry}s each mapping a given file path to an array
@@ -285,8 +287,8 @@ export namespace gatherPseudodecoratorsEntriesFromFiles {
    * {@link cache.clear}.
    */
   export const sync = function (...args) {
-    return gatherPseudodecoratorsEntriesFromFiles_(true, ...args);
-  } as SyncVersionOf<typeof gatherPseudodecoratorsEntriesFromFiles>;
+    return gatherPseudodecoratorEntriesFromFiles_(true, ...args);
+  } as SyncVersionOf<typeof gatherPseudodecoratorEntriesFromFiles>;
 }
 
 function contentsToDecorators(contents: string): Pseudodecorator[] {

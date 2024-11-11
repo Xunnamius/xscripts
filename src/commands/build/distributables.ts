@@ -30,7 +30,7 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
   gatherImportEntriesFromFiles,
-  gatherPseudodecoratorsEntriesFromFiles,
+  gatherPseudodecoratorEntriesFromFiles,
   isRootPackage,
   isWorkspacePackage,
   pathToPackage,
@@ -1054,7 +1054,7 @@ distrib root: ${absoluteOutputDirPath}
                     excludeTypeImports: false,
                     useCached: true
                   }),
-                  gatherPseudodecoratorsEntriesFromFiles(allOtherFilesPlusBuildTargets, {
+                  gatherPseudodecoratorEntriesFromFiles(allOtherFilesPlusBuildTargets, {
                     useCached: true
                   })
                 ]);

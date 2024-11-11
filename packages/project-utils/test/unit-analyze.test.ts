@@ -15,7 +15,7 @@ import {
   gatherPackageBuildTargets,
   gatherPackageFiles,
   gatherProjectFiles,
-  gatherPseudodecoratorsEntriesFromFiles,
+  gatherPseudodecoratorEntriesFromFiles,
   generatePackageJsonEngineMaintainedNodeVersions,
   packageRootToId,
   ProjectAttribute,
@@ -252,7 +252,7 @@ describe('::gatherProjectFiles', () => {
           atWorkspaceRoot: new Map(),
           elsewhere: [`${root}/.vercel/package.json`, `${root}/src/package.json`]
         },
-        typescriptFiles: {
+        typescriptSrcFiles: {
           all: [
             `${root}/src/1.ts`,
             `${root}/src/2.mts`,
@@ -266,6 +266,19 @@ describe('::gatherProjectFiles', () => {
             `${root}/src/4.tsx`
           ],
           inWorkspaceSrc: new Map()
+        },
+        typescriptTestFiles: {
+          all: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inRootTest: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inWorkspaceTest: new Map()
         }
       });
     });
@@ -327,7 +340,7 @@ describe('::gatherProjectFiles', () => {
             `${root}/packages/unnamed-pkg-2/package.json`
           ]
         },
-        typescriptFiles: {
+        typescriptSrcFiles: {
           all: [
             `${root}/packages/pkg-2/src/4.tsx`,
             `${root}/packages/pkg-import/src/index.ts`
@@ -337,6 +350,15 @@ describe('::gatherProjectFiles', () => {
             ['pkg-1', []],
             ['pkg-2', [`${root}/packages/pkg-2/src/4.tsx`]],
             ['pkg-import', [`${root}/packages/pkg-import/src/index.ts`]]
+          ])
+        },
+        typescriptTestFiles: {
+          all: [],
+          inRootTest: [],
+          inWorkspaceTest: new Map([
+            ['pkg-1', []],
+            ['pkg-2', []],
+            ['pkg-import', []]
           ])
         }
       });
@@ -406,7 +428,7 @@ describe('::gatherProjectFiles', () => {
             `${root}/src/package.json`
           ]
         },
-        typescriptFiles: {
+        typescriptSrcFiles: {
           all: [
             `${root}/src/2.mts`,
             `${root}/src/3.cts`,
@@ -423,6 +445,43 @@ describe('::gatherProjectFiles', () => {
           inWorkspaceSrc: new Map([
             ['cli', [`${root}/packages/cli/src/som-file.tsx`]],
             ['private', []],
+            ['webpack', []]
+          ])
+        },
+        typescriptTestFiles: {
+          all: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`,
+            `${root}/packages/cli/test/my.unit.test.ts`,
+            `${root}/packages/cli/test/nested/type-3.test.ts`,
+            `${root}/packages/cli/test/type-4.test.ts`,
+            `${root}/packages/private/test/my.unit.test.ts`,
+            `${root}/packages/private/test/nested/my.unit.test.ts`,
+            `${root}/packages/private/test/type-5.test.ts`
+          ],
+          inRootTest: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inWorkspaceTest: new Map([
+            [
+              'cli',
+              [
+                `${root}/packages/cli/test/my.unit.test.ts`,
+                `${root}/packages/cli/test/nested/type-3.test.ts`,
+                `${root}/packages/cli/test/type-4.test.ts`
+              ]
+            ],
+            [
+              'private',
+              [
+                `${root}/packages/private/test/my.unit.test.ts`,
+                `${root}/packages/private/test/nested/my.unit.test.ts`,
+                `${root}/packages/private/test/type-5.test.ts`
+              ]
+            ],
             ['webpack', []]
           ])
         }
@@ -509,7 +568,7 @@ describe('::gatherProjectFiles', () => {
             `${root}/src/package.json`
           ]
         },
-        typescriptFiles: {
+        typescriptSrcFiles: {
           all: [
             `${root}/src/1.ts`,
             `${root}/src/2.mts`,
@@ -523,6 +582,19 @@ describe('::gatherProjectFiles', () => {
             `${root}/src/4.tsx`
           ],
           inWorkspaceSrc: new Map()
+        },
+        typescriptTestFiles: {
+          all: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inRootTest: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inWorkspaceTest: new Map()
         }
       });
     });
@@ -642,7 +714,7 @@ describe('::gatherProjectFiles', () => {
           atWorkspaceRoot: new Map(),
           elsewhere: [`${root}/.vercel/package.json`, `${root}/src/package.json`]
         },
-        typescriptFiles: {
+        typescriptSrcFiles: {
           all: [
             `${root}/src/1.ts`,
             `${root}/src/2.mts`,
@@ -656,6 +728,19 @@ describe('::gatherProjectFiles', () => {
             `${root}/src/4.tsx`
           ],
           inWorkspaceSrc: new Map()
+        },
+        typescriptTestFiles: {
+          all: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inRootTest: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inWorkspaceTest: new Map()
         }
       });
     });
@@ -715,7 +800,7 @@ describe('::gatherProjectFiles', () => {
             `${root}/packages/unnamed-pkg-2/package.json`
           ]
         },
-        typescriptFiles: {
+        typescriptSrcFiles: {
           all: [
             `${root}/packages/pkg-2/src/4.tsx`,
             `${root}/packages/pkg-import/src/index.ts`
@@ -725,6 +810,15 @@ describe('::gatherProjectFiles', () => {
             ['pkg-1', []],
             ['pkg-2', [`${root}/packages/pkg-2/src/4.tsx`]],
             ['pkg-import', [`${root}/packages/pkg-import/src/index.ts`]]
+          ])
+        },
+        typescriptTestFiles: {
+          all: [],
+          inRootTest: [],
+          inWorkspaceTest: new Map([
+            ['pkg-1', []],
+            ['pkg-2', []],
+            ['pkg-import', []]
           ])
         }
       });
@@ -794,7 +888,7 @@ describe('::gatherProjectFiles', () => {
             `${root}/src/package.json`
           ]
         },
-        typescriptFiles: {
+        typescriptSrcFiles: {
           all: [
             `${root}/src/2.mts`,
             `${root}/src/3.cts`,
@@ -811,6 +905,43 @@ describe('::gatherProjectFiles', () => {
           inWorkspaceSrc: new Map([
             ['cli', [`${root}/packages/cli/src/som-file.tsx`]],
             ['private', []],
+            ['webpack', []]
+          ])
+        },
+        typescriptTestFiles: {
+          all: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`,
+            `${root}/packages/cli/test/my.unit.test.ts`,
+            `${root}/packages/cli/test/nested/type-3.test.ts`,
+            `${root}/packages/cli/test/type-4.test.ts`,
+            `${root}/packages/private/test/my.unit.test.ts`,
+            `${root}/packages/private/test/nested/my.unit.test.ts`,
+            `${root}/packages/private/test/type-5.test.ts`
+          ],
+          inRootTest: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inWorkspaceTest: new Map([
+            [
+              'cli',
+              [
+                `${root}/packages/cli/test/my.unit.test.ts`,
+                `${root}/packages/cli/test/nested/type-3.test.ts`,
+                `${root}/packages/cli/test/type-4.test.ts`
+              ]
+            ],
+            [
+              'private',
+              [
+                `${root}/packages/private/test/my.unit.test.ts`,
+                `${root}/packages/private/test/nested/my.unit.test.ts`,
+                `${root}/packages/private/test/type-5.test.ts`
+              ]
+            ],
             ['webpack', []]
           ])
         }
@@ -897,7 +1028,7 @@ describe('::gatherProjectFiles', () => {
             `${root}/src/package.json`
           ]
         },
-        typescriptFiles: {
+        typescriptSrcFiles: {
           all: [
             `${root}/src/1.ts`,
             `${root}/src/2.mts`,
@@ -911,6 +1042,19 @@ describe('::gatherProjectFiles', () => {
             `${root}/src/4.tsx`
           ],
           inWorkspaceSrc: new Map()
+        },
+        typescriptTestFiles: {
+          all: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inRootTest: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inWorkspaceTest: new Map()
         }
       });
     });
@@ -947,7 +1091,7 @@ describe('::gatherProjectFiles', () => {
           atWorkspaceRoot: new Map(),
           elsewhere: [`${root}/.vercel/package.json`, `${root}/src/package.json`]
         },
-        typescriptFiles: {
+        typescriptSrcFiles: {
           all: [
             `${root}/src/1.ts`,
             `${root}/src/2.mts`,
@@ -961,6 +1105,19 @@ describe('::gatherProjectFiles', () => {
             `${root}/src/4.tsx`
           ],
           inWorkspaceSrc: new Map()
+        },
+        typescriptTestFiles: {
+          all: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inRootTest: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ],
+          inWorkspaceTest: new Map()
         }
       });
     });
@@ -1525,7 +1682,7 @@ describe('::gatherImportEntriesFromFiles', () => {
   });
 });
 
-describe('::gatherPseudodecoratorsEntriesFromFiles', () => {
+describe('::gatherPseudodecoratorEntriesFromFiles', () => {
   const tsFile = `${__dirname}/fixtures/dummy-pseudodecorators/1.ts` as AbsolutePath;
   const jsFile = `${__dirname}/fixtures/dummy-pseudodecorators/2.js` as AbsolutePath;
   const jsonFile = `${__dirname}/fixtures/dummy-pseudodecorators/3.json` as AbsolutePath;
@@ -1537,7 +1694,7 @@ describe('::gatherPseudodecoratorsEntriesFromFiles', () => {
       expect.hasAssertions();
 
       expect(
-        gatherPseudodecoratorsEntriesFromFiles.sync(
+        gatherPseudodecoratorEntriesFromFiles.sync(
           [tsFile, jsFile, jsonFile, mdFile, ymlFile],
           { useCached: true }
         )
@@ -1551,15 +1708,15 @@ describe('::gatherPseudodecoratorsEntriesFromFiles', () => {
 
       const fileOne = `${__dirname}/fixtures/dummy-imports/1.ts` as AbsolutePath;
 
-      const decoratorEntries = gatherPseudodecoratorsEntriesFromFiles.sync([fileOne], {
+      const decoratorEntries = gatherPseudodecoratorEntriesFromFiles.sync([fileOne], {
         useCached: false
       });
 
       expect(decoratorEntries[0][1]).toBe(
-        gatherPseudodecoratorsEntriesFromFiles.sync([fileOne], { useCached: true })[0][1]
+        gatherPseudodecoratorEntriesFromFiles.sync([fileOne], { useCached: true })[0][1]
       );
 
-      const updatedDecoratorEntries = gatherPseudodecoratorsEntriesFromFiles.sync(
+      const updatedDecoratorEntries = gatherPseudodecoratorEntriesFromFiles.sync(
         [fileOne],
         { useCached: false }
       );
@@ -1567,7 +1724,7 @@ describe('::gatherPseudodecoratorsEntriesFromFiles', () => {
       expect(updatedDecoratorEntries[0][1]).not.toBe(decoratorEntries[0][1]);
 
       expect(
-        gatherPseudodecoratorsEntriesFromFiles.sync([fileOne], { useCached: true })[0][1]
+        gatherPseudodecoratorEntriesFromFiles.sync([fileOne], { useCached: true })[0][1]
       ).toBe(updatedDecoratorEntries[0][1]);
     });
   });
@@ -1577,7 +1734,7 @@ describe('::gatherPseudodecoratorsEntriesFromFiles', () => {
       expect.hasAssertions();
 
       await expect(
-        gatherPseudodecoratorsEntriesFromFiles(
+        gatherPseudodecoratorEntriesFromFiles(
           [tsFile, jsFile, jsonFile, mdFile, ymlFile],
           { useCached: true }
         )
@@ -1591,17 +1748,17 @@ describe('::gatherPseudodecoratorsEntriesFromFiles', () => {
 
       const fileOne = `${__dirname}/fixtures/dummy-imports/1.ts` as AbsolutePath;
 
-      const decoratorEntries = await gatherPseudodecoratorsEntriesFromFiles([fileOne], {
+      const decoratorEntries = await gatherPseudodecoratorEntriesFromFiles([fileOne], {
         useCached: false
       });
 
       expect(decoratorEntries[0][1]).toBe(
         (
-          await gatherPseudodecoratorsEntriesFromFiles([fileOne], { useCached: true })
+          await gatherPseudodecoratorEntriesFromFiles([fileOne], { useCached: true })
         )[0][1]
       );
 
-      const updatedDecoratorEntries = await gatherPseudodecoratorsEntriesFromFiles(
+      const updatedDecoratorEntries = await gatherPseudodecoratorEntriesFromFiles(
         [fileOne],
         { useCached: false }
       );
@@ -1610,7 +1767,7 @@ describe('::gatherPseudodecoratorsEntriesFromFiles', () => {
 
       expect(
         (
-          await gatherPseudodecoratorsEntriesFromFiles([fileOne], { useCached: true })
+          await gatherPseudodecoratorEntriesFromFiles([fileOne], { useCached: true })
         )[0][1]
       ).toBe(updatedDecoratorEntries[0][1]);
     });
@@ -1649,7 +1806,12 @@ describe('::gatherPackageFiles', () => {
           `${root}/src/index.js`,
           `${root}/src/package.json`
         ],
-        test: []
+        test: [
+          `${root}/test/nested/type-2.test.tsx`,
+          `${root}/test/something-else.ts`,
+          `${root}/test/type-1.test.ts`,
+          `${root}/test/unit-jest.test.ts`
+        ]
       });
     });
 
@@ -1677,7 +1839,12 @@ describe('::gatherPackageFiles', () => {
           `${root}/src/index.ts`,
           `${root}/src/package.json`
         ],
-        test: []
+        test: [
+          `${root}/test/nested/type-2.test.tsx`,
+          `${root}/test/something-else.ts`,
+          `${root}/test/type-1.test.ts`,
+          `${root}/test/unit-jest.test.ts`
+        ]
       });
     });
 
@@ -1701,7 +1868,12 @@ describe('::gatherPackageFiles', () => {
             `${root}/src/package.json`,
             `${root}/src/som-file.tsx`
           ],
-          test: [`${root}/test/my.unit.test.ts`]
+          test: [
+            `${root}/test/my.unit.test.ts`,
+            `${root}/test/nested/type-3.test.ts`,
+            `${root}/test/something-else.ts`,
+            `${root}/test/type-4.test.ts`
+          ]
         });
       }
 
@@ -1754,7 +1926,12 @@ describe('::gatherPackageFiles', () => {
             `${root}/src/index.js`,
             `${root}/src/package.json`
           ],
-          test: []
+          test: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/something-else.ts`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ]
         });
       }
 
@@ -1783,7 +1960,12 @@ describe('::gatherPackageFiles', () => {
             `${root}/src/4.tsx`,
             `${root}/src/index.ts`
           ],
-          test: []
+          test: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/something-else.ts`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ]
         });
       }
 
@@ -1815,7 +1997,12 @@ describe('::gatherPackageFiles', () => {
             `${root}/src/index.ts`,
             `${root}/src/package.json`
           ],
-          test: []
+          test: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/something-else.ts`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ]
         });
       }
     });
@@ -1846,7 +2033,12 @@ describe('::gatherPackageFiles', () => {
           `${root}/src/index.ts`,
           `${root}/src/package.json`
         ],
-        test: []
+        test: [
+          `${root}/test/nested/type-2.test.tsx`,
+          `${root}/test/something-else.ts`,
+          `${root}/test/type-1.test.ts`,
+          `${root}/test/unit-jest.test.ts`
+        ]
       });
 
       expect(
@@ -1871,7 +2063,12 @@ describe('::gatherPackageFiles', () => {
           `${root}/src/index.ts`,
           `${root}/src/package.json`
         ],
-        test: []
+        test: [
+          `${root}/test/nested/type-2.test.tsx`,
+          `${root}/test/something-else.ts`,
+          `${root}/test/type-1.test.ts`,
+          `${root}/test/unit-jest.test.ts`
+        ]
       });
     });
 
@@ -1948,7 +2145,12 @@ describe('::gatherPackageFiles', () => {
           `${root}/src/index.js`,
           `${root}/src/package.json`
         ],
-        test: []
+        test: [
+          `${root}/test/nested/type-2.test.tsx`,
+          `${root}/test/something-else.ts`,
+          `${root}/test/type-1.test.ts`,
+          `${root}/test/unit-jest.test.ts`
+        ]
       });
     });
 
@@ -1978,7 +2180,12 @@ describe('::gatherPackageFiles', () => {
           `${root}/src/index.ts`,
           `${root}/src/package.json`
         ],
-        test: []
+        test: [
+          `${root}/test/nested/type-2.test.tsx`,
+          `${root}/test/something-else.ts`,
+          `${root}/test/type-1.test.ts`,
+          `${root}/test/unit-jest.test.ts`
+        ]
       });
     });
 
@@ -2002,7 +2209,12 @@ describe('::gatherPackageFiles', () => {
             `${root}/src/package.json`,
             `${root}/src/som-file.tsx`
           ],
-          test: [`${root}/test/my.unit.test.ts`]
+          test: [
+            `${root}/test/my.unit.test.ts`,
+            `${root}/test/nested/type-3.test.ts`,
+            `${root}/test/something-else.ts`,
+            `${root}/test/type-4.test.ts`
+          ]
         });
       }
 
@@ -2055,7 +2267,12 @@ describe('::gatherPackageFiles', () => {
             `${root}/src/index.js`,
             `${root}/src/package.json`
           ],
-          test: []
+          test: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/something-else.ts`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ]
         });
       }
 
@@ -2081,7 +2298,12 @@ describe('::gatherPackageFiles', () => {
             `${root}/src/4.tsx`,
             `${root}/src/index.ts`
           ],
-          test: []
+          test: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/something-else.ts`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ]
         });
       }
 
@@ -2113,7 +2335,12 @@ describe('::gatherPackageFiles', () => {
             `${root}/src/index.ts`,
             `${root}/src/package.json`
           ],
-          test: []
+          test: [
+            `${root}/test/nested/type-2.test.tsx`,
+            `${root}/test/something-else.ts`,
+            `${root}/test/type-1.test.ts`,
+            `${root}/test/unit-jest.test.ts`
+          ]
         });
       }
     });
@@ -2144,7 +2371,12 @@ describe('::gatherPackageFiles', () => {
           `${root}/src/index.ts`,
           `${root}/src/package.json`
         ],
-        test: []
+        test: [
+          `${root}/test/nested/type-2.test.tsx`,
+          `${root}/test/something-else.ts`,
+          `${root}/test/type-1.test.ts`,
+          `${root}/test/unit-jest.test.ts`
+        ]
       });
 
       await expect(
@@ -2169,7 +2401,12 @@ describe('::gatherPackageFiles', () => {
           `${root}/src/index.ts`,
           `${root}/src/package.json`
         ],
-        test: []
+        test: [
+          `${root}/test/nested/type-2.test.tsx`,
+          `${root}/test/something-else.ts`,
+          `${root}/test/type-1.test.ts`,
+          `${root}/test/unit-jest.test.ts`
+        ]
       });
     });
 

@@ -32,7 +32,8 @@ const debug = debug_.extend('gatherProjectFiles');
 
 const packageJsonGlob = '**/package.json';
 const markdownGlob = '**/*.md';
-const typescriptGlob = 'src/**/*.{ts,tsx,mts,cts}';
+const typescriptSrcGlob = 'src/**/*.{ts,tsx,mts,cts}';
+const typescriptTestGlob = 'test/**/*.test.{ts,tsx,mts,cts}';
 
 /**
  * @see {@link gatherProjectFiles}
@@ -142,9 +143,14 @@ function gatherProjectFiles_(
       inWorkspace: new Map(),
       all: []
     },
-    typescriptFiles: {
+    typescriptSrcFiles: {
       inRootSrc: [],
       inWorkspaceSrc: new Map(),
+      all: []
+    },
+    typescriptTestFiles: {
+      inRootTest: [],
+      inWorkspaceTest: new Map(),
       all: []
     }
   };
@@ -153,7 +159,8 @@ function gatherProjectFiles_(
     packageJsonFiles,
     mainBinFiles: binFiles,
     markdownFiles,
-    typescriptFiles
+    typescriptSrcFiles,
+    typescriptTestFiles
   } = projectFiles;
 
   if (shouldRunSynchronously) {
@@ -212,17 +219,17 @@ function gatherProjectFiles_(
         .then((entries) => new Map(entries))
         .then(assignResultTo(markdownFiles, 'inWorkspace')),
 
-      globAsync(typescriptGlob, {
+      globAsync(typescriptSrcGlob, {
         ignore: ignoreAndPackages,
         dot: true,
         absolute: true,
         nodir: true,
         cwd: projectRoot
-      }).then(assignResultTo(typescriptFiles, 'inRootSrc')),
+      }).then(assignResultTo(typescriptSrcFiles, 'inRootSrc')),
 
       Promise.all(
         subRootPackagesArray.map(async (package_) => {
-          const paths = await globAsync(typescriptGlob, {
+          const paths = await globAsync(typescriptSrcGlob, {
             ignore,
             dot: true,
             absolute: true,
@@ -234,7 +241,31 @@ function gatherProjectFiles_(
         })
       )
         .then((entries) => new Map(entries))
-        .then(assignResultTo(typescriptFiles, 'inWorkspaceSrc'))
+        .then(assignResultTo(typescriptSrcFiles, 'inWorkspaceSrc')),
+
+      globAsync(typescriptTestGlob, {
+        ignore: ignoreAndPackages,
+        dot: true,
+        absolute: true,
+        nodir: true,
+        cwd: projectRoot
+      }).then(assignResultTo(typescriptTestFiles, 'inRootTest')),
+
+      Promise.all(
+        subRootPackagesArray.map(async (package_) => {
+          const paths = await globAsync(typescriptTestGlob, {
+            ignore,
+            dot: true,
+            absolute: true,
+            nodir: true,
+            cwd: package_.root
+          });
+
+          return [package_.id, paths] as [string, string[]];
+        })
+      )
+        .then((entries) => new Map(entries))
+        .then(assignResultTo(typescriptTestFiles, 'inWorkspaceTest'))
     ]);
 
     finalize();
@@ -287,7 +318,7 @@ function gatherProjectFiles_(
       })
     );
 
-    typescriptFiles.inRootSrc = globSync(typescriptGlob, {
+    typescriptSrcFiles.inRootSrc = globSync(typescriptSrcGlob, {
       ignore: ignoreAndPackages,
       dot: true,
       absolute: true,
@@ -295,9 +326,31 @@ function gatherProjectFiles_(
       cwd: projectRoot
     }) as AbsolutePath[];
 
-    typescriptFiles.inWorkspaceSrc = new Map(
+    typescriptSrcFiles.inWorkspaceSrc = new Map(
       subRootPackagesArray.map((package_) => {
-        const paths = globSync(typescriptGlob, {
+        const paths = globSync(typescriptSrcGlob, {
+          ignore,
+          dot: true,
+          absolute: true,
+          nodir: true,
+          cwd: package_.root
+        });
+
+        return [package_.id, paths] as [string, AbsolutePath[]];
+      })
+    );
+
+    typescriptTestFiles.inRootTest = globSync(typescriptTestGlob, {
+      ignore: ignoreAndPackages,
+      dot: true,
+      absolute: true,
+      nodir: true,
+      cwd: projectRoot
+    }) as AbsolutePath[];
+
+    typescriptTestFiles.inWorkspaceTest = new Map(
+      subRootPackagesArray.map((package_) => {
+        const paths = globSync(typescriptTestGlob, {
           ignore,
           dot: true,
           absolute: true,
@@ -352,8 +405,12 @@ function gatherProjectFiles_(
       Array.from(markdownFiles.inWorkspace.values()).flat()
     );
 
-    typescriptFiles.all = typescriptFiles.inRootSrc.concat(
-      Array.from(typescriptFiles.inWorkspaceSrc.values()).flat()
+    typescriptSrcFiles.all = typescriptSrcFiles.inRootSrc.concat(
+      Array.from(typescriptSrcFiles.inWorkspaceSrc.values()).flat()
+    );
+
+    typescriptTestFiles.all = typescriptTestFiles.inRootTest.concat(
+      Array.from(typescriptTestFiles.inWorkspaceTest.values()).flat()
     );
 
     debug('project files: %O', projectFiles);

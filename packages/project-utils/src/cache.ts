@@ -13,7 +13,7 @@ import type {
   gatherPackageBuildTargets,
   gatherPackageFiles,
   gatherProjectFiles,
-  gatherPseudodecoratorsEntriesFromFiles
+  gatherPseudodecoratorEntriesFromFiles
 } from 'rootverse+project-utils:src/analyze.ts';
 
 import {
@@ -112,7 +112,7 @@ export enum CacheScope {
   GatherPackageBuildTargets = 'gatherPackageBuildTargets',
   GatherPackageFiles = 'gatherPackageFiles',
   GatherProjectFiles = 'gatherProjectFiles',
-  GatherPseudodecoratorsEntriesFromFiles = 'gatherPseudodecoratorsEntriesFromFiles',
+  GatherPseudodecoratorEntriesFromFiles = 'gatherPseudodecoratorEntriesFromFiles',
   DeriveVirtualGitignoreLines = 'deriveVirtualGitignoreLines',
   DeriveVirtualPrettierignoreLines = 'deriveVirtualPrettierignoreLines',
   IsAccessible = 'isAccessible',
@@ -191,8 +191,8 @@ function setInCache(
   ...args: FunctionToCacheParameters<typeof gatherProjectFiles>
 ): void;
 function setInCache(
-  scope: CacheScope.GatherPseudodecoratorsEntriesFromFiles,
-  ...args: FunctionToCacheParameters<typeof gatherPseudodecoratorsEntriesFromFiles, true>
+  scope: CacheScope.GatherPseudodecoratorEntriesFromFiles,
+  ...args: FunctionToCacheParameters<typeof gatherPseudodecoratorEntriesFromFiles, true>
 ): void;
 function setInCache(
   scope: CacheScope.DeriveVirtualGitignoreLines,
@@ -256,12 +256,12 @@ function getFromCache(
   ...args: ArrayNoLast<FunctionToCacheParameters<typeof gatherProjectFiles>>
 ): FunctionToCacheParameters<typeof gatherProjectFiles>[1] | undefined;
 function getFromCache(
-  scope: CacheScope.GatherPseudodecoratorsEntriesFromFiles,
+  scope: CacheScope.GatherPseudodecoratorEntriesFromFiles,
   ...args: ArrayNoLast<
-    FunctionToCacheParameters<typeof gatherPseudodecoratorsEntriesFromFiles, true>
+    FunctionToCacheParameters<typeof gatherPseudodecoratorEntriesFromFiles, true>
   >
 ):
-  | FunctionToCacheParameters<typeof gatherPseudodecoratorsEntriesFromFiles, true>[1]
+  | FunctionToCacheParameters<typeof gatherPseudodecoratorEntriesFromFiles, true>[1]
   | undefined;
 function getFromCache(
   scope: CacheScope.DeriveVirtualGitignoreLines,

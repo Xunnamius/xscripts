@@ -17,6 +17,11 @@ export enum Tsconfig {
 export const jestConfigProjectBase = 'jest.config.mjs';
 
 /**
+ * The basename of the well-known custom Tstyche configuration file.
+ */
+export const tstycheConfigProjectBase = 'tstyche.config.json';
+
+/**
  * The basename of the well-known custom Next.js configuration file.
  */
 export const nextjsConfigProjectBase = 'next.config.mjs';
