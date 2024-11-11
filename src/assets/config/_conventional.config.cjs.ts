@@ -227,11 +227,11 @@ export const defaultIssuePrefixes = ['#'];
  * `wellKnownCommitTypes`, will appear _after_ any well-known sections if they
  * are set to appear at all (e.g. if they are marked as breaking changes).
  *
- * Also note that conventional-changelog-* have internal lists of "well-known
- * commit types" (conventional, angular, etc) that this type will be merged on
- * top of; the implication being: not overwriting an internal type's
- * configuration can lead to that type (feat, fix, ci) being included even if it
- * is not present in the below array.
+ * Also note that `@-xun/changelog` has internal lists of "well-known commit
+ * types" (conventional, angular, etc) that this type will be merged on top of;
+ * the implication being: not overwriting an internal type's configuration can
+ * lead to that type (feat, fix, ci) being included even if it is not present in
+ * the below array.
  *
  * Valid commit types are alphanumeric and may contain an underscore (_) or dash
  * (-). Using characters other than these will lead to undefined behavior.
@@ -319,10 +319,8 @@ export function unpatchSpawnChild() {
 }
 
 /**
- * This function returns an "unconventional" conventional-changelog
- * configuration preset. See the documentation for details on the differences
- * between this and the official `conventional-changelog-conventionalcommits`
- * package.
+ * This function returns a `@-xun/changelog` configuration preset. See the
+ * documentation for details.
  *
  * `configOverrides`, if an object or undefined, is recursively merged into a
  * partially initialized {@link XchangelogConfig} object (overwriting same keys)
@@ -914,7 +912,7 @@ module.exports = moduleExport({
  * Return directories that should be excluded from consideration depending on
  * the project structure and the current working directory.
  *
- * Useful for narrowing the scope of conventional-changelog and semantic-release
+ * Useful for narrowing the scope of `@-xun/changelog` and semantic-release
  * -based tooling like xchangelog and xrelease.
  */
 export function getExcludedDirectoriesRelativeToProjectRoot() {

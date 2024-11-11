@@ -1,4 +1,3 @@
-// {@xscripts/notExtraneous dotenv}
 import { type ChildConfiguration } from '@black-flag/core';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
@@ -169,6 +168,8 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
 
       // TODO: execute tasks #1-8 wrt --ci, --rebuild-changelog, and --skip-prerelease-tasks
 
+      // {@xscripts/notExtraneous dotenv}
+
       // TODO: set these before semantic-release runs
       void process.env.XSCRIPTS_RELEASE_REBUILD_CHANGELOG;
       void process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT;
@@ -178,7 +179,7 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
       // TODO: execute task #10 (semantic-release, maybe with --ci)
       // TODO: provenance via https://docs.npmjs.com/generating-provenance-statements
       // TODO: simultaneously publish to GitHub Packages and NPM?
-      // TODO: simultaneously publish to NPM and JSR?
+      // TODO: simultaneously publish to NPM and JSR
       // TODO: do not allow packages below version 1.0.0 to be published (error early in plugin)
 
       // TODO: do codecov upload last; CODECOV_TOKEN=$(npx --yes dotenv-cli -p CODECOV_TOKEN) codecov; use codecov flags to determine which flags to send to codecov when uploading test results

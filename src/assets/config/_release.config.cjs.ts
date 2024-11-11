@@ -2,7 +2,7 @@
 // * - @semantic-release/release-notes-generator
 // * - @semantic-release/changelog
 
-// {@xscripts/notExtraneous semantic-release}
+// {@xscripts/notExtraneous @-xun/release}
 import assert from 'node:assert';
 import crypto from 'node:crypto';
 import { readFile, rm as rmFile, writeFile } from 'node:fs/promises';

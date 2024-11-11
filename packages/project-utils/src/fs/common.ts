@@ -63,11 +63,10 @@ export function toAbsolutePath(
  * This function returns the calculated {@link RelativePath} from `from` to
  * `to`.
  *
- * **If `from === to` and/or `from` and `to` point to the same location, the
- * string `'.'` is returned**, which is different than Node's standard
- * {@link resolve} behavior (which returns an empty string `""`). Otherwise, if
- * `to`/`from` are not {@link AbsolutePath}s, `process.cwd()` will be prepended
- * to them before calculation.
+ * If `from === to` and/or `from` and `to` point to the same location, the empty
+ * string `''` is returned. Otherwise, if `to`/`from` are not
+ * {@link AbsolutePath}s, `process.cwd()` will be prepended to them before
+ * calculation.
  *
  * @see {@link resolve}
  */
@@ -75,9 +74,9 @@ export function toRelativePath(from: string, to: string): RelativePath;
 /**
  * This function returns `to` as a {@link RelativePath}.
  *
- * **If `to` is already relative and/or is the empty string (`""`), it is
- * returned as-is without any modifications.** Otherwise, a {@link RelativePath}
- * from `process.cwd()` to `to` will be returned.
+ * If `to` is already relative and/or is the empty string (`""`), it is returned
+ * as-is without any modifications. Otherwise, a {@link RelativePath} from
+ * `process.cwd()` to `to` will be returned.
  *
  * @see {@link resolve}
  */
