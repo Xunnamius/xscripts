@@ -4,10 +4,6 @@
 
 import assert from 'node:assert';
 
-import conventionalChangelogCore, {
-  type Options as ConventionalChangelogOptions
-} from 'conventional-changelog-core';
-
 import { toSentenceCase } from 'multiverse+cli-utils:util.ts';
 
 import {
@@ -21,10 +17,15 @@ import {
 
 import {
   moduleExport,
+  noSpecialInitialCommitIndicator,
   noteTitleForBreakingChange,
   wellKnownCommitTypes
 } from 'universe:assets/config/_conventional.config.cjs.ts';
 
+import type {
+  XchangelogConfig,
+  XchangelogOptions
+} from '@-xun/changelog' with { 'resolution-mode': 'import' };
 import type { Merge, Promisable, SetParameterType } from 'type-fest';
 
 reconfigureJestGlobalsToSkipTestsInThisFileIfRequested({ it: true });
@@ -41,6 +42,12 @@ const commitTypeSections: Record<
     })
     .filter((item) => !!item)
 );
+
+beforeEach(() => {
+  process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT = noSpecialInitialCommitIndicator;
+});
+
+afterEach(() => delete process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT);
 
 // TODO: need to do monorepo tests too
 
@@ -157,7 +164,7 @@ it('translates each semver tag into a super-section link suffixed with commit da
 
         tags.all.forEach((tag) => {
           expect(changelog).toInclude(
-            `[${tag.slice(1)}](https://github.com/fake-user/fake-repo/compare/`
+            `[${tag.slice(9)}](https://github.com/fake-user/fake-repo/compare/`
           );
         });
       }
@@ -1000,16 +1007,25 @@ async function withMockedFixtureWrapper(
 }
 
 async function runConventionalChangelog(
-  config: ConventionalChangelogOptions['config'],
+  config: XchangelogConfig,
   {
     makeReplacements = true,
-    ...options
-  }: { makeReplacements?: boolean } & Omit<ConventionalChangelogOptions, 'config'> = {}
+    ...optionsOverrides
+  }: { makeReplacements?: boolean } & Omit<XchangelogOptions, 'config'> = {}
 ) {
+  const { default: makeChangelogSectionStream } = await import('@-xun/changelog');
+  const { options, parserOpts, writerOpts, context, gitRawCommitsOpts } = config;
   // * Note that options.outputUnreleased is used to determine config.writerOps.doFlush
-  const result = (await conventionalChangelogCore({ config, ...options }).toArray()).join(
-    ''
-  );
+  const result = (
+    await makeChangelogSectionStream(
+      { config, ...options, ...optionsOverrides },
+      context,
+      gitRawCommitsOpts,
+      parserOpts,
+      writerOpts,
+      {}
+    ).toArray()
+  ).join('');
 
   const changelog = makeReplacements
     ? result
@@ -1104,7 +1120,7 @@ function generatePatchesForEnvironment6(): TestEnvironmentPatch[] {
           })
         });
 
-        return git.addAnnotatedTag('v0.1.0', 'v0.1.0');
+        return git.addAnnotatedTag('fake-pkg@0.1.0', 'fake-pkg@0.1.0');
       }
     }
   ]);
@@ -1127,7 +1143,7 @@ function generatePatchesForEnvironment7(): TestEnvironmentPatch[] {
           })
         });
 
-        return git.addAnnotatedTag('v0.2.0', 'v0.2.0');
+        return git.addAnnotatedTag('fake-pkg@0.2.0', 'fake-pkg@0.2.0');
       }
     }
   ]);
@@ -1146,7 +1162,7 @@ function generatePatchesForEnvironment8(): TestEnvironmentPatch[] {
           })
         });
 
-        return git.addAnnotatedTag('v0.2.1', 'v0.2.1');
+        return git.addAnnotatedTag('fake-pkg@0.2.1', 'fake-pkg@0.2.1');
       }
     }
   ]);
@@ -1170,7 +1186,7 @@ function generatePatchesForEnvironment9(): TestEnvironmentPatch[] {
           })
         });
 
-        return git.addAnnotatedTag('v1.0.0', 'v1.0.0');
+        return git.addAnnotatedTag('fake-pkg@1.0.0', 'fake-pkg@1.0.0');
       }
     }
   ]);
@@ -1195,7 +1211,7 @@ function generatePatchesForEnvironment10(): TestEnvironmentPatch[] {
           })
         });
 
-        return git.addAnnotatedTag('v1.1.0', 'v1.1.0');
+        return git.addAnnotatedTag('fake-pkg@1.1.0', 'fake-pkg@1.1.0');
       }
     }
   ]);
@@ -1221,7 +1237,7 @@ function generatePatchesForEnvironment11(): TestEnvironmentPatch[] {
           })
         });
 
-        return git.addAnnotatedTag('v1.1.1', 'v1.1.1');
+        return git.addAnnotatedTag('fake-pkg@1.1.1', 'fake-pkg@1.1.1');
       }
     }
   ]);

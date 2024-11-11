@@ -45,7 +45,7 @@ exports[`matches changelog snapshot when there are no semver tags in the repo 1`
 `;
 
 exports[`matches changelog snapshot when there are semver tags in the repo 1`] = `
-"### [1.1.1](https://github.com/fake-user/fake-repo/compare/v1.1.0...v1.1.1) (date)
+"### [1.1.1](https://github.com/fake-user/fake-repo/compare/fake-pkg@1.1.0...fake-pkg@1.1.1) (date)
 
 #### 💥 BREAKING CHANGES 💥
 
@@ -71,7 +71,7 @@ exports[`matches changelog snapshot when there are semver tags in the repo 1`] =
 
 * *"build(bore): include1 [skip cd]"* ([X](https://github.com/fake-user/fake-repo/commit/X))
 
-## [1.1.0](https://github.com/fake-user/fake-repo/compare/v1.0.0...v1.1.0) (date)
+## [1.1.0](https://github.com/fake-user/fake-repo/compare/fake-pkg@1.0.0...fake-pkg@1.1.0) (date)
 
 ### 🔥 Reverted
 
@@ -81,7 +81,7 @@ exports[`matches changelog snapshot when there are semver tags in the repo 1`] =
 * *"feat(X): broken-but-still-supported revert"* ([X](https://github.com/fake-user/fake-repo/commit/X))
 * *Feat: custom revert format* ([X](https://github.com/fake-user/fake-repo/commit/X))
 
-## [1.0.0](https://github.com/fake-user/fake-repo/compare/v0.2.1...v1.0.0) (date)
+## [1.0.0](https://github.com/fake-user/fake-repo/compare/fake-pkg@0.2.1...fake-pkg@1.0.0) (date)
 
 ### 💥 BREAKING CHANGES 💥
 
@@ -108,13 +108,13 @@ Here are some extra details!
 
 * **deps:** bump @dummy/package from 7.1.2 to 8.0.0 (thanks [@Xunnamius](https://github.com/Xunnamius), [@suimannux](https://github.com/suimannux) [@user1](https://github.com/user1)/[@user2](https://github.com/user2), [@user3](https://github.com/user3)/@+u%+(#bad email@aol.com with help from [@merchanz039f9](https://github.com/merchanz039f9)) ([X](https://github.com/fake-user/fake-repo/commit/X))
 
-### [0.2.1](https://github.com/fake-user/fake-repo/compare/v0.2.0...v0.2.1) (date)
+### [0.2.1](https://github.com/fake-user/fake-repo/compare/fake-pkg@0.2.0...fake-pkg@0.2.1) (date)
 
 #### ✨ Features
 
 * Implementing [#5](https://github.com/fake-user/fake-repo/issues/5) by [@dlmr](https://github.com/dlmr) ([X](https://github.com/fake-user/fake-repo/commit/X)) <sup>see [#10](https://github.com/fake-user/fake-repo/issues/10)</sup>
 
-## [0.2.0](https://github.com/fake-user/fake-repo/compare/v0.1.0...v0.2.0) (date)
+## [0.2.0](https://github.com/fake-user/fake-repo/compare/fake-pkg@0.1.0...fake-pkg@0.2.0) (date)
 
 ### ✨ Features
 
@@ -122,7 +122,7 @@ Here are some extra details!
 * Even more features ([X](https://github.com/fake-user/fake-repo/commit/X))
 * Some more features ([X](https://github.com/fake-user/fake-repo/commit/X))
 
-## [0.1.0](https://github.com/fake-user/fake-repo/compare/X...v0.1.0) (date)
+## [0.1.0](https://github.com/fake-user/fake-repo/compare/X...fake-pkg@0.1.0) (date)
 
 ### 💥 BREAKING CHANGES 💥
 
