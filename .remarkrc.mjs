@@ -64,7 +64,7 @@ const lintConfig = {
     // {@xscripts/notExtraneous remark-lint-heading-whitespace}
     'remark-lint-heading-whitespace',
     // {@xscripts/notExtraneous remark-lint-list-item-style}
-    'remark-lint-list-item-style',
+    ['remark-lint-list-item-style', { checkPunctuation: false }],
     // {@xscripts/notExtraneous remark-lint-no-duplicate-defined-urls}
     'remark-lint-no-duplicate-defined-urls',
     // {@xscripts/notExtraneous remark-lint-no-duplicate-headings-in-section}
