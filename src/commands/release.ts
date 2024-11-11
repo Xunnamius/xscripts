@@ -98,15 +98,15 @@ export default function command({
 $1 according to the release procedure described in the MAINTAINING.md file and at length in the xscripts wiki: https://github.com/Xunnamius/xscripts/wiki. Said release procedure is essentially composed of ten tasks:
 
 1. Validate environment variables
-2. [prerelease task] Run npm ci
+2. [prerelease task] Run npm ci (only if \`--ci=true\`)
 3. [prerelease task] [npm run lint] xscripts lint --scope=this-package-source
 4. [prerelease task] [npm run build] xscripts build distributables
 5. [prerelease task] [npm run format] xscripts format
 6. [prerelease task] [npm run build:docs] xscripts build documentation
 7. [prerelease task] [npm run test] xscripts test --coverage
-8. xscripts project renovate --synchronize-interdependencies (affects this package only)
-9. Run semantic-release and regenerate CHANGELOG.md
-10. Upload coverage results to Codecov
+8. xscripts project renovate --scope this-package --task synchronize-interdependencies
+9. Run semantic-release and rebuild CHANGELOG.md
+10. [postrelease task] Upload coverage results to Codecov
 
 Provide --ci (--continuous-integration) to enable useful functionality for CI execution environments. Specifically: run task #2, run semantic-release in CI mode, and facilitate package provenance if the runtime environment supports it. If running the release procedure by hand instead of via CI/CD, use --no-ci to disable CI-specific functionality. --no-ci (\`--ci=false\`) is the default when the NODE_ENV environment variable is undefined or "development," otherwise --ci (\`--ci=true\`) is the default.
 
@@ -114,13 +114,15 @@ Provide --rebuild-changelog to set the XSCRIPTS_RELEASE_UPDATE_CHANGELOG environ
 
 Running \`xscripts release\` will usually execute the tasks listed above. Provide --skip-prerelease-tasks to skip running tasks #2-7, also known as the "prerelease tasks". This is useful for task scheduling tools like Turbo that decide out-of-band if/when/how to run specific prerelease tasks; such a tool only calls \`xscripts release\` when it's ready to trigger semantic-release. Therefore, \`--skip-prerelease-tasks=true\` becomes the default when Turbo is detected in the runtime environment (by checking for the existence of \`process.env.TURBO_HASH\`).
 
+Similarly, provide --skip-postrelease-tasks to skip running tasks after #9, known as the "postrelease tasks," though this is typically unnecessary.
+
 If the package's package.json file is missing the NPM script associated with a task, this command will exit with an error unless \`--skip-missing-tasks\` is provided, in which case any missing scripts (except "release", which must be defined) are noted in a warning but otherwise ignored.
 
 The only available scope is "${ReleaseScope.ThisPackage}"; hence, when invoking this command, only the package at the current working directory will be eligible for release. Use Npm's workspace features, or Turbo's, if your goal is to potentially release multiple packages.
 
-Provide --synchronize-interdependencies to run a version of \`xscripts project renovate --synchronize-interdependencies\`, except the renovation is limited to the current package's package.json rather than every package's package.json across the entire project.
+Provide --synchronize-interdependencies to run the equivalent of \`xscripts project renovate --scope this-package --task synchronize-interdependencies\`. Defaults to \`--synchronize-interdependencies=true\`.
 
-Uploading test coverage data to Codecov is only performed if any coverage data exists. A warning will be issued if no coverage data exists. Coverage data can be generated using \`xscripts test --coverage\` (which is prerelease task #7). When uploading coverage data, the package's name is used to derive a flag (https://docs.codecov.com/docs/flags). Codecov uses flags to map reports to specific packages in its UI and coverage badges.
+Uploading test coverage data to Codecov (a postrelease task) is only performed if any coverage data exists. An error will be thrown if no coverage data exists. Coverage data can be generated using \`xscripts test --coverage\` (which is prerelease task #7). When uploading coverage data, the package's name is used to derive a flag (https://docs.codecov.com/docs/flags). Codecov uses flags to map reports to specific packages in its UI and coverage badges.
 
 Provide --dry-run to ensure no changes are made, no release is cut, and no publishing or git write operations occur. Use --dry-run to test what would happen if you were to cut a release.
 

@@ -805,7 +805,13 @@ distrib root: ${absoluteOutputDirPath}
           // TODO: This is waiting for my babel plugin to spit out some metadata.
           // TODO: There is probably a more clever way to do that without
           // TODO: suffering this delay. Once that way is found, delete this:
-          await delay(100);
+          await delay(150);
+
+          genericLogger.newline([LogTag.IF_NOT_HUSHED]);
+          genericLogger(
+            [LogTag.IF_NOT_QUIETED],
+            'Distributables built successfully and are now available ✅'
+          );
 
           if (
             (packageAttributes[ProjectAttribute.Cli] ||
@@ -902,10 +908,13 @@ distrib root: ${absoluteOutputDirPath}
           }
 
           if (skipOutputChecks) {
-            debug('skipped consistency and integrity checks on build output');
+            genericLogger.newline([LogTag.IF_NOT_HUSHED]);
+            genericLogger(
+              [LogTag.IF_NOT_HUSHED],
+              '✖️ Skipped consistency and integrity checks on build output'
+            );
           } else {
             genericLogger.newline([LogTag.IF_NOT_QUIETED]);
-
             genericLogger(
               [LogTag.IF_NOT_QUIETED],
               '⮞ Running lightweight consistency and integrity checks on build output'
@@ -949,7 +958,7 @@ distrib root: ${absoluteOutputDirPath}
 
             if (attwExitCode !== 0 && !isSilenced) {
               if (attwOutput) {
-                process.stdout.write([attwOutput].flat().join('\n'));
+                process.stderr.write([attwOutput].flat().join('\n') + '\n');
               } else {
                 genericLogger.error(
                   [LogTag.IF_NOT_SILENCED],
@@ -959,20 +968,23 @@ distrib root: ${absoluteOutputDirPath}
                 );
               }
             } else {
-              genericLogger([LogTag.IF_NOT_SILENCED], `${TAB}@attw/cli test succeeded`);
+              genericLogger(
+                [LogTag.IF_NOT_SILENCED],
+                `${TAB}@attw/cli test succeeded ✅`
+              );
             }
 
             if (bijectionResult.status === 'fulfilled') {
               genericLogger(
                 [LogTag.IF_NOT_SILENCED],
-                `${TAB}dependency bijection tests succeeded`
+                `${TAB}Dependency bijection tests succeeded ✅`
               );
             }
 
             if (entryResult.status === 'fulfilled') {
               genericLogger(
                 [LogTag.IF_NOT_SILENCED],
-                `${TAB}package.json::exports entry point tests succeeded`
+                `${TAB}package.json::exports entry point tests succeeded ✅`
               );
             }
 

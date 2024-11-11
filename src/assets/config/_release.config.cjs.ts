@@ -395,7 +395,7 @@ export async function success(_pluginConfig: PluginConfig, context: SuccessConte
 
     if (context.envCi.isCi) {
       process.stdout.write(
-        '::warning title=Repository left in unclean state::The release pipeline has terminated but the repository remains in an unclean state. This is typically evident of a broken build process.'
+        '::warning title=Repository left in unclean state::The release pipeline has terminated but the repository remains in an unclean state. This is typically evident of a broken build process.\n'
       );
     }
   }
