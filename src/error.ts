@@ -145,6 +145,9 @@ export const ErrorMessage = {
   LintingFailed() {
     return 'one or more linters returned a bad exit code';
   },
+  TestingFailed() {
+    return 'one or more test executables returned a bad exit code';
+  },
   BuildOutputChecksFailed() {
     return 'one or more build output integrity checks failed';
   },

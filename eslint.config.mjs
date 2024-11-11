@@ -688,6 +688,7 @@ const config = makeTsEslintConfig(
     ...eslintPluginJestAll,
     name: '@-xun/scripts:jest',
     files: [`**/*.test.{${toExtensionList(extensionsTsAndJs)}}`],
+    ignores: [`**/type-*.test.{${toExtensionList(extensionsTsAndJs)}}`],
     rules: {
       ...eslintPluginJestAll.rules,
       ...jestRules
