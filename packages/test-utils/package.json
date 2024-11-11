@@ -1,5 +1,7 @@
 {
   "name": "@-xun/test",
   "version": "1.0.0",
-  "dependencies": {}
+  "dependencies": {
+    "simple-git": "^3.27.0"
+  }
 }
