@@ -40,7 +40,7 @@ export default function command({
   state,
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const { root: projectRoot } = projectMetadata_?.rootPackage || {};
+  const { rootPackage: { root: projectRoot } = {} } = projectMetadata_ || {};
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     scope: { choices: documentationBuilderScopes },
     entries: {
@@ -48,11 +48,7 @@ export default function command({
       array: true,
       description: 'The entry point(s) of your documentation',
       default: projectRoot
-        ? [
-            'src/**/*.ts',
-            'test/**/*.ts',
-            `${projectRoot === process.cwd() ? '' : `${projectRoot}/`}types/**/*.ts`
-          ]
+        ? ['src/**/*.ts', 'test/**/*.ts', 'types/**/*.ts']
         : '(project-dependent)',
       check: checkArrayNotEmpty('--entries')
     }
