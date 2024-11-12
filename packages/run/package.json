@@ -78,6 +78,7 @@
     "node": "18.20.0 || ^20.15.0 || >=22.5.0"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   }
 }
