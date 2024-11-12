@@ -28,8 +28,6 @@ import {
   tstycheConfigProjectBase
 } from 'multiverse+project-utils:fs.ts';
 
-import { runNoRejectOnBadExit } from 'multiverse+run';
-
 import { baseConfig } from 'universe:assets/config/_jest.config.mjs.ts';
 
 import {
@@ -47,6 +45,8 @@ import {
   runGlobalPreChecks,
   withGlobalBuilder
 } from 'universe:util.ts';
+
+import { runNoRejectOnBadExit } from '@-xun/run';
 
 // ! Cannot use the global (g) flag
 const tstycheTargetRegExp = /(^|\/)type-.*\.test\.(m|c)?tsx?$/;

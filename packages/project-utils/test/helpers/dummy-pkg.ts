@@ -4,7 +4,7 @@ import { isNativeError } from 'node:util/types';
 import { TrialError } from 'named-app-errors';
 import { resolve as resolverLibrary } from 'resolve.exports';
 
-import { runNoRejectOnBadExit } from 'multiverse+run';
+import { runNoRejectOnBadExit } from '@-xun/run';
 
 import { toAbsolutePath, type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
 

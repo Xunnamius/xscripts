@@ -10,7 +10,7 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
-import { run } from 'multiverse+run';
+import { run } from '@-xun/run';
 
 import {
   DefaultGlobalScope,

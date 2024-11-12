@@ -10,7 +10,7 @@ import {
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { Tsconfig } from 'multiverse+project-utils:fs.ts';
-import { run } from 'multiverse+run';
+import { run } from '@-xun/run';
 
 import {
   ThisPackageGlobalScope as DocumentationBuilderScope,

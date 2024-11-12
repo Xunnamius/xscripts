@@ -17,12 +17,13 @@ import {
 
 import { toRelativePath, type RelativePath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
-import { runNoRejectOnBadExit } from 'multiverse+run';
 
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
 import { __read_file_sync } from 'universe:util.ts';
+
+import { runNoRejectOnBadExit } from '@-xun/run';
 
 import type {
   XchangelogCommit,

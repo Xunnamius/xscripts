@@ -10,7 +10,7 @@ import {
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { isRootPackage } from 'multiverse+project-utils:analyze.ts';
-import { runWithInheritedIo } from 'multiverse+run';
+import { runWithInheritedIo } from '@-xun/run';
 
 import {
   UnlimitedGlobalScope as PreparationScope,

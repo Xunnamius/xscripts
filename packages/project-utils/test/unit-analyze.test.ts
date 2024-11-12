@@ -1,6 +1,6 @@
 import { toss } from 'toss-expression';
 
-import { runNoRejectOnBadExit } from 'multiverse+run';
+import { runNoRejectOnBadExit } from '@-xun/run';
 import { asMockedFunction } from 'multiverse+test-utils';
 
 import { pathToPackage } from 'rootverse+project-utils:src/analyze/path-to-package.ts';
@@ -38,7 +38,7 @@ jest.mock<typeof import('browserslist')>('browserslist', () => {
     : jest.requireActual('browserslist');
 });
 
-jest.mock('multiverse+run');
+jest.mock('@-xun/run');
 
 // eslint-disable-next-line jest/require-hook
 let mockShouldReturnBrowserslistMock = false;

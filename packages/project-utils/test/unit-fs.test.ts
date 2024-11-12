@@ -4,7 +4,7 @@ import { relative } from 'node:path';
 
 import { toss } from 'toss-expression';
 
-import { runNoRejectOnBadExit } from 'multiverse+run';
+import { runNoRejectOnBadExit } from '@-xun/run';
 import { asMockedFunction } from 'multiverse+test-utils';
 
 import { cache } from 'rootverse+project-utils:src/cache.ts';
@@ -30,7 +30,7 @@ import { fixtures } from 'rootverse+project-utils:test/helpers/dummy-repo.ts';
 
 jest.mock('node:fs');
 jest.mock('node:fs/promises');
-jest.mock('multiverse+run');
+jest.mock('@-xun/run');
 
 const mockedReadFileSync = asMockedFunction(readFileSync);
 const mockedReadFileAsync = asMockedFunction(readFileAsync);

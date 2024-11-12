@@ -12,7 +12,7 @@ import {
   WorkspaceAttribute
 } from 'multiverse+project-utils';
 
-import { runWithInheritedIo } from 'multiverse+run';
+import { runWithInheritedIo } from '@-xun/run';
 
 import {
   DefaultGlobalScope,

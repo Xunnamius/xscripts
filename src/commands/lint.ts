@@ -25,7 +25,7 @@ import {
   Tsconfig
 } from 'multiverse+project-utils:fs.ts';
 
-import { runNoRejectOnBadExit, type run, type Subprocess } from 'multiverse+run';
+import { runNoRejectOnBadExit, type run, type Subprocess } from '@-xun/run';
 
 import {
   DefaultGlobalScope,

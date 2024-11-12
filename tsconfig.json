@@ -56,7 +56,6 @@
       "multiverse+debug:*": ["packages/debug/src/*"],
       "multiverse+project-utils:*": ["packages/project-utils/src/*"],
       "multiverse+rejoinder:*": ["packages/rejoinder/src/*"],
-      "multiverse+run:*": ["packages/run/src/*"],
       "multiverse+test-utils:*": ["packages/test-utils/src/*"],
       "multiverse+bfe": ["packages/bfe/src/index.ts"],
       "multiverse+babel-plugin-metadata-accumulator": [
@@ -66,7 +65,6 @@
       "multiverse+debug": ["packages/debug/src/index.ts"],
       "multiverse+project-utils": ["packages/project-utils/src/index.ts"],
       "multiverse+rejoinder": ["packages/rejoinder/src/index.ts"],
-      "multiverse+run": ["packages/run/src/index.ts"],
       "multiverse+test-utils": ["packages/test-utils/src/index.ts"],
       "testverse:*": ["test/*"],
       "testverse+bfe:*": ["packages/bfe/test/*"],
@@ -77,7 +75,6 @@
       "testverse+debug:*": ["packages/debug/test/*"],
       "testverse+project-utils:*": ["packages/project-utils/test/*"],
       "testverse+rejoinder:*": ["packages/rejoinder/test/*"],
-      "testverse+run:*": ["packages/run/test/*"],
       "testverse+test-utils:*": ["packages/test-utils/test/*"],
       "typeverse:*": ["types/*"],
       "rootverse:*": ["*"],
@@ -89,7 +86,6 @@
       "rootverse+debug:*": ["packages/debug/*"],
       "rootverse+project-utils:*": ["packages/project-utils/*"],
       "rootverse+rejoinder:*": ["packages/rejoinder/*"],
-      "rootverse+run:*": ["packages/run/*"],
       "rootverse+test-utils:*": ["packages/test-utils/*"]
     },
     "resolveJsonModule": true,

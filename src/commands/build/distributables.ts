@@ -73,7 +73,7 @@ import {
 } from 'multiverse+project-utils:resolver.ts';
 
 import { SHORT_TAB, TAB } from 'multiverse+rejoinder';
-import { run, runNoRejectOnBadExit } from 'multiverse+run';
+import { run, runNoRejectOnBadExit } from '@-xun/run';
 
 import {
   extensionsTypescript,

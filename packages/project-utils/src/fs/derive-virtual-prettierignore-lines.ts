@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { readFile as readFileAsync } from 'node:fs/promises';
 
-import { runNoRejectOnBadExit } from 'multiverse+run';
+import { runNoRejectOnBadExit } from '@-xun/run';
 
 import { cache, CacheScope } from 'rootverse+project-utils:src/cache.ts';
 import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';

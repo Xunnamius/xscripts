@@ -27,7 +27,6 @@ import {
 } from 'multiverse+project-utils:fs.ts';
 
 import { createDebugLogger } from 'multiverse+rejoinder';
-import { run } from 'multiverse+run';
 
 import {
   getExcludedDirectoriesRelativeToProjectRoot,
@@ -51,6 +50,8 @@ import {
 
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
+
+import { run } from '@-xun/run';
 
 import type { XchangelogConfigOptions } from '@-xun/changelog' with { 'resolution-mode': 'import' };
 import type { EmptyObject } from 'type-fest';

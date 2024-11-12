@@ -27,7 +27,7 @@ import {
 } from 'multiverse+project-utils:fs.ts';
 
 import { SHORT_TAB } from 'multiverse+rejoinder';
-import { run, runNoRejectOnBadExit } from 'multiverse+run';
+import { run, runNoRejectOnBadExit } from '@-xun/run';
 
 import {
   DefaultGlobalScope,

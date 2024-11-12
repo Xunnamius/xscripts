@@ -5,7 +5,7 @@ import { type AsStrictExecutionContext } from 'multiverse+bfe';
 import { logStartTime, LogTag } from 'multiverse+cli-utils:logging.ts';
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { ProjectAttribute } from 'multiverse+project-utils';
-import { run, runWithInheritedIo } from 'multiverse+run';
+import { run, runWithInheritedIo } from '@-xun/run';
 
 import {
   ThisPackageGlobalScope as DevScope,

@@ -82,7 +82,6 @@ const config = deepMergeConfig(moduleExport, {
 // ? analytical purposes.
 const wellKnownPackageAliases = [
   ['multiverse+test-utils:*', './packages/test-utils/src/*'],
-  ['multiverse+run:*', './packages/run/src/*'],
   ['multiverse+rejoinder:*', './packages/rejoinder/src/*'],
   ['multiverse+project-utils:*', './packages/project-utils/src/*'],
   ['multiverse+debug:*', './packages/debug/src/*'],
@@ -93,7 +92,6 @@ const wellKnownPackageAliases = [
     './packages/babel-plugin-metadata-accumulator/src/*'
   ],
   ['multiverse+test-utils', './packages/test-utils/src/index.js'],
-  ['multiverse+run', './packages/run/src/index.js'],
   ['multiverse+rejoinder', './packages/rejoinder/src/index.js'],
   ['multiverse+project-utils', './packages/project-utils/src/index.js'],
   ['multiverse+debug', './packages/debug/src/index.js'],
@@ -104,7 +102,6 @@ const wellKnownPackageAliases = [
     './packages/babel-plugin-metadata-accumulator/src/index.js'
   ],
   ['rootverse+test-utils:*', './packages/test-utils/*'],
-  ['rootverse+run:*', './packages/run/*'],
   ['rootverse+rejoinder:*', './packages/rejoinder/*'],
   ['rootverse+project-utils:*', './packages/project-utils/*'],
   ['rootverse+debug:*', './packages/debug/*'],
@@ -118,7 +115,6 @@ const wellKnownPackageAliases = [
   ['universe:*', './src/*'],
   ['universe', './src/index.js'],
   ['testverse+test-utils:*', './packages/test-utils/test/*'],
-  ['testverse+run:*', './packages/run/test/*'],
   ['testverse+rejoinder:*', './packages/rejoinder/test/*'],
   ['testverse+project-utils:*', './packages/project-utils/test/*'],
   ['testverse+debug:*', './packages/debug/test/*'],
