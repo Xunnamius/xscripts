@@ -1,4 +1,6 @@
 import { type ChildConfiguration } from '@black-flag/core';
+// ? Patches global Proxy and spawn functions; see documentation for details
+import '@-xun/scripts/assets/config/conventional.config.cjs';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
 

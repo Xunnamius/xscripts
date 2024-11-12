@@ -3,6 +3,8 @@ import { pipeline } from 'node:stream/promises';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { valid as isValidSemver } from 'semver';
+// ? Patches global Proxy and spawn functions; see documentation for details
+import '@-xun/scripts/assets/config/conventional.config.cjs';
 
 import {
   getInvocableExtendedHandler,
@@ -21,9 +23,7 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
   defaultChangelogTopmatter,
-  getLatestCommitWithXpipelineInitCommandSuffix,
-  patchSpawnChild,
-  unpatchSpawnChild
+  getLatestCommitWithXpipelineInitCommandSuffix
 } from 'universe:assets/config/_conventional.config.cjs.ts';
 
 import {
@@ -200,8 +200,6 @@ Use --import-section-file to add a custom release section to the changelog. The 
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Compiling changelog...');
-
-      patchSpawnChild();
 
       const {
         rootPackage: { root: projectRoot },
@@ -400,8 +398,6 @@ Use --import-section-file to add a custom release section to the changelog. The 
 
           changelogOutputStream
         );
-
-        unpatchSpawnChild();
       }
 
       if (formatChangelog) {

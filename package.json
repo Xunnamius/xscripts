@@ -15,7 +15,7 @@
   },
   "license": "MIT",
   "author": "Xunnamius",
-  "sideEffects": false,
+  "sideEffects": true,
   "type": "commonjs",
   "exports": {
     ".": {

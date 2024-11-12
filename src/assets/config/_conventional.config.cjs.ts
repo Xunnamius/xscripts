@@ -37,6 +37,19 @@ const debug = createDebugLogger({
 });
 
 /**
+ * @internal
+ * @see {@link patchProxy}
+ */
+const patcherMemory = {
+  previousSpawnChild: undefined as undefined | typeof childProcess.spawn,
+  previousProxy: undefined as undefined | typeof Proxy,
+  proxiedTargets: new WeakMap<InstanceType<typeof Proxy>, object>()
+};
+
+patchProxy();
+patchSpawnChild();
+
+/**
  * The Git pathspecs that should be ignored (excluded) when not considering the
  * root package. Pathspecs should be relative to _project_ root.
  *
@@ -79,6 +92,28 @@ const revertPrefixPattern = /^Revert\s+/;
 const neverMatchAnythingPattern = /(?!)/;
 
 /**
+ * @internal
+ * @see {@link patchSpawnChild}
+ */
+const specialArgumentMarkerForFlags = '_flags_';
+
+/**
+ * @internal
+ * @see {@link patchSpawnChild}
+ */
+const specialArgumentMarkerForPaths = '_paths_';
+
+/**
+ * @internal
+ * @see {@link patchSpawnChild}
+ */
+const specialArgumentRegExp = new RegExp(
+  `^-?-(${specialArgumentMarkerForFlags}|${specialArgumentMarkerForPaths})=?(.*)`
+);
+
+export type Context = EmptyObject;
+
+/**
  * The inline image HTML element appended to links leading to external
  * repositories. This value is also duplicated in the commit.hbs template file.
  */
@@ -93,28 +128,6 @@ export const inlineExternalImageElement = /*html*/ `
  * the changelog file.
  */
 export const noteTitleForBreakingChange = 'BREAKING CHANGES';
-
-/**
- * No characters recognized by {@link RegExp}.
- *
- * @internal
- * @see {@link patchSpawnChild}
- * @see {@link unpatchSpawnChild}
- */
-export const specialArgumentMarkerForFlags = '_flags_';
-
-/**
- * No characters recognized by {@link RegExp}.
- *
- * @internal
- * @see {@link patchSpawnChild}
- * @see {@link unpatchSpawnChild}
- */
-export const specialArgumentMarkerForPaths = '_paths_';
-
-const specialArgumentRegExp = new RegExp(
-  `^-?-(${specialArgumentMarkerForFlags}|${specialArgumentMarkerForPaths})=?(.*)`
-);
 
 /**
  * The preamble prefixed to any generated the changelog file.
@@ -270,54 +283,38 @@ export const defaultTemplates = {
   }
 };
 
-const memory = { previousSpawnChild: undefined as undefined | typeof childProcess.spawn };
+export const { transformer } = makeTransformer<Context>({
+  transform(context) {
+    const { name } = assertIsExpectedTransformerContext(context);
+
+    return {
+      [name]: /*js*/ `
+// @ts-check
+'use strict';
+
+// TODO: publish latest rejoinder package first, then update configs to use it
+/*const { createDebugLogger } = require('debug');
+const debug = createDebugLogger({
+  namespace: '${globalDebuggerNamespace}:config:conventional'
+});*/
+
+const { moduleExport } = require('@-xun/scripts/assets/config/${name}');
+module.exports = moduleExport({
+  // * Your customizations here
+});
+
+/*debug('exported config: %O', module.exports);*/
+`.trimStart()
+    };
+  }
+});
 
 /**
- * Part of a hack to get conventional-commits to accept our flags/paths for `git
- * log`.
- * @internal
+ * The value populating the XSCRIPTS_SPECIAL_INITIAL_COMMIT environment variable
+ * when there was no special initialization commit reference found.
  */
-export function patchSpawnChild() {
-  assert(!memory.previousSpawnChild);
-  const spawn = (memory.previousSpawnChild = childProcess.spawn);
-  childProcess.spawn = function wrappedSpawnChild(...args: Parameters<typeof spawn>) {
-    if (Array.isArray(args[1])) {
-      const spawnArgs = args[1] as string[];
-      let alreadySawPathsMarker = false;
-
-      // eslint-disable-next-line unicorn/prevent-abbreviations
-      for (const [index, arg] of spawnArgs.entries()) {
-        const [, id, value] = arg.match(specialArgumentRegExp) || [];
-
-        if (id && value) {
-          if (id === specialArgumentMarkerForFlags || alreadySawPathsMarker) {
-            spawnArgs[index] = value;
-          } else {
-            alreadySawPathsMarker = true;
-            spawnArgs[index] = '--';
-            spawnArgs.splice(index + 1, 0, value);
-          }
-        }
-      }
-    }
-
-    return spawn(...args);
-  } as typeof spawn;
-
-  debug('patched child_process.spawn');
-}
-
-/**
- * Part of a hack to get conventional-commits to accept our flags/paths for `git
- * log`.
- * @internal
- */
-export function unpatchSpawnChild() {
-  assert(memory.previousSpawnChild);
-  childProcess.spawn = memory.previousSpawnChild;
-  memory.previousSpawnChild = undefined;
-  debug('unpatched child_process.spawn');
-}
+// TODO: migrate this into xpipeline
+export const noSpecialInitialCommitIndicator = 'N/A';
 
 /**
  * This function returns a `@-xun/changelog` configuration preset. See the
@@ -336,6 +333,12 @@ export function unpatchSpawnChild() {
  * `src/commands/build/changelog.ts` file, **you should call
  * {@link patchSpawnChild} as soon as possible** upon entering the handler and
  * call {@link unpatchSpawnChild} towards the end of the same scope.
+ *
+ * This function also modifies the global `Proxy` class so that it returns the
+ * object its proxying as a property on the proxy object accessible via the
+ * {@link $proxiedTarget} symbol. This is used to hack our way around some
+ * questionable attempts at implementing immutable commit objects in
+ * conventional-commits-writer.
  */
 export function moduleExport(
   configOverrides:
@@ -431,8 +434,9 @@ export function moduleExport(
         return a === -1 || b === -1 ? b - a : a - b;
       },
       // ? Note that in recent versions of conventional-commits, the commit
-      // ? object is now immutable (i.e. a Proxy)
+      // ? object is now "immutable" (i.e. a Proxy); we do away with that below:
       transform(commit_, context) {
+        assert(patcherMemory.proxiedTargets.has(commit_), ErrorMessage.GuruMeditation());
         const commit = safeDeepClone(patcherMemory.proxiedTargets.get(commit_));
         const debug_ = debug.extend('writerOpts:transform');
         debug_('pre-transform commit: %O', commit);
@@ -881,34 +885,6 @@ export function moduleExport(
   }
 }
 
-export type Context = EmptyObject;
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
-    return {
-      [name]: /*js*/ `
-// @ts-check
-'use strict';
-
-// TODO: publish latest rejoinder package first, then update configs to use it
-/*const { createDebugLogger } = require('debug');
-const debug = createDebugLogger({
-  namespace: '${globalDebuggerNamespace}:config:conventional'
-});*/
-
-const { moduleExport } = require('@-xun/scripts/assets/config/${name}');
-module.exports = moduleExport({
-  // * Your customizations here
-});
-
-/*debug('exported config: %O', module.exports);*/
-`.trimStart()
-    };
-  }
-});
-
 /**
  * Return directories that should be excluded from consideration depending on
  * the project structure and the current working directory.
@@ -959,13 +935,6 @@ export function getExcludedDirectoriesRelativeToProjectRoot() {
 
   return result;
 }
-
-/**
- * The value populating the XSCRIPTS_SPECIAL_INITIAL_COMMIT environment variable
- * when there was no special initialization commit reference found.
- */
-// TODO: migrate this into xpipeline
-export const noSpecialInitialCommitIndicator = 'N/A';
 
 /**
  * Return the commit-ish (SHA hash) of the most recent commit containing the
@@ -1030,4 +999,69 @@ function safeDeepClone<T>(o: T): T {
 
     return undefined;
   });
+}
+
+/**
+ * Part of a hack to work around conventional-commits and its strange attempt at
+ * making commits immutable.
+ *
+ * @internal
+ */
+function patchProxy() {
+  assert(!patcherMemory.previousProxy);
+
+  const OldProxy = (patcherMemory.previousProxy = globalThis.Proxy);
+
+  // eslint-disable-next-line @typescript-eslint/no-extraneous-class
+  globalThis.Proxy = class WrappedProxy {
+    constructor(...args: ConstructorParameters<typeof Proxy>) {
+      const result = new OldProxy(...args);
+      patcherMemory.proxiedTargets.set(result, args[0]);
+      return result;
+    }
+
+    static revocable(...args: Parameters<typeof Proxy.revocable>) {
+      const result = OldProxy.revocable(...args);
+      patcherMemory.proxiedTargets.set(result.proxy, args[0]);
+      return result;
+    }
+  } as typeof Proxy;
+
+  debug('patched globalThis.Proxy');
+}
+
+/**
+ * Part of a hack to get conventional-commits to accept our flags/paths for `git
+ * log`.
+ *
+ * @internal
+ */
+function patchSpawnChild() {
+  assert(!patcherMemory.previousSpawnChild);
+  const spawn = (patcherMemory.previousSpawnChild = childProcess.spawn);
+  childProcess.spawn = function wrappedSpawnChild(...args: Parameters<typeof spawn>) {
+    if (Array.isArray(args[1])) {
+      const spawnArgs = args[1] as string[];
+      let alreadySawPathsMarker = false;
+
+      // eslint-disable-next-line unicorn/prevent-abbreviations
+      for (const [index, arg] of spawnArgs.entries()) {
+        const [, id, value] = arg.match(specialArgumentRegExp) || [];
+
+        if (id && value) {
+          if (id === specialArgumentMarkerForFlags || alreadySawPathsMarker) {
+            spawnArgs[index] = value;
+          } else {
+            alreadySawPathsMarker = true;
+            spawnArgs[index] = '--';
+            spawnArgs.splice(index + 1, 0, value);
+          }
+        }
+      }
+    }
+
+    return spawn(...args);
+  } as typeof spawn;
+
+  debug('patched child_process.spawn');
 }
