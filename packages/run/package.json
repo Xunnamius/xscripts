@@ -57,7 +57,7 @@
     "lint:package:source": "NODE_NO_WARNINGS=1 xscripts lint --scope this-package-source",
     "lint:packages:all": "NODE_NO_WARNINGS=1 xscripts lint --scope unlimited",
     "lint:project": "NODE_NO_WARNINGS=1 xscripts project lint",
-    "list-tasks": "NODE_NO_WARNINGS=1 xscripts list-tasks",
+    "list-tasks": "NODE_NO_WARNINGS=1 xscripts list-tasks --scope this-package",
     "release": "NODE_NO_WARNINGS=1 xscripts release",
     "renovate": "NODE_NO_WARNINGS=1 xscripts project renovate",
     "start": "NODE_NO_WARNINGS=1 xscripts start --",
