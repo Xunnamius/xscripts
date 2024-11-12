@@ -1,3 +1,4 @@
+import { run } from '@-xun/run';
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { rimraf as forceDeletePaths } from 'rimraf';
 
@@ -10,7 +11,6 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
-import { run } from '@-xun/run';
 
 import {
   DefaultGlobalScope,

@@ -1,3 +1,4 @@
+import { run } from '@-xun/run';
 import { type ChildConfiguration } from '@black-flag/core';
 import askPassword from 'askpassword';
 import uniqueFilename from 'unique-filename';
@@ -13,7 +14,6 @@ import {
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { ProjectAttribute } from 'multiverse+project-utils';
-import { run } from '@-xun/run';
 
 import {
   ThisPackageGlobalScope as DeployScope,

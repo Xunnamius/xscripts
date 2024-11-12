@@ -1,3 +1,4 @@
+import { runWithInheritedIo } from '@-xun/run';
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
@@ -11,8 +12,6 @@ import {
   ProjectAttribute,
   WorkspaceAttribute
 } from 'multiverse+project-utils';
-
-import { runWithInheritedIo } from '@-xun/run';
 
 import {
   DefaultGlobalScope,

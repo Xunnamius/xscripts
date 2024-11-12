@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { setTimeout as delay } from 'node:timers/promises';
 
+import { runNoRejectOnBadExit } from '@-xun/run';
 import { type ChildConfiguration } from '@black-flag/core';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
@@ -45,8 +46,6 @@ import {
   runGlobalPreChecks,
   withGlobalBuilder
 } from 'universe:util.ts';
-
-import { runNoRejectOnBadExit } from '@-xun/run';
 
 // ! Cannot use the global (g) flag
 const tstycheTargetRegExp = /(^|\/)type-.*\.test\.(m|c)?tsx?$/;

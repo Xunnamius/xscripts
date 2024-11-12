@@ -73,7 +73,8 @@
     "/README.md"
   ],
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "!packages/*.ignore*"
   ],
   "scripts": {
     "build": "npm run build:dist --",

@@ -8,14 +8,8 @@ import crypto from 'node:crypto';
 import { readFile, rm as rmFile, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 
+import { run } from '@-xun/run';
 import { type ExecutionContext } from '@black-flag/core/util';
-
-import {
-  type GenerateNotesContext,
-  type Options as ReleaseConfig,
-  type SuccessContext,
-  type VerifyConditionsContext
-} from 'semantic-release';
 
 import { getInvocableExtendedHandler } from 'multiverse+bfe';
 import { analyzeProjectStructure } from 'multiverse+project-utils:analyze.ts';
@@ -51,9 +45,13 @@ import {
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
 
-import { run } from '@-xun/run';
-
 import type { XchangelogConfigOptions } from '@-xun/changelog' with { 'resolution-mode': 'import' };
+import type {
+  GenerateNotesContext,
+  Options as ReleaseConfig,
+  SuccessContext,
+  VerifyConditionsContext
+} from 'semantic-release' with { 'resolution-mode': 'import' };
 import type { EmptyObject } from 'type-fest';
 
 const debug = createDebugLogger({

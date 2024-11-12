@@ -7,6 +7,8 @@ import { dirname, extname } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { isNativeError } from 'node:util/types';
 
+import { run, runNoRejectOnBadExit } from '@-xun/run';
+
 import {
   loadOptions as loadBabelOptions,
   transformFileAsync as babelTransformAsync
@@ -73,7 +75,6 @@ import {
 } from 'multiverse+project-utils:resolver.ts';
 
 import { SHORT_TAB, TAB } from 'multiverse+rejoinder';
-import { run, runNoRejectOnBadExit } from '@-xun/run';
 
 import {
   extensionsTypescript,

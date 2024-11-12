@@ -1,6 +1,8 @@
 import assert from 'node:assert';
 import childProcess from 'node:child_process';
 
+import { runNoRejectOnBadExit } from '@-xun/run';
+
 import escapeStringRegExp from 'escape-string-regexp~4';
 import clone from 'lodash.clone';
 import cloneDeepWith from 'lodash.clonedeepwith';
@@ -22,8 +24,6 @@ import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:as
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
 import { __read_file_sync } from 'universe:util.ts';
-
-import { runNoRejectOnBadExit } from '@-xun/run';
 
 import type {
   XchangelogCommit,

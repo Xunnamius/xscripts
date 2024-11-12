@@ -1,3 +1,4 @@
+import { runNoRejectOnBadExit, type run, type Subprocess } from '@-xun/run';
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
@@ -24,8 +25,6 @@ import {
   toPath,
   Tsconfig
 } from 'multiverse+project-utils:fs.ts';
-
-import { runNoRejectOnBadExit, type run, type Subprocess } from '@-xun/run';
 
 import {
   DefaultGlobalScope,

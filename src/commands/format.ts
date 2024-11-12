@@ -1,5 +1,6 @@
 import { basename } from 'node:path';
 
+import { run, runNoRejectOnBadExit } from '@-xun/run';
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { glob } from 'glob-gitignore';
 import { getSupportInfo } from 'prettier';
@@ -27,7 +28,6 @@ import {
 } from 'multiverse+project-utils:fs.ts';
 
 import { SHORT_TAB } from 'multiverse+rejoinder';
-import { run, runNoRejectOnBadExit } from '@-xun/run';
 
 import {
   DefaultGlobalScope,
