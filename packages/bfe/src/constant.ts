@@ -1,4 +1,4 @@
 /**
  * The project-wide namespace that appears in debugger output.
  */
-export const globalDebuggerNamespace = 'bfe';
+export const globalDebuggerNamespace = 'xbfe';
