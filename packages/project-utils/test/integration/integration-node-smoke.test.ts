@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-dynamic-delete */
-import { debugFactory } from 'multiverse+debug';
 import { runNoRejectOnBadExit } from '@-xun/run';
+
+import { debugFactory } from 'multiverse+debug';
 
 import {
   dummyDirectoriesFixture,

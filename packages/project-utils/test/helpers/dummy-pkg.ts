@@ -1,10 +1,9 @@
 import assert from 'node:assert';
 import { isNativeError } from 'node:util/types';
 
+import { runNoRejectOnBadExit } from '@-xun/run';
 import { TrialError } from 'named-app-errors';
 import { resolve as resolverLibrary } from 'resolve.exports';
-
-import { runNoRejectOnBadExit } from '@-xun/run';
 
 import { toAbsolutePath, type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
 

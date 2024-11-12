@@ -2,9 +2,9 @@ import { accessSync, readFileSync } from 'node:fs';
 import { access as accessAsync, readFile as readFileAsync } from 'node:fs/promises';
 import { relative } from 'node:path';
 
+import { runNoRejectOnBadExit } from '@-xun/run';
 import { toss } from 'toss-expression';
 
-import { runNoRejectOnBadExit } from '@-xun/run';
 import { asMockedFunction } from 'multiverse+test-utils';
 
 import { cache } from 'rootverse+project-utils:src/cache.ts';

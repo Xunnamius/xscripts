@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename } from 'node:path';
 
+import { run, type RunReturnType } from '@-xun/run';
 import glob from 'glob';
 import { simpleGit, type SimpleGit } from 'simple-git';
 import uniqueFilename from 'unique-filename';
@@ -11,7 +12,6 @@ import uniqueFilename from 'unique-filename';
 import { webpackConfigProjectBase } from 'multiverse+project-utils:fs/well-known-constants.ts';
 import { toAbsolutePath, toPath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger, type ExtendedDebugger } from 'multiverse+rejoinder';
-import { run, type RunReturnType } from '@-xun/run';
 
 import {
   name as rootPackageJsonName,

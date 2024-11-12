@@ -1,6 +1,6 @@
+import { runNoRejectOnBadExit } from '@-xun/run';
 import { toss } from 'toss-expression';
 
-import { runNoRejectOnBadExit } from '@-xun/run';
 import { asMockedFunction } from 'multiverse+test-utils';
 
 import { pathToPackage } from 'rootverse+project-utils:src/analyze/path-to-package.ts';
