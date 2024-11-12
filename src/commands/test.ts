@@ -50,6 +50,8 @@ import {
 
 // ! Cannot use the global (g) flag
 const tstycheTargetRegExp = /(^|\/)type-.*\.test\.(m|c)?tsx?$/;
+const tstycheVacuousSuccessMessage =
+  'Tstyche tests vacuously succeeded: no "type-*.test.tsx?" files were found';
 
 /**
  * Which type of test to run.
@@ -409,11 +411,15 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
           : typescriptTestFiles.all
       );
 
-      npxTstycheArguments.push(
-        ...tstycheTargetAbsolutePaths
-          .filter((path) => tstycheTargetRegExp.test(path))
-          .map((path) => toRelativePath(packageRoot, path) as string)
-      );
+      const tstycheTargetRelativePaths = tstycheTargetAbsolutePaths
+        .filter(
+          (path) => path.startsWith(packageRoot + '/') && tstycheTargetRegExp.test(path)
+        )
+        .map((path) => toRelativePath(packageRoot, path) as string);
+
+      debug('tstycheTargetRelativePaths: %O', tstycheTargetRelativePaths);
+
+      npxTstycheArguments.push(...tstycheTargetRelativePaths);
 
       if (testPathPatterns) {
         const jestPrefix = isCwdTheProjectRoot ? '' : '/' + relativePackageRoot;
@@ -450,13 +456,18 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
         const [tstycheResult, jestResult] = await Promise.all([
           allTypes || shouldRunTstycheTests
-            ? // {@xscripts/notExtraneous tstyche}
-              runNoRejectOnBadExit('npx', npxTstycheArguments, {
-                all: true,
-                env,
-                cwd: projectRoot
-              })
-            : Promise.resolve({ all: '', exitCode: 0 }),
+            ? tstycheTargetRelativePaths.length
+              ? // {@xscripts/notExtraneous tstyche}
+                runNoRejectOnBadExit('npx', npxTstycheArguments, {
+                  all: true,
+                  env,
+                  cwd: projectRoot
+                })
+              : Promise.resolve({
+                  all: `(${tstycheVacuousSuccessMessage.toLowerCase()})`,
+                  exitCode: 0
+                })
+            : Promise.resolve({ all: '(tstyche tests were skipped)', exitCode: 0 }),
           shouldRunJestTests
             ? runNoRejectOnBadExit('npx', npxJestArguments, {
                 env,
@@ -464,7 +475,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
                 stdout: isHushed ? 'ignore' : 'inherit',
                 stderr: isQuieted ? 'ignore' : 'inherit'
               })
-            : Promise.resolve({ exitCode: 0 })
+            : Promise.resolve({ all: '(jest tests were skipped)', exitCode: 0 })
         ]);
 
         const { all: tstycheOutput_, exitCode: tstycheExitCode } = tstycheResult;
@@ -504,10 +515,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
             }
 
             if (tstycheExitCode !== 0) {
-              genericLogger(
-                [LogTag.IF_NOT_HUSHED],
-                'Tstyche tests vacuously succeeded: no "type-*.test.tsx?" files were found'
-              );
+              genericLogger([LogTag.IF_NOT_HUSHED], tstycheVacuousSuccessMessage);
             } else {
               process.stdout.write(tstycheOutput + '\n');
             }
