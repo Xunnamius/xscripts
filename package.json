@@ -230,7 +230,7 @@
     "remark-tight-comments": "^2.0.0",
     "remark-validate-links": "^13.0.2",
     "rimraf": "^6.0.1",
-    "semantic-release": "npm:@-xun/release@^0.0.1",
+    "semantic-release": "npm:@-xun/release@^0.0.2",
     "semver": "^7.6.3",
     "simple-git": "^3.27.0",
     "sort-package-json": "^2.10.1",
