@@ -207,7 +207,7 @@ With somber focus, the following steps should be taken:
 > If you're using [xscripts][12], all of this can be done automatically:
 >
 > ```bash
-> npx xscripts project renovate --deprecate
+> npx xscripts project renovate --task deprecate
 > ```
 
 > These steps were inspired by [Richard Litt's checklist][13].
@@ -218,7 +218,7 @@ With somber focus, the following steps should be taken:
 > one of the commits created as a result of following these instructions must be
 > of the [`build` type][15] so that a final "deprecated" version with updated
 > deprecation documentation is released. If operating on a monorepo, said commit
-> must touch every package.
+> must touch every deprecated package.
 
 <br />
 
@@ -318,37 +318,28 @@ out of the way, e.g. `/repos/.deprecated/<deprecated-repo-here>`.
 
 Thank you so much for helping to maintain this project!
 
-[commit]:
-  https://github.com/conventional-changelog-archived-repos/conventional-changelog-angular/blob/ed32559941719a130bb0327f886d6a32a8cbc2ba/convention.md
+[commit]: https://github.com/conventional-changelog-archived-repos/conventional-changelog-angular/blob/ed32559941719a130bb0327f886d6a32a8cbc2ba/convention.md
 [1]: ./.github/CODE_OF_CONDUCT.md
 [2]: http://makeapullrequest.com
 [3]: ./.github/workflows
-[4]:
-  https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#rebase-and-merge-your-commits
-[5]:
-  https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#squash-and-merge-your-commits
+[4]: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#rebase-and-merge-your-commits
+[5]: https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#squash-and-merge-your-commits
 [6]: https://github.com/conventional-changelog/conventional-changelog
 [7]: https://www.conventionalcommits.org/en/v1.0.0
-[8]:
-  https://www.metaltoad.com/blog/beginners-guide-git-bisect-process-elimination
+[8]: https://www.metaltoad.com/blog/beginners-guide-git-bisect-process-elimination
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/semantic-release/semantic-release
-[11]:
-  https://github.com/Xunnamius/black-flag/blob/eec78609146a92cab29caa9d1fa05a0581e5bd3f/release.config.js#L27
+[11]: https://github.com/Xunnamius/black-flag/blob/eec78609146a92cab29caa9d1fa05a0581e5bd3f/release.config.js#L27
 [12]: https://github.com/Xunnamius/xscripts
-[13]:
-  https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
+[13]: https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
-[15]:
-  https://github.com/Xunnamius/xscripts/blob/2da3d8abed3de3d2ebc33d3cd54da3190dc2c63c/src/assets/config/_conventional.config.cjs.ts#L201-L214
+[15]: https://github.com/Xunnamius/xscripts/blob/2da3d8abed3de3d2ebc33d3cd54da3190dc2c63c/src/assets/config/_conventional.config.cjs.ts#L201-L214
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
 [19]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#keywords
 [20]: #deprecate-the-remote-github-repository
-[21]:
-  https://docs.npmjs.com/generating-provenance-statements#provenance-limitations
+[21]: https://docs.npmjs.com/generating-provenance-statements#provenance-limitations
 [22]: https://docs.npmjs.com/cli/v8/commands/npm-deprecate
-[23]:
-  https://docs.npmjs.com/deprecating-and-undeprecating-packages-or-package-versions
+[23]: https://docs.npmjs.com/deprecating-and-undeprecating-packages-or-package-versions
 [24]: #manual-release-method-1-semi-automated
