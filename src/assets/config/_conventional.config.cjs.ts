@@ -437,7 +437,11 @@ export function moduleExport(
       // ? object is now "immutable" (i.e. a Proxy); we do away with that below:
       transform(commit_, context) {
         assert(patcherMemory.proxiedTargets.has(commit_), ErrorMessage.GuruMeditation());
-        const commit = safeDeepClone(patcherMemory.proxiedTargets.get(commit_));
+
+        const commit = safeDeepClone(
+          patcherMemory.proxiedTargets.get(commit_) as typeof commit_
+        );
+
         const debug_ = debug.extend('writerOpts:transform');
         debug_('pre-transform commit: %O', commit);
 
