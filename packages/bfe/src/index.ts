@@ -733,7 +733,7 @@ export function withBuilderExtensions<
       debug('calling customBuilder (if a function) and returning builder object');
       // ? We make a deep clone of whatever options object we're passed
       // ? since there's a good chance we may be committing some light mutating
-      const builderObject = superiorClone(
+      const builderObject = safeDeepClone(
         (typeof customBuilder === 'function'
           ? customBuilder(
               blackFlag as BfeCustomBuilderFunctionParameters<
@@ -1711,7 +1711,8 @@ function defaultHandler() {
  * A smarter more useful cloning algorithm based on "structured clone" that
  * passes through as-is items that cannot be cloned.
  */
-function superiorClone<T>(o: T): T {
+// TODO: export this as part of js-utils (@-xun/js) shared with release config
+function safeDeepClone<T>(o: T): T {
   return cloneDeepWith(o, (value) => {
     const attempt = clone(value);
 

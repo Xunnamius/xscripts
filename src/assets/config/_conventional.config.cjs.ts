@@ -2,7 +2,8 @@ import assert from 'node:assert';
 import childProcess from 'node:child_process';
 
 import escapeStringRegExp from 'escape-string-regexp~4';
-import cloneDeep from 'lodash.clonedeepwith';
+import clone from 'lodash.clone';
+import cloneDeepWith from 'lodash.clonedeepwith';
 import deepMerge from 'lodash.mergewith';
 import semver from 'semver';
 
@@ -432,7 +433,7 @@ export function moduleExport(
       // ? Note that in recent versions of conventional-commits, the commit
       // ? object is now immutable (i.e. a Proxy)
       transform(commit_, context) {
-        const commit = cloneDeep(commit_);
+        const commit = safeDeepClone(patcherMemory.proxiedTargets.get(commit_));
         const debug_ = debug.extend('writerOpts:transform');
         debug_('pre-transform commit: %O', commit);
 
@@ -1012,4 +1013,21 @@ function mergeCustomizer(
   }
 
   return undefined;
+}
+
+/**
+ * A smarter more useful cloning algorithm based on "structured clone" that
+ * passes through as-is items that cannot be cloned.
+ */
+// TODO: export this as part of js-utils (@-xun/js) shared with bfe
+function safeDeepClone<T>(o: T): T {
+  return cloneDeepWith(o, (value) => {
+    const attempt = clone(value);
+
+    if (attempt && typeof attempt === 'object' && Object.keys(attempt).length === 0) {
+      return value;
+    }
+
+    return undefined;
+  });
 }
