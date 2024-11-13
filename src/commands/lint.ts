@@ -92,6 +92,7 @@ export const linterScopes = Object.values(LinterScope);
 
 export type CustomCliArguments = GlobalCliArguments<LinterScope> & {
   linter: Linter[];
+  linterOptions: string[];
   remarkSkipIgnored: boolean;
   ignoreWarnings: boolean;
   allowWarningComments: boolean;
@@ -106,49 +107,64 @@ export default async function command({
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const defaultScope = await determineDefaultScope();
 
-  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
-    scope: {
-      choices: linterScopes,
-      default: defaultScope
-    },
-    linter: {
-      alias: 'linters',
-      array: true,
-      choices: linters,
-      description: 'Which linters to run',
-      default: [Linter.All],
-      check: [
-        checkArrayNotEmpty('--linter'),
-        checkAllChoiceIfGivenIsByItself(Linter.All, 'linter value')
-      ]
-    },
-    'remark-skip-ignored': {
-      boolean: true,
-      description: 'Ignore files listed in .prettierignore when running remark linter',
-      default: true
-    },
-    'run-to-completion': {
-      boolean: true,
-      description: 'Do not exit until all linters have finished running',
-      default: true
-    },
-    'ignore-warnings': {
-      boolean: true,
-      description: 'Ignore linter warnings (and tsc errors) but not errors',
-      default: false
-    },
-    'allow-warning-comments': {
-      boolean: true,
-      description: 'Do not trigger linter warnings for "TODO"-style comments',
-      default: true
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
+    (blackFlag) => {
+      blackFlag.parserConfiguration({ 'unknown-options-as-args': true });
+
+      return {
+        scope: {
+          choices: linterScopes,
+          default: defaultScope
+        },
+        linter: {
+          alias: 'linters',
+          array: true,
+          choices: linters,
+          description: 'Which linters to run',
+          default: [Linter.All],
+          check: [
+            checkArrayNotEmpty('--linter'),
+            checkAllChoiceIfGivenIsByItself(Linter.All, 'linter value')
+          ]
+        },
+        'linter-options': {
+          alias: 'options',
+          array: true,
+          description: 'Command-line arguments passed directly to linters',
+          default: []
+        },
+        'remark-skip-ignored': {
+          boolean: true,
+          description:
+            'Ignore files listed in .prettierignore when running remark linter',
+          default: true
+        },
+        'run-to-completion': {
+          boolean: true,
+          description: 'Do not exit until all linters have finished running',
+          default: true
+        },
+        'ignore-warnings': {
+          boolean: true,
+          description: 'Ignore linter warnings (and tsc errors) but not errors',
+          default: false
+        },
+        'allow-warning-comments': {
+          boolean: true,
+          description: 'Do not trigger linter warnings for "TODO"-style comments',
+          default: true
+        }
+      };
     }
-  });
+  );
 
   return {
     builder,
     description: 'Run linters (e.g. eslint, remark) across all relevant files',
     usage: withGlobalUsage(
       `$1.
+
+Any unrecognized flags/arguments provided after the --tester-options flag are always passed through directly to each linter. They are inserted they are inserted after all other arguments, e.g. \`--computed-arg-1=... computed-arg-2 <your extra args>\`.
 
 Passing \`--scope=${LinterScope.ThisPackage}\` will lint all files in the package (determined by ./${Tsconfig.PackageLintUnlimited}), including any Markdown files. Passing \`--scope=${LinterScope.ThisPackageSource}\` will lint all _source_ files (determined by ./${Tsconfig.PackageLintSource}) and all Markdown files in the package. Passing \`--scope=${LinterScope.Unlimited}\` will lint all possible files under the package root (determined by ./${Tsconfig.ProjectLintUnlimited} or ./${Tsconfig.PackageLintUnlimited}) even if they belong to another package. Passing \`--scope=${LinterScope.UnlimitedSource}\` will lint all possible _source_ files (determined by ./${Tsconfig.ProjectLintSource} or ./${Tsconfig.PackageLintSource}), including any Markdown files, under the package root even if they belong to another package.
 
@@ -174,6 +190,7 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
       remarkSkipIgnored: skipIgnored,
       ignoreWarnings,
       allowWarningComments,
+      linterOptions,
       runToCompletion,
       hush: isHushed,
       quiet: isQuieted
@@ -190,6 +207,7 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
       genericLogger([LogTag.IF_NOT_QUIETED], 'Linting project...');
 
       debug('linters: %O', linters);
+      debug('linterOptions: %O', linterOptions);
       debug('scope: %O', scope);
       debug('skipIgnored: %O', skipIgnored);
       debug('ignoreWarnings: %O', ignoreWarnings);
@@ -344,6 +362,8 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
       async function runLinter(
         ...[exec, args = [], options = {}]: Parameters<typeof run>
       ) {
+        args = args.concat(linterOptions);
+
         const { stdout, stderr, exitCode } = await runNoRejectOnBadExit(exec, args, {
           ...options,
           stdout: isHushed ? 'ignore' : 'pipe',

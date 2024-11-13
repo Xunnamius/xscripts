@@ -116,6 +116,7 @@ export type CustomCliArguments = GlobalCliArguments<TesterScope> & {
   nodeOptions: string[];
   baseline: boolean;
   propagateDebugEnv: boolean;
+  testerOptions: string[];
 };
 
 export default function command({
@@ -126,7 +127,6 @@ export default function command({
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
     (blackFlag) => {
-      blackFlag.strict(false);
       blackFlag.parserConfiguration({ 'unknown-options-as-args': true });
 
       return {
@@ -219,6 +219,12 @@ export default function command({
           description: 'Executing Jest alone without any added scope/type args/patterns',
           default: false,
           conflicts: ['type', 'scope']
+        },
+        'tester-options': {
+          alias: 'options',
+          array: true,
+          description: 'Command-line arguments passed directly to testers',
+          default: []
         }
       };
     }
@@ -233,7 +239,7 @@ $1.
 
 Currently, "type" (\`--type="type"\`) tests are executed by the Tstyche test runner while all others are executed by the Jest test runner. Therefore, all test files should be appropriately named (e.g. "\${type}-\${name}.test.ts") and exist under a package's ./test directory.
 
-Any extra arguments passed to this command, including file globs and unrecognized flags, are always passed through directly to Jest (not Tstyche). They are inserted after computed args but before test path patterns, i.e. \`--reporters=... --testPathIgnorePatterns=... <your extra args> -- testPathPattern1 testPathPattern2\`.
+Any unrecognized flags/arguments provided after the --tester-options flag are always passed through directly to each tester. For Jest, they are inserted after computed arguments but before test path patterns, e.g. \`--reporters=... --testPathIgnorePatterns=... <your extra args> -- testPathPattern1 testPathPattern2\`. For Tstyche, they are inserted after all other arguments, e.g. \`--computed-arg-1=... computed-arg-2 <your extra args>\`.
 
 By default, this command constructs an execution plan (i.e. the computed arguments and path patterns passed to Tstyche/Jest's CLI) based on project metadata and provided options. Alternatively, you can provide --baseline when you want to construct your own custom Jest execution plan but still wish to make use of the runtime environment provided by this tool. Note that using --baseline will disable Tstyche "type" tests.
 
@@ -247,7 +253,6 @@ For running "intermediate" test files transpiled by \`xscripts build\`, provide 
 
 Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS environment variable in the testing environment. This will activate the \`reconfigureJestGlobalsToSkipTestsInThisFileIfRequested\` function of the @-xun/jest library, which will force Jest to skip by default all tests within files where said function was invoked. Providing --skip-slow-tests twice (or -xx) has the same effect, with the addition that test files that have "-slow." in their name are skipped entirely (not even looked at by Jest or executed by Node). This can be used in those rare instances where even the mere execution of a test file is too slow, such as a test file with hundreds or even thousands of generated tests that must be skipped. Note, however, that --skip-slow-tests has no bearing on the Tstyche runtime.`,
     handler: withGlobalHandler(async function ({
-      _: _extraArguments,
       $0: scriptFullName,
       scope,
       collectCoverage,
@@ -257,6 +262,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       repeat,
       type: types,
       baseline,
+      testerOptions,
       hush: isHushed,
       quiet: isQuieted
     }) {
@@ -279,10 +285,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       debug('test scope: %O', scope);
       debug('test type: %O', types);
       debug('baseline: %O', baseline);
-
-      const extraArguments = _extraArguments.map(String);
-
-      debug('extraArguments: %O', extraArguments);
+      debug('testerOptions: %O', testerOptions);
 
       const {
         rootPackage: { root: projectRoot },
@@ -393,7 +396,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       // ? E.g. the user might add extra array arguments, so they have to be
       // ? followed by a non-array argument since we append file paths (below)
       npxJestArguments.push(
-        ...extraArguments,
+        ...testerOptions,
         `--config=${projectRoot}/${jestConfigProjectBase}`
       );
 
@@ -418,7 +421,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
       debug('tstycheTargetRelativePaths: %O', tstycheTargetRelativePaths);
 
-      npxTstycheArguments.push(...tstycheTargetRelativePaths);
+      npxTstycheArguments.push(...tstycheTargetRelativePaths, ...testerOptions);
 
       if (testPathPatterns) {
         const jestPrefix = isCwdTheProjectRoot ? '' : '/' + relativePackageRoot;
