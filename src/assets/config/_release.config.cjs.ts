@@ -105,7 +105,7 @@ export function moduleExport({
           : '',
       // ? Tell xrelease to exclude commits from the other packages
       // ? unless that package is "shared" (according to @-xun/project)
-      path: gitLogPathspecs
+      paths: gitLogPathspecs
     },
     branches: [
       // ? Tell xrelease what package-specific maintenance branch names look
