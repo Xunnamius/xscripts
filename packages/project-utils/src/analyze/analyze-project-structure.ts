@@ -326,6 +326,7 @@ function setSubrootPackagesAndCwdPackage(
       for (const packageRoot of globSync(pattern, globOptions) as AbsolutePath[]) {
         assert(typeof packageRoot === 'string');
 
+        // TODO: miiight be redundant given package.json workspaces negated glob
         if (packageRoot.endsWith('.ignore')) {
           dbg.warn('encountered explicitly ignored package at %O', packageRoot);
           continue;
@@ -382,6 +383,7 @@ function setSubrootPackagesAndCwdPackage(
               packageRoots.map(async (packageRoot) => {
                 assert(typeof packageRoot === 'string');
 
+                // TODO: maybe redundant w/ package.json workspaces negated glob
                 if (packageRoot.endsWith('.ignore')) {
                   dbg.warn('encountered explicitly ignored package at %O', packageRoot);
                   return undefined;
