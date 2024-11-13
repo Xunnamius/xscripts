@@ -229,7 +229,8 @@ export function withStandardBuilder<
 
       debug('reconfiguring yargs-parser');
       blackFlag.parserConfiguration({
-        'duplicate-arguments-array': false
+        'duplicate-arguments-array': false,
+        'greedy-arrays': true
       });
 
       debug('invoking withBuilderExtensions::builder');
