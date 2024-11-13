@@ -59,7 +59,7 @@ export default function command({
     },
     force: {
       boolean: true,
-      description: "Dangerously take ownership of the project's concurrency lock",
+      description: 'Override various safety checks',
       default: false
     },
     'rebuild-changelog': {
@@ -82,12 +82,6 @@ export default function command({
       boolean: true,
       description:
         'Pull latest package.json dependency versions from other packages in this project',
-      default: true
-    },
-    'tag-compatibility-mode': {
-      alias: 'compat',
-      boolean: true,
-      description: 'When cwd is the root package, include polyrepo-style version tags',
       default: true
     }
   });
@@ -164,13 +158,13 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
       debug('skipMissingTasks: %O', skipMissingTasks);
       debug('synchronizeInterdependencies: %O', synchronizeInterdependencies);
 
+      // TODO: disallow release if the repository is in a dirty state unless --force (give solution in error message)
+
       // TODO: --skip-prerelease-task [...2-7] vs --skip-prerelease-tasks (all of them) and these two options conflict
 
       // TODO: --skip-postrelease-task [10] vs --skip-postrelease-tasks (all of them) and these two options conflict
 
       // TODO: only use basic npm scripts and not nested (":") scripts
-
-      // TODO: ensure simultaneous releases are supported (backoff if locked)
 
       // TODO: check that all required environment variables are defined and valid
 
@@ -192,9 +186,9 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
 
       // TODO: do codecov upload last; CODECOV_TOKEN=$(npx --yes dotenv-cli -p CODECOV_TOKEN) codecov; use codecov flags to determine which flags to send to codecov when uploading test results
 
-      // TODO: DO NOT USE npx codecov, we need to download the binary (to a consistent location based on its filename) if it isn't in path and use it instead
+      // TODO: DO NOT upload codecov information if we're not on the main branch... unless we can use codecov's flags to address this issue? Maybe we can!
 
-      // TODO: change it so that even polyrepo root packages are released using the name@version tag syntax instead of the vversion tag syntax. For backwards compat, the olf vversion syntax will interpreted as root-pkg@version
+      // TODO: DO NOT USE npx codecov, we need to download the binary (to a consistent location based on its filename) if it isn't in path and use it instead
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
