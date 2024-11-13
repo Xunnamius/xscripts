@@ -152,7 +152,7 @@ it('appends commit short-hash and repo link to the end of commits of non-hidden 
   );
 });
 
-it('translates each semver tag into a super-section link suffixed with commit date', async () => {
+it('translates each semver tag into a super-section link prefixed with package name and suffixed with commit date', async () => {
   expect.hasAssertions();
 
   await withMockedFixtureWrapper(
@@ -164,7 +164,7 @@ it('translates each semver tag into a super-section link suffixed with commit da
 
         tags.all.forEach((tag) => {
           expect(changelog).toInclude(
-            `[${tag.slice(9)}](https://github.com/fake-user/fake-repo/compare/`
+            `fake-pkg[@${tag.slice(9)}](https://github.com/fake-user/fake-repo/compare/`
           );
         });
       }
@@ -338,8 +338,8 @@ it('indents majors with h2, minors with h3, and adjusts section heading level as
         const config = moduleExport();
         const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
 
-        expect(changelog).toMatch(/## \[0.2.0][^#]+\n### /);
-        expect(changelog).toMatch(/### \[0.2.1][^#]+\n#### /);
+        expect(changelog).toMatch(/## fake-pkg\[@0.2.0][^#]+\n### /);
+        expect(changelog).toMatch(/### fake-pkg\[@0.2.1][^#]+\n#### /);
       }
     },
     generatePatchesForEnvironment8()
