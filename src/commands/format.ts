@@ -335,6 +335,10 @@ With respect to .prettierignore being the single source of truth for formatters:
       genericLogger([LogTag.IF_NOT_HUSHED], 'Formatting target files...');
       debug.message('cwd override used for all executables: %O', projectRoot);
 
+      // * truthy = ran and succeeded (number = count of successes)
+      // * false = ran and failed
+      // * null = running
+      // * undefined = did not run
       const status: Record<
         'sort' | 'doctoc' | 'allContrib' | 'remark',
         boolean | null | undefined
@@ -477,7 +481,8 @@ With respect to .prettierignore being the single source of truth for formatters:
 
         if (shouldDoPrettier) {
           const prettierTargetFiles = files_?.length
-            ? targetOtherFiles
+            ? // ? Prettier does markdown and json files too, so include them
+              targetOtherFiles.concat(targetMarkdownFiles, targetPackageJsonFiles)
             : [
                 // ? cwd === projectRoot (with respect to '.')
                 (scope === DefaultGlobalScope.ThisPackage
