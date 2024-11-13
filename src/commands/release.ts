@@ -164,6 +164,10 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
       debug('skipMissingTasks: %O', skipMissingTasks);
       debug('synchronizeInterdependencies: %O', synchronizeInterdependencies);
 
+      // TODO: --skip-prerelease-task [...2-7] vs --skip-prerelease-tasks (all of them) and these two options conflict
+
+      // TODO: --skip-postrelease-task [10] vs --skip-postrelease-tasks (all of them) and these two options conflict
+
       // TODO: only use basic npm scripts and not nested (":") scripts
 
       // TODO: ensure simultaneous releases are supported (backoff if locked)
