@@ -1,3 +1,7 @@
+import escapeStringRegExp from 'escape-string-regexp~4';
+
+import { analyzeProjectStructure } from './node_modules/@-xun/scripts/dist/packages/project-utils/src/analyze.js';
+
 /**
  * @typedef {{settings?: import('mdast-util-to-markdown').Options, plugins?:
  * import('unified-engine/lib/configuration').PluggableList |
@@ -126,6 +130,10 @@ if (process.env.XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS !== 'true') {
   //lintConfig.plugins.push('no-warning-comments');
 }
 
+const { rootPackage, subRootPackages } = await analyzeProjectStructure({
+  useCached: true
+});
+
 /**
  * Remark configuration loaded when `NODE_ENV === 'format'`. The goal here is to
  * correct things that will not be taken care of by prettier.
@@ -143,7 +151,17 @@ const formatConfig = {
     // {@xscripts/notExtraneous remark-tight-comments}
     'remark-tight-comments',
     // {@xscripts/notExtraneous remark-capitalize-headings}
-    ['remark-capitalize-headings', { excludeHeadingLevel: { h1: true } }],
+    [
+      'remark-capitalize-headings',
+      {
+        excludeHeadingLevel: { h1: true },
+        // ? Do not capitalize any of our package names
+        excludeHeadingText: subRootPackages.all
+          .concat(rootPackage)
+          .map(({ json: { name } }) => (name ? escapeStringRegExp(name) : undefined))
+          .filter(Boolean)
+      }
+    ],
     // {@xscripts/notExtraneous remark-remove-unused-definitions}
     'remark-remove-unused-definitions',
     // {@xscripts/notExtraneous remark-remove-url-trailing-slash}
