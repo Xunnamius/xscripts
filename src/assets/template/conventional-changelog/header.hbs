@@ -3,9 +3,17 @@
 {{~else~}}
   ##
 {{~/if}} {{#if @root.linkCompare~}}
-  [{{version}}]({{compareUrlFormat}})
+  {{#if packageName~}}
+    {{packageName}}[@{{version}}]({{compareUrlFormat}})
+  {{~else~}}
+    [{{version}}]({{compareUrlFormat}})
+  {{~/if}}
 {{~else}}
-  {{~version}}
+  {{~#if packageName~}}
+    {{packageName}}@{{version}}
+  {{~else~}}
+    {{version}}
+  {{~/if}}
 {{~/if}}
 
 {{~#if title}} "{{title}}" {{~/if}}

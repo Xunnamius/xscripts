@@ -367,11 +367,9 @@ export function moduleExport(
 
   const intermediateConfig: XchangelogConfig = {
     // * Core configuration keys * \\
-    context: {},
+    context: { packageName: cwdPackageName },
     // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-core#options
-    options: {
-      tagPrefix: `${cwdPackageName}@`
-    },
+    options: { tagPrefix: `${cwdPackageName}@` },
 
     // ? gitRawCommitsOpts key is redefined below
     gitRawCommitsOpts: {

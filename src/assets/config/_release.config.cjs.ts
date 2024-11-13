@@ -45,7 +45,11 @@ import {
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
 
-import type { XchangelogConfigOptions } from '@-xun/changelog' with { 'resolution-mode': 'import' };
+import type {
+  XchangelogConfig,
+  XchangelogConfigOptions
+} from '@-xun/changelog' with { 'resolution-mode': 'import' };
+
 import type {
   GenerateNotesContext,
   Options as ReleaseConfig,
@@ -145,7 +149,13 @@ export function moduleExport({
         {
           releaseSectionPath,
           parserOpts,
-          writerOpts
+          writerOpts: {
+            ...writerOpts,
+            finalizeContext(context: XchangelogConfig['context']) {
+              context.packageName = cwdPackageName;
+              return context;
+            }
+          }
         }
       ],
 
