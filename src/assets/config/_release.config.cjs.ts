@@ -173,8 +173,8 @@ export function moduleExport({
         '@semantic-release/git',
         {
           assets: ['package.json', 'package-lock.json', 'CHANGELOG.md', 'docs'],
-          // ? Make sure semantic-release uses a patched release (changelog) body.
-          message: `release: <%= nextRelease.version %> [skip ci]\n\n<%= nextRelease.notes %>`
+          // ? Make sure we send out the patched release notes (i.e. changelog)
+          message: `release: ${cwdPackageName}@<%= nextRelease.version %> [skip ci]\n\n<%= nextRelease.notes %>`
         }
       ],
       // This comes bundled with semantic-release
