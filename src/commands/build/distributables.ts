@@ -157,6 +157,7 @@ export type CustomCliArguments = GlobalCliArguments<DistributablesBuilderScope> 
   generateIntermediatesFor?: IntermediateTranspilationEnvironment;
   outputExtension?: string;
   includeExternalFiles?: Path[];
+  partialFilter?: RegExp[];
   excludeInternalFiles?: Path[];
   skipOutputChecks?: boolean;
   skipOutputValidityCheckFor?: (string | RegExp)[];
@@ -244,6 +245,23 @@ export default async function command({
           array: true,
           default: [],
           description: 'Add one or more files to external build targets'
+        },
+        'partial-filter': {
+          alias: 'partial',
+          string: true,
+          array: true,
+          default: [],
+          description: 'Only transpile source file paths matching a RegExp filter',
+          coerce(argument: string[]) {
+            // ! These regular expressions can never use the global (g) flag
+            return argument.map((a) => new RegExp(a, 'u'));
+          },
+          implies: {
+            'clean-output-dir': false,
+            'link-cli-into-bin': false,
+            'prepend-shebang': false,
+            'skip-output-checks': true
+          }
         },
         'link-cli-into-bin': {
           boolean: true,
@@ -349,6 +367,8 @@ The only available scope is "${DistributablesBuilderScope.ThisPackage}"; hence, 
 
 When you need to access the intermediate babel transpilation result for non-production non-Next.js build outputs, which can be extremely useful when debugging strange problems in development and testing environments, see the --generate-intermediates-for option and the corresponding \`xscripts test --scope=${TesterScope.ThisPackageIntermediates}\` command.
 
+In scenarios where build times must be reduced (such as during rapid iteration or debugging), a combination of --no-generate-types (skip types) and --partial-filter (limit scope to only file paths that match one of the filters, which are regular expressions) allows you to skip the two most costly operations executed by this command: type generation and transpilation of the entire entire source dependency tree. Using either --no-generate-types or --partial-filter also disables this command's output validation post-build step, though note that --partial-filter by itself only filters build targets and has no effect on the output of type definition files.
+
 Finally, note that, when attempting to build a Next.js package, this command will defer entirely to \`next build\`. This means most of the options made available by this command are not available when building a Next.js package.`
     ),
     handler: withGlobalHandler(async function ({
@@ -370,7 +390,8 @@ Finally, note that, when attempting to build a Next.js package, this command wil
       moduleSystem: moduleSystem_,
       skipOutputChecks: skipOutputChecks_,
       skipOutputValidityCheckFor: skipOutputValidityCheckFor_,
-      skipOutputExtraneityCheckFor: skipOutputExtraneityCheckFor_
+      skipOutputExtraneityCheckFor: skipOutputExtraneityCheckFor_,
+      partialFilter: partialFilter_
     }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
@@ -408,13 +429,14 @@ Finally, note that, when attempting to build a Next.js package, this command wil
           debug('linkCliIntoBin: %O', linkCliIntoBin_);
           debug('prependShebang: %O', prependShebang_);
           debug('moduleSystem: %O', moduleSystem_);
+          debug('outputExtension (original): %O', outputExtension);
           debug('skipOutputChecks: %O', skipOutputChecks_);
           debug('skipOutputValidityCheckFor (original): %O', skipOutputValidityCheckFor_);
           debug(
             'skipOutputExtraneityCheckFor (original): %O',
             skipOutputExtraneityCheckFor_
           );
-          debug('outputExtension (original): %O', outputExtension);
+          debug('partialFilter: %O', partialFilter_);
 
           if (generateIntermediatesFor) {
             genericLogger.warn(
@@ -437,6 +459,7 @@ Finally, note that, when attempting to build a Next.js package, this command wil
           const skipOutputChecks = skipOutputChecks_;
           const skipOutputValidityCheckFor = new Set(skipOutputValidityCheckFor_);
           const skipOutputExtraneityCheckFor = new Set(skipOutputExtraneityCheckFor_);
+          const partialFilters = partialFilter_;
 
           hardAssert(includeExternalFiles !== undefined, ErrorMessage.GuruMeditation());
           hardAssert(excludeInternalFiles !== undefined, ErrorMessage.GuruMeditation());
@@ -445,6 +468,7 @@ Finally, note that, when attempting to build a Next.js package, this command wil
           hardAssert(prependShebang !== undefined, ErrorMessage.GuruMeditation());
           hardAssert(moduleSystem !== undefined, ErrorMessage.GuruMeditation());
           hardAssert(skipOutputChecks !== undefined, ErrorMessage.GuruMeditation());
+          hardAssert(partialFilters !== undefined, ErrorMessage.GuruMeditation());
 
           outputExtension ??=
             moduleSystem === ModuleSystem.Cjs ||
@@ -513,7 +537,8 @@ Finally, note that, when attempting to build a Next.js package, this command wil
           debug('initial build targets: %O', buildTargets);
           debug('build metadata: %O', buildMetadata);
 
-          const allBuildTargets = Array.from(buildTargets.internal).concat(
+          // * Note that this has not been filtered by partialFilters yet
+          const _allBuildTargets = Array.from(buildTargets.internal).concat(
             Array.from(buildTargets.external)
           );
 
@@ -527,22 +552,36 @@ Finally, note that, when attempting to build a Next.js package, this command wil
             });
 
             for (const filepath of testFiles) {
-              allBuildTargets.push(toRelativePath(projectRoot, filepath));
+              _allBuildTargets.push(toRelativePath(projectRoot, filepath));
             }
           }
 
+          // * Note that this is filtered by partialFilters
+          const allBuildTargets: RelativePath[] = [];
+
           const allBuildAssetTargets: RelativePath[] = [];
           const allBuildSourceTargets: RelativePath[] = [];
+          const filteredOutBuildTargets: RelativePath[] = [];
 
-          for (const target of allBuildTargets) {
-            (hasTypescriptExtension(target)
-              ? allBuildSourceTargets
-              : allBuildAssetTargets
-            ).push(target);
+          for (const target of _allBuildTargets) {
+            if (!partialFilters.length || partialFilters.some((f) => f.test(target))) {
+              allBuildTargets.push(target);
+              if (hasTypescriptExtension(target)) {
+                allBuildSourceTargets.push(target);
+              } else {
+                allBuildAssetTargets.push(target);
+              }
+            } else {
+              filteredOutBuildTargets.push(target);
+            }
           }
 
           debug('all build asset targets: %O', allBuildAssetTargets);
           debug('all build source targets: %O', allBuildSourceTargets);
+          debug('all ignored targets (filtered out): %O', filteredOutBuildTargets);
+
+          const isPartialBuild = !!filteredOutBuildTargets.length;
+          debug('isPartialBuild: %O', isPartialBuild);
 
           const aliasCountsEntries = toNaturalSorted(
             Object.entries(buildMetadata.imports.aliasCounts)
@@ -566,40 +605,58 @@ type      : ${projectMetadata.type} ${
               projectAttributes[ProjectAttribute.Hybridrepo] ? '(hybridrepo) ' : ''
             }${isCwdTheProjectRoot ? 'root package' : 'workspace package (sub-root)'}
 attributes: ${Object.keys(cwdPackage.attributes).join(', ')}
-prod ready: ${generateIntermediatesFor ? `NO! (${generateIntermediatesFor})` : 'yes'}
+prod ready: ${generateIntermediatesFor || partialFilters.length ? `NO! (${[generateIntermediatesFor, partialFilters.length && 'filtered to partials'].filter(Boolean).join(' ')})` : 'yes'}
 
-build targets: ${allBuildTargets.length} file${allBuildTargets.length !== 1 ? 's' : ''}
-${SHORT_TAB}   internal: ${buildTargets.internal.size} file${
+build targets: ${_allBuildTargets.length} file${_allBuildTargets.length !== 1 ? 's' : ''}${
+              isPartialBuild
+                ? ` (down to ${allBuildTargets.length} file${allBuildTargets.length !== 1 ? 's' : ''} after ${filteredOutBuildTargets.length} were filtered out)`
+                : ''
+            }
+${SHORT_TAB}   internal${isPartialBuild ? ' (before filter)' : ''}: ${buildTargets.internal.size} file${
               buildTargets.internal.size !== 1 ? 's' : ''
             }
-${SHORT_TAB}   external: ${buildTargets.external.size} file${
+${SHORT_TAB}   external${isPartialBuild ? ' (before filter)' : ''}: ${buildTargets.external.size} file${
               buildTargets.external.size !== 1 ? 's' : ''
             }
+${SHORT_TAB}   -
+${SHORT_TAB}   assets${isPartialBuild ? '   (after filter)' : ''}  : ${allBuildAssetTargets.length} file${
+              allBuildAssetTargets.length !== 1 ? 's' : ''
+            }
+${SHORT_TAB}   sources${isPartialBuild ? '  (after filter)' : ''} : ${allBuildSourceTargets.length} file${
+              allBuildSourceTargets.length !== 1 ? 's' : ''
+            }
 
-aliases imported: ${aliasCountsEntries.length}
-${aliasCountsEntries
-  .map(
-    ([dep, count]) => `${SHORT_TAB}${dep} (from ${count} file${count !== 1 ? 's' : ''})`
-  )
-  .join('\n')}
+aliases imported: ${
+              isPartialBuild
+                ? '(not reported during partial builds)'
+                : `${aliasCountsEntries.length}\n` +
+                  aliasCountsEntries
+                    .map(
+                      ([dep, count]) =>
+                        `${SHORT_TAB}${dep} (from ${count} file${count !== 1 ? 's' : ''})`
+                    )
+                    .join('\n')
+            }${isPartialBuild ? '\n' : '\n\n'}packages imported: ${
+              isPartialBuild
+                ? '(not reported during partial builds)'
+                : `${dependencyCountsEntries.length}\n` +
+                  dependencyCountsEntries
+                    .reduce<[string[], string[]]>(
+                      (strings, [alias, count]) => {
+                        const [fromSources, fromAssets] = strings;
 
-packages imported: ${dependencyCountsEntries.length}
-${dependencyCountsEntries
-  .reduce<[string[], string[]]>(
-    (strings, [alias, count]) => {
-      const [fromSources, fromAssets] = strings;
+                        (alias.startsWith(assetPrefix) ? fromAssets : fromSources).push(
+                          `${SHORT_TAB}${alias} (from ${count} file${count !== 1 ? 's' : ''})`
+                        );
 
-      (alias.startsWith(assetPrefix) ? fromAssets : fromSources).push(
-        `${SHORT_TAB}${alias} (from ${count} file${count !== 1 ? 's' : ''})`
-      );
-
-      return strings;
-    },
-    [[], []]
-  )
-  .map((strings) => strings.join('\n'))
-  .filter((strings) => strings.length)
-  .join('\n\n')}
+                        return strings;
+                      },
+                      [[], []]
+                    )
+                    .map((strings) => strings.join('\n'))
+                    .filter((strings) => strings.length)
+                    .join('\n\n')
+            }
 
 Paths
 -----
@@ -909,7 +966,10 @@ distrib root: ${absoluteOutputDirPath}
           }
 
           if (skipOutputChecks) {
-            genericLogger.newline([LogTag.IF_NOT_HUSHED]);
+            if (!isPartialBuild) {
+              genericLogger.newline([LogTag.IF_NOT_HUSHED]);
+            }
+
             genericLogger(
               [LogTag.IF_NOT_HUSHED],
               '✖️ Skipped consistency and integrity checks on build output'
@@ -1548,11 +1608,20 @@ distrib root: ${absoluteOutputDirPath}
         throw error;
       }
 
-      if (!isCwdANextJsPackage && generateIntermediatesFor) {
-        genericLogger.warn(
-          [LogTag.IF_NOT_SILENCED],
-          ErrorMessage.specialized.BuildOutputIntermediates()
-        );
+      if (!isCwdANextJsPackage) {
+        if (generateIntermediatesFor) {
+          genericLogger.warn(
+            [LogTag.IF_NOT_SILENCED],
+            ErrorMessage.specialized.BuildOutputIntermediates()
+          );
+        }
+
+        if (partialFilter_?.length) {
+          genericLogger.warn(
+            [LogTag.IF_NOT_SILENCED],
+            ErrorMessage.specialized.BuildOutputPartial()
+          );
+        }
       }
 
       // TODO: move this into xscripts project lint

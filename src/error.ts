@@ -180,7 +180,10 @@ export const ErrorMessage = {
    */
   specialized: {
     BuildOutputIntermediates() {
-      return '⚠️🚧 Build output consists of intermediate files NOT SUITABLE FOR DISTRIBUTION OR PRODUCTION!';
+      return '⚠️🚧 Build output consists of intermediate files NOT SUITABLE FOR DISTRIBUTION OR PRODUCTION';
+    },
+    BuildOutputPartial() {
+      return '⚠️🚧 The build "succeeded," but ONLY a subset of build targets were actually transpiled';
     },
     BuildOutputChecksFailed() {
       return '⚠️🚧 The build succeeded and is available, but one or more build output integrity checks failed';
