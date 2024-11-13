@@ -326,6 +326,11 @@ function setSubrootPackagesAndCwdPackage(
       for (const packageRoot of globSync(pattern, globOptions) as AbsolutePath[]) {
         assert(typeof packageRoot === 'string');
 
+        if (packageRoot.endsWith('.ignore')) {
+          dbg.warn('encountered explicitly ignored package at %O', packageRoot);
+          continue;
+        }
+
         const packageJson = (() => {
           try {
             return readPackageJsonAtRoot.sync(packageRoot, { useCached });
@@ -376,6 +381,11 @@ function setSubrootPackagesAndCwdPackage(
             return Promise.all(
               packageRoots.map(async (packageRoot) => {
                 assert(typeof packageRoot === 'string');
+
+                if (packageRoot.endsWith('.ignore')) {
+                  dbg.warn('encountered explicitly ignored package at %O', packageRoot);
+                  return undefined;
+                }
 
                 const packageJson = await (async () => {
                   try {
@@ -480,12 +490,16 @@ function setSubrootPackagesAndCwdPackage(
     } satisfies WorkspacePackage;
 
     if (negate) {
+      debug('package "%O" analysis result: negated and removed', packageId);
+
       if (workspacePackage.json.name) {
         subRootPackages.delete(workspacePackage.json.name);
       } else {
         subRootPackages.unnamed.delete(workspacePackage.id);
       }
     } else {
+      debug('package "%O" analysis result: added (unless validation fails)', packageId);
+
       if (workspacePackage.json.name) {
         if (subRootPackages.has(workspacePackage.json.name)) {
           const subrootPackage = subRootPackages.get(workspacePackage.json.name)!;

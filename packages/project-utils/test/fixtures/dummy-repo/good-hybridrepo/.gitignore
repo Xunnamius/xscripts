@@ -3,3 +3,6 @@
 # file if a parent directory of that file is excluded. See also:
 # https://git-scm.com/docs/gitignore
 .git-ignored/**
+*.ignore
+*.ignore.*
+ignore.*
