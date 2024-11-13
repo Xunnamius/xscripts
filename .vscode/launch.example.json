@@ -33,7 +33,13 @@
       // ? Set to false to step through node internals
       "smartStep": true,
       // ? Selectively comment out entries for deeper debugging
-      "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**",
+        "!**/node_modules/@-xun/**",
+        "!**/node_modules/semantic-release/**",
+        "!**/node_modules/@semantic-release/**"
+      ]
     },
     {
       "type": "node",
@@ -61,7 +67,13 @@
       // ? Set to false to step through node internals
       "smartStep": true,
       // ? Selectively comment out entries for deeper debugging
-      "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**",
+        "!**/node_modules/@-xun/**",
+        "!**/node_modules/semantic-release/**",
+        "!**/node_modules/@semantic-release/**"
+      ]
     },
     {
       "type": "node",
@@ -91,7 +103,13 @@
       // ? Set to false to step through node internals
       "smartStep": true,
       // ? Selectively comment out entries for deeper debugging
-      "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**",
+        "!**/node_modules/@-xun/**",
+        "!**/node_modules/semantic-release/**",
+        "!**/node_modules/@semantic-release/**"
+      ]
     }
   ]
 }
