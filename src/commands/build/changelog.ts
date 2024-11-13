@@ -53,7 +53,7 @@ import {
 import type { XchangelogConfig } from '@-xun/changelog' with { 'resolution-mode': 'import' };
 import type { Promisable } from 'type-fest';
 
-const extractVersionRegExp = /^#+\s\[?([^\s\]]+)/;
+const extractVersionRegExp = /^#+\s(?:(?:[^[\s]*\[?@([^\s\]]+))|(?:([^\s\]]+)))/;
 
 const wellKnownChangelogPatcherFilenames = [
   'changelog.patch.mjs',
