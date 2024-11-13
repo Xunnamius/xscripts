@@ -93,8 +93,6 @@
     "strict": true,
     "target": "ESNext"
   },
-  // ? Exclude patterns are also used by tooling like eslint (using node glob)
-  "exclude": ["**/node_modules/**/*"],
   // ? Include patterns are also used by tooling like eslint (using node glob)
   "include": [
     "types/**/*",
@@ -102,5 +100,13 @@
     "test/**/*",
     "packages/*/src/**/*",
     "packages/*/test/**/*"
+  ],
+  // ? Exclude patterns are also used by tooling like eslint (using node glob)
+  "exclude": [
+    "**/dist/**/*",
+    "**/node_modules/**/*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
   ]
 }

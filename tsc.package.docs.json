@@ -12,5 +12,14 @@
   // ? Include patterns are also used by tooling like eslint (using node glob)
   "include": ["types/**/*", "src/**/*", "test/**/*"],
   // ? Exclude patterns are also used by tooling like eslint (using node glob)
-  "exclude": ["**/test/fixtures/**"]
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "packages/**/*",
+    "packages/**/.*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
 }
