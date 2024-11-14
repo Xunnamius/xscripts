@@ -150,12 +150,9 @@ The second way is by running the following npm scripts in the specified order:
 > trying to release as the current working directory. Using `npm -w` also works.
 
 ```bash
-# 1. OPTIONAL: Reset the working tree to a clean state. The build command
+# 2. OPTIONAL: Reset the working tree to a clean state. The build command
 # usually does this for you, making this step unnecessary.
 #npm run clean -- --force
-
-# 2. OPTIONAL: Ensure installed dependencies match package-lock perfectly.
-#npm run ci
 
 # 3. Format this package's files.
 npm run format
