@@ -191,7 +191,8 @@ npm run renovate
 #
 # Do a dry run first:
 npm run release -- --skip-prerelease-tasks --dry-run
-# Then do the actual release:
+# Then review CHANGELOG.md and, after making sure the next release includes the
+# commits you're expecting, reset/revert CHANGELOG.md and do the actual release:
 npm run release -- --skip-prerelease-tasks
 ```
 
