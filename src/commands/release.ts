@@ -116,7 +116,7 @@ $1 according to the release procedure described in the MAINTAINING.md file and a
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀10. [postrelease task] Upload coverage results to Codecov
 ⠀⠀⠀⠀⠀⠀6. [prerelease task] [npm run build:docs] xscripts build documentation
 
-Tasks at the same indentation level will be run concurrently unless --no-parallel is provided, in which case they will be run in serial task order.
+Tasks at the same indentation level will be run concurrently unless --no-parallel is provided, in which case they will be run in serial task order. Use --no-parallel to prevent race conditions when, for instance, linting a package that imports from its own build output while also rebuilding that same package.
 
 Provide --ci (--continuous-integration) to enable useful functionality for CI execution environments. Specifically: run task #2, run xrelease in CI mode, and facilitate package provenance if the runtime environment supports it. If running the release procedure by hand instead of via CI/CD, use --no-ci to disable CI-specific functionality. --no-ci (\`--ci=false\`) is the default when the NODE_ENV environment variable is undefined or "development," otherwise --ci (\`--ci=true\`) is the default.
 
