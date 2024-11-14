@@ -84,8 +84,9 @@ export default function command({
       //
       // TODO (--task clone-remote-wiki to clone the GitHub wiki (if it exists) into .wiki; --task kill-master to reconfigure the local and remote (GitHub) branch from master to main)
       // TODO (need to handle assetverse aliasing concerns (example in quiz-euphoriareign))
-      // TODO (xscripts project renovate --task synchronize-interdependencies (if monorepo, update all package.json dependencies with latest versions from other packages in the monorepo))
+      // TODO (xscripts project renovate --task synchronize-interdependencies (alias "sync-deps") (if monorepo, update all package.json dependencies with latest versions from other packages in the monorepo))
       // TODO: https://gist.github.com/Xunnamius/7f6cd12e09bd46fb59af91a63ddd4dd7
+      // TODO: --tasks can have aliases; if both are given, dedup occurs
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
