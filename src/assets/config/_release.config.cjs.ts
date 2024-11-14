@@ -396,11 +396,23 @@ export async function success(_pluginConfig: PluginConfig, context: SuccessConte
   const pluginDebug = debug.extend('generateNotes');
   pluginDebug('entered step function');
 
-  const { stdout } = await run('git', ['status', '--porcelain']);
+  pluginDebug('updating remote');
+  await run('git', ['fetch', '--prune']);
 
-  if (stdout) {
-    pluginDebug.warn('repository was left in an unclean state! Git status output:');
-    pluginDebug.message('%O', stdout);
+  pluginDebug('analyzing repository state');
+  const { all: gitStatusOutput, exitCode: gitStatusExitCode } = await run(
+    'git',
+    ['status', '--porcelain'],
+    { all: true }
+  );
+
+  if (gitStatusOutput) {
+    pluginDebug.warn(
+      'repository was left in an unclean state! Git status output (exit code %O):',
+      gitStatusExitCode
+    );
+
+    pluginDebug.message('%O', gitStatusOutput);
 
     if (context.envCi.isCi) {
       process.stdout.write(
