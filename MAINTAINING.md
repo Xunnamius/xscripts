@@ -147,8 +147,7 @@ The second way is by running the following npm scripts in the specified order:
 > next step.
 
 > These commands should be run with the root of the individual package you're
-> trying to release root as the current working directory. Using `npm -w` also
-> works.
+> trying to release as the current working directory. Using `npm -w` also works.
 
 ```bash
 # 1. OPTIONAL: Reset the working tree to a clean state. The build command
