@@ -11,7 +11,6 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
-import { SHORT_TAB } from 'multiverse+rejoinder';
 
 import {
   ThisPackageGlobalScope as ReleaseScope,
