@@ -16,7 +16,7 @@
 
 ### excludeInternalFiles?
 
-> `optional` **excludeInternalFiles**: (`AbsolutePath` \| `RelativePath`)[]
+> `optional` **excludeInternalFiles**: `Path`[]
 
 ### generateIntermediatesFor?
 
@@ -28,7 +28,7 @@
 
 ### includeExternalFiles?
 
-> `optional` **includeExternalFiles**: (`AbsolutePath` \| `RelativePath`)[]
+> `optional` **includeExternalFiles**: `Path`[]
 
 ### linkCliIntoBin?
 
@@ -41,6 +41,10 @@
 ### outputExtension?
 
 > `optional` **outputExtension**: `string`
+
+### partialFilter?
+
+> `optional` **partialFilter**: `RegExp`[]
 
 ### prependShebang?
 
@@ -60,4 +64,4 @@
 
 ## Defined in
 
-[src/commands/build/distributables.ts:146](https://github.com/Xunnamius/xscripts/blob/ca4900adafe61fe400aec55151e46f5130a666a6/src/commands/build/distributables.ts#L146)
+[src/commands/build/distributables.ts:150](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/commands/build/distributables.ts#L150)

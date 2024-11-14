@@ -28,3 +28,4 @@
 
 - [configureErrorHandlingEpilogue](functions/configureErrorHandlingEpilogue.md)
 - [configureExecutionContext](functions/configureExecutionContext.md)
+- [configureExecutionEpilogue](functions/configureExecutionEpilogue.md)

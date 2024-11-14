@@ -22,4 +22,4 @@
 
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:69](https://github.com/Xunnamius/xscripts/blob/ca4900adafe61fe400aec55151e46f5130a666a6/src/assets/config/_eslint.config.mjs.ts#L69)
+[src/assets/config/\_eslint.config.mjs.ts:69](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/assets/config/_eslint.config.mjs.ts#L69)

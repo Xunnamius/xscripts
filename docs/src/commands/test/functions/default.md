@@ -22,7 +22,7 @@
 
 ### description
 
-> **description**: `string` = `'Run available unit, integration, and/or e2e tests'`
+> **description**: `string` = `'Run available type, unit, integration, and/or e2e tests'`
 
 ### handler()
 
@@ -42,4 +42,4 @@
 
 ## Defined in
 
-[src/commands/test.ts:96](https://github.com/Xunnamius/xscripts/blob/ca4900adafe61fe400aec55151e46f5130a666a6/src/commands/test.ts#L96)
+[src/commands/test.ts:122](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/commands/test.ts#L122)

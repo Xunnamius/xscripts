@@ -190,6 +190,93 @@ A collection of possible error and warning messages.
 
 `string`
 
+### specialized
+
+> **specialized**: `object`
+
+These are "error" messages that are not necessarily meant to be the message
+of an Error instance, but are reported to the user in other ways
+(such as via `rejoinder`). They may not follow the same standard
+punctuation and capitalization rules as the other error messages.
+
+### specialized.BuildOutputChecksFailed()
+
+#### Returns
+
+`string`
+
+### specialized.BuildOutputIntermediates()
+
+#### Returns
+
+`string`
+
+### specialized.BuildOutputPartial()
+
+#### Returns
+
+`string`
+
+### specialized.DependenciesExtraneous()
+
+#### Parameters
+
+• **packagesMeta**: [`string`, `string`][]
+
+#### Returns
+
+`string`
+
+### specialized.DistributablesSpecifiersDependenciesMissing()
+
+#### Parameters
+
+• **packageSpecifiers**: [`AbsolutePath`, `string`, `string`][]
+
+#### Returns
+
+`string`
+
+### specialized.DistributablesSpecifiersPointOutsideDist()
+
+#### Parameters
+
+• **specifiers**: `ImportSpecifier`[]
+
+#### Returns
+
+`string`
+
+### specialized.DistributablesSpecifiersPointToInaccessible()
+
+#### Parameters
+
+• **specifiers**: `ImportSpecifier`[]
+
+#### Returns
+
+`string`
+
+### specialized.ExportSubpathsPointsToInaccessible()
+
+#### Parameters
+
+• **subpaths**: [`string`, `string`][]
+
+#### Returns
+
+`string`
+
+### specialized.OthersSpecifiersDependenciesMissing()
+
+#### Parameters
+
+• **packageSpecifiers**: [`AbsolutePath`, `string`, `string`][]
+
+#### Returns
+
+`string`
+
 ### ValidationFailure()
 
 > **ValidationFailure**: () => `string`
@@ -586,46 +673,6 @@ A collection of possible error and warning messages.
 
 `string`
 
-### DependenciesExtraneous()
-
-#### Parameters
-
-• **packagesMeta**: [`string`, `string`][]
-
-#### Returns
-
-`string`
-
-### DistributablesSpecifiersDependenciesMissing()
-
-#### Parameters
-
-• **packageSpecifiers**: [`AbsolutePath`, `string`, `string`][]
-
-#### Returns
-
-`string`
-
-### DistributablesSpecifiersPointOutsideDist()
-
-#### Parameters
-
-• **specifiers**: `ImportSpecifier`[]
-
-#### Returns
-
-`string`
-
-### DistributablesSpecifiersPointToInaccessible()
-
-#### Parameters
-
-• **specifiers**: `ImportSpecifier`[]
-
-#### Returns
-
-`string`
-
 ### DuplicateOptionName()
 
 #### Parameters
@@ -641,16 +688,6 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **identifier**: `string`
-
-#### Returns
-
-`string`
-
-### ExportSubpathsPointsToInaccessible()
-
-#### Parameters
-
-• **subpaths**: [`string`, `string`][]
 
 #### Returns
 
@@ -776,6 +813,16 @@ A collection of possible error and warning messages.
 
 `string`
 
+### MissingXscriptsEnvironmentVariable()
+
+#### Parameters
+
+• **variableName**: `string`
+
+#### Returns
+
+`string`
+
 ### MultipleConfigsWhenExpectingOnlyOne()
 
 #### Parameters
@@ -789,16 +836,6 @@ A collection of possible error and warning messages.
 `string`
 
 ### MustChooseDeployEnvironment()
-
-#### Returns
-
-`string`
-
-### OthersSpecifiersDependenciesMissing()
-
-#### Parameters
-
-• **packageSpecifiers**: [`AbsolutePath`, `string`, `string`][]
 
 #### Returns
 
@@ -849,6 +886,12 @@ A collection of possible error and warning messages.
 #### Parameters
 
 • **path**: `string`
+
+#### Returns
+
+`string`
+
+### TestingFailed()
 
 #### Returns
 
@@ -932,4 +975,4 @@ A collection of possible error and warning messages.
 
 ## Defined in
 
-[src/error.ts:15](https://github.com/Xunnamius/xscripts/blob/ca4900adafe61fe400aec55151e46f5130a666a6/src/error.ts#L15)
+[src/error.ts:61](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/error.ts#L61)

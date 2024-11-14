@@ -26,4 +26,4 @@
 
 ## Defined in
 
-[src/util.ts:259](https://github.com/Xunnamius/xscripts/blob/ca4900adafe61fe400aec55151e46f5130a666a6/src/util.ts#L259)
+[src/util.ts:263](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/util.ts#L263)
