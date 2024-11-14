@@ -134,7 +134,7 @@ Provide --synchronize-interdependencies to run the equivalent of \`xscripts proj
 
 Uploading test coverage data to Codecov (a postrelease task) is only performed if any coverage data exists. An error will be thrown if no coverage data exists. Coverage data can be generated using \`xscripts test --coverage\` (which is prerelease task #7). When uploading coverage data, the package's name is used to derive a flag (https://docs.codecov.com/docs/flags). Codecov uses flags to map reports to specific packages in its UI and coverage badges.
 
-Provide --dry-run to ensure no changes are made, no release is cut, and no publishing or git write operations occur. Use --dry-run to test what would happen if you were to cut a release.
+Provide --dry-run to ensure no changes are made (except to CHANGELOG.md), no release is cut, and no publishing or git write operations occur. Use --dry-run to test what would happen if you were to cut a release. Do note, however, that --dry-run will updated the CHANGELOG.md file to match what would have been output during a real release. This is done so the end result can be more easily scrutinized by the developer; any changes to CHANGELOG.md should be reverted manually after a dry run.
 
 Note: the minimum package version this command will release will always be 1.0.0. This is because xrelease does not officially support packages with versions below semver 1.0.0. If you attempt to release a package with a version below 0.0.1, it will be released as a 1.0.0 (breaking change) instead. It is not wise to use experimental package versions with xrelease or xscripts.
 
