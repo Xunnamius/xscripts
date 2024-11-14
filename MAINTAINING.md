@@ -57,11 +57,11 @@ useful changes to justify it. See [the release rules][11] for a list of commit
 types that trigger releases.
 
 To generate a new release, a GitHub Actions build gets kicked off and, if it's
-successful, [semantic-release][10] (SR) is used to automatically publish a new
-release to npm and GitHub along with an updated changelog. SR determines whether
-a release is necessary, and what the new version number will be, by analyzing
-git commit messages. With this in mind, **it is imperative you brush up on [the
-commit message convention][commit] which drives our releases.**
+successful, [xrelease][10] is used to automatically publish a new release to npm
+and GitHub along with an updated changelog. xrelease determines whether a
+release is necessary, and what the new version number will be, by analyzing git
+commit messages. With this in mind, **it is imperative you brush up on [the
+commit message convention][25] which drives our releases.**
 
 > \[!IMPORTANT]
 >
@@ -73,8 +73,8 @@ commit message convention][commit] which drives our releases.**
 
 This project employs an automated CI/CD release pipeline. However, sometimes
 things get messed up (e.g. CI workflow / GitHub Actions breaks) and we need to
-trigger a release ourselves. When this happens, semantic-release can be
-triggered locally.
+trigger a release ourselves. When this happens, xrelease can be triggered
+locally.
 
 > \[!CAUTION]
 >
@@ -153,26 +153,25 @@ The second way is by running the following npm scripts in the specified order:
 ```bash
 # 1. OPTIONAL: Reset the working tree to a clean state. The build command
 # usually does this for you, making this step unnecessary.
-# npm run clean -- --force
+#npm run clean -- --force
 
-# 2. Lint all recognized source file types under the current working directory.
+# 2. OPTIONAL: Ensure installed dependencies match package-lock perfectly.
+#npm run ci
+
+# 3. Format this package's files.
+npm run format
+
+# 4. Lint all recognized source file types under the current working directory.
 npm run lint:package:source
 # The above only lints the current package if in a monorepo. To lint the entire
 # monorepo, use the following instead:
 #npm run lint:packages:all
 
-# 3. Build this package's distributables.
+# 5. Build this package's distributables.
 npm run build
 
-# 4. Format this package's files.
-npm run format
-
-# 5. Build this package's documentation (AFTER format for correct line numbers).
+# 6. Build this package's documentation (AFTER format for correct line numbers).
 npm run build:docs
-
-# 6. OPTIONAL: Run project-wide sanity and validity checks across the entire
-# repository. This is typically run in an ad hoc fashion by the developer.
-# npm run lint:project
 
 # 7. Run all of this package's tests and generate coverage data.
 npm run test:package:all
@@ -180,8 +179,15 @@ npm run test:package:all
 # monorepo, use the following instead:
 #npm run test:packages:all
 
-# 8. Trigger semantic-release locally to public a new release of this package.
-# This requires having valid tokens for NPM, GitHub, and Codecov each with the
+# 8. Perform any renovations, such as synchronizing versions of interdependent
+# packages in a monorepo.
+npm run renovate
+# You can additionally optionally run project-wide sanity and validity checks
+# across the entire repository using the following:
+#npm run lint:project
+
+# 9. Trigger xrelease locally to publish a new release of this package. This
+# requires having valid tokens for NPM, GitHub, and Codecov each with the
 # appropriate permissions.
 #
 # Do a dry run first:
@@ -318,8 +324,6 @@ out of the way, e.g. `/repos/.deprecated/<deprecated-repo-here>`.
 
 Thank you so much for helping to maintain this project!
 
-[commit]:
-  https://github.com/conventional-changelog-archived-repos/conventional-changelog-angular/blob/ed32559941719a130bb0327f886d6a32a8cbc2ba/convention.md
 [1]: ./.github/CODE_OF_CONDUCT.md
 [2]: http://makeapullrequest.com
 [3]: ./.github/workflows
@@ -327,12 +331,12 @@ Thank you so much for helping to maintain this project!
   https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#rebase-and-merge-your-commits
 [5]:
   https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#squash-and-merge-your-commits
-[6]: https://github.com/conventional-changelog/conventional-changelog
+[6]: https://github.com/Xunnamius/xchangelog
 [7]: https://www.conventionalcommits.org/en/v1.0.0
 [8]:
   https://www.metaltoad.com/blog/beginners-guide-git-bisect-process-elimination
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
-[10]: https://github.com/semantic-release/semantic-release
+[10]: https://github.com/Xunnamius/xrelease
 [11]:
   https://github.com/Xunnamius/black-flag/blob/eec78609146a92cab29caa9d1fa05a0581e5bd3f/release.config.js#L27
 [12]: https://github.com/Xunnamius/xscripts
@@ -352,3 +356,5 @@ Thank you so much for helping to maintain this project!
 [23]:
   https://docs.npmjs.com/deprecating-and-undeprecating-packages-or-package-versions
 [24]: #manual-release-method-1-semi-automated
+[25]:
+  https://github.com/conventional-changelog-archived-repos/conventional-changelog-angular/blob/ed32559941719a130bb0327f886d6a32a8cbc2ba/convention.md

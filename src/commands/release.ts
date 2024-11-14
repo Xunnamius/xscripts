@@ -109,9 +109,9 @@ $1 according to the release procedure described in the MAINTAINING.md file and a
 1. Validate environment variables
 ⠀⠀2. [prerelease task] Run npm ci (only if \`--ci=true\`)
 ⠀⠀⠀⠀3. [prerelease task] [npm run format] xscripts format
-⠀⠀⠀⠀⠀⠀4. [prerelease task] [npm run lint] xscripts lint --scope=this-package-source
+⠀⠀⠀⠀⠀⠀4. [prerelease task] [npm run lint:package:source or npm run lint] xscripts lint --scope=this-package-source
 ⠀⠀⠀⠀⠀⠀5. [prerelease task] [npm run build] xscripts build distributables
-⠀⠀⠀⠀⠀⠀⠀⠀7. [prerelease task] [npm run test] xscripts test --coverage
+⠀⠀⠀⠀⠀⠀⠀⠀7. [prerelease task] [npm run test:package:all or npm run test] xscripts test --coverage
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀8. xscripts project renovate --scope this-package --task synchronize-interdependencies
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀9. Run xchangelog (rebuild CHANGELOG.md) and xrelease (publish new release)
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀10. [postrelease task] Upload coverage results to Codecov
