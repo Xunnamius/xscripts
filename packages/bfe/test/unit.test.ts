@@ -358,6 +358,68 @@ describe('::withBuilderExtensions', () => {
         }
       }
     });
+
+    it('searches for arg-vals in given argument when configured as an array', async () => {
+      expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: { requires: { y: 5 } },
+          y: { array: true }
+        }
+      });
+
+      {
+        const { handlerResult } = await runner({});
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.RequiresViolation('x', [['y', 5]])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.RequiresViolation('x', [['y', 5]])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1, 2] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.RequiresViolation('x', [['y', 5]])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [5] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1, 5, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+    });
   });
 
   describe('"conflicts" configuration', () => {
@@ -654,6 +716,66 @@ describe('::withBuilderExtensions', () => {
             'x-y': 1
           });
         }
+      }
+    });
+
+    it('searches for arg-vals in given argument when configured as an array', async () => {
+      expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: { conflicts: { y: 5 } },
+          y: { array: true }
+        }
+      });
+
+      {
+        const { handlerResult } = await runner({});
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [5] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.ConflictsViolation('x', [['y', 5]])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1, 5, 2] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.ConflictsViolation('x', [['y', 5]])
+        });
       }
     });
   });
@@ -1465,6 +1587,76 @@ describe('::withBuilderExtensions', () => {
         }
       }
     });
+
+    it('searches for arg-vals in given argument when configured as an array', async () => {
+      expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: { demandThisOptionIf: { y: 5 } },
+          y: { array: true }
+        }
+      });
+
+      {
+        const { handlerResult } = await runner({});
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [5] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1, 5, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [5] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandIfViolation('x', ['y', 5])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1, 5, 2] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandIfViolation('x', ['y', 5])
+        });
+      }
+    });
   });
 
   describe('"demandThisOption" configuration', () => {
@@ -1842,6 +2034,92 @@ describe('::withBuilderExtensions', () => {
             ])
           });
         }
+      }
+    });
+
+    it('searches for arg-vals in given argument when configured as an array', async () => {
+      expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: { demandThisOptionOr: { y: 5 } },
+          y: { array: true }
+        }
+      });
+
+      {
+        const { handlerResult } = await runner({});
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandOrViolation([
+            ['y', 5],
+            ['x', $exists]
+          ])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandOrViolation([
+            ['y', 5],
+            ['x', $exists]
+          ])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandOrViolation([
+            ['y', 5],
+            ['x', $exists]
+          ])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1, 2] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandOrViolation([
+            ['y', 5],
+            ['x', $exists]
+          ])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [5] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1, 5, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [5] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1, 5, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
       }
     });
   });
@@ -2414,6 +2692,97 @@ describe('::withBuilderExtensions', () => {
             ])
           });
         }
+      }
+    });
+
+    it('searches for arg-vals in given argument when configured as an array', async () => {
+      expect.hasAssertions();
+
+      const runner = makeMockBuilderRunner({
+        customBuilder: {
+          x: { demandThisOptionXor: { y: 5 } },
+          y: { array: true }
+        }
+      });
+
+      {
+        const { handlerResult } = await runner({});
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandGenericXorViolation([
+            ['y', 5],
+            ['x', $exists]
+          ])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandGenericXorViolation([
+            ['y', 5],
+            ['x', $exists]
+          ])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandGenericXorViolation([
+            ['y', 5],
+            ['x', $exists]
+          ])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1, 2] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandGenericXorViolation([
+            ['y', 5],
+            ['x', $exists]
+          ])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [1, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ x: true, y: [5] });
+        expect(handlerResult).toMatchObject({
+          message: ErrorMessage.DemandGenericXorViolation([
+            ['y', 5],
+            ['x', $exists]
+          ])
+        });
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1, 5, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [5] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      }
+
+      {
+        const { handlerResult } = await runner({ y: [1, 5, 2] });
+        expect(handlerResult).toSatisfy(isCommandNotImplementedError);
       }
     });
   });

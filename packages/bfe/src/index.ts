@@ -25,12 +25,11 @@ import { type ParserConfigurationOptions } from 'yargs';
 // {@xscripts/notInvalid yargs}
 import makeVanillaYargs from 'yargs/yargs';
 
-import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { globalDebuggerNamespace } from 'rootverse+bfe:src/constant.ts';
-
 import { ErrorMessage, type KeyValueEntry } from 'rootverse+bfe:src/error.ts';
+
 import {
   $artificiallyInvoked,
   $canonical,
@@ -223,6 +222,10 @@ export type BfeBuilderObjectValueExtensions<
    *   "y": {}
    * }
    * ```
+   *
+   * Note: if an argument-value pair is specified and said argument is
+   * configured as an array (`{ array: true }`), it will be searched for the
+   * specified value. Otherwise, a strict deep equality check is performed.
    */
   requires?: BfeBuilderObjectValueExtensionValue;
   /**
@@ -236,6 +239,10 @@ export type BfeBuilderObjectValueExtensions<
    *   "y": {}
    * }
    * ```
+   *
+   * Note: if an argument-value pair is specified and said argument is
+   * configured as an array (`{ array: true }`), it will be searched for the
+   * specified value. Otherwise, a strict deep equality check is performed.
    */
   conflicts?: BfeBuilderObjectValueExtensionValue;
   /**
@@ -250,6 +257,10 @@ export type BfeBuilderObjectValueExtensions<
    *   "z": { "demandThisOptionIf": "x" } // ◄ Demands z if x is given
    * }
    * ```
+   *
+   * Note: if an argument-value pair is specified and said argument is
+   * configured as an array (`{ array: true }`), it will be searched for the
+   * specified value. Otherwise, a strict deep equality check is performed.
    */
   demandThisOptionIf?: BfeBuilderObjectValueExtensionValue;
   /**
@@ -276,6 +287,10 @@ export type BfeBuilderObjectValueExtensions<
    *   "z": { "demandThisOptionOr": ["x", "y"] }
    * }
    * ```
+   *
+   * Note: if an argument-value pair is specified and said argument is
+   * configured as an array (`{ array: true }`), it will be searched for the
+   * specified value. Otherwise, a strict deep equality check is performed.
    */
   demandThisOptionOr?: BfeBuilderObjectValueExtensionValue;
   /**
@@ -293,6 +308,10 @@ export type BfeBuilderObjectValueExtensions<
    *   "w": { "demandThisOptionXor": ["z"] }
    * }
    * ```
+   *
+   * Note: if an argument-value pair is specified and said argument is
+   * configured as an array (`{ array: true }`), it will be searched for the
+   * specified value. Otherwise, a strict deep equality check is performed.
    */
   demandThisOptionXor?: BfeBuilderObjectValueExtensionValue;
   /**
@@ -387,6 +406,10 @@ export type BfeBuilderObjectValueExtensions<
    * `conflicts`. See [the
    * documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#support-for-default-with-conflictsrequiresetc)
    * for details.
+   *
+   * Note also that a defaulted argument will not be coerced by the `coerce`
+   * setting. Only arguments given via `argv` trigger `coerce`. This is vanilla
+   * yargs behavior.
    */
   default?: unknown;
 };
@@ -721,7 +744,7 @@ export function withBuilderExtensions<
           latestBfInstance as unknown as { parsed?: { defaulted?: Record<string, true> } }
         ).parsed?.defaulted;
 
-        hardAssert(defaultedOptions, ErrorMessage.UnexpectedlyFalsyDetailedArguments());
+        assertHard(defaultedOptions, ErrorMessage.UnexpectedlyFalsyDetailedArguments());
 
         // ? We delete defaulted arguments from argv so that the end developer's
         // ? custom builder doesn't see them either (includes expansions/aliases)
@@ -887,7 +910,7 @@ export function withBuilderExtensions<
         debug('entered withHandlerExtensions::handler wrapper function');
         debug('option metadata: %O', optionsMetadata);
 
-        hardAssert(optionsMetadata, ErrorMessage.IllegalHandlerInvocation());
+        assertHard(optionsMetadata, ErrorMessage.IllegalHandlerInvocation());
 
         debug('real argv: %O', realArgv);
 
@@ -896,7 +919,7 @@ export function withBuilderExtensions<
         ).parsed?.defaulted;
 
         debug('defaultedOptions: %O', defaultedOptions);
-        hardAssert(defaultedOptions, ErrorMessage.UnexpectedlyFalsyDetailedArguments());
+        assertHard(defaultedOptions, ErrorMessage.UnexpectedlyFalsyDetailedArguments());
 
         deleteDefaultedArguments({ argv: realArgv, defaultedOptions });
         debug('real argv with defaults deleted: %O', realArgv);
@@ -912,7 +935,7 @@ export function withBuilderExtensions<
 
         // * Run requires checks
         optionsMetadata.required.forEach(({ [$genesis]: requirer, ...requireds }) => {
-          hardAssert(
+          assertHard(
             requirer !== undefined,
             ErrorMessage.MetadataInvariantViolated('requires')
           );
@@ -921,17 +944,22 @@ export function withBuilderExtensions<
             const missingRequiredKeyValues: Entries<typeof requireds> = [];
 
             Object.entries(requireds).forEach((required) => {
-              const [key, value] = required;
+              const [requiredKey, requiredValue] = required;
+              const givenValue = pseudoArgv.get(requiredKey);
+              const givenValueIsArray = Array.isArray(givenValue);
 
               if (
-                !pseudoArgv.has(key) ||
-                (value !== $exists && !isEqual(pseudoArgv.get(key), value))
+                !pseudoArgv.has(requiredKey) ||
+                (requiredValue !== $exists &&
+                  ((givenValueIsArray &&
+                    !givenValue.some((value) => isEqual(value, requiredValue))) ||
+                    (!givenValueIsArray && !isEqual(givenValue, requiredValue))))
               ) {
                 missingRequiredKeyValues.push(required);
               }
             });
 
-            softAssert(
+            assertSoft(
               !missingRequiredKeyValues.length,
               ErrorMessage.RequiresViolation(requirer, missingRequiredKeyValues)
             );
@@ -941,7 +969,7 @@ export function withBuilderExtensions<
         // * Run conflicts checks
         optionsMetadata.conflicted.forEach(
           ({ [$genesis]: conflicter, ...conflicteds }) => {
-            hardAssert(
+            assertHard(
               conflicter !== undefined,
               ErrorMessage.MetadataInvariantViolated('conflicts')
             );
@@ -950,17 +978,22 @@ export function withBuilderExtensions<
               const seenConflictingKeyValues: Entries<typeof conflicteds> = [];
 
               Object.entries(conflicteds).forEach((keyValue) => {
-                const [key, value] = keyValue;
+                const [conflictedKey, conflictedValue] = keyValue;
+                const givenValue = pseudoArgv.get(conflictedKey);
+                const givenValueIsArray = Array.isArray(givenValue);
 
                 if (
-                  pseudoArgv.has(key) &&
-                  (value === $exists || isEqual(pseudoArgv.get(key), value))
+                  pseudoArgv.has(conflictedKey) &&
+                  (conflictedValue === $exists ||
+                    (givenValueIsArray &&
+                      givenValue.some((value) => isEqual(value, conflictedValue))) ||
+                    (!givenValueIsArray && isEqual(givenValue, conflictedValue)))
                 ) {
                   seenConflictingKeyValues.push(keyValue);
                 }
               });
 
-              softAssert(
+              assertSoft(
                 !seenConflictingKeyValues.length,
                 ErrorMessage.ConflictsViolation(conflicter, seenConflictingKeyValues)
               );
@@ -970,7 +1003,7 @@ export function withBuilderExtensions<
 
         // * Run demandThisOptionIf checks
         optionsMetadata.demandedIf.forEach(({ [$genesis]: demanded, ...demanders }) => {
-          hardAssert(
+          assertHard(
             demanded !== undefined,
             ErrorMessage.MetadataInvariantViolated('demandThisOptionIf')
           );
@@ -978,12 +1011,18 @@ export function withBuilderExtensions<
           const sawDemanded = pseudoArgv.has(demanded);
 
           Object.entries(demanders).forEach((demander) => {
-            const [key, value] = demander;
-            const sawADemander =
-              pseudoArgv.has(key) &&
-              (value === $exists || isEqual(pseudoArgv.get(key), value));
+            const [demanderKey, demanderValue] = demander;
+            const givenValue = pseudoArgv.get(demanderKey);
+            const givenValueIsArray = Array.isArray(givenValue);
 
-            softAssert(
+            const sawADemander =
+              pseudoArgv.has(demanderKey) &&
+              (demanderValue === $exists ||
+                (givenValueIsArray &&
+                  givenValue.some((value) => isEqual(value, demanderValue))) ||
+                (!givenValueIsArray && isEqual(givenValue, demanderValue)));
+
+            assertSoft(
               !sawADemander || sawDemanded,
               ErrorMessage.DemandIfViolation(demanded, demander)
             );
@@ -995,13 +1034,19 @@ export function withBuilderExtensions<
           const groupEntries = Object.entries(group);
           const sawAtLeastOne = groupEntries.some((keyValue) => {
             const [key, value] = keyValue;
+            const givenValue = pseudoArgv.get(key);
+            const givenValueIsArray = Array.isArray(givenValue);
+
             return (
               pseudoArgv.has(key) &&
-              (value === $exists || isEqual(pseudoArgv.get(key), value))
+              (value === $exists ||
+                (givenValueIsArray &&
+                  givenValue.some((value_) => isEqual(value_, value))) ||
+                (!givenValueIsArray && isEqual(givenValue, value)))
             );
           });
 
-          softAssert(sawAtLeastOne, ErrorMessage.DemandOrViolation(groupEntries));
+          assertSoft(sawAtLeastOne, ErrorMessage.DemandOrViolation(groupEntries));
         });
 
         // * Run demandThisOptionXor checks
@@ -1011,13 +1056,18 @@ export function withBuilderExtensions<
 
           groupEntries.forEach((keyValue) => {
             const [key, value] = keyValue;
+            const givenValue = pseudoArgv.get(key);
+            const givenValueIsArray = Array.isArray(givenValue);
 
             if (
               pseudoArgv.has(key) &&
-              (value === $exists || isEqual(pseudoArgv.get(key), value))
+              (value === $exists ||
+                (givenValueIsArray &&
+                  givenValue.some((value_) => isEqual(value_, value))) ||
+                (!givenValueIsArray && isEqual(givenValue, value)))
             ) {
               if (sawAtLeastOne !== undefined) {
-                softAssert(
+                assertSoft(
                   false,
                   ErrorMessage.DemandSpecificXorViolation(sawAtLeastOne, keyValue)
                 );
@@ -1027,7 +1077,7 @@ export function withBuilderExtensions<
             }
           });
 
-          softAssert(sawAtLeastOne, ErrorMessage.DemandGenericXorViolation(groupEntries));
+          assertSoft(sawAtLeastOne, ErrorMessage.DemandGenericXorViolation(groupEntries));
         });
 
         // ? Take advantage of our loop through optionsMetadata.implied to
@@ -1041,7 +1091,7 @@ export function withBuilderExtensions<
             [$canonical]: canonicalImplications,
             ...expandedImplications
           }) => {
-            hardAssert(
+            assertHard(
               implier !== undefined,
               ErrorMessage.MetadataInvariantViolated('implies')
             );
@@ -1065,7 +1115,7 @@ export function withBuilderExtensions<
                   }
                 });
 
-                softAssert(
+                assertSoft(
                   !seenConflictingKeyValues.length,
                   ErrorMessage.ImpliesViolation(implier, seenConflictingKeyValues)
                 );
@@ -1130,8 +1180,8 @@ export function withBuilderExtensions<
     argv: Arguments<CustomCliArguments, CustomExecutionContext>;
     defaultedOptions: Record<string, true>;
   }): void {
-    hardAssert(previousBfBuilderObject, ErrorMessage.GuruMeditation());
-    hardAssert(previousBfParserConfiguration, ErrorMessage.GuruMeditation());
+    assertHard(previousBfBuilderObject, ErrorMessage.GuruMeditation());
+    assertHard(previousBfParserConfiguration, ErrorMessage.GuruMeditation());
 
     Object.keys(defaultedOptions).forEach((defaultedOption) => {
       expandOptionNameAndAliasesWithRespectToParserConfiguration({
@@ -1202,7 +1252,7 @@ export async function getInvocableExtendedHandler<
     });
   }
 
-  hardAssert(command, ErrorMessage.FalsyCommandExport());
+  assertHard(command, ErrorMessage.FalsyCommandExport());
 
   // ? ESM <=> CJS interop. If there's a default property, we'll use it.
   if (command.default !== undefined) {
@@ -1211,6 +1261,7 @@ export async function getInvocableExtendedHandler<
 
   // ? ESM <=> CJS interop, again. See: @black-flag/core/src/discover.ts
   // ! We cannot trust the type of command.default yet, hence the next line:
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (command?.default !== undefined) {
     command = command.default;
   }
@@ -1221,14 +1272,15 @@ export async function getInvocableExtendedHandler<
     config = await command(context);
   } else {
     // ! We cannot trust the type of command if we've reached this point
-    hardAssert(command && typeof command === 'object', ErrorMessage.FalsyCommandExport());
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    assertHard(command && typeof command === 'object', ErrorMessage.FalsyCommandExport());
 
     // * Now we can trust its type :)
     config = command;
   }
 
   const { builder, handler } = config;
-  hardAssert(handler, ErrorMessage.CommandHandlerNotAFunction());
+  assertHard(handler, ErrorMessage.CommandHandlerNotAFunction());
 
   debug('returned immediately invocable handler function');
 
@@ -1375,7 +1427,7 @@ function analyzeBuilderObject<
       allPossibleOptionNamesAndAliasesSet
     );
 
-    hardAssert(
+    assertHard(
       conflictingNamesSet.size === 0,
       ErrorMessage.DuplicateOptionName(getFirstValueFromNonEmptySet(conflictingNamesSet))
     );
@@ -1564,21 +1616,21 @@ function expandOptionNameAndAliasesWithRespectToParserConfiguration({
   return expandedNamesSet;
 
   function add(name: string) {
-    hardAssert(!expandedNamesSet.has(name), ErrorMessage.DuplicateOptionName(name));
+    assertHard(!expandedNamesSet.has(name), ErrorMessage.DuplicateOptionName(name));
     expandedNamesSet.add(name);
   }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getParserConfigurationFromBlackFlagInstance(blackFlag: any) {
-  hardAssert(
+  assertHard(
     typeof blackFlag.getInternalMethods === 'function',
     ErrorMessage.UnexpectedValueFromInternalYargsMethod()
   );
 
   const yargsInternalMethods = blackFlag.getInternalMethods();
 
-  hardAssert(
+  assertHard(
     typeof yargsInternalMethods.getParserConfiguration === 'function',
     ErrorMessage.UnexpectedValueFromInternalYargsMethod()
   );
@@ -1586,8 +1638,9 @@ function getParserConfigurationFromBlackFlagInstance(blackFlag: any) {
   const parserConfiguration: Partial<ParserConfigurationOptions> =
     yargsInternalMethods.getParserConfiguration();
 
-  hardAssert(
+  assertHard(
     // ! We cannot trust the type of parserConfiguration, hence the next line:
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     parserConfiguration && typeof parserConfiguration === 'object',
     ErrorMessage.UnexpectedValueFromInternalYargsMethod()
   );
@@ -1653,7 +1706,7 @@ function separateExtensionsFromBuilderObjectValue<
     subOptionOf
   };
 
-  hardAssert(
+  assertHard(
     !('default' in builderObjectValue) || default_ !== undefined,
     ErrorMessage.IllegalExplicitlyUndefinedDefault()
   );
@@ -1677,7 +1730,7 @@ function validateAndFlattenExtensionValue(
   }
 
   Object.keys(mergedConfig).forEach((referredOptionName) => {
-    hardAssert(
+    assertHard(
       referredOptionName in builderObject,
       ErrorMessage.ReferencedNonExistentOption(optionName, referredOptionName)
     );
@@ -1728,4 +1781,44 @@ function getFirstValueFromNonEmptySet<T extends Set<unknown>>(
   set: T
 ): Parameters<T['add']>[0] {
   return set.values().next().value;
+}
+
+/**
+ * Copied over from cli-utils to break a dependency cycle.
+ * @internal
+ */
+function assertSoft(valueOrMessage: unknown, message?: string): asserts valueOrMessage {
+  let shouldThrow = true;
+
+  if (typeof message === 'string') {
+    const value = valueOrMessage;
+    shouldThrow = !value;
+  } else {
+    message = String(valueOrMessage);
+  }
+
+  if (shouldThrow) {
+    throw new CliError(message, { suggestedExitCode: FrameworkExitCode.DefaultError });
+  }
+}
+
+/**
+ * Copied over from cli-utils to break a dependency cycle.
+ * @internal
+ */
+function assertHard(valueOrMessage: unknown, message?: string): asserts valueOrMessage {
+  let shouldThrow = true;
+
+  if (typeof message === 'string') {
+    const value = valueOrMessage;
+    shouldThrow = !value;
+  } else {
+    message = String(valueOrMessage);
+  }
+
+  if (shouldThrow) {
+    throw new CliError(ErrorMessage.FrameworkError(message), {
+      suggestedExitCode: FrameworkExitCode.AssertionFailed
+    });
+  }
 }

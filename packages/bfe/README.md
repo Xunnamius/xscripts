@@ -236,6 +236,10 @@ This configuration allows the following arguments: no arguments (`∅`), `‑y=.
 `‑y=... ‑z`, `‑xz ‑y=one`; and disallows: `‑x`, `‑z`, `‑x ‑y=...`, `‑xz ‑y=...`,
 `‑xz`.
 
+Note that, when performing a check using the parsed value of an argument and
+that argument is configured as an array (`{ array: true }`), that array will be
+searched for said value. Otherwise, a strict deep equality check is performed.
+
 ###### `requires` versus `implies`
 
 Choose [BFE's `implies`][14] over `requires` when you want one argument to imply
@@ -284,6 +288,10 @@ addition to the argument existence checks demonstrated above. For example:
 This configuration allows the following arguments: no arguments (`∅`), `‑y=...`,
 `‑x`, `‑z`, `‑x ‑y=...`; and disallows: `‑y=... ‑z`, `‑x ‑y=one`, `‑xz ‑y=one`,
 `‑xz`.
+
+Note that, when performing a check using the parsed value of an argument and
+that argument is configured as an array (`{ array: true }`), that array will be
+searched for said value. Otherwise, a strict deep equality check is performed.
 
 ###### `conflicts` versus `implies`
 
@@ -552,8 +560,12 @@ This configuration allows the following arguments: no arguments (`∅`), `‑x`,
 `‑y=...`, `‑x ‑y=...`, `‑xz`, `‑xz y=...`; and disallows: `‑z`, `‑y=one`,
 `‑y=... ‑z`.
 
-Note that a more powerful implementation of `demandThisOptionIf` can be achieved
-via [`subOptionOf`][19].
+Note that, when performing a check using the parsed value of an argument and
+that argument is configured as an array (`{ array: true }`), that array will be
+searched for said value. Otherwise, a strict deep equality check is performed.
+
+Also note that a more powerful implementation of `demandThisOptionIf` can be
+achieved via [`subOptionOf`][19].
 
 ---
 
@@ -639,6 +651,10 @@ This configuration allows the following arguments: `‑x`, `‑y=one`, `‑z`,
 `‑x ‑y=...`, `‑xz`, `‑y=... ‑z`, `‑xz ‑y=...`; and disallows: no arguments
 (`∅`), `‑y=...`.
 
+Note that, when performing a check using the parsed value of an argument and
+that argument is configured as an array (`{ array: true }`), that array will be
+searched for said value. Otherwise, a strict deep equality check is performed.
+
 ---
 
 ##### `demandThisOptionXor`
@@ -693,6 +709,10 @@ example:
 This configuration allows the following arguments: `‑x`, `‑y=one`, `‑z`,
 `‑x ‑y=...`, `‑y=... ‑z`; and disallows: no arguments (`∅`), `‑y=...`,
 `‑x ‑y=one`, `‑xz`, `‑y=one ‑z`, `‑xz ‑y=...`.
+
+Note that, when performing a check using the parsed value of an argument and
+that argument is configured as an array (`{ array: true }`), that array will be
+searched for said value. Otherwise, a strict deep equality check is performed.
 
 ---
 
