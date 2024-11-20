@@ -3,7 +3,6 @@ import { readFileSync } from 'node:fs';
 import { readFile as readFileAsync } from 'node:fs/promises';
 
 import { cache, CacheScope } from 'rootverse+project-utils:src/cache.ts';
-
 import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
 import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
 

@@ -2,18 +2,18 @@ import { makeNamedError } from 'named-app-errors';
 
 import { ErrorMessage as UpstreamErrorMessage } from 'multiverse+cli-utils:error.ts';
 
-import type {
-  ImportSpecifier,
-  ProjectAttribute,
-  RootPackage
-} from 'multiverse+project-utils';
-
 import {
   $type,
   $type_ProjectError,
   isProjectError,
   ProjectError
 } from 'multiverse+project-utils:error.ts';
+
+import type {
+  ImportSpecifier,
+  ProjectAttribute,
+  RootPackage
+} from 'multiverse+project-utils';
 
 export { TaskError } from 'multiverse+cli-utils:error.ts';
 

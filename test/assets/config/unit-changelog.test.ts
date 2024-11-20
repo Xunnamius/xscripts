@@ -26,6 +26,7 @@ import type {
   XchangelogConfig,
   XchangelogOptions
 } from '@-xun/changelog' with { 'resolution-mode': 'import' };
+
 import type { Merge, Promisable, SetParameterType } from 'type-fest';
 
 reconfigureJestGlobalsToSkipTestsInThisFileIfRequested({ it: true });

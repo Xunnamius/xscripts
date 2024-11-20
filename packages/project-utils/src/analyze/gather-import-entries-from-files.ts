@@ -96,10 +96,12 @@ function gatherImportEntriesFromFiles_(
 
         dbg('using babel to evaluate source file imports');
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (!babel) {
           babel = getBabel();
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (!plugin || !accumulator) {
           ({ plugin, accumulator } = createMetadataAccumulatorPlugin());
         }
@@ -150,10 +152,12 @@ function gatherImportEntriesFromFiles_(
 
             dbg('using babel to evaluate source file imports');
 
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (!babel) {
               babel = getBabel();
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (!plugin || !accumulator) {
               ({ plugin, accumulator } = createMetadataAccumulatorPlugin());
             }

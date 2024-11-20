@@ -10,7 +10,6 @@ import {
 } from 'universe:configure.ts';
 
 import { globalCliName } from 'universe:constant.ts';
-
 import { withGlobalBuilder, withGlobalUsage } from 'universe:util.ts';
 
 /**

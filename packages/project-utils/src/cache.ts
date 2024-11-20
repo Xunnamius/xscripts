@@ -7,6 +7,14 @@ import {
   isProjectMetadata
 } from 'rootverse+project-utils:src/analyze/common.ts';
 
+import {
+  type deriveVirtualGitignoreLines,
+  type deriveVirtualPrettierignoreLines,
+  type isAccessible,
+  type readJson,
+  type readJsonc
+} from 'rootverse+project-utils:src/fs.ts';
+
 import type {
   analyzeProjectStructure,
   gatherImportEntriesFromFiles,
@@ -15,14 +23,6 @@ import type {
   gatherProjectFiles,
   gatherPseudodecoratorEntriesFromFiles
 } from 'rootverse+project-utils:src/analyze.ts';
-
-import {
-  type deriveVirtualGitignoreLines,
-  type deriveVirtualPrettierignoreLines,
-  type isAccessible,
-  type readJson,
-  type readJsonc
-} from 'rootverse+project-utils:src/fs.ts';
 
 const internalCache = new Map<CacheScope, InternalScopedCache>();
 const cacheDebug = debug_.extend('cache');
@@ -318,7 +318,7 @@ function clearCacheByScope(
         cacheDebug(
           'internal %O cache cleared (%O entries deleted)',
           scope,
-          internalScopedCache?.size
+          internalScopedCache.size
         );
       } else {
         cacheDebug('internal %O cache vacuously cleared (cache was never used)', scope);

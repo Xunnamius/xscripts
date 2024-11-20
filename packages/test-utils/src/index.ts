@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable unicorn/no-keyword-prefix */
 import assert from 'node:assert';
 import fs from 'node:fs/promises';

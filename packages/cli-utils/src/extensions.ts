@@ -35,11 +35,11 @@ export { withUsageExtensions as withStandardUsage } from 'multiverse+bfe';
  */
 export type StandardExecutionContext = ExecutionContext & {
   /**
-   * The {@link ExtendedLogger} for the CLI.
+   * The {@link ExtendedLogger} for the CLI (not Black Flag's).
    */
   log: ExtendedLogger;
   /**
-   * The {@link ExtendedDebugger} for the CLI.
+   * The {@link ExtendedDebugger} for the CLI (not Black Flag's).
    */
   debug_: ExtendedDebugger;
   state: {
