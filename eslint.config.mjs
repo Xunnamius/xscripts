@@ -9,8 +9,8 @@ import eslintPluginJest from 'eslint-plugin-jest';
 import eslintPluginNode from 'eslint-plugin-n';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import jsGlobals from 'globals';
-
 import { toss } from 'toss-expression';
+
 import {
   config as makeTsEslintConfig,
   configs as eslintTsConfigs,
@@ -40,6 +40,7 @@ const uriSchemeSubDelimiter = '+';
 const $scheme = Symbol('scheme');
 
 const extensionsTsAndJs = [...extensionsTypescript, ...extensionsJavascript];
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 const { node: packageJsonEnginesNode } = packageJson.engines || {};
 
 if (typeof packageJsonEnginesNode !== 'string') {
@@ -128,6 +129,50 @@ const wellKnownPackageAliases = [
   ['typeverse:*', './types/*']
 ];
 
+// TODO: perhaps this should be an importable function from asset config? Yes!
+const pathGroups = wellKnownPackageAliases
+  // eslint-disable-next-line unicorn/no-array-reduce
+  .reduce((groups, [alias]) => {
+    const scheme = alias.split(uriSchemeDelimiter)[0].split(uriSchemeSubDelimiter)[0];
+    const previousVerse = groups.at(-1)?.[$scheme];
+
+    // ? Collapse imports from the same scheme (verse) into the same block
+    if (previousVerse !== scheme) {
+      groups.push({
+        // ? This is a minimatch pattern to match any use of the aliases
+        pattern: `${scheme}{*,*/**}`,
+        // ? "internal" is always under package root but not under
+        // ? node_modules; "external" is under node_modules or above
+        // ? package root; our custom groups _could_ be either, so we
+        // ? default to "external"
+        group: 'external',
+        position: 'after',
+        [$scheme]: scheme
+      });
+    }
+
+    return groups;
+  }, []);
+
+const pathGroupOverrides = wellKnownPackageAliases
+  // eslint-disable-next-line unicorn/no-array-reduce
+  .reduce((groups, [alias]) => {
+    const scheme = alias.split(uriSchemeDelimiter)[0].split(uriSchemeSubDelimiter)[0];
+    const previousVerse = groups.at(-1)?.[$scheme];
+
+    // ? Collapse imports from the same scheme (verse) into the same block
+    if (previousVerse !== scheme) {
+      groups.push({
+        // ? This is a minimatch pattern to match any use of the aliases
+        pattern: `${scheme}:{*,*/**}`,
+        action: 'enforce',
+        [$scheme]: scheme
+      });
+    }
+
+    return groups;
+  }, []);
+
 const genericRules = {
   // * eslint
   'no-console': 'warn',
@@ -137,20 +182,20 @@ const genericRules = {
   'no-await-in-loop': 'warn',
   'no-restricted-globals': ['warn', ...restrictedGlobals],
   'no-empty': 'off',
+  eqeqeq: 'warn',
   // ? Ever since v4, we will rely on TypeScript to catch these
   'no-undef': 'off',
   'no-unused-vars': 'off',
-  eqeqeq: 'warn',
 
   // * import
-  // TODO: replace with fork that fixes this (fix is: ignorePackages should only
-  // TODO: ignore stuff that resolves into node_modules)
-  // TODO: https://github.com/import-js/eslint-plugin-import/blob/v2.31.0/docs/rules/extensions.md
   'import/extensions': [
     'error',
     'always',
-    // TODO: needs to be fixed to properly error on multiversal aliases
-    { ignorePackages: true, checkTypeImports: true }
+    {
+      ignorePackages: true,
+      checkTypeImports: true,
+      pathGroupOverrides
+    }
   ],
   'import/no-duplicates': ['warn', { 'prefer-inline': true }],
   'import/no-unresolved': ['error', { commonjs: true }],
@@ -164,11 +209,16 @@ const genericRules = {
   'import/order': [
     'warn',
     {
-      alphabetize: { order: 'asc', caseInsensitive: true },
+      // * Applies to both import identifiers and specifiers (see below)
+      alphabetize: { order: 'asc', orderImportKind: 'asc', caseInsensitive: true },
+      // * Applies to import identifiers
+      // * e.g. "id1" and "id2" in `import { id1, id2 } from 'specifier';`
       named: {
         enabled: true,
         types: 'types-last'
       },
+      // * Applies to import specifiers
+      // * e.g. "specifier" in `import { id1, id2 } from 'specifier';`
       groups: [
         'builtin',
         'external',
@@ -176,34 +226,22 @@ const genericRules = {
         ['parent', 'sibling', 'index'],
         ['object', 'type']
       ],
-      // TODO: perhaps this should be an importable function from asset config?
-      pathGroups: wellKnownPackageAliases
-        // eslint-disable-next-line unicorn/no-array-reduce
-        .reduce((groups, [alias]) => {
-          const scheme = alias
-            .split(uriSchemeDelimiter)[0]
-            .split(uriSchemeSubDelimiter)[0];
-
-          const previousVerse = groups.at(-1)?.[$scheme];
-
-          // ? Collapse imports from the same scheme (verse) into the same block
-          if (previousVerse !== scheme) {
-            groups.push({
-              // ? This is a minimatch pattern to match any use of the aliases
-              pattern: `${scheme}{*,*/**}`,
-              group: scheme === 'testverse' ? 'internal' : 'external',
-              position: 'after',
-              [$scheme]: scheme
-            });
-          }
-
-          return groups;
-        }, []),
+      // * Custom sub-groups based on specifier allowing sorting between groups
+      pathGroups,
+      // * Ensures different "pathGroup" groups are separated by a newline even
+      // * though they're technically part of the same "group" group
+      distinctGroup: true,
+      // * Controls which groups are excluded from "pathGroups" rules. The
+      // * default is ["builtin", "external", "object"]
       pathGroupsExcludedImportTypes: ['builtin', 'object'],
-      // TODO: replace with fork that adds new feature (new feature is: new
-      // TODO: spacing mode where single-line imports kept together)
+      // * Controls the spacing between and within import groups
       'newlines-between': 'always-and-inside-groups',
-      distinctGroup: true
+      // * Controls the spacing between and within type-only import groups
+      'newlines-between-types': 'never',
+      // * Enables sorting type-only imports and exports amongst themselves
+      sortTypesAmongThemselves: true,
+      // * Ensures multiline imports are separated and singleline are collected
+      consolidateIslands: 'inside-groups'
     }
   ],
 
@@ -304,8 +342,6 @@ const genericRules = {
   '@typescript-eslint/no-useless-constructor': 'off',
   // ? This rule is broken: it can actually introduce bugs if applied blindly.
   '@typescript-eslint/prefer-nullish-coalescing': 'off',
-  // ? TypeScript/Eslint isn't smart enough to do this right
-  '@typescript-eslint/no-unnecessary-condition': 'off',
 
   // * unicorn
   'unicorn/no-keyword-prefix': 'warn',
@@ -485,6 +521,13 @@ const mjsRules = {
   ]
 };
 
+const earlyJsOnlyRules = {
+  // * Rules applied only to JS files (cjs, mjs, jsx, etc) but NOT TS files.
+  // * These rules are also applied before all others and may be overridden
+  'no-undef': 'error',
+  'no-unused-vars': 'error'
+};
+
 const globals = {
   ...jsGlobals.builtin,
   ...jsGlobals.commonjs,
@@ -521,23 +564,20 @@ assert(eslintPluginNodeRecommendedExtEither);
 assert(eslintPluginNodeRecommendedExtMjs);
 assert(eslintPluginNodeRecommendedExtCjs);
 
-const projectLintUnlimitedPath = `${import.meta.dirname}/${Tsconfig.ProjectLintUnlimited}`;
-const projectLintSourcePath = `${import.meta.dirname}/${Tsconfig.ProjectLintSource}`;
+const projectLintPath = `${import.meta.dirname}/${Tsconfig.ProjectLint}`;
 
 /**
  ** Despite the scope used by xscripts, we want as broad a configuration file
  ** as possible and we'll leave the further narrowing of scope to others.
  */
-const cwdTsconfigFile = isAccessible.sync(projectLintUnlimitedPath, { useCached: true })
-  ? projectLintUnlimitedPath
-  : isAccessible.sync(Tsconfig.PackageLintUnlimited, { useCached: true })
-    ? Tsconfig.PackageLintUnlimited
-    : isAccessible.sync(projectLintSourcePath, { useCached: true })
-      ? projectLintSourcePath
-      : isAccessible.sync(Tsconfig.PackageLintSource, { useCached: true })
-        ? Tsconfig.PackageLintSource
-        : // TODO: make this a ProjectError; use ErrorMessage.X
-          toss(new Error('unable to locate suitable tsconfig file'));
+const cwdTsconfigFile = isAccessible.sync(projectLintPath, { useCached: true })
+  ? projectLintPath
+  : isAccessible.sync(Tsconfig.PackageLint, { useCached: true })
+    ? Tsconfig.PackageLint
+    : isAccessible.sync(Tsconfig.ProjectBase, { useCached: true })
+      ? Tsconfig.ProjectBase
+      : // TODO: make this a ProjectError; use ErrorMessage.X
+        toss(new Error('unable to locate suitable tsconfig file'));
 
 const config = makeTsEslintConfig(
   // * Global ignores applying to all files (any extension)
@@ -625,6 +665,14 @@ const config = makeTsEslintConfig(
   ].flatMap((configs) =>
     overwriteProperty(configs, 'files', [`**/*.{${toExtensionList(extensionsTsAndJs)}}`])
   ),
+
+  // * Early configs, likely overridden applying only to ANY JavaScript file
+  // ? These do not apply to TypeScript files, and likely get overridden later
+  {
+    name: '@-xun/scripts:any-js-no-ts',
+    files: [`**/*.{${toExtensionList(extensionsJavascript)}}`],
+    rules: earlyJsOnlyRules
+  },
 
   // * Configs applying only to JavaScript files ending in .js
   {
