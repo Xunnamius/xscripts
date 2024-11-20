@@ -4,6 +4,8 @@ import assert from 'node:assert';
 import { fixupConfigRules } from '@eslint/compat';
 import eslintJs from '@eslint/js';
 import restrictedGlobals from 'confusing-browser-globals';
+// TODO: delete me when we merge this config with the real one
+import eslintPluginImport from 'eslint-plugin-import';
 import eslintPluginJest from 'eslint-plugin-jest';
 import eslintPluginNode from 'eslint-plugin-n';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
@@ -28,9 +30,11 @@ import { Tsconfig } from 'multiverse+project-utils:fs/well-known-constants.ts';
 import { type AbsolutePath } from 'multiverse+project-utils:fs.ts';
 
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
-
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
+
+// TODO: delete me next time you see me
+void eslintPluginImport;
 
 // TODO: update with latest changes from project root eslint.config.mjs
 
@@ -50,7 +54,7 @@ export type EslintConfig = Extract<Config, unknown[]>[number];
 /**
  * The name of the tsconfig JSON file used by the linter.
  */
-export const tsconfigProject = Tsconfig.ProjectLintUnlimited;
+export const tsconfigProject = Tsconfig.ProjectLint;
 
 /**
  * All file extensions recognized as JavaScript or TypeScript.
