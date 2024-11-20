@@ -56,6 +56,7 @@ import type {
   SuccessContext,
   VerifyConditionsContext
 } from 'semantic-release' with { 'resolution-mode': 'import' };
+
 import type { EmptyObject } from 'type-fest';
 
 const debug = createDebugLogger({
@@ -400,24 +401,41 @@ export async function success(_pluginConfig: PluginConfig, context: SuccessConte
   await run('git', ['fetch', '--prune']);
 
   pluginDebug('analyzing repository state');
+  const { isDirty } = await determineRepoWorkingTreeDirty();
+
+  if (isDirty && context.envCi.isCi) {
+    process.stdout.write(
+      '::warning title=Repository left in unclean state::The release pipeline has terminated but the repository remains in an unclean state. This is typically evident of a broken build process.\n'
+    );
+  }
+}
+
+/**
+ * If `gitStatusOutput` is not empty or `gitStatusExitCode` is non-zero, then
+ * the current working tree is dirty. This can be checked quickly via the
+ * `isDirty` property.
+ */
+export async function determineRepoWorkingTreeDirty() {
   const { all: gitStatusOutput, exitCode: gitStatusExitCode } = await run(
     'git',
     ['status', '--porcelain'],
     { all: true }
   );
 
-  if (gitStatusOutput) {
-    pluginDebug.warn(
+  const isDirty = !!gitStatusOutput || gitStatusExitCode !== 0;
+
+  if (isDirty) {
+    debug.warn(
       'repository was left in an unclean state! Git status output (exit code %O):',
       gitStatusExitCode
     );
-
-    pluginDebug.message('%O', gitStatusOutput);
-
-    if (context.envCi.isCi) {
-      process.stdout.write(
-        '::warning title=Repository left in unclean state::The release pipeline has terminated but the repository remains in an unclean state. This is typically evident of a broken build process.\n'
-      );
-    }
   }
+
+  debug.message('%O', gitStatusOutput);
+
+  return {
+    gitStatusOutput,
+    gitStatusExitCode,
+    isDirty
+  };
 }
