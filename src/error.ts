@@ -116,10 +116,10 @@ export const ErrorMessage = {
     return `expected a project ${preposition} the following attributes: ${expected.join(', ')}; saw ${Object.keys(actual).join(', ')} instead`;
   },
   BadProjectNameInPackageJson() {
-    return `a package.json file must contain a valid "name" field`;
+    return `the distributable package.json file does not contain a valid "name" field`;
   },
   BadPackageExportsInPackageJson() {
-    return `a distributable package.json file must contain a valid "exports" field`;
+    return `the distributable package.json file does not contain a valid "exports" field`;
   },
   MustChooseDeployEnvironment() {
     return 'must choose either --preview or --production deployment environment';
@@ -139,11 +139,14 @@ export const ErrorMessage = {
   MarkdownNoUndefinedReferences() {
     return 'cannot continue with undefined references present in one or more Markdown files';
   },
-  AllOptionValueMustBeAlone(noun: string) {
-    return `the "all" ${noun} must not be given alongside any others`;
+  OptionValueMustBeAlone(option: string, noun: string) {
+    return `the "${option}" ${noun} must not be given alongside any others`;
   },
   LintingFailed() {
     return 'one or more linters returned a bad exit code';
+  },
+  MissingConfigurationFile(path: string) {
+    return `this command requires the following configuration file exists: ${path}`;
   },
   TestingFailed() {
     return 'one or more test executables returned a bad exit code';
@@ -151,7 +154,31 @@ export const ErrorMessage = {
   BuildOutputChecksFailed() {
     return 'one or more build output integrity checks failed';
   },
-  RetrievalFailed(path: string) {
+  ReleaseEnvironmentValidationFailed() {
+    return 'one or more runtime environment validation checks failed';
+  },
+  ReleaseRepositoryStateValidationFailed() {
+    return 'one or more runtime environment validation checks failed';
+  },
+  ReleaseRepositoryNoCurrentBranch() {
+    return 'repository "HEAD" ref is not currently on an existing branch (are you in detached HEAD state?)';
+  },
+  ReleaseScriptExecutionFailed() {
+    return 'one or more package.json scripts returned a non-zero exit code';
+  },
+  ReleaseRunnerExecutionFailed() {
+    return 'one or more release tasks failed to complete';
+  },
+  CodecovDownloaderOnlySupportsLinux() {
+    return 'the Codecov downloader only supports the Linux operating system; ensure a suitable "codecov" binary exists in the runtime path before reattempting this command';
+  },
+  FailedToInstallCodecov() {
+    return 'the Codecov downloader failed to make a "codecov" executable available; ensure a suitable "codecov" binary exists in the runtime path before reattempting this command';
+  },
+  CodecovRetrievalFailed(url: string) {
+    return `failed to download a suitable codecov binary from ${url}`;
+  },
+  AssetRetrievalFailed(path: string) {
     return `failed to retrieve asset at ${path}`;
   },
   UnmatchedCommitType(type: string | undefined, variableName: string) {
@@ -171,6 +198,11 @@ export const ErrorMessage = {
   },
   TranspilationReturnedNothing(sourcePath: string, outputPath: string) {
     return `transpilation of the following file returned an empty result: ${sourcePath} => ${outputPath}`;
+  },
+  TaskNotRunnable(id: string, npmScripts: string[]) {
+    return npmScripts.length
+      ? `task ${id} expects one of the following scripts to exist in this package's package.json file: "${npmScripts.join('", "')}`
+      : `task ${id} is not runnable`;
   },
   /**
    * These are "error" messages that are not necessarily meant to be the message
