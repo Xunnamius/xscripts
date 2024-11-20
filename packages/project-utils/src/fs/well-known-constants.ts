@@ -3,11 +3,9 @@
  */
 export enum Tsconfig {
   ProjectBase = 'tsconfig.json',
-  ProjectLintSource = 'tsc.project.lint-source.json',
-  ProjectLintUnlimited = 'tsc.project.lint-unlimited.json',
+  ProjectLint = 'tsc.project.lint.json',
   PackageDocumentation = 'tsc.package.docs.json',
-  PackageLintSource = 'tsc.package.lint-source.json',
-  PackageLintUnlimited = 'tsc.package.lint-unlimited.json',
+  PackageLint = 'tsc.package.lint.json',
   PackageTypes = 'tsc.package.types.json'
 }
 
@@ -57,6 +55,16 @@ export const releaseConfigProjectBase = 'release.config.cjs';
 export const conventionalChangelogConfigProjectBase = 'conventional.config.cjs';
 
 /**
+ * The basename of the well-known dotenv configuration file.
+ */
+export const dotEnvConfigProjectBase = '.env';
+
+/**
+ * The basename of the well-known dotenv configuration file.
+ */
+export const dotEnvConfigPackageBase = '.env';
+
+/**
  * The basename of the well-known "shared package file". The presence of this
  * file at a package root signifies that commits scoped to said package will be
  * included by other packages in the project.
@@ -65,3 +73,18 @@ export const conventionalChangelogConfigProjectBase = 'conventional.config.cjs';
  * packages.
  */
 export const sharedConfigPackageBase = '.shared';
+
+/**
+ * The basename of the well-known distributables output or "dist" directory.
+ */
+export const distDirPackageBase = 'dist';
+
+/**
+ * The basename of the well-known intermediate transpilation output directory.
+ */
+export const intermediatesDirPackageBase = '.transpiled';
+
+/**
+ * The basename of the well-known test coverage output directory.
+ */
+export const coverageDirPackageBase = 'coverage';
