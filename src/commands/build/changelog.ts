@@ -463,31 +463,33 @@ Use --import-section-file to add a custom release section to the changelog. The 
 
             // ? ESM <=> CJS interop, again. See: @black-flag/core/src/discover.ts
             // ! We cannot trust the type of changelogPatcher.default yet
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (changelogPatcher?.default !== undefined) {
               changelogPatcher = changelogPatcher.default;
             }
           }
 
-          if (changelogPatcher) {
-            const contents = await readFile(changelogFile);
-            const patcher = (changelog: string, patches: ChangelogPatches) => {
-              // eslint-disable-next-line unicorn/no-array-reduce
-              return patches.reduce(function (str, [searchValue, replaceValue]) {
-                return str.replace(searchValue, replaceValue);
-              }, changelog);
-            };
+          softAssert(
+            changelogPatcher,
+            ErrorMessage.BadChangelogPatcher(changelogPatcherFile)
+          );
 
-            if (typeof changelogPatcher === 'function') {
-              debug('invoking changelogPatcher as a function');
-              await writeFile(changelogFile, await changelogPatcher(contents, patcher));
-            } else if (Array.isArray(changelogPatcher)) {
-              debug('invoking patcher using changelogPatcher array');
-              await writeFile(changelogFile, patcher(contents, changelogPatcher));
-            } else {
-              throw new CliError(ErrorMessage.BadChangelogPatcher(changelogPatcherFile));
-            }
+          const contents = await readFile(changelogFile);
+          const patcher = (changelog: string, patches: ChangelogPatches) => {
+            // eslint-disable-next-line unicorn/no-array-reduce
+            return patches.reduce(function (str, [searchValue, replaceValue]) {
+              return str.replace(searchValue, replaceValue);
+            }, changelog);
+          };
+
+          if (typeof changelogPatcher === 'function') {
+            debug('invoking changelogPatcher as a function');
+            await writeFile(changelogFile, await changelogPatcher(contents, patcher));
+          } else if (Array.isArray(changelogPatcher)) {
+            debug('invoking patcher using changelogPatcher array');
+            await writeFile(changelogFile, patcher(contents, changelogPatcher));
           } else {
-            throw new CliError(ErrorMessage.BadChangelogPatcher(changelogPatcherFile));
+            softAssert(ErrorMessage.BadChangelogPatcher(changelogPatcherFile));
           }
         } else {
           debug(

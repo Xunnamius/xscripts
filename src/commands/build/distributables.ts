@@ -3,7 +3,6 @@
 import { chmod, rename, stat, symlink } from 'node:fs/promises';
 import { builtinModules } from 'node:module';
 import { dirname, extname } from 'node:path';
-
 import { setTimeout as delay } from 'node:timers/promises';
 import { isNativeError } from 'node:util/types';
 
@@ -14,7 +13,7 @@ import {
   transformFileAsync as babelTransformAsync
 } from '@babel/core';
 
-import { CliError, type ChildConfiguration } from '@black-flag/core';
+import { type ChildConfiguration } from '@black-flag/core';
 import { glob } from 'glob';
 import { rimraf as forceDeletePaths } from 'rimraf';
 import uniqueFilename from 'unique-filename';
@@ -59,6 +58,8 @@ import {
 import { gatherPackageFiles } from 'multiverse+project-utils:analyze/gather-package-files.ts';
 
 import {
+  distDirPackageBase,
+  intermediatesDirPackageBase,
   isAbsolutePath,
   isAccessible,
   toAbsolutePath,
@@ -108,9 +109,6 @@ import {
 
 const standardNodeShebang = '#!/usr/bin/env node\n';
 const nodeModulesRelativeBinDir = `node_modules/.bin`;
-const transpiledDirBase = '.transpiled';
-const distDirBase = 'dist';
-
 const collator = new Intl.Collator(undefined, { numeric: true });
 
 /**
@@ -479,8 +477,8 @@ Finally, note that, when attempting to build a Next.js package, this command wil
           debug('outputExtension (final): %O', outputExtension);
 
           const outputDirName = generateIntermediatesFor
-            ? transpiledDirBase
-            : distDirBase;
+            ? intermediatesDirPackageBase
+            : distDirPackageBase;
           const absoluteOutputDirPath = toAbsolutePath(outputDirName);
           const absoluteNodeModulesDirPath = toAbsolutePath('node_modules');
           const absoluteRootPackageJsonDirPath = toAbsolutePath('package.json');
@@ -744,7 +742,7 @@ distrib root: ${absoluteOutputDirPath}
                     'fixup transpilation returned an empty result: %O',
                     filepath
                   );
-                  throw new CliError(
+                  softAssert(
                     ErrorMessage.TranspilationReturnedNothing(filepath, filepath)
                   );
                 }
@@ -841,7 +839,7 @@ distrib root: ${absoluteOutputDirPath}
                 await writeFile(outputPath, code);
               } else {
                 debug.error('transpilation returned an empty result: %O', outputPath);
-                throw new CliError(
+                softAssert(
                   ErrorMessage.TranspilationReturnedNothing(sourcePath, outputPath)
                 );
               }
@@ -872,7 +870,7 @@ distrib root: ${absoluteOutputDirPath}
           );
 
           if (
-            (packageAttributes[ProjectAttribute.Cli] ||
+            (projectAttributes[ProjectAttribute.Cli] ||
               packageAttributes[WorkspaceAttribute.Cli]) &&
             linkCliIntoBin
           ) {
@@ -1498,71 +1496,70 @@ distrib root: ${absoluteOutputDirPath}
 
               dbg('cwdPackageExports: %O', cwdPackageExports);
 
-              if (cwdPackageExports) {
-                const flattenedExports = flattenPackageJsonSubpathMap({
-                  map: cwdPackageExports
+              softAssert(
+                cwdPackageExports,
+                ErrorMessage.BadPackageExportsInPackageJson()
+              );
+
+              const flattenedExports = flattenPackageJsonSubpathMap({
+                map: cwdPackageExports
+              });
+
+              const badExports: [subpath: string, target: string][] = [];
+
+              dbg('flattenedExports: %O', flattenedExports);
+
+              for (const { subpath, conditions } of flattenedExports) {
+                dbg('resolving subpath: %O %O', subpath, conditions);
+
+                const targets = resolveExportsTargetsFromEntryPoint({
+                  flattenedExports,
+                  entryPoint: subpath,
+                  conditions
                 });
 
-                const badExports: [subpath: string, target: string][] = [];
+                dbg('saw targets: %O', targets);
 
-                dbg('flattenedExports: %O', flattenedExports);
+                for (const target of targets) {
+                  if (target.includes('*')) {
+                    const realTarget = target
+                      .replaceAll(/\/\*(?!\*)/g, '/**/*')
+                      .replaceAll(/(?<!\*)\*\//g, '*/**/');
 
-                for (const { subpath, conditions } of flattenedExports) {
-                  dbg('resolving subpath: %O %O', subpath, conditions);
+                    const realTargets = await glob(realTarget, {
+                      dot: true,
+                      nodir: true
+                    });
 
-                  const targets = resolveExportsTargetsFromEntryPoint({
-                    flattenedExports,
-                    entryPoint: subpath,
-                    conditions
-                  });
+                    dbg('checking real wildcard target: %O', realTarget);
 
-                  dbg('saw targets: %O', targets);
+                    if (!realTargets.length) {
+                      dbg.error(
+                        'entry point with wildcard target leads to no accessible files: %O',
+                        target
+                      );
 
-                  for (const target of targets) {
-                    if (target.includes('*')) {
-                      const realTarget = target
-                        .replaceAll(/\/\*(?!\*)/g, '/**/*')
-                        .replaceAll(/(?<!\*)\*\//g, '*/**/');
+                      badExports.push([subpath, target]);
+                    }
+                  } else {
+                    dbg('checking target: %O', target);
 
-                      const realTargets = await glob(realTarget, {
-                        dot: true,
-                        nodir: true
-                      });
-
-                      dbg('checking real wildcard target: %O', realTarget);
-
-                      if (!realTargets.length) {
-                        dbg.error(
-                          'entry point with wildcard target leads to no accessible files: %O',
-                          target
-                        );
-
-                        badExports.push([subpath, target]);
-                      }
-                    } else {
-                      dbg('checking target: %O', target);
-
-                      if (!(await isAccessible(target, { useCached: false }))) {
-                        dbg.error('entry point leads to inaccessible file: %O', target);
-                        badExports.push([subpath, target]);
-                      }
+                    if (!(await isAccessible(target, { useCached: false }))) {
+                      dbg.error('entry point leads to inaccessible file: %O', target);
+                      badExports.push([subpath, target]);
                     }
                   }
                 }
+              }
 
-                if (badExports.length) {
-                  genericLogger.newline([LogTag.IF_NOT_SILENCED]);
-                  genericLogger.error(
-                    [LogTag.IF_NOT_SILENCED],
-                    ErrorMessage.specialized.ExportSubpathsPointsToInaccessible(
-                      badExports
-                    )
-                  );
+              if (badExports.length) {
+                genericLogger.newline([LogTag.IF_NOT_SILENCED]);
+                genericLogger.error(
+                  [LogTag.IF_NOT_SILENCED],
+                  ErrorMessage.specialized.ExportSubpathsPointsToInaccessible(badExports)
+                );
 
-                  throw new BuildOutputCheckError();
-                }
-              } else {
-                throw new CliError(ErrorMessage.BadPackageExportsInPackageJson());
+                throw new BuildOutputCheckError();
               }
             }
 

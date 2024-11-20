@@ -328,7 +328,7 @@ With respect to .prettierignore being the single source of truth for formatters:
             genericLogger.newline([LogTag.IF_NOT_SILENCED]);
           }
 
-          throw new CliError(ErrorMessage.MarkdownNoUndefinedReferences());
+          softAssert(ErrorMessage.MarkdownNoUndefinedReferences());
         }
       }
 

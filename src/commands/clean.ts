@@ -1,8 +1,9 @@
 import { run } from '@-xun/run';
-import { CliError, type ChildConfiguration } from '@black-flag/core';
+import { type ChildConfiguration } from '@black-flag/core';
 import { rimraf as forceDeletePaths } from 'rimraf';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
+import { softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   logStartTime,
@@ -130,12 +131,10 @@ Note that the regular expressions provided via --exclude-paths are computed with
       debug('final ignored paths: %O', finalIgnoredPaths);
       genericLogger([LogTag.IF_NOT_HUSHED], 'Deletion targets: %O', finalIgnoredPaths);
 
-      if (force) {
-        genericLogger([LogTag.IF_NOT_HUSHED], 'Performing deletions...');
-        await forceDeletePaths(finalIgnoredPaths);
-      } else {
-        throw new CliError(ErrorMessage.CleanCalledWithoutForce());
-      }
+      softAssert(force, ErrorMessage.CleanCalledWithoutForce());
+
+      genericLogger([LogTag.IF_NOT_HUSHED], 'Performing deletions...');
+      await forceDeletePaths(finalIgnoredPaths);
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })

@@ -4,18 +4,20 @@ import fs from 'node:fs/promises';
 
 import { CliError, FrameworkExitCode } from '@black-flag/core';
 
+import { softAssert } from 'multiverse+cli-utils:error.ts';
+
 import {
   withStandardBuilder,
   withStandardUsage
 } from 'multiverse+cli-utils:extensions.ts';
 
-import { ProjectError } from 'multiverse+project-utils:error.ts';
 import {
   isAccessible,
   toAbsolutePath,
   toPath,
   type AbsolutePath
 } from 'multiverse+project-utils:fs.ts';
+
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import {
@@ -108,9 +110,7 @@ export async function runGlobalPreChecks({
 }> {
   const debug = debug_.extend('globalPreChecks');
 
-  if (!projectMetadata_) {
-    throw new CliError(ErrorMessage.CannotRunOutsideRoot());
-  }
+  softAssert(projectMetadata_, ErrorMessage.CannotRunOutsideRoot());
 
   const cwd = toAbsolutePath(process.cwd());
 
@@ -123,9 +123,10 @@ export async function runGlobalPreChecks({
   debug('cwdPackage root: %O', packageRoot);
   debug('cwd (must match one of the above): %O', cwd);
 
-  if (![projectRoot, packageRoot].includes(cwd)) {
-    throw new CliError(ErrorMessage.CannotRunOutsideRoot());
-  }
+  softAssert(
+    [projectRoot, packageRoot].includes(cwd),
+    ErrorMessage.CannotRunOutsideRoot()
+  );
 
   return { projectMetadata: projectMetadata_ };
 }
@@ -223,7 +224,7 @@ export async function findOneConfigurationFile(
       [currentPath, currentPathIsReadable]
     ) {
       if (firstAccessiblePath !== undefined && currentPathIsReadable) {
-        throw new ProjectError(
+        softAssert(
           ErrorMessage.MultipleConfigsWhenExpectingOnlyOne(
             firstAccessiblePath,
             currentPath
@@ -247,18 +248,6 @@ export function hasExitCode(error: unknown): error is object & { exitCode: numbe
 
 // TODO: also consider a package of @-xun/black-flag-common-option-checks that
 // TODO: includes the generic checks implemented below:
-
-export function checkAllChoiceIfGivenIsByItself(allChoice: string, noun: string) {
-  return function (currentArg: unknown[]) {
-    const includesAll = currentArg.includes(allChoice);
-
-    return (
-      !includesAll ||
-      currentArg.length === 1 ||
-      ErrorMessage.AllOptionValueMustBeAlone(noun)
-    );
-  };
-}
 
 export function checkIsNotNegative(argName: string) {
   return function (currentArg: unknown) {

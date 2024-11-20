@@ -3,6 +3,7 @@ import { run, runWithInheritedIo } from '@-xun/run';
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
+import { softAssert } from 'multiverse+cli-utils:error.ts';
 import { logStartTime, LogTag } from 'multiverse+cli-utils:logging.ts';
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { ProjectAttribute } from 'multiverse+project-utils';
@@ -79,7 +80,7 @@ export default function command({
             env: { USE_WEBPACK_DEV_CONFIG: 'true', NODE_ENV: 'development' }
           });
         } else {
-          throw new CliError(ErrorMessage.UnsupportedCommand());
+          softAssert(ErrorMessage.UnsupportedCommand());
         }
       } catch (error) {
         throw hasExitCode(error)

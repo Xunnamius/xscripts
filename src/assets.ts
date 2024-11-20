@@ -1,6 +1,7 @@
-import { CliError, FrameworkExitCode } from '@black-flag/core';
+import { CliError } from '@black-flag/core';
 import mergeWith from 'lodash.mergewith';
 
+import { hardAssert } from 'multiverse+cli-utils:error.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { globalDebuggerNamespace } from 'universe:constant.ts';
@@ -125,7 +126,7 @@ export async function retrieveConfigAsset({
 
     return await transformer(context, options);
   } catch (error) {
-    throw new CliError(ErrorMessage.RetrievalFailed(transformerPath), {
+    throw new CliError(ErrorMessage.AssetRetrievalFailed(transformerPath), {
       cause: error
     });
   }
@@ -169,11 +170,10 @@ export function assertIsExpectedTransformerContext<const U extends string[] = ne
 ) {
   [...(expectedKeys ?? []), ...requiredTransformerContextKeys].forEach((key) => {
     const value = record[key];
-    if (typeof value !== 'string' || value.length > 0) {
-      throw new CliError(ErrorMessage.BadAssetContextKey(key), {
-        suggestedExitCode: FrameworkExitCode.AssertionFailed
-      });
-    }
+    hardAssert(
+      typeof value === 'string' && value.length > 0,
+      ErrorMessage.BadAssetContextKey(key)
+    );
   });
 
   return record as unknown as Record<U[number], string> & RequiredTransformerContext;
