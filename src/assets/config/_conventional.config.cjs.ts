@@ -2,7 +2,6 @@ import assert from 'node:assert';
 import childProcess from 'node:child_process';
 
 import { runNoRejectOnBadExit } from '@-xun/run';
-
 import escapeStringRegExp from 'escape-string-regexp~4';
 import clone from 'lodash.clone';
 import cloneDeepWith from 'lodash.clonedeepwith';
@@ -37,16 +36,14 @@ const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:conventional`
 });
 
-/**
- * @internal
- * @see {@link patchProxy}
- */
-const patcherMemory = {
-  previousSpawnChild: undefined as undefined | typeof childProcess.spawn,
-  previousProxy: undefined as undefined | typeof Proxy,
-  proxiedTargets: new WeakMap<InstanceType<typeof Proxy>, object>()
-};
+// @ts-expect-error: part of a hack
+globalThis.previousSpawnChild ||= undefined as undefined | typeof childProcess.spawn;
+// @ts-expect-error: part of a hack
+globalThis.previousProxy ||= undefined as undefined | typeof Proxy;
 
+const proxiedTargets = new WeakMap<InstanceType<typeof Proxy>, object>();
+
+debug('conventional.config.cjs was freshly imported, running patchers...');
 patchProxy();
 patchSpawnChild();
 
@@ -435,11 +432,9 @@ export function moduleExport(
       // ? Note that in recent versions of conventional-commits, the commit
       // ? object is now "immutable" (i.e. a Proxy); we do away with that below:
       transform(commit_, context) {
-        assert(patcherMemory.proxiedTargets.has(commit_), ErrorMessage.GuruMeditation());
+        assert(proxiedTargets.has(commit_), ErrorMessage.GuruMeditation());
 
-        const commit = safeDeepClone(
-          patcherMemory.proxiedTargets.get(commit_) as typeof commit_
-        );
+        const commit = safeDeepClone(proxiedTargets.get(commit_) as typeof commit_);
 
         const debug_ = debug.extend('writerOpts:transform');
         debug_('pre-transform commit: %O', commit);
@@ -757,6 +752,7 @@ export function moduleExport(
   debug('relevantHeaderPattern: %O', relevantHeaderPattern);
   debug('issuePattern: %O', issuePattern);
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (finalConfig.writerOpts) {
     debug('finalizing writerOpts');
 
@@ -807,6 +803,7 @@ export function moduleExport(
    * `test(system)!: hello world` but with no `BREAKING CHANGE:` footer.
    */
   function addBangNotes({ header, notes }: XchangelogCommit) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const { breakingHeaderPattern } = finalConfig.parserOpts ?? {};
 
     if (breakingHeaderPattern) {
@@ -891,6 +888,8 @@ export function moduleExport(
 /**
  * Return directories that should be excluded from consideration depending on
  * the project structure and the current working directory.
+ *
+ * This function takes into account {@link WorkspaceAttribute.Shared} packages.
  *
  * Useful for narrowing the scope of `@-xun/changelog` and semantic-release
  * -based tooling like xchangelog and xrelease.
@@ -1011,21 +1010,26 @@ function safeDeepClone<T>(o: T): T {
  * @internal
  */
 function patchProxy() {
-  assert(!patcherMemory.previousProxy);
+  //@ts-expect-error: part of a hack
+  if (globalThis.previousProxy) {
+    debug('global Proxy class was already patched in this runtime');
+    return;
+  }
 
-  const OldProxy = (patcherMemory.previousProxy = globalThis.Proxy);
+  //@ts-expect-error: part of a hack
+  const OldProxy = (globalThis.previousProxy = globalThis.Proxy);
 
   // eslint-disable-next-line @typescript-eslint/no-extraneous-class
   globalThis.Proxy = class WrappedProxy {
     constructor(...args: ConstructorParameters<typeof Proxy>) {
       const result = new OldProxy(...args);
-      patcherMemory.proxiedTargets.set(result, args[0]);
+      proxiedTargets.set(result, args[0]);
       return result;
     }
 
     static revocable(...args: Parameters<typeof Proxy.revocable>) {
       const result = OldProxy.revocable(...args);
-      patcherMemory.proxiedTargets.set(result.proxy, args[0]);
+      proxiedTargets.set(result.proxy, args[0]);
       return result;
     }
   } as typeof Proxy;
@@ -1040,8 +1044,14 @@ function patchProxy() {
  * @internal
  */
 function patchSpawnChild() {
-  assert(!patcherMemory.previousSpawnChild);
-  const spawn = (patcherMemory.previousSpawnChild = childProcess.spawn);
+  //@ts-expect-error: part of a hack
+  if (globalThis.previousSpawnChild) {
+    debug('global spawn function was already patched in this runtime');
+    return;
+  }
+
+  //@ts-expect-error: part of a hack
+  const spawn = (globalThis.previousSpawnChild = childProcess.spawn);
   childProcess.spawn = function wrappedSpawnChild(...args: Parameters<typeof spawn>) {
     if (Array.isArray(args[1])) {
       const spawnArgs = args[1] as string[];
