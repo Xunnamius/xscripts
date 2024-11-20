@@ -156,14 +156,20 @@ const metadata = {
 };
 
 /**
- * A string of spaces representing a CLI "tab" (four spaces).
+ * A string representing a single space (one space-ish character).
  */
-export const TAB = '    ';
+// ! SINGLE_SPACE is a UNICODE CHARACTER and not a normal space character!
+export const SINGLE_SPACE = '⠀';
 
 /**
- * A string of spaces representing a short CLI "tab" (two spaces).
+ * A string of spaces representing a short CLI "tab" (two space-ish characters).
  */
-export const SHORT_TAB = '  ';
+export const SHORT_TAB = SINGLE_SPACE.repeat(2);
+
+/**
+ * A string of spaces representing a CLI "tab" (four space-ish characters).
+ */
+export const TAB = SINGLE_SPACE.repeat(4);
 
 const consoleLog = (...args: unknown[]) => {
   // eslint-disable-next-line no-console
