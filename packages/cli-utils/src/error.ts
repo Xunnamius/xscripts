@@ -18,7 +18,9 @@ export class TaskError extends Error {
  */
 /* istanbul ignore next */
 export const ErrorMessage = {
-  ...UpstreamErrorMessage,
+  GuruMeditation() {
+    return 'an impossible scenario occurred';
+  },
   UnsupportedCommand() {
     return 'this project does not support this command';
   },
@@ -99,7 +101,7 @@ export function hardAssert(
   }
 
   if (shouldThrow) {
-    throw new CliError(ErrorMessage.FrameworkError(message), {
+    throw new CliError(UpstreamErrorMessage.FrameworkError(message), {
       suggestedExitCode: FrameworkExitCode.AssertionFailed
     });
   }
