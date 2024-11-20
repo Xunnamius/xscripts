@@ -8,6 +8,8 @@ import { resolve as resolverLibrary } from 'resolve.exports';
 import { toAbsolutePath, type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
 
 import type { PackageJson } from 'type-fest';
+// TODO: replace with import from @-xun/types
+import type { XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
 
 const DUMMY_PACKAGE_DIR = toAbsolutePath(__dirname, '..', 'fixtures', 'dummy-pkg');
 
@@ -32,7 +34,7 @@ export type DummyPackageMetadata<
 > = {
   path: AbsolutePath;
   name: string;
-  packageJson: PackageJson;
+  packageJson: XPackageJson;
 
   imports: RequireObjectImports extends true
     ? Exclude<PackageJson.Imports, string | undefined | null | unknown[]>
@@ -81,7 +83,7 @@ export function getDummyPackage<
 
   const package_ = {
     path: '',
-    json: {} as PackageJson
+    json: {} as XPackageJson
   };
 
   if (id === 'root') {
@@ -232,7 +234,7 @@ export function resolveTargetWithResolveExports({
   /**
    * Contents of the `package.json` file of the package under test.
    */
-  packageJson: PackageJson;
+  packageJson: XPackageJson;
   /**
    * The subpath to resolve against the `packageName` package. Must start with
    * either "#" or "./" or be "." exactly.

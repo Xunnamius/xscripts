@@ -10,7 +10,8 @@ import {
   type WorkspacePackage
 } from 'rootverse+project-utils:src/index.ts';
 
-import type { PackageJson } from 'type-fest';
+// TODO: replace with import from @-xun/types
+import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
 
 /**
  * Patch the package.json data returned by {@link fs.readPackageJsonAtRoot} or
@@ -22,7 +23,7 @@ export function patchReadPackageJsonAtRoot(
    * `"*"`, it will be used to patch all `package.json` imports but can be
    * overwritten by a more specific `root` string.
    */
-  spec: { [root: string]: PackageJson },
+  spec: { [root: string]: XPackageJson },
   /**
    * Options that influence the patching process.
    */
@@ -56,7 +57,7 @@ export function patchReadPackageJsonAtRoot(
 
   return spec;
 
-  function finalize(root: string, packageJson: PackageJson): PackageJson {
+  function finalize(root: string, packageJson: XPackageJson): XPackageJson {
     return options?.replace === false
       ? {
           ...spec['*'],
@@ -76,7 +77,7 @@ export function patchReadPackageJsonAtRoot(
  */
 export type Fixture = {
   root: fs.AbsolutePath;
-  json: PackageJson;
+  json: XPackageJson;
   attributes: RootPackage['attributes'];
   namedPackageMapData: PackageMapEntry[];
   unnamedPackageMapData: PackageMapEntry[];

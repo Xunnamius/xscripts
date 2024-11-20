@@ -27,7 +27,8 @@ import {
   resolveTargetWithResolveExports
 } from 'rootverse+project-utils:test/helpers/dummy-pkg.ts';
 
-import type { PackageJson } from 'type-fest';
+// TODO: replace with import from @-xun/types
+import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
 
 reconfigureJestGlobalsToSkipTestsInThisFileIfRequested();
 
@@ -5871,7 +5872,7 @@ type CreateSharedTestContextOptions<MapType extends 'forward' | 'reverse'> = {
    * Configuration for the resolve.exports library.
    */
   library: {
-    packageJson: PackageJson;
+    packageJson: XPackageJson;
     /**
      * Sometimes resolve.exports has bugs or cannot handle some more complex
      * spec-compliant use cases. When this is the case, add the failing test's

@@ -1,5 +1,4 @@
 import { type ChildConfiguration } from '@black-flag/core';
-import { type PackageJson } from 'type-fest';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
 
@@ -10,6 +9,9 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
+
+// TODO: replace with import from @-xun/types
+import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
 
 import {
   DefaultGlobalScope,
@@ -124,7 +126,7 @@ export default function command({
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
 
-      function getPackageName({ name }: PackageJson) {
+      function getPackageName({ name }: XPackageJson) {
         return name ?? '(unnamed package)';
       }
 

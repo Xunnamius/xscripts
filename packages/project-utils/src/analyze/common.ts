@@ -7,6 +7,8 @@ import {
   type RelativePath
 } from 'rootverse+project-utils:src/fs/common.ts';
 
+import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
+
 // @ts-expect-error: used in documentation
 import type {
   // ? Used in documentation eslint-disable-next-line
@@ -17,7 +19,7 @@ import type {
   webpackConfigProjectBase
 } from 'rootverse+project-utils:src/fs/well-known-constants.ts';
 
-import type { PackageJson } from 'type-fest';
+// TODO: replace with import from @-xun/types
 
 export const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:analyze`
@@ -46,7 +48,7 @@ export type RootPackage = {
   /**
    * The contents of the root `package.json` file.
    */
-  json: PackageJson;
+  json: XPackageJson;
   /**
    * A collection of {@link ProjectAttribute} flags describing the project.
    */
@@ -78,7 +80,7 @@ export type WorkspacePackage = {
   /**
    * The contents of the package's `package.json` file.
    */
-  json: PackageJson;
+  json: XPackageJson;
   /**
    * A collection of {@link WorkspaceAttribute} flags describing the workspace.
    */
@@ -173,8 +175,12 @@ export enum WorkspaceAttribute {
   Webpack = 'webpack',
   /**
    * The workspace root contains the file {@link sharedConfigPackageBase},
-   * signifying that commits scoped to this workspace will be considered by all
-   * workspaces.
+   * signifying that paths and commits scoped to this workspace will be
+   * considered "global"; that is: as if they existed in the scopes of every
+   * workspace in the project.
+   *
+   * The existence of this attribute will modify the behavior of xscript
+   * commands like "build changelog" and "release".
    */
   Shared = 'shared'
 }
@@ -502,7 +508,8 @@ export function isPackage(o: unknown): o is Package {
 }
 
 /**
- * Returns `true` if `o` is probably an instance of `WorkspacePackage`.
+ * Returns `true` if `o` is probably an instance of `WorkspacePackage` (i.e. not
+ * a {@link RootPackage}).
  */
 export function isWorkspacePackage(o: unknown): o is WorkspacePackage {
   return (
@@ -517,7 +524,8 @@ export function isWorkspacePackage(o: unknown): o is WorkspacePackage {
 }
 
 /**
- * Returns `true` if `o` is probably an instance of `RootPackage`.
+ * Returns `true` if `o` is probably an instance of `RootPackage` (i.e. not a
+ * {@link WorkspacePackage}).
  */
 // TODO: unit test these isX functions
 export function isRootPackage(o: unknown): o is RootPackage {

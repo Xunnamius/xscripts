@@ -1,3 +1,5 @@
+import { type Promisable } from 'type-fest';
+
 import { PackageJsonNotParsableError } from 'rootverse+project-utils:src/error.ts';
 import { readJson } from 'rootverse+project-utils:src/fs/read-json.ts';
 import { type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
@@ -7,7 +9,8 @@ import {
   type SyncVersionOf
 } from 'rootverse+project-utils:src/util.ts';
 
-import type { PackageJson, Promisable } from 'type-fest';
+// TODO: replace with import from @-xun/types
+import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
 
 /**
  * @see {@link readPackageJsonAtRoot}
@@ -26,17 +29,17 @@ function readPackageJsonAtRoot_(
   shouldRunSynchronously: false,
   packageRoot: AbsolutePath,
   options: ReadPackageJsonAtRootOptions
-): Promise<PackageJson>;
+): Promise<XPackageJson>;
 function readPackageJsonAtRoot_(
   shouldRunSynchronously: true,
   packageRoot: AbsolutePath,
   options: ReadPackageJsonAtRootOptions
-): PackageJson;
+): XPackageJson;
 function readPackageJsonAtRoot_(
   shouldRunSynchronously: boolean,
   packageRoot: AbsolutePath,
   { useCached }: ReadPackageJsonAtRootOptions
-): Promisable<PackageJson> {
+): Promisable<XPackageJson> {
   // ? readJson will check if the path is absolute for us
   const packageJsonPath = `${packageRoot}/package.json` as AbsolutePath;
 

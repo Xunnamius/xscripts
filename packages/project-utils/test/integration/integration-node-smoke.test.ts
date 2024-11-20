@@ -20,7 +20,8 @@ import {
   version as packageVersion
 } from 'rootverse+project-utils:package.json';
 
-import type { PackageJson } from 'type-fest';
+// TODO: replace with import from @-xun/types
+import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
 
 reconfigureJestGlobalsToSkipTestsInThisFileIfRequested({ it: true });
 
@@ -29,7 +30,7 @@ const debug = debugFactory(`${packageName}:${TEST_IDENTIFIER}`);
 const nodeVersion = process.env.XPIPE_MATRIX_NODE_VERSION || process.version;
 
 const packageMainPaths = Object.values(
-  packageExports as NonNullable<PackageJson['exports']>
+  packageExports as NonNullable<XPackageJson['exports']>
 )
   .map((xport) =>
     !xport || typeof xport === 'string' || Array.isArray(xport)

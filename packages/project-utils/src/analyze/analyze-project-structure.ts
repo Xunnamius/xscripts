@@ -10,6 +10,7 @@ import {
 } from 'glob-gitignore';
 
 import { toss } from 'toss-expression';
+import { type Promisable } from 'type-fest';
 
 import {
   debug as debug_,
@@ -53,7 +54,8 @@ import {
   type SyncVersionOf
 } from 'rootverse+project-utils:src/util.ts';
 
-import type { PackageJson, Promisable } from 'type-fest';
+// TODO: replace with import from @-xun/types
+import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
 
 const debug = debug_.extend('getProjectMetadata');
 
@@ -480,7 +482,7 @@ function setSubrootPackagesAndCwdPackage(
     attributes: WorkspacePackage['attributes'];
     packageRoot: AbsolutePath;
     packageId: string;
-    packageJson: PackageJson;
+    packageJson: XPackageJson;
     negate: boolean;
   }): Promisable<void> {
     const workspacePackage = {
@@ -595,21 +597,21 @@ function determineCwdPackage(
 function getProjectAttributes(
   runSynchronously: false,
   root: AbsolutePath,
-  projectJson: PackageJson,
+  projectJson: XPackageJson,
   repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo,
   useCached: boolean
 ): Promise<RootPackage['attributes']>;
 function getProjectAttributes(
   runSynchronously: true,
   root: AbsolutePath,
-  projectJson: PackageJson,
+  projectJson: XPackageJson,
   repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo,
   useCached: boolean
 ): RootPackage['attributes'];
 function getProjectAttributes(
   runSynchronously: boolean,
   root: AbsolutePath,
-  projectJson: PackageJson,
+  projectJson: XPackageJson,
   repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo,
   useCached: boolean
 ): Promisable<RootPackage['attributes']> {
@@ -734,19 +736,19 @@ function getProjectAttributes(
 function getWorkspaceAttributes(
   runSynchronously: false,
   root: AbsolutePath,
-  workspaceJson: PackageJson,
+  workspaceJson: XPackageJson,
   useCached: boolean
 ): Promise<WorkspacePackage['attributes']>;
 function getWorkspaceAttributes(
   runSynchronously: true,
   root: AbsolutePath,
-  workspaceJson: PackageJson,
+  workspaceJson: XPackageJson,
   useCached: boolean
 ): WorkspacePackage['attributes'];
 function getWorkspaceAttributes(
   runSynchronously: boolean,
   root: AbsolutePath,
-  workspaceJson: PackageJson,
+  workspaceJson: XPackageJson,
   useCached: boolean
 ): Promisable<WorkspacePackage['attributes']> {
   const attributes: WorkspacePackage['attributes'] = {};
