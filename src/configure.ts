@@ -21,7 +21,7 @@ import {
 import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse+project-utils';
 import { cache } from 'multiverse+project-utils:cache.ts';
 import { isAccessible } from 'multiverse+project-utils:fs/is-accessible.ts';
-import { toPath } from 'multiverse+project-utils:fs.ts';
+import { distDirPackageBase, toPath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
 import { version as packageVersion } from 'rootverse:package.json';
@@ -146,8 +146,14 @@ export const configureExecutionContext = async function (context) {
   );
 
   if (projectMetadata) {
-    const { root: projectRoot, json: rootPackageJson } = projectMetadata.rootPackage;
-    const { name: rootPackageName } = rootPackageJson;
+    const {
+      rootPackage: { root: projectRoot },
+      cwdPackage: { root: packageRoot }
+    } = projectMetadata;
+
+    const cwdPackageDistDirPath = toPath(packageRoot, distDirPackageBase);
+    const rootPackageDistDirPath = toPath(projectRoot, distDirPackageBase);
+
     const nodeModulesDirTsconfigFilePath = toPath(
       projectRoot,
       'node_modules',
@@ -156,12 +162,20 @@ export const configureExecutionContext = async function (context) {
       'tsconfig.json'
     );
 
-    rootDebugLogger('rootPackageName: %O', rootPackageName);
+    const isRunningFromWithinCurrentProjectDistDir =
+      !__dirname.includes('/node_modules/') &&
+      (__dirname.startsWith(cwdPackageDistDirPath) ||
+        __dirname.startsWith(rootPackageDistDirPath));
+
+    rootDebugLogger('__dirname: %O', __dirname);
     rootDebugLogger('nodeModulesDirTsconfigFilePath: %O', nodeModulesDirTsconfigFilePath);
+    rootDebugLogger(
+      'isRunningFromWithinCurrentProjectDistDir: %O',
+      isRunningFromWithinCurrentProjectDistDir
+    );
 
     if (
-      // ? Check to see if the name of the project is our name...
-      rootPackageName === '@-xun/scripts' ||
+      isRunningFromWithinCurrentProjectDistDir ||
       // ? ... or look for the existence of a non-distributables file
       (await isAccessible(nodeModulesDirTsconfigFilePath, { useCached: true }))
     ) {
