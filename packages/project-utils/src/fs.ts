@@ -7,6 +7,8 @@ export * from 'rootverse+project-utils:src/fs/read-jsonc.ts';
 export * from 'rootverse+project-utils:src/fs/read-package-json-at-root.ts';
 
 export {
+  getCurrentWorkingDirectory,
+  getInitialWorkingDirectory,
   isAbsolutePath,
   isRelativePath,
   toAbsolutePath,

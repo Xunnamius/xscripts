@@ -11,6 +11,7 @@ import {
 } from 'multiverse+cli-utils:extensions.ts';
 
 import {
+  getInitialWorkingDirectory,
   isAccessible,
   toAbsolutePath,
   toPath,
@@ -111,7 +112,7 @@ export async function runGlobalPreChecks({
 
   softAssert(projectMetadata_, ErrorMessage.CannotRunOutsideRoot());
 
-  const cwd = toAbsolutePath(process.cwd());
+  const cwd = toAbsolutePath(getInitialWorkingDirectory());
 
   const {
     rootPackage: { root: projectRoot },

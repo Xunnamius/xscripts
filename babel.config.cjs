@@ -232,7 +232,7 @@ function makeDistReplacerEntry(
 ) {
   // ? Assuming the current working directory is always at a package root, an
   // ? invariant enforced by xscripts itself
-  const packageRoot = process.cwd();
+  const packageRoot = getCurrentWorkingDirectory();
   // ? Assuming this file is always at the project root
   const projectRoot = __dirname;
   // ? Are we at the root package of a hybridrepo?

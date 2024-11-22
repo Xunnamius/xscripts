@@ -37,6 +37,7 @@ import {
 
 import {
   deriveVirtualGitignoreLines,
+  getCurrentWorkingDirectory,
   isAccessible,
   nextjsConfigProjectBase,
   readPackageJsonAtRoot,
@@ -94,7 +95,7 @@ function analyzeProjectStructure_(
   shouldRunSynchronously: boolean,
   {
     useCached,
-    cwd = toAbsolutePath(process.cwd()),
+    cwd = getCurrentWorkingDirectory(),
     ...incompleteCacheIdComponentsObject
   }: AnalyzeProjectStructureOptions
 ): Promisable<ProjectMetadata> {
@@ -328,7 +329,7 @@ function setSubrootPackagesAndCwdPackage(
       for (const packageRoot of globSync(pattern, globOptions) as AbsolutePath[]) {
         assert(typeof packageRoot === 'string');
 
-        // TODO: miiight be redundant given package.json workspaces negated glob
+        // TODO: maybe be redundant given package.json workspaces negated glob
         if (packageRoot.endsWith('.ignore')) {
           dbg.warn('encountered explicitly ignored package at %O', packageRoot);
           continue;

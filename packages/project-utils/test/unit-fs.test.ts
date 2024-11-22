@@ -13,6 +13,7 @@ import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
 import {
   deriveVirtualGitignoreLines,
   deriveVirtualPrettierignoreLines,
+  getCurrentWorkingDirectory,
   isAbsolutePath,
   isAccessible,
   isRelativePath,
@@ -38,7 +39,7 @@ const mockedAccessSync = asMockedFunction(accessSync);
 const mockedAccessAsync = asMockedFunction(accessAsync);
 const mockedRun = asMockedFunction(runNoRejectOnBadExit);
 
-const cwd = process.cwd();
+const cwd = getCurrentWorkingDirectory();
 
 afterEach(() => {
   cache.clear();
@@ -1007,7 +1008,7 @@ describe('::toRelativePath', () => {
     // * Edge cases
 
     expect(toRelativePath('', '/a/b/1/2/3')).toBe(
-      relative(process.cwd(), '/') + '/a/b/1/2/3'
+      relative(getCurrentWorkingDirectory(), '/') + '/a/b/1/2/3'
     );
 
     expect(toRelativePath('/a/b/1/2/3', '')).toBe(relative('/a/b/1/2/3', '/') + cwd);

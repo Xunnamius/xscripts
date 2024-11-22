@@ -129,3 +129,47 @@ export function isAbsolutePath(path: string): path is AbsolutePath {
 export function isRelativePath(path: string): path is RelativePath {
   return !isAbsolutePath(path);
 }
+
+/**
+ * This function returns the **current working directory**. It is functionally
+ * identical to calling `process.cwd()`.
+ *
+ * This function exists because tools like NPM will change the current working
+ * directory to wherever `package.json` or `node_modules` is. While sensible,
+ * this behavior can be surprising, especially if we're expecting to get the
+ * actual working directory from where the script was actually executed.
+ *
+ * This function and its counterpart {@link getInitialWorkingDirectory} exist to
+ * surface this behavior and make it clear when you'll get the "current working
+ * directory" or the actual working directory from where the script was
+ * executed.
+ *
+ * @returns the result of calling `process.cwd()` (current working directory)
+ * @see https://docs.npmjs.com/cli/v9/commands/npm-run-script#description
+ */
+export function getCurrentWorkingDirectory() {
+  // eslint-disable-next-line no-restricted-syntax
+  return toAbsolutePath(process.cwd());
+}
+
+/**
+ * This function returns the **initial working directory**. This is the value of
+ * `process.cwd()` _before any NPM or NPM-like tooling changed the working
+ * directory_.
+ *
+ * This function exists because tools like NPM will change the current working
+ * directory to wherever `package.json` or `node_modules` is. While sensible,
+ * this behavior can be surprising, especially if we're expecting to get the
+ * actual working directory from where the script was actually executed.
+ *
+ * This function and its counterpart {@link getCurrentWorkingDirectory} exist to
+ * surface this behavior and make it clear when you'll get the "current working
+ * directory" or the actual working directory from where the script was
+ * executed.
+ *
+ * @returns the actual working directory from where the script was executed
+ * @see https://docs.npmjs.com/cli/v9/commands/npm-run-script#description
+ */
+export function getInitialWorkingDirectory() {
+  return toAbsolutePath(process.env.INIT_CWD || getCurrentWorkingDirectory());
+}
