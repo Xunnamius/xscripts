@@ -173,6 +173,16 @@ const pathGroupOverrides = wellKnownPackageAliases
     return groups;
   }, []);
 
+// ! It's not safe to use this var until AFTER the process.env conditional below
+const sharedRestrictedImportRules = [
+  // ! This must always be the first restrict import configuration object
+  {
+    name: '+(.|..)/node_modules/@-xun/**/*',
+    message:
+      'This warning is a reminder that the import needs to be removed once the corresponding package is published.'
+  }
+];
+
 const genericRules = {
   // * eslint
   'no-console': 'warn',
@@ -186,6 +196,20 @@ const genericRules = {
   // ? Ever since v4, we will rely on TypeScript to catch these
   'no-undef': 'off',
   'no-unused-vars': 'off',
+  // ? We need to warn about using bad things that are or may be bad
+  'no-restricted-syntax': [
+    'warn',
+    {
+      selector: "BinaryExpression[operator='instanceof']",
+      message:
+        'Using `instanceof` is a poor choice when writing a library due to realms and other package hazards. Consider a symbol-based tagging scheme instead'
+    },
+    {
+      selector: "MemberExpression[object.name='process'][property.name='cwd']",
+      message:
+        'Use `getCurrentWorkingDirectory` or `getInitialWorkingDirectory` from @-xun/js-utils instead of `process.cwd`'
+    }
+  ],
 
   // * import
   'import/extensions': [
@@ -417,6 +441,12 @@ const genericRules = {
   'unicorn/prefer-regexp-test': 'off'
 };
 
+if (process.env.XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS !== 'true') {
+  genericRules['no-warning-comments'] = 'warn';
+} else {
+  sharedRestrictedImportRules.shift();
+}
+
 const jestRules = {
   // * Jest (all jest rules are enabled by default)
   'jest/lowercase': 'off',
@@ -478,16 +508,8 @@ const nodeRules = {
   'n/no-unsupported-features/node-builtins': 'off',
   // ? Handled by unicorn
   'n/no-process-exit': 'off',
-  'n/no-restricted-import': [
-    'warn',
-    [
-      {
-        name: '+(.|..)/node_modules/@-xun/**/*',
-        message:
-          'This warning is a reminder that the import needs to be removed once the corresponding package is published.'
-      }
-    ]
-  ]
+  'n/no-restricted-import': ['warn', sharedRestrictedImportRules],
+  'n/no-restricted-require': ['warn', sharedRestrictedImportRules]
 };
 
 const tsNodeRules = {
@@ -495,7 +517,7 @@ const tsNodeRules = {
   'n/no-restricted-import': [
     'warn',
     [
-      ...nodeRules['n/no-restricted-import'][1],
+      ...sharedRestrictedImportRules,
       {
         name: '{.,..}/**/*',
         message:
@@ -525,8 +547,8 @@ const mjsRules = {
 const earlyJsOnlyRules = {
   // * Rules applied only to JS files (cjs, mjs, jsx, etc) but NOT TS files.
   // * These rules are also applied before all others and may be overridden
-  'no-undef': 'error',
-  'no-unused-vars': 'error'
+  // ? We can't count on tsc to be around to catch these in our JS files
+  'no-undef': 'error'
 };
 
 const globals = {
@@ -535,15 +557,6 @@ const globals = {
   ...jsGlobals.es2025,
   ...jsGlobals.node
 };
-
-if (process.env.XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS !== 'true') {
-  genericRules['no-warning-comments'] = 'warn';
-} else {
-  nodeRules['n/no-restricted-import'][1] =
-    nodeRules['n/no-restricted-import'][1].slice(1);
-  tsNodeRules['n/no-restricted-import'][1] =
-    tsNodeRules['n/no-restricted-import'][1].slice(1);
-}
 
 const eslintPluginUnicornRecommended = eslintPluginUnicorn.configs['flat/recommended'];
 
