@@ -412,6 +412,19 @@ export type BfeBuilderObjectValueExtensions<
    * yargs behavior.
    */
   default?: unknown;
+  /**
+   * `coerce` transforms an original `argv` value into another one. This is
+   * equivalent to `coerce` from vanilla yargs.
+   *
+   * However, unlike vanilla yargs and Black Flag, the `coerce` function will
+   * _always_ receive an array if the option was configured with `{ array: true
+   * }`.
+   *
+   * Note that **a defaulted argument will not be coerced by the `coerce`
+   * setting**. Only arguments given via `argv` trigger `coerce`. This is
+   * vanilla yargs behavior.
+   */
+  coerce?: BfGenericBuilderObjectValue['coerce'];
 };
 
 /**
@@ -1711,7 +1724,14 @@ function separateExtensionsFromBuilderObjectValue<
     ErrorMessage.IllegalExplicitlyUndefinedDefault()
   );
 
-  return [{ ...bfeConfig, default: default_ }, vanillaYargsConfig];
+  if (vanillaYargsConfig.coerce) {
+    const coercer = vanillaYargsConfig.coerce;
+    vanillaYargsConfig.coerce = (parameter) => {
+      return coercer(vanillaYargsConfig.array ? [parameter].flat() : parameter);
+    };
+  }
+
+  return [{ ...bfeConfig, default: default_, coerce: undefined }, vanillaYargsConfig];
 }
 
 function validateAndFlattenExtensionValue(

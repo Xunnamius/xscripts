@@ -2063,7 +2063,13 @@ Further documentation can be found under [`docs/`][x-repo-docs].
 
 ### Differences between Black Flag Extensions and Yargs
 
-When using BFE, command options must be configured by [returning an `opt`
+When using BFE, several options function differently, such as [`implies`][14].
+Other options have their effect deferred, like [`default`][8]. [`coerce`][55]
+will always receive an array when the same option also has [`array: true`][13].
+See the [configuration keys section][24] for a list of changes and their
+justifications.
+
+Additionally, command options must be configured by [returning an `opt`
 object][13] from your command's [`builder`][5] rather than imperatively invoking
 the yargs API.
 
@@ -2364,3 +2370,4 @@ specification. Contributions of any kind welcome!
 [52]: #vacuousimplications
 [53]: https://en.wikipedia.org/wiki/Vacuous_truth
 [54]: https://en.wikipedia.org/wiki/Consequent
+[55]: https://yargs.js.org/docs#api-reference-coercekey-fn

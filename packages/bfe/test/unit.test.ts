@@ -4825,6 +4825,55 @@ describe('::withBuilderExtensions', () => {
     expect(handlerResult).toSatisfy(isCommandNotImplementedError);
   });
 
+  test('coerce always receives an array when its option is configured as such', async () => {
+    expect.hasAssertions();
+
+    const runner = makeMockBuilderRunner({
+      customBuilder: {
+        a: {
+          string: true,
+          coerce(arg) {
+            return arg;
+          }
+        },
+        b: {
+          string: true,
+          array: true,
+          coerce(arg) {
+            return arg;
+          }
+        },
+        c: {
+          array: true,
+          coerce(arg) {
+            return arg;
+          }
+        }
+      }
+    });
+
+    const { handlerResult, secondPassResult: secondPassResult_ } = await runner({
+      a: 'a',
+      b: 'b',
+      c: 'c'
+    });
+
+    expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+
+    const secondPassResult = secondPassResult_ as Exclude<
+      typeof secondPassResult_,
+      Error
+    >;
+
+    expect(secondPassResult?.a?.coerce?.('a')).toBe('a');
+    expect(secondPassResult?.b?.coerce?.('b')).toStrictEqual(['b']);
+    expect(secondPassResult?.c?.coerce?.('c')).toStrictEqual(['c']);
+
+    expect(secondPassResult?.a?.coerce?.(['a'])).toStrictEqual(['a']);
+    expect(secondPassResult?.b?.coerce?.(['b'])).toStrictEqual(['b']);
+    expect(secondPassResult?.c?.coerce?.(['c'])).toStrictEqual(['c']);
+  });
+
   it('throws a framework error when providing an explicitly undefined default', async () => {
     expect.hasAssertions();
 
