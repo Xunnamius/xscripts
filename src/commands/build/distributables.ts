@@ -398,6 +398,7 @@ Finally, note that, when attempting to build a Next.js package, this command wil
 
       const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
+      let isBuildAlreadyOutput = false;
 
       logStartTime({ log, startTime });
 
@@ -868,6 +869,8 @@ distrib root: ${absoluteOutputDirPath}
             [LogTag.IF_NOT_QUIETED],
             'Distributables built successfully and are now available ✅'
           );
+
+          isBuildAlreadyOutput = true;
 
           if (
             (projectAttributes[ProjectAttribute.Cli] ||
@@ -1595,10 +1598,10 @@ distrib root: ${absoluteOutputDirPath}
 
         genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
       } catch (error) {
-        if (isBuildOutputCheckError(error)) {
+        if (isBuildAlreadyOutput && isBuildOutputCheckError(error)) {
           genericLogger.warn(
             [LogTag.IF_NOT_SILENCED],
-            ErrorMessage.specialized.BuildOutputChecksFailed()
+            ErrorMessage.specialized.BuildSucceededButOutputCheckFailed()
           );
         }
 

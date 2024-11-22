@@ -220,7 +220,7 @@ export const ErrorMessage = {
     BuildOutputPartial() {
       return '⚠️🚧 The build "succeeded," but ONLY a subset of build targets were actually transpiled';
     },
-    BuildOutputChecksFailed() {
+    BuildSucceededButOutputCheckFailed() {
       return '⚠️🚧 The build succeeded and is available, but one or more build output integrity checks failed';
     },
     ExportSubpathsPointsToInaccessible(subpaths: [subpath: string, target: string][]) {
