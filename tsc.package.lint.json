@@ -1,6 +1,6 @@
 /**
  ** This file extends the project root tsconfig.json file for use with linting
- ** all files at the package level.
+ ** all files at the package level. Only tsc gets its paths from this file.
  **
  ** Use this file to exert some control over which files are considered
  ** part of the current package and which will be ignored. Typically only
@@ -11,9 +11,7 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig.json",
   "extends": "./tsconfig.json",
-  // ? Include patterns are also used by tooling like eslint (using node glob)
   "include": ["**/*", "**/.*/**/*", "**/.*"],
-  // ? Exclude patterns are also used by tooling like eslint (using node glob)
   "exclude": [
     "**/dist/**/*",
     "**/test/fixtures/**/*",

@@ -565,6 +565,7 @@ assert(eslintPluginNodeRecommendedExtEither);
 assert(eslintPluginNodeRecommendedExtMjs);
 assert(eslintPluginNodeRecommendedExtCjs);
 
+const projectBasePath = `${import.meta.dirname}/${Tsconfig.ProjectBase}`;
 const projectLintPath = `${import.meta.dirname}/${Tsconfig.ProjectLint}`;
 
 /**
@@ -573,27 +574,31 @@ const projectLintPath = `${import.meta.dirname}/${Tsconfig.ProjectLint}`;
  */
 const cwdTsconfigFile = isAccessible.sync(projectLintPath, { useCached: true })
   ? projectLintPath
-  : isAccessible.sync(Tsconfig.PackageLint, { useCached: true })
-    ? Tsconfig.PackageLint
-    : isAccessible.sync(Tsconfig.ProjectBase, { useCached: true })
-      ? Tsconfig.ProjectBase
-      : // TODO: make this a ProjectError; use ErrorMessage.X
-        toss(new Error('unable to locate suitable tsconfig file'));
+  : isAccessible.sync(projectBasePath, { useCached: true })
+    ? projectBasePath
+    : // TODO: make this a ProjectError; use ErrorMessage.X
+      toss(new Error('unable to locate suitable tsconfig file'));
 
 const config = makeTsEslintConfig(
   // * Global ignores applying to all files (any extension)
   // ! Should be the first configuration block (as of 2024)
   {
+    // ! These should include the contents of tsc.project.lint.json's "exclude"
     ignores: [
-      '**/coverage/**/*',
       '**/dist/**/*',
+      '**/test/fixtures/**/*',
+      '**/node_modules/**/*',
+      '**/*.ignore',
+      '**/*.ignore.*/**/*',
+      '**/ignore.*',
+      '**/coverage/**/*',
       '**/bin/**/*',
+      '**/.transpiled/**/*',
       // TODO: delete this after we rename build => dist for Next.js projects
       '**/build/**/*',
-      '**/.transpiled/**/*',
       '!**/src/**/*',
+      // TODO: specific to this project; delete these after generalization
       '**/dummy-repo/**/*',
-      // TODO: specific to this project; delete this comment after generalization
       'src/assets/template/.remarkrc.mjs'
     ]
   },

@@ -93,7 +93,6 @@
     "strict": true,
     "target": "ESNext"
   },
-  // ? Include patterns are also used by tooling like eslint (using node glob)
   "include": [
     "types/**/*",
     "src/**/*",
@@ -101,7 +100,6 @@
     "packages/*/src/**/*",
     "packages/*/test/**/*"
   ],
-  // ? Exclude patterns are also used by tooling like eslint (using node glob)
   "exclude": [
     "**/dist/**/*",
     "**/node_modules/**/*",

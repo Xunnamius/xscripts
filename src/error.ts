@@ -142,6 +142,9 @@ export const ErrorMessage = {
   OptionValueMustBeAlone(option: string, noun: string) {
     return `the "${option}" ${noun} must not be given alongside any others`;
   },
+  OptionValueMustBeAloneWhenBaseline(option: string, noun: string) {
+    return ErrorMessage.OptionValueMustBeAlone(option, noun) + ' when using --baseline';
+  },
   LintingFailed() {
     return 'one or more linters returned a bad exit code';
   },
