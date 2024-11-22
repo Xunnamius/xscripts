@@ -1375,6 +1375,15 @@ function transmuteBFEBuilderToBFBuilder<
         bfeBuilderObjectValue.default;
     }
 
+    if (vanillaYargsBuilderObjectValue.coerce !== undefined) {
+      const coercer = vanillaYargsBuilderObjectValue.coerce;
+      vanillaYargsBuilderObjectValue.coerce = (parameter) => {
+        return coercer(
+          vanillaYargsBuilderObjectValue.array ? [parameter].flat() : parameter
+        );
+      };
+    }
+
     vanillaYargsBuilderObject[option] = vanillaYargsBuilderObjectValue;
   }
 
@@ -1727,14 +1736,15 @@ function separateExtensionsFromBuilderObjectValue<
     ErrorMessage.IllegalExplicitlyUndefinedDefault()
   );
 
-  if (vanillaYargsConfig.coerce) {
-    const coercer = vanillaYargsConfig.coerce;
-    vanillaYargsConfig.coerce = (parameter) => {
-      return coercer(vanillaYargsConfig.array ? [parameter].flat() : parameter);
-    };
-  }
-
-  return [{ ...bfeConfig, default: default_, coerce: undefined }, vanillaYargsConfig];
+  return [
+    {
+      ...bfeConfig,
+      default: default_,
+      // ? This is actually ignored by BFE except when transmuting opts back to BF
+      coerce: undefined
+    },
+    vanillaYargsConfig
+  ];
 }
 
 function validateAndFlattenExtensionValue(
