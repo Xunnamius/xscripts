@@ -123,9 +123,6 @@ export type ReleaseTaskRunner = (
   taskContextPartial: Omit<ReleaseTaskContext, 'self'>
 ) => Promise<void>;
 
-/**
- * @internal
- */
 export type ExecutionContextWithProjectMetadata = Merge<
   Parameters<typeof command>[0],
   { projectMetadata: ProjectMetadata }

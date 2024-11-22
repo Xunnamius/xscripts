@@ -87,9 +87,6 @@ export enum Test {
   All = 'all'
 }
 
-/**
- * @internal
- */
 export enum _TesterScope {
   /**
    * Limit the command to relevant _transpiled_ tests (aka "intermediates")
