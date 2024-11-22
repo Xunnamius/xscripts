@@ -182,11 +182,10 @@ export default function command({
             },
             baseline: {
               when: (baseline) => baseline,
-              update({ ...oldOptionConfig }) {
+              update(oldOptionConfig) {
                 return {
                   ...oldOptionConfig,
                   demandThisOption: true,
-                  // TODO: re-evaluate if this limitation is required
                   // ? Either Jest or Tstyche run in baseline mode, but not both
                   check: [oldOptionConfig.check || []]
                     .flat()
@@ -198,8 +197,10 @@ export default function command({
                       return (
                         !includesType ||
                         currentArgument.length === 1 ||
-                        ErrorMessage.OptionValueMustBeAlone(Test.Type, 'test option') +
-                          ' when using --baseline'
+                        ErrorMessage.OptionValueMustBeAloneWhenBaseline(
+                          Test.Type,
+                          'test option'
+                        )
                       );
                     })
                 };
@@ -283,7 +284,7 @@ Any unrecognized flags/arguments provided after the --tester-options flag are al
 
 By default, this command constructs an execution plan (i.e. the computed arguments and path patterns passed to each tester's CLI) based on project metadata and provided options, namely --scope and --tests. When \`--scope=${TesterScope.ThisPackage}\` (the default), tests will be run from the current package and any packages it imports files from. Passing \`--scope=${TesterScope.Unlimited}\` will execute all runnable tests in the project. Both options are conditioned on --tests.
 
-Alternatively, you can provide --baseline when you want to construct your own custom execution plan but still wish to make use of the runtime environment provided by this tool. Note that using --baseline will disable the ability to run Jest and Tstyche concurrently.
+Alternatively, you can provide --baseline when you want to construct your own custom execution plan but still wish to make use of the runtime environment provided by this tool. When --baseline is provided, only one tester can be run at a time.
 
 Also by default (if the CI environment variable is not defined), this command prevents the value of the DEBUG environment variable, if given, from propagating down into tests since this can cause strange output-related problems. Provide --propagate-debug-env to allow the value of DEBUG to be seen by test files and the rest of the test environment, including tests.
 
