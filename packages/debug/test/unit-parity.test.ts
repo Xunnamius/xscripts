@@ -1,4 +1,4 @@
-import { debugFactory as debug } from 'multiverse+debug';
+import { debugFactory as debug } from 'rootverse+debug:src/index.ts';
 
 // * This test ensures that debug maintains feature parity with debug.
 // * To this end, this test suite is taken straight from

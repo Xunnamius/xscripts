@@ -1,4 +1,4 @@
-import { type ExtendedDebugger } from 'multiverse+debug';
+import { type ExtendedDebugger } from 'rootverse+debug:src/index.ts';
 
 export function expectExtendedDebugger(instance: unknown) {
   const dbg = instance as ExtendedDebugger;

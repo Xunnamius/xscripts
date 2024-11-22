@@ -39,8 +39,6 @@ export interface InternalDebug extends _Debug {
 /**
  * The base `Debugger` interface coming from the [debug](https://npm.im/debug)
  * package.
- *
- * @internal
  */
 export interface InternalDebugger extends __Debugger {
   /**

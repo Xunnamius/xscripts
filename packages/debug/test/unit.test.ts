@@ -5,7 +5,7 @@ import {
   debugFactory,
   extendDebugger,
   finalizeDebugger
-} from 'multiverse+debug';
+} from 'rootverse+debug:src/index.ts';
 
 import {
   expectExtendedDebugger,
