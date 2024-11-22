@@ -358,6 +358,7 @@ const genericRules = {
     {
       checkFilenames: false,
       replacements: {
+        arg: false,
         args: false,
         str: false,
         fn: false,
