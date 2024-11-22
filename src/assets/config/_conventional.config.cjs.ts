@@ -16,7 +16,15 @@ import {
   WorkspaceAttribute
 } from 'multiverse+project-utils';
 
-import { toRelativePath, type RelativePath } from 'multiverse+project-utils:fs.ts';
+import {
+  documentationDirPackageBase,
+  srcDirPackageBase,
+  testDirPackageBase,
+  toRelativePath,
+  Tsconfig,
+  type RelativePath
+} from 'multiverse+project-utils:fs.ts';
+
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
@@ -379,7 +387,7 @@ export function moduleExport(
           : [],
       // ? Pathspecs passed to git log; used to ignore changes in other packages
       // ? See: https://github.com/sindresorhus/dargs#usage
-      [specialArgumentMarkerForPaths]: getExcludedDirectoriesRelativeToProjectRoot()
+      [specialArgumentMarkerForPaths]: getExcludedPathsRelativeToProjectRoot()
     },
 
     // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#options
@@ -894,20 +902,17 @@ export function moduleExport(
  * Useful for narrowing the scope of `@-xun/changelog` and semantic-release
  * -based tooling like xchangelog and xrelease.
  */
-export function getExcludedDirectoriesRelativeToProjectRoot() {
-  const {
-    cwdPackage,
-    rootPackage: { root: projectRoot },
-    subRootPackages
-  } = analyzeProjectStructure.sync({
+export function getExcludedPathsRelativeToProjectRoot() {
+  const { cwdPackage, rootPackage, subRootPackages } = analyzeProjectStructure.sync({
     useCached: true
   });
 
+  const { root: projectRoot } = rootPackage;
   const isCwdPackageTheRootPackage = isRootPackage(cwdPackage);
-  const excludedDirectoriesRelativeToProjectRoot: RelativePath[] = [];
+  const excludedPathsRelativeToProjectRoot: RelativePath[] = [];
 
   if (!isCwdPackageTheRootPackage) {
-    excludedDirectoriesRelativeToProjectRoot.push(...rootPackageExcludedDirectories);
+    excludedPathsRelativeToProjectRoot.push(...rootPackageExcludedDirectories);
   }
 
   if (subRootPackages) {
@@ -919,22 +924,31 @@ export function getExcludedDirectoriesRelativeToProjectRoot() {
         packageRoot !== cwdPackage.root &&
         !packageAttributes[WorkspaceAttribute.Shared]
       ) {
-        excludedDirectoriesRelativeToProjectRoot.push(
-          toRelativePath(projectRoot, packageRoot)
-        );
+        excludedPathsRelativeToProjectRoot.push(toRelativePath(projectRoot, packageRoot));
       }
     }
   }
 
-  const result = excludedDirectoriesRelativeToProjectRoot.map(
-    (path) => `:(exclude,top)${path}`
-  );
+  debug('excludedPathsRelativeToProjectRoot: %O', excludedPathsRelativeToProjectRoot);
 
-  debug(
-    'excludedDirectoriesRelativeToProjectRoot: %O',
-    excludedDirectoriesRelativeToProjectRoot
-  );
+  const result = excludedPathsRelativeToProjectRoot.flatMap((path) => {
+    const excludeTargets =
+      path === ''
+        ? [
+            srcDirPackageBase,
+            testDirPackageBase,
+            documentationDirPackageBase,
+            Tsconfig.PackageDocumentation,
+            Tsconfig.PackageLint,
+            Tsconfig.PackageTypes,
+            ...(rootPackage.json.files || [])
+          ]
+        : [path];
 
+    return excludeTargets.map((p) => `:(exclude,top)${p}`);
+  });
+
+  debug('result: %O', result);
   return result;
 }
 

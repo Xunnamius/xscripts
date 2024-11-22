@@ -88,3 +88,19 @@ export const intermediatesDirPackageBase = '.transpiled';
  * The basename of the well-known test coverage output directory.
  */
 export const coverageDirPackageBase = 'coverage';
+
+/**
+ * The basename of the well-known directory containing the package's source.
+ */
+export const srcDirPackageBase = 'src';
+
+/**
+ * The basename of the well-known directory containing the package's tests.
+ */
+export const testDirPackageBase = 'test';
+
+/**
+ * The basename of the well-known directory containing the package's
+ * documentation.
+ */
+export const documentationDirPackageBase = 'docs';
