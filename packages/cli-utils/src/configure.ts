@@ -106,6 +106,8 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
 
           // ? Push the current message onto the causal stack
           causalStack.push(
+            // TODO: use tagged object instead
+            // eslint-disable-next-line no-restricted-syntax
             `${TAB}⮕  ${subError instanceof TaskError ? toFirstLowerCase(currentMessage) : currentMessage}`
           );
 

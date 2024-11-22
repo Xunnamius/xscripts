@@ -593,6 +593,8 @@ export async function withMockedOutput(
             // @ts-expect-error: TypeScript isn't smart enough to figure this out
             target[property];
 
+          // ? It's what the MDN example uses, so we shall use it too
+          // eslint-disable-next-line no-restricted-syntax
           if (value instanceof Function) {
             return function (...args: unknown[]) {
               // ? "this-recovering" code
