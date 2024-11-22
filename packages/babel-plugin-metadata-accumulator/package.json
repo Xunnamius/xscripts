@@ -1,4 +1,78 @@
 {
   "name": "@-xun/babel-plugin-metadata-accumulator",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "description": "A babel plugin that collects and returns metadata from input files",
+  "keywords": [
+    "babel",
+    "plugin",
+    "metadata",
+    "collection",
+    "imports"
+  ],
+  "homepage": "https://github.com/Xunnamius/babel-plugin-metadata-accumulator#readme",
+  "bugs": {
+    "url": "https://github.com/Xunnamius/babel-plugin-metadata-accumulator/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xunnamius/babel-plugin-metadata-accumulator.git"
+  },
+  "license": "MIT",
+  "author": "Xunnamius",
+  "sideEffects": false,
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "types": "./dist/packages/babel-plugin-metadata-accumulator/src/index.d.ts",
+      "default": "./dist/packages/babel-plugin-metadata-accumulator/src/index.js"
+    },
+    "./package": "./package.json",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "dist/packages/babel-plugin-metadata-accumulator/src/index.d.ts"
+      ],
+      "package": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "/dist",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
+  "scripts": {
+    "build": "npm run build:dist --",
+    "build:changelog": "NODE_NO_WARNINGS=1 xscripts build changelog",
+    "build:dist": "NODE_NO_WARNINGS=1 xscripts build distributables",
+    "build:docs": "NODE_NO_WARNINGS=1 xscripts build docs",
+    "clean": "NODE_NO_WARNINGS=1 xscripts clean",
+    "format": "NODE_NO_WARNINGS=1 xscripts format --hush",
+    "info": "NODE_NO_WARNINGS=1 xscripts project info",
+    "lint": "npm run lint:package --",
+    "lint:package": "NODE_NO_WARNINGS=1 xscripts lint",
+    "lint:packages": "NODE_NO_WARNINGS=1 xscripts lint --scope unlimited",
+    "lint:project": "NODE_NO_WARNINGS=1 xscripts project lint",
+    "list-tasks": "NODE_NO_WARNINGS=1 xscripts list-tasks --scope this-package",
+    "release": "NODE_NO_WARNINGS=1 xscripts release",
+    "start": "NODE_NO_WARNINGS=1 xscripts start --",
+    "test": "npm run test:package:unit --",
+    "test:package:all": "NODE_NO_WARNINGS=1 xscripts test --coverage",
+    "test:package:e2e": "NODE_NO_WARNINGS=1 xscripts test --tests end-to-end",
+    "test:package:integration": "NODE_NO_WARNINGS=1 xscripts test --tests integration",
+    "test:package:unit": "NODE_NO_WARNINGS=1 xscripts test --tests unit",
+    "test:packages:all": "NODE_NO_WARNINGS=1 xscripts test --scope unlimited --coverage"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": "18.20.0 || ^20.15.0 || >=22.5.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
 }
