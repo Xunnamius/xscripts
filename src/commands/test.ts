@@ -5,6 +5,7 @@ import { runNoRejectOnBadExit } from '@-xun/run';
 import { type ChildConfiguration } from '@black-flag/core';
 
 import { type AsStrictExecutionContext } from 'multiverse+bfe';
+import { softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   logStartTime,
@@ -13,17 +14,19 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
+import { isRootPackage } from 'multiverse+project-utils:analyze/common.ts';
 
 import {
-  isRootPackage,
-  ProjectAttribute
-} from 'multiverse+project-utils:analyze/common.ts';
-
-import { gatherProjectFiles } from 'multiverse+project-utils:analyze.ts';
-import { ProjectError } from 'multiverse+project-utils:error.ts';
+  gatherPackageBuildTargets,
+  gatherProjectFiles,
+  ProjectAttribute,
+  type Package
+} from 'multiverse+project-utils:analyze.ts';
 
 import {
   jestConfigProjectBase,
+  testDirPackageBase,
+  toPath,
   toRelativePath,
   Tsconfig,
   tstycheConfigProjectBase
@@ -40,12 +43,14 @@ import {
 import { ErrorMessage } from 'universe:error.ts';
 
 import {
-  checkAllChoiceIfGivenIsByItself,
   checkArrayNotEmpty,
   checkIsNotNegative,
   runGlobalPreChecks,
   withGlobalBuilder
 } from 'universe:util.ts';
+
+// TODO: delete me when you see me (unless test-utils is still under packages/)
+// {@xscripts/notExtraneous simple-git}
 
 // ! Cannot use the global (g) flag
 const tstycheTargetRegExp = /(^|\/)type-.*\.test\.(m|c)?tsx?$/;
@@ -53,9 +58,9 @@ const tstycheVacuousSuccessMessage =
   'Tstyche tests vacuously succeeded: no "type-*.test.tsx?" files were found';
 
 /**
- * Which type of test to run.
+ * Which kind of test to run.
  */
-export enum TestType {
+export enum Test {
   /**
    * Include type tests from the chosen scope.
    */
@@ -73,16 +78,19 @@ export enum TestType {
    */
   EndToEnd = 'end-to-end',
   /**
-   * Include all test types from the chosen scope.
+   * Include all possible test from the chosen scope.
    *
    * Will also include code coverage results by default.
    */
   All = 'all'
 }
 
-export enum TestScope_ {
+/**
+ * @internal
+ */
+export enum _TesterScope {
   /**
-   * Limit the command to relevant _transpiled_ files (aka "intermediates")
+   * Limit the command to relevant _transpiled_ tests (aka "intermediates")
    * within `./.transpiled` (with respect to the current working directory).
    */
   ThisPackageIntermediates = 'this-package-intermediates'
@@ -91,17 +99,17 @@ export enum TestScope_ {
 /**
  * The context in which to search for test files.
  */
-export type TesterScope = DefaultGlobalScope | TestScope_;
+export type TesterScope = DefaultGlobalScope | _TesterScope;
 
 /**
  * The context in which to search for test files.
  */
-export const TesterScope = { ...DefaultGlobalScope, ...TestScope_ } as const;
+export const TesterScope = { ...DefaultGlobalScope, ..._TesterScope } as const;
 
 /**
- * @see {@link TestType}
+ * @see {@link Test}
  */
-export const testTypes = Object.values(TestType);
+export const tests = Object.values(Test);
 
 /**
  * @see {@link TesterScope}
@@ -109,14 +117,14 @@ export const testTypes = Object.values(TestType);
 export const testerScopes = Object.values(TesterScope);
 
 export type CustomCliArguments = GlobalCliArguments<TesterScope> & {
-  type: TestType[];
+  tests: Test[];
+  testerOptions: string[];
+  nodeOptions: string[];
+  baseline: boolean;
   repeat: number;
   collectCoverage: boolean;
   skipSlowTests: number;
-  nodeOptions: string[];
-  baseline: boolean;
   propagateDebugEnv: boolean;
-  testerOptions: string[];
 };
 
 export default function command({
@@ -126,27 +134,45 @@ export default function command({
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
-    (blackFlag) => {
-      blackFlag.parserConfiguration({ 'unknown-options-as-args': true });
+    (blackFlag, _, argv) => {
+      if (argv?.testerOptions.length) {
+        blackFlag.parserConfiguration({ 'unknown-options-as-args': true });
+      }
+
+      const allActualTests = tests.filter((test) => test !== Test.All);
 
       return {
         scope: {
           choices: testerScopes,
           default: TesterScope.ThisPackage
         },
-        type: {
-          alias: 'types',
+        tests: {
+          alias: 'test',
           array: true,
-          choices: testTypes,
-          description: 'Which test type(s) to run',
-          default: [TestType.All],
-          check: [
-            checkArrayNotEmpty('--type'),
-            checkAllChoiceIfGivenIsByItself(TestType.All, 'test type')
-          ],
+          choices: tests,
+          description: 'Which kinds of test to run',
+          default: allActualTests,
+          check: checkArrayNotEmpty('--tests'),
+          coerce(tests: Test[]) {
+            return Array.from(
+              new Set(
+                tests.flatMap((test) => {
+                  switch (test) {
+                    case Test.All: {
+                      return allActualTests;
+                    }
+
+                    default: {
+                      return test;
+                    }
+                  }
+                })
+              )
+            );
+          },
           subOptionOf: {
-            type: {
-              when: (type: TestType) => type === TestType.Type,
+            tests: {
+              when: (tests: Test[]) => tests.includes(Test.Type),
               update(oldOptionConfig) {
                 return {
                   ...oldOptionConfig,
@@ -155,36 +181,62 @@ export default function command({
               }
             },
             baseline: {
-              when: (baseline: boolean) => baseline,
-              update(oldOptionConfig) {
+              when: (baseline) => baseline,
+              update({ array: _, default: __, ...oldOptionConfig }) {
                 return {
                   ...oldOptionConfig,
-                  // ? Do not run type-only tests when --baseline is given. Note
-                  // ? also how --baseline and --type conflict (see below)
-                  default: [TestType.Unit, TestType.Integration, TestType.EndToEnd]
+                  demandThisOption: true,
+                  // TODO: re-evaluate if this limitation is required
+                  // ? Either Jest or Tstyche run in baseline mode, but not both
+                  check: [oldOptionConfig.check || []]
+                    .flat()
+                    .concat(function checkTypeChoiceIfGivenIsByItself(
+                      currentArgument: Test[]
+                    ) {
+                      const includesType = currentArgument.includes(Test.Type);
+
+                      return (
+                        !includesType ||
+                        currentArgument.length === 1 ||
+                        ErrorMessage.OptionValueMustBeAlone(Test.Type, 'test option')
+                      );
+                    })
                 };
               }
             }
           }
+        },
+        'tester-options': {
+          alias: 'options',
+          array: true,
+          description: 'Command-line arguments passed directly to testers',
+          default: []
+        },
+        baseline: {
+          alias: ['base', 'bare'],
+          boolean: true,
+          description: 'Execute a single tester alone without an execution plan',
+          default: false,
+          conflicts: 'scope'
         },
         repeat: {
           number: true,
           description:
             'Repeat entire Jest (not Tstyche) test suite --repeat times after initial run',
           default: 0,
-          conflicts: [{ type: TestType.Type }, { type: TestType.All }],
+          conflicts: [{ tests: Test.Type }, { tests: Test.All }],
           check: checkIsNotNegative('repeat')
         },
         'collect-coverage': {
           alias: 'coverage',
           boolean: true,
           description: 'Instruct Jest (not Tstyche) to collect coverage information',
-          defaultDescription: 'false unless --type=all and --scope=unlimited',
+          defaultDescription: 'false unless --tests=all and --scope=unlimited',
           default: false,
           subOptionOf: {
-            type: {
-              when: (type: TestType[], { scope }) =>
-                type.includes(TestType.All) && scope === TesterScope.Unlimited,
+            tests: {
+              when: (tests: Test[], { scope }) =>
+                tests.includes(Test.All) && scope === TesterScope.Unlimited,
               update(oldOptionConfig) {
                 return {
                   ...oldOptionConfig,
@@ -210,21 +262,8 @@ export default function command({
         'node-options': {
           string: true,
           array: true,
-          description: 'The options passed to the Node runtime via NODE_OPTIONS',
+          description: 'Options passed to the Node runtime via NODE_OPTIONS',
           default: ['--no-warnings --experimental-vm-modules']
-        },
-        baseline: {
-          alias: ['base', 'bare'],
-          boolean: true,
-          description: 'Executing Jest alone without any added scope/type args/patterns',
-          default: false,
-          conflicts: ['type', 'scope']
-        },
-        'tester-options': {
-          alias: 'options',
-          array: true,
-          description: 'Command-line arguments passed directly to testers',
-          default: []
         }
       };
     }
@@ -237,15 +276,15 @@ export default function command({
 
 $1.
 
-Currently, "type" (\`--type="type"\`) tests are executed by the Tstyche test runner while all others are executed by the Jest test runner. Therefore, all test files should be appropriately named (e.g. "\${type}-\${name}.test.ts") and exist under a package's ./test directory.
+Currently, "type" (\`--tests=type\`) tests are executed by the Tstyche test runner while all others are executed by the Jest test runner. Therefore, all test files should be appropriately named (e.g. "\${type}-\${name}.test.ts") and exist under a package's ./test directory.
 
 Any unrecognized flags/arguments provided after the --tester-options flag are always passed through directly to each tester. For Jest, they are inserted after computed arguments but before test path patterns, e.g. \`--reporters=... --testPathIgnorePatterns=... <your extra args> -- testPathPattern1 testPathPattern2\`. For Tstyche, they are inserted after all other arguments, e.g. \`--computed-arg-1=... computed-arg-2 <your extra args>\`.
 
-By default, this command constructs an execution plan (i.e. the computed arguments and path patterns passed to Tstyche/Jest's CLI) based on project metadata and provided options. Alternatively, you can provide --baseline when you want to construct your own custom Jest execution plan but still wish to make use of the runtime environment provided by this tool. Note that using --baseline will disable Tstyche "type" tests.
+By default, this command constructs an execution plan (i.e. the computed arguments and path patterns passed to each tester's CLI) based on project metadata and provided options. Alternatively, you can provide --baseline when you want to construct your own custom execution plan but still wish to make use of the runtime environment provided by this tool. Note that using --baseline will disable the ability to run Jest and Tstyche concurrently.
 
 Also by default (if the CI environment variable is not defined), this command prevents the value of the DEBUG environment variable, if given, from propagating down into tests since this can cause strange output-related problems. Provide --propagate-debug-env to allow the value of DEBUG to be seen by test files and the rest of the test environment, including tests.
 
-Provide --collect-coverage to instruct Jest to collect coverage information. --collect-coverage is false by default unless \`--scope=${TesterScope.Unlimited}\` and \`--type=${TestType.All}\`, in which case it will be true by default. Note that Tstyche never provides coverage information; this flag only affects Jest.
+Provide --collect-coverage to instruct Jest to collect coverage information. --collect-coverage is false by default unless \`--scope=${TesterScope.Unlimited}\` and \`--tests=${Test.All}\`, in which case it will be true by default. Note that Tstyche never provides coverage information; this flag only affects Jest.
 
 For detecting flakiness in tests, which is almost always a sign of deep developer error, provide --repeat; e.g. \`--repeat 100\`. Note that this flag cannot be used when running Tstyche "type" tests.
 
@@ -255,14 +294,14 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
     handler: withGlobalHandler(async function ({
       $0: scriptFullName,
       scope,
+      tests,
+      testerOptions,
+      nodeOptions,
+      baseline,
       collectCoverage,
       skipSlowTests,
-      nodeOptions,
       propagateDebugEnv,
       repeat,
-      type: types,
-      baseline,
-      testerOptions,
       hush: isHushed,
       quiet: isQuieted
     }) {
@@ -277,30 +316,25 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Testing project...');
 
-      debug('collectCoverage: %O', collectCoverage);
-      debug('skipSlowTests: %O', skipSlowTests);
-      debug('nodeOptions: %O', nodeOptions);
-      debug('repeat: %O', repeat);
-      debug('propagateDebugEnv: %O', propagateDebugEnv);
-      debug('test scope: %O', scope);
-      debug('test type: %O', types);
+      debug('scope: %O', scope);
+      debug('tests: %O', tests);
       debug('baseline: %O', baseline);
       debug('testerOptions: %O', testerOptions);
+      debug('nodeOptions: %O', nodeOptions);
+      debug('collectCoverage: %O', collectCoverage);
+      debug('skipSlowTests: %O', skipSlowTests);
+      debug('repeat: %O', repeat);
+      debug('propagateDebugEnv: %O', propagateDebugEnv);
 
-      const {
-        rootPackage: { root: projectRoot },
-        cwdPackage
-      } = projectMetadata;
+      const { rootPackage, cwdPackage, subRootPackages } = projectMetadata;
 
       const packageRoot = cwdPackage.root;
+      const projectRoot = rootPackage.root;
 
       debug('projectRoot: %O', projectRoot);
       debug('packageRoot: %O', packageRoot);
 
-      const allTypes = types.includes(TestType.All);
       const isRepeating = repeat > 0;
-
-      debug('allTypes: %O', allTypes);
 
       if (isRepeating) {
         genericLogger.message(
@@ -313,11 +347,15 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
         DEBUG: undefined,
         DEBUG_COLORS: 'false',
         NODE_ENV: 'test',
-        // eslint-disable-next-line unicorn/no-array-reduce
-        NODE_OPTIONS: nodeOptions.reduce(
-          (previous, current) => (previous + ' ' + current).trim(),
-          ''
-        )
+        ...(nodeOptions.length
+          ? {
+              // eslint-disable-next-line unicorn/no-array-reduce
+              NODE_OPTIONS: nodeOptions.reduce(
+                (previous, current) => (previous + ' ' + current).trim(),
+                ''
+              )
+            }
+          : {})
       };
 
       if (scope === TesterScope.ThisPackageIntermediates) {
@@ -339,9 +377,8 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       debug('env: %O', env);
 
       // ! Test path patterns should begin with a slash (/)
-      const testPathPatterns: string[] = [];
+      const jestTestPathPatterns: string[] = [];
       const { testPathIgnorePatterns = [] } = baseConfig;
-      const isMonorepo = projectMetadata.type === ProjectAttribute.Monorepo;
       const isCwdTheProjectRoot = isRootPackage(cwdPackage);
       const npxJestArguments = ['jest'];
 
@@ -357,27 +394,81 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
         npxJestArguments.push('--coverage');
       }
 
+      const buildTargetPackages = new Set<Package>();
+      const buildExtraneousPackages = new Set<Package>();
+
       if (!baseline) {
+        if (scope !== TesterScope.Unlimited) {
+          const {
+            targets: { external: externalBuildTargets }
+          } = await gatherPackageBuildTargets(cwdPackage, {
+            useCached: true
+          });
+
+          const allPackagesExceptCwd = Array.from(
+            (subRootPackages?.values() || []).filter(
+              ({ root }) => root !== cwdPackage.root
+            ) as Package[]
+          ).concat(
+            !isCwdTheProjectRoot && rootPackage.attributes[ProjectAttribute.Hybridrepo]
+              ? [rootPackage]
+              : []
+          );
+
+          debug('allPackagesExceptCwd: %O', allPackagesExceptCwd);
+
+          for (const package_ of allPackagesExceptCwd) {
+            buildExtraneousPackages.add(package_);
+          }
+
+          for (const buildTargetPath of externalBuildTargets) {
+            const buildTargetPackage = allPackagesExceptCwd.find((package_) => {
+              const relativeRoot = toRelativePath(projectRoot, package_.root);
+
+              return relativeRoot === ''
+                ? !buildTargetPath.startsWith('packages/')
+                : buildTargetPath.startsWith(relativeRoot);
+            });
+
+            if (buildTargetPackage) {
+              buildTargetPackages.add(buildTargetPackage);
+              buildExtraneousPackages.delete(buildTargetPackage);
+            }
+          }
+        }
+
         // * When scope is set to Intermediate, that's handled in
         // * jest.config.mjs, which is aware of the
         // * XSCRIPTS_TEST_JEST_TRANSPILED environment variable.
 
-        if (allTypes || types.includes(TestType.Unit)) {
+        if (tests.includes(Test.Unit)) {
           // ? These sorts of patterns match at any depth (leading / isn't root)
-          testPathPatterns.push(String.raw`/test(/.*)?/unit(-.*)?\.test\.tsx?`);
+          jestTestPathPatterns.push(String.raw`/test(/.*)?/unit(-.*)?\.test\.tsx?`);
         }
 
-        if (allTypes || types.includes(TestType.Integration)) {
-          testPathPatterns.push(String.raw`/test(/.*)?/integration(-.*)?\.test\.tsx?`);
+        if (tests.includes(Test.Integration)) {
+          jestTestPathPatterns.push(
+            String.raw`/test(/.*)?/integration(-.*)?\.test\.tsx?`
+          );
         }
 
-        if (allTypes || types.includes(TestType.EndToEnd)) {
-          testPathPatterns.push(String.raw`/test(/.*)?/e2e(-.*)?\.test\.tsx?`);
+        if (tests.includes(Test.EndToEnd)) {
+          jestTestPathPatterns.push(String.raw`/test(/.*)?/e2e(-.*)?\.test\.tsx?`);
         }
 
-        if (isMonorepo && scope === TesterScope.ThisPackage && isCwdTheProjectRoot) {
-          testPathIgnorePatterns.push('/packages/');
-        }
+        // ? These are all the paths (mostly package roots) that should NOT have
+        // ? their tests run; note that they are in Jest-style and should have
+        // ? leading or trailing / (which will be inserted later when no
+        // ? necessary)
+        const testIgnorePathSegments = buildExtraneousPackages
+          .values()
+          .map((package_) => {
+            return isRootPackage(package_)
+              ? toPath(projectRoot.slice(1), testDirPackageBase)
+              : toRelativePath(projectRoot, package_.root);
+          });
+
+        testPathIgnorePatterns.push(...testIgnorePathSegments.map((root) => `/${root}/`));
 
         if (testPathIgnorePatterns.length) {
           npxJestArguments.push(
@@ -386,13 +477,18 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
         }
       }
 
+      debug('buildTargetPackages: %O', buildTargetPackages);
+      debug('buildExtraneousPackages: %O', buildExtraneousPackages);
+
+      // ? Jest's CLI array intake ability is trash, so all array-taking
+      // ? args need to be followed by another arg (i.e. --something)
+      npxJestArguments.push('--inject-globals');
+
       if (isRepeating) {
-        // ? Jest's CLI array intake ability is trash, so all array-taking
-        // ? args need to be followed by another arg (i.e. --something)
         npxJestArguments.push('--reporters=jest-silent-reporter');
       }
 
-      // ? Order matters, so keep this here due to how Jest CLI handles arrays.
+      // ? Order matters, so keep these here due to how Jest CLI handles arrays.
       // ? E.g. the user might add extra array arguments, so they have to be
       // ? followed by a non-array argument since we append file paths (below)
       npxJestArguments.push(
@@ -400,37 +496,56 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
         `--config=${projectRoot}/${jestConfigProjectBase}`
       );
 
-      const relativePackageRoot = toRelativePath(projectRoot, packageRoot);
-      debug('relativePackageRoot: %O', relativePackageRoot);
+      let hasTstycheTargets = false;
 
-      const tstycheTargetAbsolutePaths = await gatherProjectFiles(projectMetadata, {
-        useCached: true
-      }).then(({ typescriptTestFiles }) =>
-        scope === TesterScope.ThisPackage
-          ? isCwdTheProjectRoot
-            ? typescriptTestFiles.inRootTest
-            : typescriptTestFiles.inWorkspaceTest.get(cwdPackage.id)!
-          : typescriptTestFiles.all
-      );
+      if (!baseline) {
+        const tstycheTargetAbsolutePaths = await gatherProjectFiles(projectMetadata, {
+          useCached: true
+        }).then(({ typescriptTestFiles }) => {
+          if (scope === TesterScope.ThisPackage) {
+            const ownFiles = isCwdTheProjectRoot
+              ? typescriptTestFiles.inRootTest
+              : typescriptTestFiles.inWorkspaceTest.get(cwdPackage.id)!;
 
-      const tstycheTargetRelativePaths = tstycheTargetAbsolutePaths
-        .filter(
-          (path) => path.startsWith(packageRoot + '/') && tstycheTargetRegExp.test(path)
-        )
-        .map((path) => toRelativePath(packageRoot, path) as string);
+            return ownFiles.concat(
+              buildTargetPackages
+                .values()
+                .flatMap((package_) => {
+                  return isRootPackage(package_)
+                    ? typescriptTestFiles.inRootTest
+                    : typescriptTestFiles.inWorkspaceTest.get(package_.id)!;
+                })
+                .toArray()
+            );
+          }
 
-      debug('tstycheTargetRelativePaths: %O', tstycheTargetRelativePaths);
+          return typescriptTestFiles.all;
+        });
 
-      npxTstycheArguments.push(...tstycheTargetRelativePaths, ...testerOptions);
+        const tstycheTargetRelativePaths = tstycheTargetAbsolutePaths
+          .filter(
+            (path) => path.startsWith(packageRoot + '/') && tstycheTargetRegExp.test(path)
+          )
+          .map((path) => toRelativePath(packageRoot, path) as string);
 
-      if (testPathPatterns) {
-        const jestPrefix = isCwdTheProjectRoot ? '' : '/' + relativePackageRoot;
+        debug('tstycheTargetRelativePaths: %O', tstycheTargetRelativePaths);
+
+        hasTstycheTargets = !!tstycheTargetRelativePaths.length;
+        npxTstycheArguments.push(...tstycheTargetRelativePaths);
+      }
+
+      npxTstycheArguments.push(...testerOptions);
+
+      if (jestTestPathPatterns.length) {
+        const jestPrefix = isCwdTheProjectRoot
+          ? ''
+          : '/' + toRelativePath(projectRoot, packageRoot);
 
         const finalJestTestPathPatterns =
           scope === TesterScope.ThisPackage
             ? // ? Assumes all patterns start with a slash (/)
-              testPathPatterns.map((pattern) => jestPrefix + pattern)
-            : testPathPatterns;
+              jestTestPathPatterns.map((pattern) => jestPrefix + pattern)
+            : jestTestPathPatterns;
 
         npxJestArguments.push(...finalJestTestPathPatterns);
       }
@@ -438,8 +553,8 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       debug('npxTstycheArguments: %O', npxTstycheArguments);
       debug('npxJestArguments: %O', npxJestArguments);
 
-      const shouldRunTstycheTests = types.includes(TestType.Type);
-      const shouldRunJestTests = types.length > 1 || !shouldRunTstycheTests;
+      const shouldRunTstycheTests = tests.includes(Test.Type);
+      const shouldRunJestTests = tests.length > 1 || !shouldRunTstycheTests;
 
       debug('will run tstyche tests: %O', shouldRunTstycheTests);
       debug('will run jest tests: %O', shouldRunJestTests);
@@ -457,8 +572,9 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
         }
 
         const [tstycheResult, jestResult] = await Promise.all([
-          allTypes || shouldRunTstycheTests
-            ? tstycheTargetRelativePaths.length
+          shouldRunTstycheTests
+            ? // ? Always run tstyche if custom tester options were given
+              hasTstycheTargets || testerOptions.length
               ? // {@xscripts/notExtraneous tstyche}
                 runNoRejectOnBadExit('npx', npxTstycheArguments, {
                   all: true,
@@ -485,7 +601,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
         const isTstycheError =
           tstycheExitCode !== 0 &&
-          !tstycheOutput?.includes(
+          !tstycheOutput.includes(
             'No test files were selected using current configuration'
           );
 
@@ -526,7 +642,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
         if (isTstycheError || jestResult.exitCode !== 0) {
           genericLogger.newline([LogTag.IF_NOT_HUSHED]);
-          throw new ProjectError(ErrorMessage.TestingFailed());
+          softAssert(ErrorMessage.TestingFailed());
         }
 
         if (isRepeating) {
