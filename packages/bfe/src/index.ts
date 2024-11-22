@@ -606,7 +606,10 @@ export type BfeCustomBuilderFunctionParameters<
     ? [
         blackFlag: R & { options: never; option: never },
         T,
-        BfeStrictArguments<CustomCliArguments, CustomExecutionContext> | undefined
+        (
+          | BfeStrictArguments<Partial<CustomCliArguments>, CustomExecutionContext>
+          | undefined
+        )
       ]
     : [blackFlag: R & { options: never; option: never }, ...S]
   : never;
