@@ -180,7 +180,13 @@ export enum WorkspaceAttribute {
    * workspace in the project.
    *
    * The existence of this attribute will modify the behavior of xscript
-   * commands like "build changelog" and "release".
+   * commands like "build changelog", and in "release" when analyzing commits to
+   * determine the next release version.
+   *
+   * Beside changelog generation, **no build artifacts or distributables are
+   * affected by shared packages**. For instance, a shared package is not
+   * automatically included in the build distributables of some other unrelated
+   * package.
    */
   Shared = 'shared'
 }
