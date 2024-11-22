@@ -23,7 +23,7 @@ import {
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import {
-  getExcludedDirectoriesRelativeToProjectRoot,
+  getExcludedPathsRelativeToProjectRoot,
   noSpecialInitialCommitIndicator
 } from 'universe:assets/config/_conventional.config.cjs.ts';
 
@@ -88,7 +88,7 @@ export function moduleExport({
   debug('releaseSectionPath: %O', releaseSectionPath);
 
   const { cwdPackage } = analyzeProjectStructure.sync({ useCached: true });
-  const gitLogPathspecs = getExcludedDirectoriesRelativeToProjectRoot();
+  const gitLogPathspecs = getExcludedPathsRelativeToProjectRoot();
 
   const cwdPackageName = cwdPackage.json.name;
   assert(cwdPackageName);

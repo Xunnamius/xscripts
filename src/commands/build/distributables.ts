@@ -250,9 +250,9 @@ export default async function command({
           array: true,
           default: [],
           description: 'Only transpile source file paths matching a RegExp filter',
-          coerce(argument: string[]) {
+          coerce(partials: string[]) {
             // ! These regular expressions can never use the global (g) flag
-            return argument.map((a) => new RegExp(a, 'u'));
+            return partials.map((str) => new RegExp(str, 'u'));
           },
           implies: {
             'clean-output-dir': false,
@@ -277,9 +277,9 @@ export default async function command({
           description: 'Override automatic extension selection for transpiled output',
           check: checkIsNotNil,
           defaultDescription: 'derived from other arguments',
-          coerce(argument: string) {
-            argument = String(argument);
-            return argument.startsWith('.') ? argument : `.${argument}`;
+          coerce(extension: string) {
+            extension = String(extension);
+            return extension.startsWith('.') ? extension : `.${extension}`;
           }
         },
         'prepend-shebang': {
@@ -303,9 +303,9 @@ export default async function command({
             'Do not warn when a matching package/dependency fails a build output validity check',
           default: [],
           implies: { 'skip-output-checks': false, 'generate-types': true },
-          coerce(argument: string[]) {
-            return argument.map((a) => {
-              return a.startsWith('^') || a.endsWith('$') ? new RegExp(a) : a;
+          coerce(strings: string[]) {
+            return strings.map((str) => {
+              return str.startsWith('^') || str.endsWith('$') ? new RegExp(str) : str;
             });
           }
         },
@@ -317,9 +317,9 @@ export default async function command({
             'Do not warn when a matching package/dependency fails a build output extraneity check',
           default: [],
           implies: { 'skip-output-checks': false, 'generate-types': true },
-          coerce(argument: string[]) {
-            return argument.map((a) => {
-              return a.startsWith('^') || a.endsWith('$') ? new RegExp(a) : a;
+          coerce(strings: string[]) {
+            return strings.map((str) => {
+              return str.startsWith('^') || str.endsWith('$') ? new RegExp(str) : str;
             });
           }
         }
@@ -330,7 +330,7 @@ export default async function command({
         Object.entries(additionalParameters).forEach(([name, parameter]) => {
           parameter.defaultDescription = '❌ disabled in Next.js packages';
           parameter.check = () => {
-            const isDefaulted = !(name in argv);
+            const isDefaulted = !(argv && name in argv);
             const errorMessage = `--${name} cannot be used when building a Next.js package`;
 
             return isDefaulted || errorMessage;
