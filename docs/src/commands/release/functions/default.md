@@ -6,11 +6,11 @@
 
 # Function: default()
 
-> **default**(`__namedParameters`): `object`
+> **default**(`executionContext`): `object`
 
 ## Parameters
 
-• **\_\_namedParameters**: `AsStrictExecutionContext`\<[`GlobalExecutionContext`](../../../configure/type-aliases/GlobalExecutionContext.md)\>
+• **executionContext**: `AsStrictExecutionContext`\<[`GlobalExecutionContext`](../../../configure/type-aliases/GlobalExecutionContext.md)\>
 
 ## Returns
 
@@ -42,4 +42,4 @@
 
 ## Defined in
 
-[src/commands/release.ts:40](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/commands/release.ts#L40)
+[src/commands/release.ts:244](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/commands/release.ts#L244)

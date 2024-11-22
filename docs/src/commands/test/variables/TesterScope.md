@@ -27,7 +27,7 @@ This is the default scope for most commands.
 
 > **ThisPackageIntermediates**: `"this-package-intermediates"`
 
-Limit the command to relevant _transpiled_ files (aka "intermediates")
+Limit the command to relevant _transpiled_ tests (aka "intermediates")
 within `./.transpiled` (with respect to the current working directory).
 
 ### Unlimited
@@ -41,4 +41,4 @@ monorepo at once; e.g. `npx xscripts lint --scope=unlimited`.
 
 ## Defined in
 
-[src/commands/test.ts:94](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/commands/test.ts#L94)
+[src/commands/test.ts:101](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/commands/test.ts#L101)

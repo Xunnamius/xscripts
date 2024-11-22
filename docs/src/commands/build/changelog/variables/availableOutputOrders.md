@@ -14,4 +14,4 @@
 
 ## Defined in
 
-[src/commands/build/changelog.ts:88](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/commands/build/changelog.ts#L88)
+[src/commands/build/changelog.ts:88](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/commands/build/changelog.ts#L88)

@@ -12,184 +12,6 @@ A collection of possible error and warning messages.
 
 ## Type declaration
 
-### AppValidationFailure()
-
-> **AppValidationFailure**: () => `string`
-
-#### Returns
-
-`string`
-
-### AuthFailure()
-
-> **AuthFailure**: () => `string`
-
-#### Returns
-
-`string`
-
-### ClientValidationFailure()
-
-> **ClientValidationFailure**: () => `string`
-
-#### Returns
-
-`string`
-
-### GuruMeditation()
-
-> **GuruMeditation**: () => `string`
-
-#### Returns
-
-`string`
-
-### HttpFailure()
-
-> **HttpFailure**: (`error`?) => `string`
-
-#### Parameters
-
-• **error?**: `string`
-
-#### Returns
-
-`string`
-
-### HttpSubFailure()
-
-> **HttpSubFailure**: (`error`, `statusCode`) => `string`
-
-#### Parameters
-
-• **error**: `null` \| `string`
-
-• **statusCode**: `number`
-
-#### Returns
-
-`string`
-
-### InvalidAppConfiguration()
-
-> **InvalidAppConfiguration**: (`details`?) => `string`
-
-#### Parameters
-
-• **details?**: `string`
-
-#### Returns
-
-`string`
-
-### InvalidAppEnvironment()
-
-> **InvalidAppEnvironment**: (`details`?) => `string`
-
-#### Parameters
-
-• **details?**: `string`
-
-#### Returns
-
-`string`
-
-### InvalidClientConfiguration()
-
-> **InvalidClientConfiguration**: (`details`?) => `string`
-
-#### Parameters
-
-• **details?**: `string`
-
-#### Returns
-
-`string`
-
-### InvalidItem()
-
-> **InvalidItem**: (`item`, `itemName`) => `string`
-
-#### Parameters
-
-• **item**: `unknown`
-
-• **itemName**: `string`
-
-#### Returns
-
-`string`
-
-### InvalidSecret()
-
-> **InvalidSecret**: (`secretType`) => `string`
-
-#### Parameters
-
-• **secretType**: `string`
-
-#### Returns
-
-`string`
-
-### ItemNotFound()
-
-> **ItemNotFound**: (`item`, `itemName`) => `string`
-
-#### Parameters
-
-• **item**: `unknown`
-
-• **itemName**: `string`
-
-#### Returns
-
-`string`
-
-### ItemOrItemsNotFound()
-
-> **ItemOrItemsNotFound**: (`itemsName`) => `string`
-
-#### Parameters
-
-• **itemsName**: `string`
-
-#### Returns
-
-`string`
-
-### NotAuthenticated()
-
-> **NotAuthenticated**: () => `string`
-
-#### Returns
-
-`string`
-
-### NotAuthorized()
-
-> **NotAuthorized**: () => `string`
-
-#### Returns
-
-`string`
-
-### NotFound()
-
-> **NotFound**: () => `string`
-
-#### Returns
-
-`string`
-
-### NotImplemented()
-
-> **NotImplemented**: () => `string`
-
-#### Returns
-
-`string`
-
 ### specialized
 
 > **specialized**: `object`
@@ -277,24 +99,6 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### ValidationFailure()
-
-> **ValidationFailure**: () => `string`
-
-#### Returns
-
-`string`
-
-### AllOptionValueMustBeAlone()
-
-#### Parameters
-
-• **noun**: `string`
-
-#### Returns
-
-`string`
-
 ### ArgumentMustBeNonNegative()
 
 #### Parameters
@@ -315,89 +119,11 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### AssertionFailureBadConfigurationPath()
-
-#### Parameters
-
-• **path**: `unknown`
-
-#### Returns
-
-`string`
-
-### AssertionFailureBadParameterCombination()
-
-#### Returns
-
-`string`
-
-### AssertionFailureCannotExecuteMultipleTimes()
-
-#### Returns
-
-`string`
-
-### AssertionFailureConfigureExecutionEpilogue()
-
-#### Returns
-
-`string`
-
-### AssertionFailureDuplicateCommandName()
-
-#### Parameters
-
-• **parentFullName**: `undefined` \| `string`
-
-• **name1**: `string`
-
-• **type1**: `"name"` \| `"alias"`
-
-• **name2**: `string`
-
-• **type2**: `"name"` \| `"alias"`
-
-#### Returns
-
-`string`
-
-### AssertionFailureInvalidCommandExport()
-
-#### Parameters
-
-• **name**: `string`
-
-#### Returns
-
-`string`
-
-### AssertionFailureInvocationNotAllowed()
-
-#### Parameters
-
-• **name**: `string`
-
-#### Returns
-
-`string`
-
-### AssertionFailureNoConfigurationLoaded()
+### AssetRetrievalFailed()
 
 #### Parameters
 
 • **path**: `string`
-
-#### Returns
-
-`string`
-
-### AssertionFailureReachedTheUnreachable()
-
-#### Returns
-
-`string`
-
-### AssertionFailureUseParseAsyncInstead()
 
 #### Returns
 
@@ -557,16 +283,6 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### CheckFailed()
-
-#### Parameters
-
-• **currentArgument**: `string`
-
-#### Returns
-
-`string`
-
 ### CleanCalledWithoutForce()
 
 #### Returns
@@ -574,6 +290,22 @@ punctuation and capitalization rules as the other error messages.
 `string`
 
 ### CliProjectHasBadBinConfig()
+
+#### Returns
+
+`string`
+
+### CodecovDownloaderOnlySupportsLinux()
+
+#### Returns
+
+`string`
+
+### CodecovRetrievalFailed()
+
+#### Parameters
+
+• **url**: `string`
 
 #### Returns
 
@@ -589,95 +321,7 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### CommandHandlerNotAFunction()
-
-#### Returns
-
-`string`
-
-### CommandNotImplemented()
-
-#### Returns
-
-`string`
-
-### ConfigLoadFailure()
-
-#### Parameters
-
-• **path**: `string`
-
-#### Returns
-
-`string`
-
-### ConflictsViolation()
-
-#### Parameters
-
-• **conflicter**: `string`
-
-• **seenConflictingKeyValues**: `ObjectEntries`\<`object`\>
-
-#### Returns
-
-`string`
-
 ### DefaultImportFalsy()
-
-#### Returns
-
-`string`
-
-### DemandGenericXorViolation()
-
-#### Parameters
-
-• **demanded**: `ObjectEntries`\<`object`\>
-
-#### Returns
-
-`string`
-
-### DemandIfViolation()
-
-#### Parameters
-
-• **demanded**: `string`
-
-• **demander**: `ObjectEntry`\<`object`\>
-
-#### Returns
-
-`string`
-
-### DemandOrViolation()
-
-#### Parameters
-
-• **demanded**: `ObjectEntries`\<`object`\>
-
-#### Returns
-
-`string`
-
-### DemandSpecificXorViolation()
-
-#### Parameters
-
-• **firstArgument**: `ObjectEntry`\<`object`\>
-
-• **secondArgument**: `ObjectEntry`\<`object`\>
-
-#### Returns
-
-`string`
-
-### DuplicateOptionName()
-
-#### Parameters
-
-• **name**: `string`
 
 #### Returns
 
@@ -693,29 +337,13 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### FalsyCommandExport()
+### FailedToInstallCodecov()
 
 #### Returns
 
 `string`
 
-### FrameworkError()
-
-#### Parameters
-
-• **error**: `unknown`
-
-#### Returns
-
-`string`
-
-### Generic()
-
-#### Returns
-
-`string`
-
-### GracefulEarlyExit()
+### GuruMeditation()
 
 #### Returns
 
@@ -726,60 +354,6 @@ punctuation and capitalization rules as the other error messages.
 #### Parameters
 
 • **args**: `string`[]
-
-#### Returns
-
-`string`
-
-### IllegalExplicitlyUndefinedDefault()
-
-#### Returns
-
-`string`
-
-### IllegalHandlerInvocation()
-
-#### Returns
-
-`string`
-
-### ImpliesViolation()
-
-#### Parameters
-
-• **implier**: `string`
-
-• **seenConflictingKeyValues**: `ObjectEntries`\<`object`\>
-
-#### Returns
-
-`string`
-
-### InvalidCharacters()
-
-#### Parameters
-
-• **str**: `string`
-
-• **violation**: `string`
-
-#### Returns
-
-`string`
-
-### InvalidConfigureArgumentsReturnType()
-
-#### Returns
-
-`string`
-
-### InvalidConfigureExecutionContextReturnType()
-
-#### Returns
-
-`string`
-
-### InvalidSubCommandInvocation()
 
 #### Returns
 
@@ -803,11 +377,11 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### MetadataInvariantViolated()
+### MissingConfigurationFile()
 
 #### Parameters
 
-• **afflictedKey**: `string`
+• **path**: `string`
 
 #### Returns
 
@@ -841,13 +415,55 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### ReferencedNonExistentOption()
+### OptionValueMustBeAlone()
 
 #### Parameters
 
-• **referrerName**: `string`
+• **option**: `string`
 
-• **doesNotExistName**: `string`
+• **noun**: `string`
+
+#### Returns
+
+`string`
+
+### OptionValueMustBeAloneWhenBaseline()
+
+#### Parameters
+
+• **option**: `string`
+
+• **noun**: `string`
+
+#### Returns
+
+`string`
+
+### ReleaseEnvironmentValidationFailed()
+
+#### Returns
+
+`string`
+
+### ReleaseRepositoryNoCurrentBranch()
+
+#### Returns
+
+`string`
+
+### ReleaseRepositoryStateValidationFailed()
+
+#### Returns
+
+`string`
+
+### ReleaseRunnerExecutionFailed()
+
+#### Returns
+
+`string`
+
+### ReleaseScriptExecutionFailed()
 
 #### Returns
 
@@ -869,23 +485,13 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### RequiresViolation()
+### TaskNotRunnable()
 
 #### Parameters
 
-• **requirer**: `string`
+• **id**: `string`
 
-• **missingRequiredKeyValues**: `ObjectEntries`\<`object`\>
-
-#### Returns
-
-`string`
-
-### RetrievalFailed()
-
-#### Parameters
-
-• **path**: `string`
+• **npmScripts**: `string`[]
 
 #### Returns
 
@@ -904,18 +510,6 @@ punctuation and capitalization rules as the other error messages.
 • **sourcePath**: `string`
 
 • **outputPath**: `string`
-
-#### Returns
-
-`string`
-
-### UnexpectedlyFalsyDetailedArguments()
-
-#### Returns
-
-`string`
-
-### UnexpectedValueFromInternalYargsMethod()
 
 #### Returns
 
@@ -975,4 +569,4 @@ punctuation and capitalization rules as the other error messages.
 
 ## Defined in
 
-[src/error.ts:61](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/error.ts#L61)
+[src/error.ts:61](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/error.ts#L61)

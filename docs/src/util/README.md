@@ -12,7 +12,6 @@
 
 - [\_\_read\_file\_sync](functions/read_file_sync.md)
 - [\_\_write\_file\_sync](functions/write_file_sync.md)
-- [checkAllChoiceIfGivenIsByItself](functions/checkAllChoiceIfGivenIsByItself.md)
 - [checkArrayNotEmpty](functions/checkArrayNotEmpty.md)
 - [checkIsNotNegative](functions/checkIsNotNegative.md)
 - [checkIsNotNil](functions/checkIsNotNil.md)

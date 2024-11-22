@@ -15,6 +15,7 @@
 
 ### Functions
 
+- [determineRepoWorkingTreeDirty](functions/determineRepoWorkingTreeDirty.md)
 - [generateNotes](functions/generateNotes.md)
 - [moduleExport](functions/moduleExport.md)
 - [success](functions/success.md)

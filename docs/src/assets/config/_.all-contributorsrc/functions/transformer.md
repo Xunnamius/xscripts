@@ -22,4 +22,4 @@
 
 ## Defined in
 
-[src/assets/config/\_.all-contributorsrc.ts:9](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/assets/config/_.all-contributorsrc.ts#L9)
+[src/assets/config/\_.all-contributorsrc.ts:9](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/assets/config/_.all-contributorsrc.ts#L9)

@@ -6,7 +6,7 @@
 
 # Type Alias: CustomCliArguments
 
-> **CustomCliArguments**: [`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md)\<[`LinterScope`](LinterScope.md)\> & `object`
+> **CustomCliArguments**: [`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md) & `object`
 
 ## Type declaration
 
@@ -14,17 +14,25 @@
 
 > **allowWarningComments**: `boolean`
 
+### baseline
+
+> **baseline**: `boolean`
+
 ### ignoreWarnings
 
 > **ignoreWarnings**: `boolean`
 
-### linter
-
-> **linter**: [`Linter`](../enumerations/Linter.md)[]
-
 ### linterOptions
 
 > **linterOptions**: `string`[]
+
+### linters
+
+> **linters**: [`Linter`](../enumerations/Linter.md)[]
+
+### nodeOptions
+
+> **nodeOptions**: `string`[]
 
 ### remarkSkipIgnored
 
@@ -36,4 +44,4 @@
 
 ## Defined in
 
-[src/commands/lint.ts:93](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/commands/lint.ts#L93)
+[src/commands/lint.ts:63](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/commands/lint.ts#L63)

@@ -25,7 +25,7 @@
 
 ### Functions
 
-- [getExcludedDirectoriesRelativeToProjectRoot](functions/getExcludedDirectoriesRelativeToProjectRoot.md)
+- [getExcludedPathsRelativeToProjectRoot](functions/getExcludedPathsRelativeToProjectRoot.md)
 - [getLatestCommitWithXpipelineInitCommandSuffix](functions/getLatestCommitWithXpipelineInitCommandSuffix.md)
 - [moduleExport](functions/moduleExport.md)
 - [transformer](functions/transformer.md)

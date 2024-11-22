@@ -30,7 +30,7 @@ Represents encountering a project that is not a git repository.
 
 #### Defined in
 
-[src/error.ts:45](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/error.ts#L45)
+[src/error.ts:45](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/error.ts#L45)
 
 ### new BuildOutputCheckError()
 
@@ -53,7 +53,7 @@ via `super`.
 
 #### Defined in
 
-[src/error.ts:50](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/error.ts#L50)
+[src/error.ts:50](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/error.ts#L50)
 
 ## Properties
 
@@ -67,7 +67,7 @@ via `super`.
 
 #### Defined in
 
-[src/error.ts:41](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/error.ts#L41)
+[src/error.ts:41](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/error.ts#L41)
 
 ***
 

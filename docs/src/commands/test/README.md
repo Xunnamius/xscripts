@@ -10,8 +10,8 @@
 
 ### Enumerations
 
-- [TestScope\_](enumerations/TestScope.md)
-- [TestType](enumerations/TestType.md)
+- [\_TesterScope](enumerations/TesterScope.md)
+- [Test](enumerations/Test.md)
 
 ### Type Aliases
 
@@ -22,7 +22,7 @@
 
 - [TesterScope](variables/TesterScope.md)
 - [testerScopes](variables/testerScopes.md)
-- [testTypes](variables/testTypes.md)
+- [tests](variables/tests.md)
 
 ### Functions
 

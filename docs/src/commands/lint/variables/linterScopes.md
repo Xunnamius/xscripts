@@ -6,12 +6,12 @@
 
 # Variable: linterScopes
 
-> `const` **linterScopes**: ([`ThisPackage`](../../../configure/enumerations/DefaultGlobalScope.md#thispackage) \| [`Unlimited`](../../../configure/enumerations/DefaultGlobalScope.md#unlimited) \| [`ThisPackageSource`](../enumerations/LinterScope.md#thispackagesource) \| [`UnlimitedSource`](../enumerations/LinterScope.md#unlimitedsource))[]
+> `const` **linterScopes**: [`DefaultGlobalScope`](../../../configure/enumerations/DefaultGlobalScope.md)[]
 
 ## See
 
-[LinterScope](LinterScope.md)
+[LinterScope](../../../configure/enumerations/DefaultGlobalScope.md)
 
 ## Defined in
 
-[src/commands/lint.ts:91](https://github.com/Xunnamius/xscripts/blob/5eb9deff748ee6e4af3c57a16f6370d16bb97bfb/src/commands/lint.ts#L91)
+[src/commands/lint.ts:61](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/commands/lint.ts#L61)

@@ -11,6 +11,7 @@
 ### Type Aliases
 
 - [Context](type-aliases/Context.md)
+- [XPackageJson](type-aliases/XPackageJson.md)
 
 ### Functions
 
