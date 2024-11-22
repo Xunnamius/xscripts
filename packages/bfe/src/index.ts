@@ -420,9 +420,9 @@ export type BfeBuilderObjectValueExtensions<
    * _always_ receive an array if the option was configured with `{ array: true
    * }`.
    *
-   * Note that **a defaulted argument will not be coerced by the `coerce`
-   * setting**. Only arguments given via `argv` trigger `coerce`. This is
-   * vanilla yargs behavior.
+   * Note that **a defaulted argument will not result in this function being
+   * called.** Only arguments given via `argv` trigger `coerce`. This is vanilla
+   * yargs behavior.
    */
   coerce?: BfGenericBuilderObjectValue['coerce'];
 };
