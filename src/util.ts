@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prevent-abbreviations */
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 
