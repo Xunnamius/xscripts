@@ -1071,7 +1071,6 @@ function patchSpawnChild() {
       const spawnArgs = args[1] as string[];
       let alreadySawPathsMarker = false;
 
-      // eslint-disable-next-line unicorn/prevent-abbreviations
       for (const [index, arg] of spawnArgs.entries()) {
         const [, id, value] = arg.match(specialArgumentRegExp) || [];
 
