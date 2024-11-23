@@ -181,7 +181,7 @@ export default async function command({
         {
           scope: { choices: distributablesBuilderScopes },
           'clean-output-dir': {
-            alias: 'clean-dist',
+            alias: 'clean',
             boolean: true,
             description: 'Force-delete the output directory before transpilation',
             default: projectMetadata_
