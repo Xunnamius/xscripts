@@ -282,7 +282,7 @@ export type PackageBuildTargets = {
        * number of times they are imported by the build target files.
        *
        * Imports from non-TS JS files under `${packageRoot}/src` (so: assets)
-       * will be prefixed with `<!FROM-ASSET> `.
+       * will be prefixed with `<❗FROM-ASSET> `.
        */
       aliasCounts: Record<string, number>;
       /**
@@ -291,7 +291,7 @@ export type PackageBuildTargets = {
        * number of times those packages are imported by the build target files.
        *
        * Imports from non-TS JS files under `${packageRoot}/src` (so: assets)
-       * will be prefixed with `<!FROM-ASSET> `.
+       * will be prefixed with `<❗FROM-ASSET> `.
        */
       dependencyCounts: Record<string, number>;
     };

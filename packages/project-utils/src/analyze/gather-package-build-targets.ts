@@ -47,7 +47,7 @@ const debug = debug_.extend('gatherPackageBuildTargets');
 /**
  * Prefixed to specifiers coming from non-source files.
  */
-export const assetPrefix = '<!FROM-ASSET>';
+export const assetPrefix = '<❗FROM-ASSET>';
 
 /**
  * @see {@link gatherPackageBuildTargets}
