@@ -225,7 +225,7 @@ export const ErrorMessage = {
     },
     ExportSubpathsPointsToInaccessible(subpaths: [subpath: string, target: string][]) {
       return (
-        'Bad package.json::exports configuration: one or more entry points targets inaccessible or non-existent files:' +
+        '💀 Bad package.json::exports configuration: one or more entry points targets inaccessible or non-existent files:' +
         subpaths.reduce(
           (result, [subpath, target]) => result + `\n  - ${subpath} =!=> ${target}`,
           ''
@@ -234,7 +234,7 @@ export const ErrorMessage = {
     },
     DistributablesSpecifiersPointToInaccessible(specifiers: ImportSpecifier[]) {
       return (
-        'Bad distributables specifiers: invalid import of inaccessible or non-existent files:' +
+        '👹 Bad distributables specifiers: invalid import of inaccessible or non-existent files:' +
         specifiers.reduce(
           (result, [filepath, specifier]) =>
             result + `\n  - "${specifier}" found in file ${filepath}`,
@@ -244,7 +244,7 @@ export const ErrorMessage = {
     },
     DistributablesSpecifiersPointOutsideDist(specifiers: ImportSpecifier[]) {
       return (
-        'Bad distributables specifiers: invalid import of files located outside distributables directory:' +
+        '😈 Bad distributables specifiers: invalid import of files located outside distributables directory:' +
         specifiers.reduce(
           (result, [filepath, specifier]) =>
             result + `\n  - "${specifier}" found in file ${filepath}`,
@@ -256,7 +256,7 @@ export const ErrorMessage = {
       packageSpecifiers: [...ImportSpecifier, packageName: string][]
     ) {
       return (
-        'Bad distributables specifiers: one or more packages were imported without a corresponding "dependencies" or "peerDependencies" entry in package.json:' +
+        '👻 Bad distributables specifiers: one or more packages were imported without a corresponding "dependencies" or "peerDependencies" entry in package.json:' +
         packageSpecifiers.reduce(
           (result, [filepath, specifier, packageName]) =>
             result +
@@ -267,7 +267,7 @@ export const ErrorMessage = {
     },
     DependenciesExtraneous(packagesMeta: [name: string, type: string][]) {
       return (
-        'Extraneous dependencies detected: the following packages are included in package.json unnecessarily and should be removed to reduce build size:' +
+        '👽 Extraneous dependencies detected: the following packages are included in package.json unnecessarily and should be removed to reduce build size:' +
         packagesMeta.reduce(
           (result, [packageName, packageType]) =>
             result + `\n  - package "${packageName}" in package.json::${packageType}`,
@@ -279,7 +279,7 @@ export const ErrorMessage = {
       packageSpecifiers: [...ImportSpecifier, packageName: string][]
     ) {
       return (
-        'Bad non-distributables specifiers: one or more packages were imported without a corresponding "devDependencies" entry in package.json:' +
+        '👻 Bad non-distributables specifiers: one or more packages were imported without a corresponding "devDependencies" entry in package.json:' +
         packageSpecifiers.reduce(
           (result, [filepath, specifier, packageName]) =>
             result +
