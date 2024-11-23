@@ -133,21 +133,21 @@ const wellKnownPackageAliases = [
 const pathGroups = wellKnownPackageAliases
   // eslint-disable-next-line unicorn/no-array-reduce
   .reduce((groups, [alias]) => {
-    const scheme = alias.split(uriSchemeDelimiter)[0].split(uriSchemeSubDelimiter)[0];
+    const verse = alias.split(uriSchemeDelimiter)[0].split(uriSchemeSubDelimiter)[0];
     const previousVerse = groups.at(-1)?.[$scheme];
 
     // ? Collapse imports from the same scheme (verse) into the same block
-    if (previousVerse !== scheme) {
+    if (previousVerse !== verse) {
       groups.push({
         // ? This is a minimatch pattern to match any use of the aliases
-        pattern: `${scheme}{*,*/**}`,
+        pattern: `${verse}{*,*/**}`,
         // ? "internal" is always under package root but not under
         // ? node_modules; "external" is under node_modules or above
         // ? package root; our custom groups _could_ be either, so we
         // ? default to "external"
         group: 'external',
         position: 'after',
-        [$scheme]: scheme
+        [$scheme]: verse
       });
     }
 
@@ -156,21 +156,21 @@ const pathGroups = wellKnownPackageAliases
 
 const pathGroupOverrides = wellKnownPackageAliases
   // eslint-disable-next-line unicorn/no-array-reduce
-  .reduce((groups, [alias]) => {
-    const scheme = alias.split(uriSchemeDelimiter)[0].split(uriSchemeSubDelimiter)[0];
-    const previousVerse = groups.at(-1)?.[$scheme];
+  .reduce((overrides, [alias]) => {
+    // ? We're only interested in enforcing extensions on specifiers with paths
+    if (alias.includes(uriSchemeDelimiter)) {
+      const schemeAndPath = alias.replace('*', '{*,*/**}');
 
-    // ? Collapse imports from the same scheme (verse) into the same block
-    if (previousVerse !== scheme) {
-      groups.push({
-        // ? This is a minimatch pattern to match any use of the aliases
-        pattern: `${scheme}:{*,*/**}`,
-        action: 'enforce',
-        [$scheme]: scheme
-      });
+      if (overrides.every(({ pattern }) => pattern !== schemeAndPath)) {
+        overrides.push({
+          // ? This is a minimatch pattern to match any use of the aliases
+          pattern: schemeAndPath,
+          action: 'enforce'
+        });
+      }
     }
 
-    return groups;
+    return overrides;
   }, []);
 
 // ! It's not safe to use this var until AFTER the process.env conditional below
