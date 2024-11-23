@@ -720,7 +720,7 @@ export function ensureRawSpecifierOk(
 
   // * We used to fail if packageId is defined and universe encountered, but
   // * this decision was reconsidered since universe imports can be pulled in
-  // * using the new dep tree algorithm
+  // * from rootverse imports
 
   // ? Fail if errorIfTestverseEncountered is true and testverse encountered
   if (errorIfTestverseEncountered && rawAlias.group === WellKnownImportAlias.Testverse) {
