@@ -9,7 +9,7 @@ import {
   uriSchemeSubDelimiter
 } from 'rootverse+project-utils:src/constant.ts';
 
-import type { WellKnownImportAlias } from 'multiverse+project-utils:alias.ts';
+import type { WellKnownImportAlias } from 'rootverse+project-utils:src/alias.ts';
 
 // TODO: replace a lot of all that follows with the official package(s),
 // TODO: including the symbol use below. Symbols and stuff need to be auto-generated.

@@ -170,7 +170,7 @@ export default async function command({
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
   const { attributes: projectAttributes = {} } = projectMetadata_?.rootPackage || {};
   const isCwdTheProjectRoot =
-    projectMetadata_ && isRootPackage(projectMetadata_.rootPackage);
+    projectMetadata_ && isRootPackage(projectMetadata_.cwdPackage);
   const isCwdANextJsPackage =
     // TODO: consider allowing Next.js projects as sub-roots / workspace packages
     isCwdTheProjectRoot && !!projectAttributes[ProjectAttribute.Next];
@@ -562,16 +562,36 @@ Finally, note that, when attempting to build a Next.js package, this command wil
           const allBuildSourceTargets: RelativePath[] = [];
           const filteredOutBuildTargets: RelativePath[] = [];
 
+          const cwdPackageJsonRelativePath = toRelativePath(
+            projectRoot,
+            toPath(packageRoot, 'package.json')
+          );
+
+          debug.message('cwdPackageJsonRelativePath: %O', cwdPackageJsonRelativePath);
+
           for (const target of _allBuildTargets) {
-            if (!partialFilters.length || partialFilters.some((f) => f.test(target))) {
-              allBuildTargets.push(target);
-              if (hasTypescriptExtension(target)) {
-                allBuildSourceTargets.push(target);
-              } else {
-                allBuildAssetTargets.push(target);
-              }
+            // ? The current package's package.json file should never be
+            // ? included in assets, even if it's explicitly imported
+            const isTargetTheCurrentPackageJsonFile =
+              target === cwdPackageJsonRelativePath;
+
+            if (isTargetTheCurrentPackageJsonFile) {
+              debug.message(
+                "silently ignored asset %O because the current package's package.json file is never considered a build target",
+                target
+              );
             } else {
-              filteredOutBuildTargets.push(target);
+              if (!partialFilters.length || partialFilters.some((f) => f.test(target))) {
+                allBuildTargets.push(target);
+
+                if (hasTypescriptExtension(target)) {
+                  allBuildSourceTargets.push(target);
+                } else {
+                  allBuildAssetTargets.push(target);
+                }
+              } else {
+                filteredOutBuildTargets.push(target);
+              }
             }
           }
 
@@ -1209,14 +1229,6 @@ distrib root: ${absoluteOutputDirPath}
 
                     dbg1('relative specifier (+ root): %O', absoluteSpecifier);
 
-                    if (isTypescriptDefinitionFile && !specifier.endsWith('.js')) {
-                      genericLogger.warn(
-                        'Specifier %O has an unexpected extension (expected ".js") in definition file %O',
-                        specifier,
-                        filepath
-                      );
-                    }
-
                     // ? Is it erroneously outside of ./dist?
                     if (
                       !absoluteSpecifier.startsWith(absoluteOutputDirPath) &&
@@ -1241,10 +1253,11 @@ distrib root: ${absoluteOutputDirPath}
                           // ? tsc likes .d.ts files w/ extensionless imports,
                           // ? and, to it, .js et al and .d.ts are synonymous
                           (
-                            await glob(absoluteSpecifier.replace(/\.js$/, '.') + '*', {
-                              dot: true,
-                              nodir: true
-                            })
+                            await glob(
+                              absoluteSpecifier.replace(/\.js$/, '') +
+                                '{.d.ts,/index.d.ts}',
+                              { dot: true }
+                            )
                           ).length === 0) ||
                         (!isTypescriptDefinitionFile &&
                           (!(await isAccessible(absoluteSpecifier, {

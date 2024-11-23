@@ -26,7 +26,7 @@ import {
 import { gatherPackageFiles } from 'rootverse+project-utils:src/analyze/gather-package-files.ts';
 import { pathToPackage } from 'rootverse+project-utils:src/analyze/path-to-package.ts';
 import { cache, CacheScope } from 'rootverse+project-utils:src/cache.ts';
-import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
+import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
 
 import {
   toPath,
@@ -98,8 +98,6 @@ function gatherPackageBuildTargets_(
   const { projectMetadata } = package_;
   const { rootPackage } = projectMetadata;
   const { root: projectRoot } = rootPackage;
-
-  const packageId_ = isWorkspacePackage(package_) ? package_.id : undefined;
 
   if (useCached) {
     const cachedBuildTargets = cache.get(CacheScope.GatherPackageBuildTargets, [
@@ -250,9 +248,10 @@ function gatherPackageBuildTargets_(
   /**
    * Given an array of {@link ImportSpecifiersEntry}s, this function returns a
    * flattened array of ({@link AbsolutePath})s resolved from those specifiers.
-   * Specifiers that are not multiversal/external, do not come from TypeScript
-   * files, or cannot be mapped are ignored, though their existence is still
-   * noted in the metadata and, unless they do not come from a TypeScript file,
+   * Specifiers that are not from a distributable source verse (i.e. testverse,
+   * typeverse) will cause an error. Specifiers that do not come from TypeScript
+   * files or cannot be mapped are ignored, though their existence is still
+   * noted in the metadata and, unless they do NOT come from a TypeScript file,
    * their syntax is still validated.
    *
    * @see {@link PackageBuildTargets}
@@ -303,23 +302,48 @@ function gatherPackageBuildTargets_(
       );
 
       if (rawAliasMapping) {
-        const [{ group, alias, packageId }] = rawAliasMapping;
+        const [{ group, alias }] = rawAliasMapping;
         const aliasKey = comesFromTypescriptFile ? alias : `${assetPrefix} ${alias}`;
 
         // ? Looks like one of ours. Noting it...
         aliasCounts[aliasKey] = (aliasCounts[alias] || 0) + 1;
 
         if (comesFromTypescriptFile) {
+          const isUniversal = group === WellKnownImportAlias.Universe;
           const isMultiversal =
             group === WellKnownImportAlias.Multiverse ||
-            (group === WellKnownImportAlias.Rootverse && packageId_ !== packageId);
+            group === WellKnownImportAlias.Rootverse ||
+            group === WellKnownImportAlias.Typeverse;
 
           const specifierResolvedPath = mapRawSpecifierToPath(rawAliasMapping, specifier);
-
           assert(specifierResolvedPath, ErrorMessage.GuruMeditation());
 
-          if (isMultiversal) {
+          if (isMultiversal || isUniversal) {
             externalTargets.push(specifierResolvedPath);
+          }
+
+          if (isMultiversal) {
+            debug(
+              'multiversal external target added: %O => %O',
+              specifier,
+              specifierResolvedPath
+            );
+          } else if (isUniversal) {
+            debug(
+              'universal external target added: %O => %O',
+              specifier,
+              specifierResolvedPath
+            );
+          } else {
+            debug.error(
+              `${group} external target rejected: %O => %O`,
+              specifier,
+              specifierResolvedPath
+            );
+
+            throw new ProjectError(
+              ErrorMessage.SpecifierNotOkVerseNotAllowed(group, specifier, path)
+            );
           }
         }
       } else {
