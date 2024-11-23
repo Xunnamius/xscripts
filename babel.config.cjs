@@ -3,6 +3,9 @@
 // {@xscripts/notExtraneous @babel/cli}
 'use strict';
 
+const assert = require('node:assert');
+const fs = require('node:fs');
+
 // TODO: replace with project-utils/fs versions
 const {
   dirname,
@@ -10,6 +13,23 @@ const {
   relative: toRelativePath,
   resolve: toAbsolutePath
 } = require('node:path');
+
+const {
+  dependencies: { 'core-js': xscriptsInternalCoreJsVersion }
+} = require('@-xun/scripts/package.json');
+
+const findUp = require('find-up~5');
+const semver = require('semver');
+
+const {
+  getCurrentWorkingDirectory,
+  readPackageJsonAtRoot
+} = require('./node_modules/@-xun/scripts/dist/packages/project-utils/src/fs.js');
+
+const {
+  flattenPackageJsonSubpathMap,
+  resolveEntryPointsFromExportsTarget
+} = require('./node_modules/@-xun/scripts/dist/packages/project-utils/src/resolver.js');
 
 // * Every now and then, we adopt best practices from CRA
 // * https://tinyurl.com/yakv4ggx
@@ -35,7 +55,7 @@ const dTsExtensionsToReplace = [
   '.cjs'
 ];
 
-const endsWithPackageJsonRegExp = /(^|\/)package.json/;
+const endsWithPackageJsonRegExp = /(^|\/)package\.json$/;
 const includesNodeModulesRegExp = /(^|\/)node_modules\//;
 const grabEverythingUpToAndIncludingNodeModulesRegExp = /^(.*\/)?node_modules\//;
 const translateJsExtensionsToTsRegExp = /(.+)\.(c|m)?ts(x)?$/;
@@ -123,7 +143,10 @@ const babelPluginTransformRewriteImportsDefinitionModuleResolver = [
   // {@xscripts/notExtraneous babel-plugin-transform-rewrite-imports}
   'babel-plugin-transform-rewrite-imports',
   {
-    appendExtension: '.js',
+    // ? Don't append extensions to imports in .d.ts files (tsc sometimes spits
+    // ? out import specifiers that rely on cjs-style extensionless import
+    // ? rules)
+    //appendExtension: '.js',
     recognizedExtensions: ['.js'],
     injectDynamicRewriter: 'never',
     replaceExtensions: {
@@ -240,6 +263,8 @@ function makeDistReplacerEntry(
   // ? Remove the leading ./ if it exists
   const projectRootRelativeReplacerPath = joinPath(rawProjectRootRelativeReplacerPath);
 
+  const knownEntrypoints = {};
+
   return [
     specifierRegExp,
     function ({ filepath: inputFilepath, capturingGroups }) {
@@ -276,21 +301,11 @@ function makeDistReplacerEntry(
         importTargetProjectRootRelativeRealFilepath ===
         joinPath(specifierSubRootPrefix, 'package.json');
 
-      const isImportTargetTheProjectRootPackageJson =
-        importTargetProjectRootRelativeRealFilepath === 'package.json';
-
-      if (!isCwdPackageTheRootPackage && isImportTargetTheProjectRootPackageJson) {
-        // TODO: replace with ErrorMessage.X
-        throw new Error(
-          `importing "${originalSpecifier}" from "${inputFilepath}" does not make sense in a monorepo sub-root package's distributables`
-        );
-      }
-
       if (isImportTargetAPackageJson && !isImportTargetThePackageRootPackageJson) {
         // TODO: replace with rejoinder and ErrorMessage.X
         // eslint-disable-next-line no-console
         console.warn(
-          `\nWARNING: importing "${originalSpecifier}" from "${inputFilepath}" will cause additional package.json files to be included in build output. This may SIGNIFICANTLY increase the size of distributables!\n`
+          `\n🚨 WARNING 🚨: importing "${originalSpecifier}" from "${inputFilepath}" will cause additional package.json files to be included in build output. This may SIGNIFICANTLY increase the size of distributables!\n`
         );
       }
 
@@ -310,7 +325,7 @@ function makeDistReplacerEntry(
         // ? (like package.json, or node_modules) so we should facilitate access
         importTargetIsValidlyOutsideDistDirectory ? '' : 'dist',
         isImportTargetUnderAPackageRootNodeModules ? 'node_modules' : '',
-        isImportTargetAPackageJson
+        isImportTargetThePackageRootPackageJson
           ? sliceOffPackageRootPrefix(importTargetProjectRootRelativeRealFilepath)
           : importTargetProjectRootRelativeRealFilepath
               .replace(grabEverythingUpToAndIncludingNodeModulesRegExp, '')
@@ -323,12 +338,108 @@ function makeDistReplacerEntry(
               )
       );
 
+      // * Note how we purposely avoided adding missing extensions to the
+      // * filepath above
+
+      if (isImportTargetUnderAPackageRootNodeModules) {
+        // ? Attempt to resolve this precarious node_modules path into a bare
+        // ? package specifier that is more resilient to hoisting
+        if (!knownEntrypoints[importTargetOutputFilepath]) {
+          const isDir = fs.statSync(importTargetOutputFilepath).isDirectory();
+          const packageJsonFile = findUp.sync('package.json', {
+            cwd: isDir ? importTargetOutputFilepath : dirname(importTargetOutputFilepath)
+          });
+
+          if (packageJsonFile) {
+            /**
+             * @type {any}
+             */
+            const packageDir = dirname(packageJsonFile);
+
+            const {
+              exports: xports,
+              name,
+              types
+            } = readPackageJsonAtRoot.sync(packageDir, {
+              useCached: true
+            });
+
+            assert(name);
+
+            if (xports) {
+              // ? For now, we only attempt resolutions in definition files
+              if (type === 'definition') {
+                const flatXports = flattenPackageJsonSubpathMap({ map: xports });
+                const target =
+                  './' + toRelativePath(packageDir, importTargetOutputFilepath);
+
+                const options = {
+                  flattenedExports: flatXports,
+                  target,
+                  conditions: ['types', 'require', 'import', 'node']
+                };
+
+                let entrypoints = resolveEntryPointsFromExportsTarget(options);
+
+                // ? I believe tsc also does shortest-path-wins
+                if (!entrypoints.length) {
+                  entrypoints = resolveEntryPointsFromExportsTarget({
+                    ...options,
+                    target: target + '.d.ts'
+                  });
+                }
+
+                if (!entrypoints.length) {
+                  entrypoints = resolveEntryPointsFromExportsTarget({
+                    ...options,
+                    target: target.replace(/\.js$/, '.d.ts')
+                  });
+                }
+
+                if (!entrypoints.length) {
+                  entrypoints = resolveEntryPointsFromExportsTarget({
+                    ...options,
+                    target: target + '/index.d.ts'
+                  });
+                }
+
+                // ? Try fallbacks
+
+                if (!entrypoints.length && types) {
+                  entrypoints = resolveEntryPointsFromExportsTarget({
+                    ...options,
+                    target: types
+                  });
+                }
+
+                knownEntrypoints[importTargetOutputFilepath] = entrypoints.at(0);
+
+                if (knownEntrypoints[importTargetOutputFilepath]) {
+                  knownEntrypoints[importTargetOutputFilepath] = knownEntrypoints[
+                    importTargetOutputFilepath
+                  ].replace('.', name);
+                }
+              }
+            } else {
+              const result = importTargetOutputFilepath.split('node_modules/').at(-1);
+              if (result) {
+                knownEntrypoints[importTargetOutputFilepath] = result;
+              }
+            }
+          }
+        }
+
+        if (knownEntrypoints[importTargetOutputFilepath]) {
+          return knownEntrypoints[importTargetOutputFilepath];
+        }
+      }
+
       const result = toRelativePath(
         dirname(transpilationOutputFilepath),
         importTargetOutputFilepath
       );
 
-      return (isRelativePathRegExp.test(result) ? '' : './') + result;
+      return ensureResultStartsWithDotSlash(result);
 
       /**
        * @param {string|undefined} path
@@ -337,6 +448,13 @@ function makeDistReplacerEntry(
         return path?.startsWith(specifierSubRootPrefix)
           ? path.slice((specifierSubRootPrefix.length || -1) + 1)
           : path || '';
+      }
+
+      /**
+       * @param {string} result
+       */
+      function ensureResultStartsWithDotSlash(result) {
+        return (isRelativePathRegExp.test(result) ? '' : './') + result;
       }
     }
   ];
