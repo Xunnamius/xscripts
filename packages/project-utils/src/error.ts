@@ -9,6 +9,8 @@ import {
   uriSchemeSubDelimiter
 } from 'rootverse+project-utils:src/constant.ts';
 
+import type { WellKnownImportAlias } from 'multiverse+project-utils:alias.ts';
+
 // TODO: replace a lot of all that follows with the official package(s),
 // TODO: including the symbol use below. Symbols and stuff need to be auto-generated.
 
@@ -342,11 +344,12 @@ export const ErrorMessage = {
   SpecifierNotOkRelativeNotRootverse(specifier: string, path?: string) {
     return `encountered illegal import specifier "${specifier}": prefer the rootverse alias over relative or absolute imports${path ? ` in ${path}` : ''}`;
   },
-  SpecifierNotOkUniverseNotAllowed(specifier: string, path?: string) {
-    return `encountered illegal import specifier "${specifier}": universe imports are not allowed in sub-roots${path ? ` in ${path}` : ''}`;
-  },
-  SpecifierNotOkTestverseNotAllowed(specifier: string, path?: string) {
-    return `encountered illegal import specifier "${specifier}": testverse imports are not allowed here${path ? ` in ${path}` : ''}`;
+  SpecifierNotOkVerseNotAllowed(
+    verse: WellKnownImportAlias,
+    specifier: string,
+    path?: string
+  ) {
+    return `encountered illegal import specifier "${specifier}": ${verse} imports are not allowed ${path ? `in ${path}` : 'here'}`;
   },
   SpecifierNotOkMissingExtension(specifier: string, path?: string) {
     return `encountered illegal import specifier "${specifier}": all non-exact aliases must end with an extension${path ? ` in ${path}` : ''}`;

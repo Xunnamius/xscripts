@@ -718,21 +718,22 @@ export function ensureRawSpecifierOk(
     return;
   }
 
-  //? Fail if packageId is defined and universe encountered
-  if (packageId !== undefined && rawAlias.group === WellKnownImportAlias.Universe) {
-    throw new ProjectError(
-      ErrorMessage.SpecifierNotOkUniverseNotAllowed(specifier, path)
-    );
-  }
+  // * We used to fail if packageId is defined and universe encountered, but
+  // * this decision was reconsidered since universe imports can be pulled in
+  // * using the new dep tree algorithm
 
-  //? Fail if errorIfTestverseEncountered is true and testverse encountered
+  // ? Fail if errorIfTestverseEncountered is true and testverse encountered
   if (errorIfTestverseEncountered && rawAlias.group === WellKnownImportAlias.Testverse) {
     throw new ProjectError(
-      ErrorMessage.SpecifierNotOkTestverseNotAllowed(specifier, path)
+      ErrorMessage.SpecifierNotOkVerseNotAllowed(
+        WellKnownImportAlias.Testverse,
+        specifier,
+        path
+      )
     );
   }
 
-  //? Fail if the alias suffix is "open" & the specifier is missing an extension
+  // ? Fail if the alias suffix is "open" & the specifier is missing an extension
   if (rawAlias.suffix === 'open') {
     const specifierPathComponent = specifier.match(rawAlias.regExp)?.at(-1);
     if (specifierPathComponent && !extname(specifierPathComponent)) {
@@ -742,12 +743,12 @@ export function ensureRawSpecifierOk(
     }
   }
 
-  //? Fail if the specifier === "index.extensionToAppend"
+  // ? Fail if the specifier === "index.extensionToAppend"
   if (specifier.endsWith(`${uriSchemeDelimiter}index${extensionToAppend}`)) {
     throw new ProjectError(ErrorMessage.SpecifierNotOkUnnecessaryIndex(specifier, path));
   }
 
-  //? Fail if packageId is defined and multiverse import used self-referentially
+  // ? Fail if packageId is defined and multiverse import used self-referentially
   if (
     packageId !== undefined &&
     rawAlias.group === WellKnownImportAlias.Multiverse &&
