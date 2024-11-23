@@ -403,10 +403,22 @@ export async function success(_pluginConfig: PluginConfig, context: SuccessConte
   pluginDebug('analyzing repository state');
   const { isDirty } = await determineRepoWorkingTreeDirty();
 
-  if (isDirty && context.envCi.isCi) {
-    process.stdout.write(
-      '::warning title=Repository left in unclean state::The release pipeline has terminated but the repository remains in an unclean state. This is typically evident of a broken build process.\n'
-    );
+  if (isDirty) {
+    // TODO: add to ErrorMessage.X tactfully
+    const dirtyMessage =
+      'The release pipeline has terminated but the repository remains in an unclean state. This can be evidence of an incomplete or broken build process';
+
+    if (context.envCi.isCi) {
+      // TODO: if we implement some sort of rejoinder-based ci output scheme,
+      // TODO: replace this with that
+      process.stdout.write(
+        `::warning title=Repository left in unclean state::${dirtyMessage}.\n`
+      );
+    } else {
+      // TODO: replace with rejoinder and add to ErrorMessage.X
+      // eslint-disable-next-line no-console
+      console.warn(`⚠️🚧 ${dirtyMessage}`);
+    }
   }
 }
 
