@@ -33,4 +33,4 @@ merged over the corresponding default configuration value in
 
 ## Defined in
 
-[src/util.ts:43](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/util.ts#L43)
+[src/util.ts:44](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/util.ts#L44)

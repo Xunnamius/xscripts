@@ -32,4 +32,4 @@ either `ChangelogPatcherFunction` or a [ChangelogPatches](ChangelogPatches.md) a
 
 ## Defined in
 
-[src/commands/build/changelog.ts:540](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/commands/build/changelog.ts#L540)
+[src/commands/build/changelog.ts:540](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/commands/build/changelog.ts#L540)

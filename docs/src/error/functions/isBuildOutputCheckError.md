@@ -20,4 +20,4 @@ Type guard for ProjectError.
 
 ## Defined in
 
-[src/error.ts:28](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/error.ts#L28)
+[src/error.ts:28](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/error.ts#L28)

@@ -12,4 +12,4 @@ The preamble prefixed to any generated the changelog file.
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:141](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/assets/config/_conventional.config.cjs.ts#L141)
+[src/assets/config/\_conventional.config.cjs.ts:141](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/assets/config/_conventional.config.cjs.ts#L141)

@@ -35,4 +35,4 @@ returning it (or throwing a CliError if undefined).
 
 ## Defined in
 
-[src/util.ts:101](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/util.ts#L101)
+[src/util.ts:102](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/util.ts#L102)

@@ -21,12 +21,6 @@ of an Error instance, but are reported to the user in other ways
 (such as via `rejoinder`). They may not follow the same standard
 punctuation and capitalization rules as the other error messages.
 
-### specialized.BuildOutputChecksFailed()
-
-#### Returns
-
-`string`
-
 ### specialized.BuildOutputIntermediates()
 
 #### Returns
@@ -34,6 +28,12 @@ punctuation and capitalization rules as the other error messages.
 `string`
 
 ### specialized.BuildOutputPartial()
+
+#### Returns
+
+`string`
+
+### specialized.BuildSucceededButOutputCheckFailed()
 
 #### Returns
 
@@ -569,4 +569,4 @@ punctuation and capitalization rules as the other error messages.
 
 ## Defined in
 
-[src/error.ts:61](https://github.com/Xunnamius/xscripts/blob/59530a02df766279a72886cbc0ab5e0790db98cc/src/error.ts#L61)
+[src/error.ts:61](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/error.ts#L61)
