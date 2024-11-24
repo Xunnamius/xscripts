@@ -1796,7 +1796,8 @@ describe('::gatherPackageFiles', () => {
           `${root}/.vercel/something.md`,
           `${root}/package.json`,
           `${root}/README.md`,
-          `${root}/something-else.md`
+          `${root}/something-else.md`,
+          `${root}/types/global.ts`
         ],
         src: [
           `${root}/src/1.ts`,
@@ -1917,7 +1918,8 @@ describe('::gatherPackageFiles', () => {
             `${root}/.prettierignore`,
             `${root}/package.json`,
             `${root}/README.md`,
-            `${root}/something-else.md`
+            `${root}/something-else.md`,
+            `${root}/types/global.ts`
           ],
           src: [
             `${root}/src/1.ts`,
@@ -2135,7 +2137,8 @@ describe('::gatherPackageFiles', () => {
           `${root}/.vercel/something.md`,
           `${root}/package.json`,
           `${root}/README.md`,
-          `${root}/something-else.md`
+          `${root}/something-else.md`,
+          `${root}/types/global.ts`
         ],
         src: [
           `${root}/src/1.ts`,
@@ -2258,7 +2261,8 @@ describe('::gatherPackageFiles', () => {
             `${root}/.prettierignore`,
             `${root}/package.json`,
             `${root}/README.md`,
-            `${root}/something-else.md`
+            `${root}/something-else.md`,
+            `${root}/types/global.ts`
           ],
           src: [
             `${root}/src/1.ts`,
@@ -2463,7 +2467,7 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         targets: {
-          external: new Set(),
+          external: new Set(['types/global.ts'] as RelativePath[]),
           internal: new Set([
             'src/1.ts',
             'src/2.mts',
@@ -2500,7 +2504,9 @@ describe('::gatherPackageBuildTargets', () => {
             'packages/private/src/lib/library.ts',
             'packages/webpack/src/webpack-lib.ts',
             'packages/private/src/lib/library2.ts',
-            'packages/webpack/src/webpack-lib2.ts'
+            'packages/webpack/src/webpack-lib2.ts',
+            'types/global.ts',
+            'types/others.ts'
           ] as RelativePath[]),
           internal: new Set(['src/index.ts', 'src/others.ts'] as RelativePath[])
         },
@@ -2511,7 +2517,7 @@ describe('::gatherPackageBuildTargets', () => {
               'rootverse+webpack': 3,
               'multiverse+cli': 1,
               'multiverse+private': 3,
-              typeverse: 1,
+              typeverse: 2,
               universe: 2
             },
             dependencyCounts: {
@@ -2520,6 +2526,7 @@ describe('::gatherPackageBuildTargets', () => {
               'node:path': 1,
               'some-package': 1,
               'another-package': 1,
+              'type-fest': 2,
               webpack: 1,
               'webpack~2': 1
             }
@@ -2544,7 +2551,9 @@ describe('::gatherPackageBuildTargets', () => {
             'packages/private/src/index.ts',
             'packages/private/src/lib/library.ts',
             'packages/webpack/src/webpack-lib.ts',
-            'packages/private/src/lib/library2.ts'
+            'packages/private/src/lib/library2.ts',
+            'types/global.ts',
+            'types/others.ts'
           ] as RelativePath[]),
           internal: new Set(['packages/cli/src/index.ts'] as RelativePath[])
         },
@@ -2554,12 +2563,13 @@ describe('::gatherPackageBuildTargets', () => {
               'rootverse+private': 1,
               'rootverse+webpack': 1,
               'multiverse+private': 2,
-              typeverse: 1
+              typeverse: 2
             },
             dependencyCounts: {
               '@black-flag/core': 1,
               webpack: 1,
               'another-package': 1,
+              'type-fest': 2,
               'some-package': 1
             }
           }
@@ -2584,7 +2594,7 @@ describe('::gatherPackageBuildTargets', () => {
           )
         ).toStrictEqual({
           targets: {
-            external: new Set([] as RelativePath[]),
+            external: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[]),
             internal: new Set([
               'packages/private/src/index.ts',
               'packages/private/src/lib/library.ts',
@@ -2598,11 +2608,12 @@ describe('::gatherPackageBuildTargets', () => {
             imports: {
               aliasCounts: {
                 'rootverse+private': 1,
-                typeverse: 1
+                typeverse: 2
               },
               dependencyCounts: {
                 'another-package': 1,
-                'some-package': 1
+                'some-package': 1,
+                'type-fest': 2
               }
             }
           }
@@ -2907,7 +2918,7 @@ describe('::gatherPackageBuildTargets', () => {
         })
       ).resolves.toStrictEqual({
         targets: {
-          external: new Set(),
+          external: new Set(['types/global.ts'] as RelativePath[]),
           internal: new Set([
             'src/1.ts',
             'src/2.mts',
@@ -2944,7 +2955,9 @@ describe('::gatherPackageBuildTargets', () => {
             'packages/private/src/lib/library.ts',
             'packages/webpack/src/webpack-lib.ts',
             'packages/private/src/lib/library2.ts',
-            'packages/webpack/src/webpack-lib2.ts'
+            'packages/webpack/src/webpack-lib2.ts',
+            'types/global.ts',
+            'types/others.ts'
           ] as RelativePath[]),
           internal: new Set(['src/index.ts', 'src/others.ts'] as RelativePath[])
         },
@@ -2955,7 +2968,7 @@ describe('::gatherPackageBuildTargets', () => {
               'rootverse+webpack': 3,
               'multiverse+cli': 1,
               'multiverse+private': 3,
-              typeverse: 1,
+              typeverse: 2,
               universe: 2
             },
             dependencyCounts: {
@@ -2964,6 +2977,7 @@ describe('::gatherPackageBuildTargets', () => {
               'node:path': 1,
               'some-package': 1,
               'another-package': 1,
+              'type-fest': 2,
               webpack: 1,
               'webpack~2': 1
             }
@@ -2988,7 +3002,9 @@ describe('::gatherPackageBuildTargets', () => {
             'packages/private/src/index.ts',
             'packages/private/src/lib/library.ts',
             'packages/webpack/src/webpack-lib.ts',
-            'packages/private/src/lib/library2.ts'
+            'packages/private/src/lib/library2.ts',
+            'types/global.ts',
+            'types/others.ts'
           ] as RelativePath[]),
           internal: new Set(['packages/cli/src/index.ts'] as RelativePath[])
         },
@@ -2998,12 +3014,13 @@ describe('::gatherPackageBuildTargets', () => {
               'rootverse+private': 1,
               'rootverse+webpack': 1,
               'multiverse+private': 2,
-              typeverse: 1
+              typeverse: 2
             },
             dependencyCounts: {
               '@black-flag/core': 1,
               webpack: 1,
               'another-package': 1,
+              'type-fest': 2,
               'some-package': 1
             }
           }
@@ -3028,7 +3045,7 @@ describe('::gatherPackageBuildTargets', () => {
           )
         ).resolves.toStrictEqual({
           targets: {
-            external: new Set([] as RelativePath[]),
+            external: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[]),
             internal: new Set([
               'packages/private/src/index.ts',
               'packages/private/src/lib/library.ts',
@@ -3042,11 +3059,12 @@ describe('::gatherPackageBuildTargets', () => {
             imports: {
               aliasCounts: {
                 'rootverse+private': 1,
-                typeverse: 1
+                typeverse: 2
               },
               dependencyCounts: {
                 'another-package': 1,
-                'some-package': 1
+                'some-package': 1,
+                'type-fest': 2
               }
             }
           }

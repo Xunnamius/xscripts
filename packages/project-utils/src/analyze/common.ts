@@ -441,7 +441,8 @@ export type PackageFiles = {
   docs: AbsolutePath[];
   /**
    * Every file under the package's `./src` directory that is not ignored by
-   * Git.
+   * Git. Does not include files under `./types` (those are in
+   * {@link PackageFiles.other}).
    *
    * Files not owned by the package (such as those belonging to other packages
    * in a monorepo) will never be returned.

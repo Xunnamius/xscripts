@@ -125,7 +125,6 @@ function gatherPackageBuildTargets_(
     }
   } = packageBuildTargets;
 
-  let seenImportPaths = new Set<AbsolutePath>();
   const wellKnownAliases = generateRawAliasMap(projectMetadata);
 
   if (shouldRunSynchronously) {
@@ -149,7 +148,8 @@ function gatherPackageBuildTargets_(
     ]);
 
     // * Note that targets.internal is relative to the **PROJECT ROOT**
-    targets.internal = absolutePathsSetToRelative(new Set(packageSrcPaths), projectRoot);
+    let seenImportPaths = new Set(packageSrcPaths);
+    targets.internal = absolutePathsSetToRelative(seenImportPaths, projectRoot);
 
     // * Note that targets.external is relative to the **PROJECT ROOT**
     targets.external = absolutePathsSetToRelative(
@@ -164,6 +164,8 @@ function gatherPackageBuildTargets_(
       previousDiff.size !== 0;
 
     ) {
+      seenImportPaths = seenImportPaths.union(previousDiff);
+
       const externalPaths = rawSpecifiersToExternalTargetPaths(
         // eslint-disable-next-line no-await-in-loop
         await gatherImportEntriesFromFiles(Array.from(previousDiff.values()), {
@@ -171,15 +173,14 @@ function gatherPackageBuildTargets_(
           excludeTypeImports: false,
           useCached
         })
-      );
+      ).difference(seenImportPaths);
 
       // * Note that targets.external is relative to the **PROJECT ROOT**
       targets.external = targets.external.union(
         absolutePathsSetToRelative(externalPaths, projectRoot)
       );
 
-      previousDiff = externalPaths.difference(seenImportPaths);
-      seenImportPaths = seenImportPaths.union(previousDiff);
+      previousDiff = externalPaths;
     }
 
     finalize();
@@ -200,7 +201,8 @@ function gatherPackageBuildTargets_(
     ];
 
     // * Note that targets.internal is relative to the **PROJECT ROOT**
-    targets.internal = absolutePathsSetToRelative(new Set(packageSrcPaths), projectRoot);
+    let seenImportPaths = new Set(packageSrcPaths);
+    targets.internal = absolutePathsSetToRelative(seenImportPaths, projectRoot);
 
     // * Note that targets.external is relative to the **PROJECT ROOT**
     targets.external = absolutePathsSetToRelative(
@@ -215,21 +217,22 @@ function gatherPackageBuildTargets_(
       previousDiff.size !== 0;
 
     ) {
+      seenImportPaths = seenImportPaths.union(previousDiff);
+
       const externalPaths = rawSpecifiersToExternalTargetPaths(
         gatherImportEntriesFromFiles.sync(Array.from(previousDiff.values()), {
           // ? Ensure specifierOk checks are also performed on type-only imports
           excludeTypeImports: false,
           useCached
         })
-      );
+      ).difference(seenImportPaths);
 
       // * Note that targets.external is relative to the **PROJECT ROOT**
       targets.external = targets.external.union(
         absolutePathsSetToRelative(externalPaths, projectRoot)
       );
 
-      previousDiff = externalPaths.difference(seenImportPaths);
-      seenImportPaths = seenImportPaths.union(previousDiff);
+      previousDiff = externalPaths;
     }
 
     finalize();
