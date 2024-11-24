@@ -19,7 +19,7 @@
     "outDir": "dist",
     "rootDir": "../../"
   },
-  "include": ["types/**/*", "src/**/*"],
+  "include": ["../../types/**/*", "src/**/*"],
   "exclude": [
     "**/dist/**/*",
     "**/test/fixtures/**/*",
