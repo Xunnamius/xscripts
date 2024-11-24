@@ -11,7 +11,8 @@ import {
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
-  UnlimitedGlobalScope as ProjectInfoScope,
+  DefaultGlobalScope,
+  DefaultGlobalScope as ProjectInfoScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe:configure.ts';
@@ -23,7 +24,7 @@ import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe
  */
 export const projectInfoScopes = Object.values(ProjectInfoScope);
 
-export type CustomCliArguments = GlobalCliArguments<ProjectInfoScope> & {
+export type CustomCliArguments = GlobalCliArguments & {
   // TODO
 };
 
@@ -52,9 +53,12 @@ export default function command({
       const { startTime } = state;
 
       logStartTime({ log, startTime });
-      genericLogger([LogTag.IF_NOT_QUIETED], 'Analyzing project...');
+      genericLogger(
+        [LogTag.IF_NOT_QUIETED],
+        `Analyzing project${scope === DefaultGlobalScope.ThisPackage ? ' (results will be limited to the current package)' : ''}...`
+      );
 
-      debug('scope (unused): %O', scope);
+      debug('scope: %O', scope);
 
       // TODO (what is the next version gonna be, if any?)
       // TODO (report on which vscode settings are used via .vscode, but also warn that in a vscode multi-root workspace, options are ignored in favor of the options in said workspace's configuration file directly)

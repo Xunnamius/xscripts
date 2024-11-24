@@ -11,7 +11,7 @@ import {
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
-  UnlimitedGlobalScope as ProjectRenovateScope,
+  DefaultGlobalScope as ProjectRenovateScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe:configure.ts';
@@ -52,9 +52,12 @@ export default function command({
       const { startTime } = state;
 
       logStartTime({ log, startTime });
-      genericLogger([LogTag.IF_NOT_QUIETED], 'Renovating project...');
+      genericLogger(
+        [LogTag.IF_NOT_QUIETED],
+        `Renovating ${scope === ProjectRenovateScope.ThisPackage ? 'this package' : 'the entire project'}...`
+      );
 
-      debug('scope (unused): %O', scope);
+      debug('scope: %O', scope);
 
       // !
       // TODO: all -operations are tasks, which are sub-arguments of --tasks

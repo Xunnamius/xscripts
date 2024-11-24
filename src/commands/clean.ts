@@ -93,7 +93,10 @@ Note that the regular expressions provided via --exclude-paths are computed with
       await runGlobalPreChecks({ debug_, projectMetadata_ });
 
       logStartTime({ log, startTime });
-      genericLogger([LogTag.IF_NOT_QUIETED], 'Cleaning project...');
+      genericLogger(
+        [LogTag.IF_NOT_QUIETED],
+        `Cleaning ${scope === DefaultGlobalScope.ThisPackage ? 'this package' : 'the entire project'}...`
+      );
 
       debug('scope: %O', scope);
       debug('excludePaths (original): %O', excludePaths);

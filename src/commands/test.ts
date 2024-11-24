@@ -315,7 +315,10 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       const { startTime } = state;
 
       logStartTime({ log, startTime });
-      genericLogger([LogTag.IF_NOT_QUIETED], 'Testing project...');
+      genericLogger(
+        [LogTag.IF_NOT_QUIETED],
+        `Testing ${scope === DefaultGlobalScope.ThisPackage ? 'this package' : 'the entire project'}...`
+      );
 
       debug('scope: %O', scope);
       debug('tests: %O', tests);
