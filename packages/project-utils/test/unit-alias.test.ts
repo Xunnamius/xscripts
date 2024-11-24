@@ -1354,49 +1354,6 @@ describe('::ensureRawSpecifierOk', () => {
     );
   });
 
-  it('throws if packageId is defined and universe alias encountered (with optional path info)', async () => {
-    expect.hasAssertions();
-
-    expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'rootverse+pkg-1:package.json', {
-        packageId: 'pkg-1'
-      })
-    ).not.toThrow();
-
-    expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe', {
-        packageId: 'pkg-1'
-      })
-    ).toThrow(ErrorMessage.SpecifierNotOkUniverseNotAllowed('universe'));
-
-    expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe', {
-        packageId: 'pkg-1',
-        path: '/in/some/file.abc'
-      })
-    ).toThrow(
-      ErrorMessage.SpecifierNotOkUniverseNotAllowed('universe', '/in/some/file.abc')
-    );
-
-    expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe:something.ts', {
-        packageId: 'pkg-1'
-      })
-    ).toThrow(ErrorMessage.SpecifierNotOkUniverseNotAllowed('universe:something.ts'));
-
-    expect(() =>
-      ensureRawSpecifierOk(mockHybridrepoMappings, 'universe:something.ts', {
-        packageId: 'pkg-1',
-        path: '/in/some/file.abc'
-      })
-    ).toThrow(
-      ErrorMessage.SpecifierNotOkUniverseNotAllowed(
-        'universe:something.ts',
-        '/in/some/file.abc'
-      )
-    );
-  });
-
   it('throws if errorIfTestverseEncountered is true and testverse alias encountered (with optional path info)', async () => {
     expect.hasAssertions();
 
@@ -1412,7 +1369,8 @@ describe('::ensureRawSpecifierOk', () => {
         path: '/in/some/file.abc'
       })
     ).toThrow(
-      ErrorMessage.SpecifierNotOkTestverseNotAllowed(
+      ErrorMessage.SpecifierNotOkVerseNotAllowed(
+        WellKnownImportAlias.Testverse,
         'testverse:setup.ts',
         '/in/some/file.abc'
       )
