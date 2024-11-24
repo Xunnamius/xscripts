@@ -123,11 +123,13 @@ export default function command(
       looseImplications: true
     },
     'patch-changelog': {
+      alias: 'patch',
       boolean: true,
       description: 'Patch compiled output using the nearest changelog patcher file',
       default: true
     },
     'only-patch-changelog': {
+      alias: 'only-patch',
       boolean: true,
       description:
         'Instead of compiling new output, only patch an existing changelog file',
@@ -136,6 +138,7 @@ export default function command(
       implies: { 'patch-changelog': true }
     },
     'format-changelog': {
+      alias: 'format',
       boolean: true,
       description: 'Run the "format" command on compiled output',
       default: true
