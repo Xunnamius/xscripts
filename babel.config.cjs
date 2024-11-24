@@ -259,7 +259,7 @@ function doCoreJsVersionChecksAndReturnHardcodedVersion() {
   assert(coreJsLibraryVersion);
 
   const { name, dependencies: { 'core-js': cwdPackageCoreJsDependency_ } = {} } =
-    readPackageJsonAtRoot.sync(packageRoot, { useCached: true, try: true }) || {};
+    readPackageJsonAtRoot.sync(packageRoot, { useCached: true, try: true });
 
   const cwdPackageCoreJsDependency =
     semver.validRange(cwdPackageCoreJsDependency_) || undefined;
