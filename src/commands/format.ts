@@ -154,7 +154,10 @@ With respect to .prettierignore being the single source of truth for formatters:
       const { startTime } = state;
 
       logStartTime({ log, startTime });
-      genericLogger([LogTag.IF_NOT_QUIETED], 'Preparing to format project files...');
+      genericLogger(
+        [LogTag.IF_NOT_QUIETED],
+        `Preparing to format ${scope === DefaultGlobalScope.ThisPackage ? "this package's" : "the entire project's"} files...`
+      );
 
       debug('scope: %O', scope);
       debug('renumberReferences: %O', renumberReferences);
