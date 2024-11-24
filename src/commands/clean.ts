@@ -12,6 +12,7 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
+import { toPath } from 'multiverse+project-utils:fs.ts';
 
 import {
   DefaultGlobalScope,
@@ -39,6 +40,7 @@ export const defaultCleanExcludedPaths: string[] = [
   String.raw`(^|/)\.husky/`,
   String.raw`(^|/)\.turbo/`,
   String.raw`(^|/)next-env\.d\.ts$`,
+  String.raw`(^|/)packages/[^/]*\.ignore/`,
   '(^|/)node_modules/',
   '(^|/)fixtures/',
   String.raw`(^|/)\.wiki/`
@@ -59,7 +61,8 @@ export default function command({
     'exclude-paths': {
       array: true,
       default: defaultCleanExcludedPaths,
-      describe: 'Paths matching these regular expressions will never be deleted'
+      describe: 'Paths matching these regular expressions will never be deleted',
+      defaultDescription: 'standard project files (see help text)'
     },
     force: {
       boolean: true,
@@ -77,7 +80,13 @@ export default function command({
 
 You must pass \`--force\` for any deletions to actually take place.
 
-Note that the regular expressions provided via --exclude-paths are computed with the "i" and "u" flags. If you want to pass an empty array to --exclude-paths (overwriting the defaults), use \`--exclude-paths ''\``
+Note that the regular expressions provided via --exclude-paths are computed with the "i" and "u" flags. If you want to pass an empty array to --exclude-paths (overwriting the defaults), use \`--exclude-paths ''\`
+
+The default value for --exclude-paths includes the following regular expressions:
+
+- ${defaultCleanExcludedPaths.join('\n- ')}
+`,
+      { appendPeriod: false }
     ),
     handler: withGlobalHandler(async function ({
       $0: scriptFullName,
@@ -90,7 +99,12 @@ Note that the regular expressions provided via --exclude-paths are computed with
 
       debug('entered handler');
 
-      await runGlobalPreChecks({ debug_, projectMetadata_ });
+      const {
+        projectMetadata: {
+          cwdPackage: { root: packageRoot },
+          rootPackage: { root: projectRoot }
+        }
+      } = await runGlobalPreChecks({ debug_, projectMetadata_ });
 
       logStartTime({ log, startTime });
       genericLogger(
@@ -114,25 +128,40 @@ Note that the regular expressions provided via --exclude-paths are computed with
       debug('excludePaths (final): %O', excludePaths);
       debug('excludeRegExps: %O', excludeRegExps);
 
+      const cleanTargetRoot =
+        scope === DefaultGlobalScope.Unlimited ? projectRoot : packageRoot;
+
+      debug('cleanTargetRoot: %O', cleanTargetRoot);
+
       const ignoredPaths = (
-        await run('git', [
-          'ls-files',
-          '--exclude-standard',
-          '--ignored',
-          '--others',
-          // ? Git will include trailing slash for directories :)
-          '--directory'
-        ])
+        await run(
+          'git',
+          [
+            'ls-files',
+            '--exclude-standard',
+            '--ignored',
+            '--others',
+            // ? Git will include trailing slash for directories :)
+            '--directory'
+          ],
+          { cwd: cleanTargetRoot }
+        )
       ).stdout.split('\n');
 
       debug('raw ignored paths: %O', ignoredPaths);
 
-      const finalIgnoredPaths = ignoredPaths.filter(
-        (path) => path && !excludeRegExps.some((regExp) => path.match(regExp))
-      );
+      const finalIgnoredPaths = ignoredPaths
+        .filter((path) => path && !excludeRegExps.some((regExp) => path.match(regExp)))
+        .map((path) =>
+          scope === DefaultGlobalScope.Unlimited ? toPath(cleanTargetRoot, path) : path
+        );
 
       debug('final ignored paths: %O', finalIgnoredPaths);
+
+      genericLogger.newline([LogTag.IF_NOT_HUSHED]);
+      genericLogger([LogTag.IF_NOT_HUSHED], 'Deletion root: %O', cleanTargetRoot);
       genericLogger([LogTag.IF_NOT_HUSHED], 'Deletion targets: %O', finalIgnoredPaths);
+      genericLogger.newline([LogTag.IF_NOT_HUSHED]);
 
       softAssert(force, ErrorMessage.CleanCalledWithoutForce());
 
