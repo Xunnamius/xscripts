@@ -23,7 +23,7 @@ import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe
  */
 export const projectRenovateScopes = Object.values(ProjectRenovateScope);
 
-export type CustomCliArguments = GlobalCliArguments<ProjectRenovateScope> & {
+export type CustomCliArguments = GlobalCliArguments & {
   // TODO
 };
 

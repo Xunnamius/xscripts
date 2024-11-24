@@ -21,8 +21,7 @@ import {
   srcDirPackageBase,
   testDirPackageBase,
   toRelativePath,
-  Tsconfig,
-  type RelativePath
+  Tsconfig
 } from 'multiverse+project-utils:fs.ts';
 
 import { createDebugLogger } from 'multiverse+rejoinder';
