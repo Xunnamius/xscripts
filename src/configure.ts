@@ -185,7 +185,7 @@ export const configureExecutionContext = async function (context) {
         name: 'version',
         description: defaultVersionTextDescription,
         // ? Lets us know when we're loading a custom-built "dev" xscripts.
-        text: String(packageVersion) + ` (dev from ${__dirname})`
+        text: String(packageVersion) + ` (dev from ${__filename})`
       };
     } else {
       rootDebugLogger('decision: a non-dev version is probably running');
