@@ -156,7 +156,7 @@ const formatConfig = {
       {
         excludeHeadingLevel: { h1: true },
         // ? Do not capitalize any of our package names
-        excludeHeadingText: subRootPackages.all
+        excludeHeadingText: (subRootPackages?.all || [])
           .concat(rootPackage)
           .map(({ json: { name } }) => (name ? escapeStringRegExp(name) : undefined))
           .filter(Boolean)
