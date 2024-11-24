@@ -475,7 +475,8 @@ function makeDistReplacerEntry(
             assert(name);
 
             if (xports) {
-              // ? For now, we only attempt resolutions in definition files
+              // ? For perf reasons, we only attempt resolutions in definition
+              // ? files at the moment
               if (type === 'definition') {
                 const flatXports = flattenPackageJsonSubpathMap({ map: xports });
                 const target =
