@@ -137,7 +137,7 @@ const babelPluginTransformRewriteImportsSourceModuleResolver = [
         )
       ),
       // ? Replace any TS extensions with their JS equivalents
-      [translateJsExtensionsToTsRegExp.toString()]:
+      [translateJsExtensionsToTsRegExp.toString().slice(1, -1)]:
         translateJsExtensionsToTsRegExpReplacer
     }
   }
