@@ -236,7 +236,7 @@
     "toss-expression": "^0.1.2",
     "tstyche": "^3.0.0",
     "turbo": "^2.3.1",
-    "type-fest": "^4.27.1",
+    "type-fest": "^4.28.0",
     "typedoc": "^0.26.11",
     "typedoc-plugin-markdown": "^4.2.10",
     "typescript": "^5.7.2",
