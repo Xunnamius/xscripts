@@ -39,7 +39,7 @@ import {
   type ExtendedLogger
 } from 'multiverse+rejoinder';
 
-import { getLatestCommitWithXpipelineInitCommandSuffix } from 'universe:assets/config/_conventional.config.cjs.ts';
+import { getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix } from 'universe:assets/config/_conventional.config.cjs.ts';
 import { type XPackageJson } from 'universe:assets/config/_package.json.ts';
 import { determineRepoWorkingTreeDirty } from 'universe:assets/config/_release.config.cjs.ts';
 
@@ -1007,12 +1007,19 @@ const initReleaseTask: InitCoreReleaseTask = {
   helpDescription: 'Run @-xun/release (publish new release)',
   async run({ projectMetadata }, { dryRun, ci, quiet: isQuieted, silent: isSilenced }) {
     const {
-      rootPackage: { root: projectRoot }
+      rootPackage: { root: projectRoot },
+      cwdPackage: {
+        json: { name: cwdPackageName }
+      }
     } = projectMetadata;
+
+    hardAssert(cwdPackageName, ErrorMessage.GuruMeditation());
 
     const { NODE_OPTIONS } = process.env;
     const XSCRIPTS_SPECIAL_INITIAL_COMMIT =
-      await getLatestCommitWithXpipelineInitCommandSuffix();
+      await getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix(
+        `${cwdPackageName}@`
+      );
 
     await run(
       'npx',

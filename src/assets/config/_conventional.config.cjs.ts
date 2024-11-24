@@ -57,20 +57,21 @@ patchSpawnChild();
 
 /**
  * The Git pathspecs that should be ignored (excluded) when not considering the
- * root package. Pathspecs should be relative to _project_ root.
+ * root package. Pathspecs should be relative to _project_ root (i.e. "top"
+ * pathspecs).
  *
- * ! DO _NOT_ PREFIX ENTRIES IN THIS ARRAY WITH A LEADING DOT (.) OR ./
+ * Entries from `package.json::files` will be included automatically.
  */
-const rootPackageExcludedDirectories = [
-  'docs',
-  'src',
-  'test',
-  'package.json',
-  'README.md',
-  'CHANGELOG.md',
-  'LICENSE',
-  'tsc.package.*'
-] as RelativePath[];
+const rootPackageExcludedPathspecs = [
+  ':(exclude,top)' + srcDirPackageBase,
+  ':(exclude,top)' + testDirPackageBase,
+  ':(exclude,top)' + documentationDirPackageBase,
+  ':(exclude,top)' + Tsconfig.PackageDocumentation,
+  ':(exclude,top)' + Tsconfig.PackageLint,
+  ':(exclude,top)' + Tsconfig.PackageTypes,
+  ':(exclude,top,glob)*-lock.json',
+  ':(exclude,top,glob)*.md'
+];
 
 /**
  * The location of the handlebars templates in relation to this file's location
@@ -352,7 +353,7 @@ export function moduleExport(
     | Partial<XchangelogConfig> = {}
 ) {
   const specialInitialCommit = process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT;
-  debug('specialInitialCommit: %O', specialInitialCommit);
+  debug('incoming specialInitialCommit (from env): %O', specialInitialCommit);
 
   assert(
     specialInitialCommit && typeof specialInitialCommit === 'string',
@@ -387,7 +388,7 @@ export function moduleExport(
           : [],
       // ? Pathspecs passed to git log; used to ignore changes in other packages
       // ? See: https://github.com/sindresorhus/dargs#usage
-      [specialArgumentMarkerForPaths]: getExcludedPathsRelativeToProjectRoot()
+      [specialArgumentMarkerForPaths]: getExclusionaryPathspecs()
     },
 
     // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#options
@@ -894,7 +895,7 @@ export function moduleExport(
 }
 
 /**
- * Return directories that should be excluded from consideration depending on
+ * Return pathspecs for excluding certain paths from consideration depending on
  * the project structure and the current working directory.
  *
  * This function takes into account {@link WorkspaceAttribute.Shared} packages.
@@ -902,17 +903,22 @@ export function moduleExport(
  * Useful for narrowing the scope of `@-xun/changelog` and semantic-release
  * -based tooling like xchangelog and xrelease.
  */
-export function getExcludedPathsRelativeToProjectRoot() {
+export function getExclusionaryPathspecs() {
   const { cwdPackage, rootPackage, subRootPackages } = analyzeProjectStructure.sync({
     useCached: true
   });
 
   const { root: projectRoot } = rootPackage;
   const isCwdPackageTheRootPackage = isRootPackage(cwdPackage);
-  const excludedPathsRelativeToProjectRoot: RelativePath[] = [];
+  const excludedPathspecs: string[] = [];
 
   if (!isCwdPackageTheRootPackage) {
-    excludedPathsRelativeToProjectRoot.push(...rootPackageExcludedDirectories);
+    excludedPathspecs.push(
+      ...rootPackageExcludedPathspecs,
+      ...(rootPackage.json.files || []).map((file) => {
+        return ':(exclude,top)' + (file.startsWith('/') ? file.slice(1) : file);
+      })
+    );
   }
 
   if (subRootPackages) {
@@ -924,51 +930,77 @@ export function getExcludedPathsRelativeToProjectRoot() {
         packageRoot !== cwdPackage.root &&
         !packageAttributes[WorkspaceAttribute.Shared]
       ) {
-        excludedPathsRelativeToProjectRoot.push(toRelativePath(projectRoot, packageRoot));
+        excludedPathspecs.push(
+          ':(exclude,top)' + toRelativePath(projectRoot, packageRoot)
+        );
       }
     }
   }
 
-  debug('excludedPathsRelativeToProjectRoot: %O', excludedPathsRelativeToProjectRoot);
+  debug('excludedPathspecs (intermediate): %O', excludedPathspecs);
 
-  const result = excludedPathsRelativeToProjectRoot.flatMap((path) => {
-    const excludeTargets =
-      path === ''
-        ? [
-            srcDirPackageBase,
-            testDirPackageBase,
-            documentationDirPackageBase,
-            Tsconfig.PackageDocumentation,
-            Tsconfig.PackageLint,
-            Tsconfig.PackageTypes,
-            ...(rootPackage.json.files || [])
-          ]
-        : [path];
-
-    return excludeTargets.map((p) => `:(exclude,top)${p}`);
-  });
-
-  debug('result: %O', result);
-  return result;
+  const finalExcludedPathspecs = excludedPathspecs.filter(Boolean);
+  debug('finalExcludedPathspecs: %O', finalExcludedPathspecs);
+  return finalExcludedPathspecs;
 }
 
 /**
  * Return the commit-ish (SHA hash) of the most recent commit containing the
- * Xpipeline command suffix `[INIT]`, or {@link noSpecialInitialCommitIndicator}
- * if no such commit could be found.
+ * Xpipeline command suffix `[INIT]`, or being pointed to by a
+ * `package-name@0.0.0-init` version tag. If no such commit could be found,
+ * {@link noSpecialInitialCommitIndicator} is returned.
+ *
+ * @see {@link XchangelogConfig}
  */
-// TODO: migrate this into xpipeline
-export async function getLatestCommitWithXpipelineInitCommandSuffix() {
-  const { stdout: reference_ } = await runNoRejectOnBadExit('git', [
-    'log',
-    '-1',
-    '--pretty=format:%H',
-    '--grep',
-    String.raw`\[INIT]$`
-  ]);
+// TODO: migrate some part of this into xpipeline
+export async function getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix(
+  tagPrefix: string
+) {
+  const [{ stdout: xpipelineReference }, { stdout: initTagReference }] =
+    await Promise.all([
+      runNoRejectOnBadExit('git', [
+        'log',
+        '-1',
+        '--pretty=format:%H',
+        '--grep',
+        String.raw`\[INIT]$`
+      ]),
+      runNoRejectOnBadExit('git', [
+        'log',
+        '-1',
+        '--pretty=format:%H',
+        `${tagPrefix}0.0.0-init`
+      ])
+    ]);
 
-  const reference = reference_ || noSpecialInitialCommitIndicator;
-  debug('latest commit with Xpipeline "[INIT]" command: %O', reference);
+  debug('xpipelineReference: %O', xpipelineReference);
+  debug('initTagReference: %O', initTagReference);
+
+  let reference: string;
+
+  if (xpipelineReference && initTagReference) {
+    // ? Use the most recent of the two options
+    const { exitCode: isXpipelineReferenceMoreRecent } = await runNoRejectOnBadExit(
+      'git',
+      [
+        'merge-base',
+        initTagReference,
+        '--is-ancestor',
+        xpipelineReference // ? Is xpipelineRef the ancestor of initTagRef?
+      ]
+    );
+
+    debug('isXpipelineReferenceMoreRecent: %O', isXpipelineReferenceMoreRecent);
+
+    reference = isXpipelineReferenceMoreRecent ? xpipelineReference : initTagReference;
+  } else {
+    reference = xpipelineReference || initTagReference || noSpecialInitialCommitIndicator;
+  }
+
+  debug(
+    'latest commit with either Xpipeline init command or version tag init suffix: %O',
+    reference
+  );
 
   return reference;
 }

@@ -11,7 +11,7 @@ import {
   type AsStrictExecutionContext
 } from 'multiverse+bfe';
 
-import { softAssert } from 'multiverse+cli-utils:error.ts';
+import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   logStartTime,
@@ -23,7 +23,7 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
   defaultChangelogTopmatter,
-  getLatestCommitWithXpipelineInitCommandSuffix
+  getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix
 } from 'universe:assets/config/_conventional.config.cjs.ts';
 
 import {
@@ -203,8 +203,15 @@ Use --import-section-file to add a custom release section to the changelog. The 
 
       const {
         rootPackage: { root: projectRoot },
-        cwdPackage: { root: packageRoot }
+        cwdPackage
       } = projectMetadata;
+
+      const {
+        root: packageRoot,
+        json: { name: cwdPackageName }
+      } = cwdPackage;
+
+      hardAssert(cwdPackageName, ErrorMessage.GuruMeditation());
 
       debug('scope (unused): %O', scope);
       debug('skipTopmatter: %O', skipTopmatter);
@@ -227,7 +234,9 @@ Use --import-section-file to add a custom release section to the changelog. The 
         const conventionalConfig = await (async () => {
           try {
             process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT =
-              await getLatestCommitWithXpipelineInitCommandSuffix();
+              await getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix(
+                `${cwdPackageName}@`
+              );
 
             const { default: config } = await import(conventionalConfigPath);
 
