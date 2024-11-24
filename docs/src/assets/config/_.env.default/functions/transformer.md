@@ -22,4 +22,4 @@
 
 ## Defined in
 
-[src/assets/config/\_.env.default.ts:7](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/assets/config/_.env.default.ts#L7)
+[src/assets/config/\_.env.default.ts:7](https://github.com/Xunnamius/xscripts/blob/f84693679e326b03b40dc7577e79e1f4160b286e/src/assets/config/_.env.default.ts#L7)

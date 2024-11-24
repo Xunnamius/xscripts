@@ -6,12 +6,12 @@
 
 # Variable: projectInfoScopes
 
-> `const` **projectInfoScopes**: [`Unlimited`](../../../../configure/enumerations/UnlimitedGlobalScope.md#unlimited)[]
+> `const` **projectInfoScopes**: [`DefaultGlobalScope`](../../../../configure/enumerations/DefaultGlobalScope.md)[]
 
 ## See
 
-[ProjectInfoScope](../../../../configure/enumerations/UnlimitedGlobalScope.md)
+[ProjectInfoScope](../../../../configure/enumerations/DefaultGlobalScope.md)
 
 ## Defined in
 
-[src/commands/project/info.ts:24](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/commands/project/info.ts#L24)
+[src/commands/project/info.ts:25](https://github.com/Xunnamius/xscripts/blob/f84693679e326b03b40dc7577e79e1f4160b286e/src/commands/project/info.ts#L25)

@@ -6,12 +6,12 @@
 
 # Variable: projectRenovateScopes
 
-> `const` **projectRenovateScopes**: [`Unlimited`](../../../../configure/enumerations/UnlimitedGlobalScope.md#unlimited)[]
+> `const` **projectRenovateScopes**: [`DefaultGlobalScope`](../../../../configure/enumerations/DefaultGlobalScope.md)[]
 
 ## See
 
-[ProjectRenovateScope](../../../../configure/enumerations/UnlimitedGlobalScope.md)
+[ProjectRenovateScope](../../../../configure/enumerations/DefaultGlobalScope.md)
 
 ## Defined in
 
-[src/commands/project/renovate.ts:24](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/commands/project/renovate.ts#L24)
+[src/commands/project/renovate.ts:24](https://github.com/Xunnamius/xscripts/blob/f84693679e326b03b40dc7577e79e1f4160b286e/src/commands/project/renovate.ts#L24)

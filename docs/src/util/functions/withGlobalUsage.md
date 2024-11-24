@@ -6,7 +6,7 @@
 
 # Function: withGlobalUsage()
 
-> **withGlobalUsage**(`altDescription`): `string`
+> **withGlobalUsage**(`altDescription`, `options`?): `string`
 
 Generate command usage text consistently yet flexibly.
 
@@ -14,10 +14,28 @@ Generate command usage text consistently yet flexibly.
 
 • **altDescription**: `string` = `'$1.'`
 
+• **options?**
+
+• **options.appendPeriod?**: `boolean`
+
+**Default**
+
+```ts
+true
+```
+
+• **options.trim?**: `boolean`
+
+**Default**
+
+```ts
+true
+```
+
 ## Returns
 
 `string`
 
 ## Defined in
 
-[packages/bfe/src/index.ts:1220](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/packages/bfe/src/index.ts#L1220)
+[packages/bfe/src/index.ts:1220](https://github.com/Xunnamius/xscripts/blob/f84693679e326b03b40dc7577e79e1f4160b286e/packages/bfe/src/index.ts#L1220)

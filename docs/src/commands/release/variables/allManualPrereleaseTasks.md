@@ -17,4 +17,4 @@ mode useful when integrating with tools like Turbo.
 
 ## Defined in
 
-[src/commands/release.ts:107](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/commands/release.ts#L107)
+[src/commands/release.ts:107](https://github.com/Xunnamius/xscripts/blob/f84693679e326b03b40dc7577e79e1f4160b286e/src/commands/release.ts#L107)
