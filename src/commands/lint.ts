@@ -249,7 +249,7 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
 
       const { root: packageRoot } = cwdPackage;
 
-      const baseTsconfigFilePath = toPath(packageRoot, Tsconfig.ProjectBase);
+      const baseTsconfigFilePath = toPath(projectRoot, Tsconfig.ProjectBase);
       const projectTsconfigFilePath = toPath(projectRoot, Tsconfig.ProjectLint);
       const packageTsconfigFilePath = toPath(packageRoot, Tsconfig.PackageLint);
 
@@ -318,12 +318,8 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
                 targets: { external: externalBuildTargets }
               }
             ] = await Promise.all([
-              gatherPackageFiles(cwdPackage, {
-                useCached: true
-              }),
-              gatherPackageBuildTargets(cwdPackage, {
-                useCached: true
-              })
+              gatherPackageFiles(cwdPackage, { useCached: true }),
+              gatherPackageBuildTargets(cwdPackage, { useCached: true })
             ]);
 
             npxEslintArguments.push(
