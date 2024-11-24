@@ -1217,12 +1217,26 @@ export function withBuilderExtensions<
 /**
  * Generate command usage text consistently yet flexibly.
  */
-export function withUsageExtensions(altDescription = '$1.') {
-  if (!altDescription.endsWith('.')) {
+export function withUsageExtensions(
+  altDescription = '$1.',
+  options?: {
+    /**
+     * @default true
+     */
+    trim?: boolean;
+    /**
+     * @default true
+     */
+    appendPeriod?: boolean;
+  }
+) {
+  if (options?.appendPeriod !== false && !altDescription.endsWith('.')) {
     altDescription += '.';
   }
 
-  return `Usage: $000\n\n${altDescription}`.trim();
+  return `Usage: $000\n\n${altDescription}`[
+    options?.trim !== false ? 'trim' : 'toString'
+  ]();
 }
 
 /**
