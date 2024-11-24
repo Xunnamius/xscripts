@@ -229,7 +229,7 @@
     "semantic-release": "npm:@-xun/release@^0.0.2",
     "semver": "^7.6.3",
     "simple-git": "^3.27.0",
-    "sort-package-json": "^2.11.0",
+    "sort-package-json": "^2.12.0",
     "spellchecker": "^3.7.1",
     "supports-color": "^8.1.1",
     "text-extensions": "^3.1.0",
