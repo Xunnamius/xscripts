@@ -10,4 +10,4 @@
 
 ## Defined in
 
-[src/assets/config/\_.prettierignore.ts:5](https://github.com/Xunnamius/xscripts/blob/f84693679e326b03b40dc7577e79e1f4160b286e/src/assets/config/_.prettierignore.ts#L5)
+[src/assets/config/\_.prettierignore.ts:5](https://github.com/Xunnamius/xscripts/blob/8feaaa78a9f524f02e4cc9204ef84f329d31ab94/src/assets/config/_.prettierignore.ts#L5)

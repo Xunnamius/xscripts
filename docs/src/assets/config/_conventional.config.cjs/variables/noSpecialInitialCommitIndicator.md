@@ -13,4 +13,4 @@ when there was no special initialization commit reference found.
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:323](https://github.com/Xunnamius/xscripts/blob/f84693679e326b03b40dc7577e79e1f4160b286e/src/assets/config/_conventional.config.cjs.ts#L323)
+[src/assets/config/\_conventional.config.cjs.ts:323](https://github.com/Xunnamius/xscripts/blob/8feaaa78a9f524f02e4cc9204ef84f329d31ab94/src/assets/config/_conventional.config.cjs.ts#L323)

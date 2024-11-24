@@ -569,4 +569,4 @@ punctuation and capitalization rules as the other error messages.
 
 ## Defined in
 
-[src/error.ts:61](https://github.com/Xunnamius/xscripts/blob/f84693679e326b03b40dc7577e79e1f4160b286e/src/error.ts#L61)
+[src/error.ts:61](https://github.com/Xunnamius/xscripts/blob/8feaaa78a9f524f02e4cc9204ef84f329d31ab94/src/error.ts#L61)
