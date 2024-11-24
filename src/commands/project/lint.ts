@@ -95,6 +95,7 @@ export default function command({
       // TODO (ensure private vulnerability reporting and secret scanning are enabled for all GitHub repositories)
       // TODO (ensure x-link references all point to proper places in Markdown docs)
       // TODO (nested workspaces are not supported)
+      // TODO (warn on package dependencies or devdependencies that are not ranges)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
