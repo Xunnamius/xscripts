@@ -28,4 +28,4 @@ string> & RequiredTransformerContext` that contains each string in
 
 ## Defined in
 
-[src/assets.ts:167](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/assets.ts#L167)
+[src/assets.ts:167](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/assets.ts#L167)

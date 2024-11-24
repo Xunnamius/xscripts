@@ -32,7 +32,7 @@ An `Error` class where the first letter of the message is capitalized.
 
 #### Defined in
 
-[packages/cli-utils/src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/packages/cli-utils/src/error.ts#L11)
+[packages/cli-utils/src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/packages/cli-utils/src/error.ts#L11)
 
 ## Properties
 
@@ -46,7 +46,7 @@ An `Error` class where the first letter of the message is capitalized.
 
 #### Defined in
 
-node\_modules/typescript/lib/lib.es2022.error.d.ts:24
+node\_modules/typescript/lib/lib.es2022.error.d.ts:26
 
 ***
 

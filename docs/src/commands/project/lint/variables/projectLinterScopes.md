@@ -14,4 +14,4 @@
 
 ## Defined in
 
-[src/commands/project/lint.ts:24](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/commands/project/lint.ts#L24)
+[src/commands/project/lint.ts:24](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/commands/project/lint.ts#L24)

@@ -46,4 +46,4 @@
 
 ## Defined in
 
-[src/commands/build/index.ts:15](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/commands/build/index.ts#L15)
+[src/commands/build/index.ts:15](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/commands/build/index.ts#L15)

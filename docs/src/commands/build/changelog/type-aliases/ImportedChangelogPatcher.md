@@ -19,4 +19,4 @@ Represents the result of importing a `changelog.patch.js` (or
 
 ## Defined in
 
-[src/commands/build/changelog.ts:549](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/commands/build/changelog.ts#L549)
+[src/commands/build/changelog.ts:549](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/commands/build/changelog.ts#L549)

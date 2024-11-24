@@ -24,4 +24,4 @@ A partial release task with loose typings for quickly authoring new tasks.
 
 ## Defined in
 
-[src/commands/release.ts:134](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/commands/release.ts#L134)
+[src/commands/release.ts:134](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/commands/release.ts#L134)

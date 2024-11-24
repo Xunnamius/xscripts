@@ -30,4 +30,4 @@ StandardCommonCliArguments
 
 ## Defined in
 
-[src/configure.ts:106](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/configure.ts#L106)
+[src/configure.ts:106](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/configure.ts#L106)

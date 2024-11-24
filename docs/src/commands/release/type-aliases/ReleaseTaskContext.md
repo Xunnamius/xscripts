@@ -26,4 +26,4 @@ The context passed to each individual task.
 
 ## Defined in
 
-[src/commands/release.ts:112](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/commands/release.ts#L112)
+[src/commands/release.ts:112](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/commands/release.ts#L112)

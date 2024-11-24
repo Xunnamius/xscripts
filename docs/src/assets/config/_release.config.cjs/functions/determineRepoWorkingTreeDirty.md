@@ -22,7 +22,7 @@ the current working tree is dirty. This can be checked quickly via the
 
 ### gitStatusOutput
 
-> **gitStatusOutput**: `undefined` \| `string` \| `string`[] \| `unknown`[] \| `Uint8Array`
+> **gitStatusOutput**: `undefined` \| `string` \| `string`[] \| `unknown`[] \| `Uint8Array`\<`ArrayBufferLike`\>
 
 ### isDirty
 
@@ -30,4 +30,4 @@ the current working tree is dirty. This can be checked quickly via the
 
 ## Defined in
 
-[src/assets/config/\_release.config.cjs.ts:418](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/assets/config/_release.config.cjs.ts#L418)
+[src/assets/config/\_release.config.cjs.ts:430](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/assets/config/_release.config.cjs.ts#L430)

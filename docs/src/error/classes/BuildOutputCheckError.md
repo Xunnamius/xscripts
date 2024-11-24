@@ -30,7 +30,7 @@ Represents encountering a project that is not a git repository.
 
 #### Defined in
 
-[src/error.ts:45](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/error.ts#L45)
+[src/error.ts:45](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/error.ts#L45)
 
 ### new BuildOutputCheckError()
 
@@ -53,7 +53,7 @@ via `super`.
 
 #### Defined in
 
-[src/error.ts:50](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/error.ts#L50)
+[src/error.ts:50](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/error.ts#L50)
 
 ## Properties
 
@@ -67,7 +67,7 @@ via `super`.
 
 #### Defined in
 
-[src/error.ts:41](https://github.com/Xunnamius/xscripts/blob/91915b63e10dd6449ad16f4202f487b34227194a/src/error.ts#L41)
+[src/error.ts:41](https://github.com/Xunnamius/xscripts/blob/f4ec173014b41a5b69e2dbdb82e9f8b7ec9d9c86/src/error.ts#L41)
 
 ***
 
@@ -81,7 +81,7 @@ via `super`.
 
 #### Defined in
 
-node\_modules/typescript/lib/lib.es2022.error.d.ts:24
+node\_modules/typescript/lib/lib.es2022.error.d.ts:26
 
 ***
 
