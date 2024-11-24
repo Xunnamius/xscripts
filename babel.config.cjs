@@ -1,7 +1,10 @@
-// @ts-check
+// TODO: reenable @ts-check
 /* eslint-disable @typescript-eslint/unbound-method */
 // {@xscripts/notExtraneous @babel/cli}
 'use strict';
+
+// * Every now and then, we adopt best practices from CRA
+// * https://tinyurl.com/yakv4ggx
 
 const assert = require('node:assert');
 const fs = require('node:fs');
@@ -13,10 +16,6 @@ const {
   relative: toRelativePath,
   resolve: toAbsolutePath
 } = require('node:path');
-
-const {
-  dependencies: { 'core-js': xscriptsInternalCoreJsVersion }
-} = require('@-xun/scripts/package.json');
 
 const findUp = require('find-up~5');
 const semver = require('semver');
@@ -31,8 +30,12 @@ const {
   resolveEntryPointsFromExportsTarget
 } = require('./node_modules/@-xun/scripts/dist/packages/project-utils/src/resolver.js');
 
-// * Every now and then, we adopt best practices from CRA
-// * https://tinyurl.com/yakv4ggx
+/**
+ * Should be bumped manually and with caution.
+ *
+ * ! MUST ALWAYS FOLLOW THE SYNTAX X.X -OR- X.X.X (WHERE "X" ARE NUMERIC CHARS)
+ */
+const CORE_JS_LIBRARY_VERSION = '3.39';
 
 // ? https://nodejs.org/en/about/releases
 const NODE_LTS = 'maintained node versions';
@@ -58,6 +61,7 @@ const dTsExtensionsToReplace = [
 const endsWithPackageJsonRegExp = /(^|\/)package\.json$/;
 const includesNodeModulesRegExp = /(^|\/)node_modules\//;
 const grabEverythingUpToAndIncludingNodeModulesRegExp = /^(.*\/)?node_modules\//;
+// ! Must end with a dollar sign
 const translateJsExtensionsToTsRegExp = /(.+)\.(c|m)?ts(x)?$/;
 const translateJsExtensionsToTsRegExpReplacer = '$1.$2js$3';
 
@@ -213,7 +217,7 @@ module.exports = {
             targets: NODE_LTS,
             useBuiltIns: 'usage',
             // TODO: get this value from package.json
-            corejs: '3.39',
+            corejs: doCoreJsVersionChecksAndReturnHardcodedVersion(),
             shippedProposals: true,
             exclude: ['transform-dynamic-import']
           }
@@ -238,6 +242,109 @@ module.exports = {
   }
 };
 
+/**
+ * Returns the core-js version to use with babel (always
+ * {@link CORE_JS_LIBRARY_VERSION}). Usually it should just be whatever
+ * `@-xun/scripts` is providing, but it could be the case that the current
+ * package supplies its own version of `core-js` (and prevents `@-xun/scripts`'s
+ * version from being hoisted). In this case, we should try to use their
+ * version.
+ */
+function doCoreJsVersionChecksAndReturnHardcodedVersion() {
+  // ? Assuming the current working directory is always at a package root, an
+  // ? invariant enforced by xscripts itself
+  const packageRoot = getCurrentWorkingDirectory();
+
+  const coreJsLibraryVersion = semver.coerce(CORE_JS_LIBRARY_VERSION)?.version;
+  assert(coreJsLibraryVersion);
+
+  const { name, dependencies: { 'core-js': cwdPackageCoreJsDependency_ } = {} } =
+    readPackageJsonAtRoot.sync(packageRoot, { useCached: true, try: true }) || {};
+
+  const cwdPackageCoreJsDependency =
+    semver.validRange(cwdPackageCoreJsDependency_) || undefined;
+
+  if (cwdPackageCoreJsDependency) {
+    // TODO: debug output here
+
+    /**
+     * @type {{version: string | undefined}}
+     */
+    const { version: resolvedCoreJsVersion } = (() => {
+      try {
+        return require('core-js/package.json');
+      } catch (error) {
+        void error; // TODO: debug output
+        return undefined;
+      }
+    })();
+
+    if (resolvedCoreJsVersion) {
+      // * At this point, any error conditions are catastrophic enough that the
+      // * build process must be abruptly aborted
+
+      const isResolvedVersionLessThanLibraryVersion =
+        semver.compare(resolvedCoreJsVersion, coreJsLibraryVersion) === -1;
+
+      if (isResolvedVersionLessThanLibraryVersion) {
+        // TODO: replace with ProjectError
+        throw new Error(
+          `babel is configured to use core-js@${coreJsLibraryVersion} ("${
+            CORE_JS_LIBRARY_VERSION
+          }") but the resolved core-js version is ${
+            resolvedCoreJsVersion
+          }; please update dependencies.core-js in ${packageRoot}/package.json`
+        );
+      }
+
+      const isCwdPackageDependencyNotSatisfiedByLibraryVersion = semver.valid(
+        cwdPackageCoreJsDependency
+      )
+        ? !semver.satisfies(cwdPackageCoreJsDependency, `^${coreJsLibraryVersion}`)
+        : !semver.satisfies(coreJsLibraryVersion, cwdPackageCoreJsDependency);
+
+      if (isCwdPackageDependencyNotSatisfiedByLibraryVersion) {
+        // TODO: replace with ProjectError
+        throw new Error(
+          `babel is configured to use core-js@${coreJsLibraryVersion} ("${
+            CORE_JS_LIBRARY_VERSION
+          }") but the ${
+            name ? `"${name}"` : 'current'
+          } package has a "core-js" field in its package.json "dependencies" object that will result in a potentially-incompatible version of core-js being installed by downstream consumers; saw: "${
+            cwdPackageCoreJsDependency
+          }" in ${packageRoot}/package.json`
+        );
+      }
+    } else {
+      // * We don't throw an error here to be kind to the build process; this
+      // * error should cause problems with Babel, which should do the reporting
+      // TODO: replace with rejoinder and add to ErrorMessage.X
+      // eslint-disable-next-line no-console
+      console.warn(
+        `⚠️🚧 Babel is configured to use core-js@${coreJsLibraryVersion} ("${
+          CORE_JS_LIBRARY_VERSION
+        }"), but an attempt to resolve "version" from "core-js/package.json" failed`
+      );
+    }
+  } else {
+    // * We don't throw an error here to be kind to the build process; this
+    // * error should be caught by post-build checks from "xscripts build"
+    // TODO: replace with rejoinder and add to ErrorMessage.X
+    // eslint-disable-next-line no-console
+    console.warn(
+      `⚠️🚧 Babel is configured to use core-js@${coreJsLibraryVersion} ("${
+        CORE_JS_LIBRARY_VERSION
+      }"), but the ${
+        name ? `"${name}"` : 'current'
+      } package is missing a semver-valid "core-js" field in its package.json "dependencies" object; saw: "${String(
+        cwdPackageCoreJsDependency
+      )}" in ${packageRoot}/package.json`
+    );
+  }
+
+  return CORE_JS_LIBRARY_VERSION;
+}
+
 // TODO: add debug calls in this function
 /**
  * Takes a definition file (`.d.ts`) path relative to the project root and
@@ -260,6 +367,7 @@ function makeDistReplacerEntry(
   const projectRoot = __dirname;
   // ? Are we at the root package of a hybridrepo?
   const isCwdPackageTheRootPackage = projectRoot === packageRoot;
+
   // ? Remove the leading ./ if it exists
   const projectRootRelativeReplacerPath = joinPath(rawProjectRootRelativeReplacerPath);
 
