@@ -193,6 +193,28 @@ describe('::readJson', () => {
       );
     });
 
+    it('does not throw on read failure when try is true', () => {
+      expect.hasAssertions();
+
+      mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
+
+      expect(
+        readJson.sync('/does/not/exist/package.json' as AbsolutePath, {
+          useCached: true,
+          try: true
+        })
+      ).toBeEmptyObject();
+    });
+
+    it('does not throw on parse failure when try is true', () => {
+      expect.hasAssertions();
+
+      const path = '/fake/path/package.json' as AbsolutePath;
+      mockedReadFileSync.mockImplementation(() => '{{');
+
+      expect(readJson.sync(path, { useCached: true, try: true })).toBeEmptyObject();
+    });
+
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
       expect.hasAssertions();
 
@@ -256,6 +278,30 @@ describe('::readJson', () => {
       await expect(readJson(path, { useCached: true })).rejects.toThrow(
         ErrorMessage.NotParsable(path)
       );
+    });
+
+    it('does not throw on read failure', async () => {
+      expect.hasAssertions();
+
+      mockedReadFileAsync.mockImplementation(() => Promise.reject());
+
+      await expect(
+        readJson('/does/not/exist/package.json' as AbsolutePath, {
+          useCached: true,
+          try: true
+        })
+      ).resolves.toBeEmptyObject();
+    });
+
+    it('does not throw on parse failure', async () => {
+      expect.hasAssertions();
+
+      const path = '/fake/path/package.json' as AbsolutePath;
+      mockedReadFileAsync.mockImplementation(() => Promise.resolve('{{'));
+
+      await expect(
+        readJson(path, { useCached: true, try: true })
+      ).resolves.toBeEmptyObject();
     });
 
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
@@ -326,6 +372,28 @@ describe('::readJsonc', () => {
       );
     });
 
+    it('does not throw on read failure', () => {
+      expect.hasAssertions();
+
+      mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
+
+      expect(
+        readJsonc.sync('/does/not/exist/package.json' as AbsolutePath, {
+          useCached: true,
+          try: true
+        })
+      ).toBeEmptyObject();
+    });
+
+    it('does not throw on parse failure', () => {
+      expect.hasAssertions();
+
+      const path = '/fake/path/package.json' as AbsolutePath;
+      mockedReadFileSync.mockImplementation(() => '{{');
+
+      expect(readJsonc.sync(path, { useCached: true, try: true })).toBeEmptyObject();
+    });
+
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
       expect.hasAssertions();
 
@@ -389,6 +457,30 @@ describe('::readJsonc', () => {
       await expect(readJsonc(path, { useCached: true })).rejects.toThrow(
         ErrorMessage.NotParsable(path)
       );
+    });
+
+    it('does not throw on read failure', async () => {
+      expect.hasAssertions();
+
+      mockedReadFileAsync.mockImplementation(() => Promise.reject('fail'));
+
+      await expect(
+        readJsonc('/does/not/exist/package.json' as AbsolutePath, {
+          useCached: true,
+          try: true
+        })
+      ).resolves.toBeEmptyObject();
+    });
+
+    it('does not throw on parse failure', async () => {
+      expect.hasAssertions();
+
+      const path = '/fake/path/package.json' as AbsolutePath;
+      mockedReadFileAsync.mockImplementation(() => Promise.resolve('{{'));
+
+      await expect(
+        readJsonc(path, { useCached: true, try: true })
+      ).resolves.toBeEmptyObject();
     });
 
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {
@@ -456,6 +548,32 @@ describe('::readPackageJsonAtRoot', () => {
       ).toThrow(`${fixtures.goodPolyrepo.root}/package.json`);
     });
 
+    it('does not throw on read failure', () => {
+      expect.hasAssertions();
+
+      mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
+
+      expect(
+        readPackageJsonAtRoot.sync('/does/not/exist' as AbsolutePath, {
+          useCached: true,
+          try: true
+        })
+      ).toBeEmptyObject();
+    });
+
+    it('does not throw on parse failure', () => {
+      expect.hasAssertions();
+
+      mockedReadFileSync.mockImplementation(() => '{{');
+
+      expect(
+        readPackageJsonAtRoot.sync(fixtures.goodPolyrepo.root, {
+          useCached: true,
+          try: true
+        })
+      ).toBeEmptyObject();
+    });
+
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', () => {
       expect.hasAssertions();
 
@@ -521,6 +639,29 @@ describe('::readPackageJsonAtRoot', () => {
       await expect(
         readPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true })
       ).rejects.toThrow(`${fixtures.goodPolyrepo.root}/package.json`);
+    });
+
+    it('does not throw on read failure', async () => {
+      expect.hasAssertions();
+
+      mockedReadFileAsync.mockImplementation(() => Promise.reject('fail'));
+
+      await expect(
+        readPackageJsonAtRoot('/does/not/exist' as AbsolutePath, {
+          useCached: true,
+          try: true
+        })
+      ).resolves.toBeEmptyObject();
+    });
+
+    it('does not throw on parse failure', async () => {
+      expect.hasAssertions();
+
+      mockedReadFileAsync.mockImplementation(() => Promise.resolve('{{'));
+
+      await expect(
+        readPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true, try: true })
+      ).resolves.toBeEmptyObject();
     });
 
     it('returns result from internal cache if available unless useCached is false (new result is always added to internal cache)', async () => {

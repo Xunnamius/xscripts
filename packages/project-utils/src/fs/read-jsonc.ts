@@ -42,6 +42,16 @@ export type ReadJsoncOptions = {
    * @see {@link JSONC.parse}
    */
   parseOptions?: Parameters<typeof JSONC.parse>[2];
+  /**
+   * If `true`, an attempt will be made to read in and parse the JSON file. If
+   * it fails (i.e. an error is thrown), `{}` is returned and no error is
+   * thrown.
+   *
+   * Note that, currently, fail results (where `{}` is returned) are not cached.
+   *
+   * @default false
+   */
+  try?: boolean;
 };
 
 function readJsonc_<T>(
@@ -57,8 +67,8 @@ function readJsonc_<T>(
 function readJsonc_<T>(
   shouldRunSynchronously: boolean,
   path: AbsolutePath,
-  { useCached, ...cacheIdComponentsObject }: ReadJsoncOptions
-): Promisable<T> {
+  { useCached, try: try_, ...cacheIdComponentsObject }: ReadJsoncOptions
+): Promisable<T | undefined> {
   const { ignoreNonExceptionErrors, parseOptions } = cacheIdComponentsObject;
 
   if (useCached) {
@@ -73,24 +83,30 @@ function readJsonc_<T>(
   }
 
   if (shouldRunSynchronously) {
-    const rawJson = (() => {
-      try {
-        return readFileSync(path, 'utf8');
-      } catch (error) {
-        throw new ProjectError(ErrorMessage.NotReadable(path), { cause: error });
-      }
-    })();
+    try {
+      const rawJson = (() => {
+        try {
+          return readFileSync(path, 'utf8');
+        } catch (error) {
+          throw new ProjectError(ErrorMessage.NotReadable(path), { cause: error });
+        }
+      })();
 
-    return parse(rawJson);
+      return parse(rawJson);
+    } catch (error) {
+      return handleError(error);
+    }
   } else {
-    return readFileAsync(path, 'utf8').then(
-      (rawJson) => {
-        return parse(rawJson);
-      },
-      (error: unknown) => {
-        throw new ProjectError(ErrorMessage.NotReadable(path), { cause: error });
-      }
-    );
+    return readFileAsync(path, 'utf8')
+      .then(
+        (rawJson) => {
+          return parse(rawJson);
+        },
+        (error: unknown) => {
+          throw new ProjectError(ErrorMessage.NotReadable(path), { cause: error });
+        }
+      )
+      .catch(handleError);
   }
 
   function parse(rawJson: string): T {
@@ -108,16 +124,30 @@ function readJsonc_<T>(
       throw new ProjectError(ErrorMessage.NotParsable(path, 'jsonc'), { cause: error });
     }
   }
+
+  function handleError(error: unknown): T | never {
+    if (try_) {
+      return {} as T;
+    }
+
+    throw error;
+  }
 }
 
 /**
  * Asynchronously read in and parse the contents of an arbitrary JSONC file.
  *
- * **NOTE: the result of this function is memoized! This does NOT _necessarily_ mean results will strictly equal each other. See `useCached` in this specific function's options for details.** To fetch fresh results,
- * set the `useCached` option to `false` or clear the internal cache with
- * {@link cache.clear}.
+ * Use the template variable (`T`) to bring your own types. Otherwise, it
+ * defaults to {@link JsonValue}.
+ *
+ * **NOTE: the result of this function is memoized! This does NOT _necessarily_
+ * mean results will strictly equal each other. See `useCached` in this specific
+ * function's options for details.** To fetch fresh results, set the `useCached`
+ * option to `false` or clear the internal cache with {@link cache.clear}.
  */
-export function readJsonc<T = JsonValue>(...args: ParametersNoFirst<typeof readJsonc_>) {
+export function readJsonc<T = JsonValue>(
+  ...args: ParametersNoFirst<typeof readJsonc_<T>>
+) {
   return readJsonc_<T>(false, ...args);
 }
 
@@ -126,12 +156,17 @@ export namespace readJsonc {
   /**
    * Synchronously read in and parse the contents of an arbitrary JSONC file.
    *
-   * **NOTE: the result of this function is memoized! This does NOT _necessarily_ mean results will strictly equal each other. See `useCached` in this specific function's options for details.** To fetch fresh results,
+   * Use the template variable (`T`) to bring your own types. Otherwise, it
+   * defaults to {@link JsonValue}.
+   *
+   * **NOTE: the result of this function is memoized! This does NOT
+   * _necessarily_ mean results will strictly equal each other. See `useCached`
+   * in this specific function's options for details.** To fetch fresh results,
    * set the `useCached` option to `false` or clear the internal cache with
    * {@link cache.clear}.
    */
   export const sync = function <T = JsonValue>(
-    ...args: ParametersNoFirst<typeof readJsonc_>
+    ...args: ParametersNoFirst<typeof readJsonc_<T>>
   ) {
     return readJsonc_<T>(true, ...args);
   } as SyncVersionOf<typeof readJsonc>;
