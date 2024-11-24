@@ -23,7 +23,7 @@ import {
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import {
-  getExcludedPathsRelativeToProjectRoot,
+  getExclusionaryPathspecs,
   noSpecialInitialCommitIndicator
 } from 'universe:assets/config/_conventional.config.cjs.ts';
 
@@ -70,7 +70,7 @@ export function moduleExport({
   writerOpts
 }: Partial<Pick<PluginConfig, 'parserOpts' | 'writerOpts'>>): ReleaseConfig {
   const specialInitialCommit = process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT;
-  debug('specialInitialCommit: %O', specialInitialCommit);
+  debug('incoming specialInitialCommit (from env): %O', specialInitialCommit);
 
   assert(
     specialInitialCommit && typeof specialInitialCommit === 'string',
@@ -88,7 +88,7 @@ export function moduleExport({
   debug('releaseSectionPath: %O', releaseSectionPath);
 
   const { cwdPackage } = analyzeProjectStructure.sync({ useCached: true });
-  const gitLogPathspecs = getExcludedPathsRelativeToProjectRoot();
+  const gitLogPathspecs = getExclusionaryPathspecs();
 
   const cwdPackageName = cwdPackage.json.name;
   assert(cwdPackageName);
@@ -102,7 +102,7 @@ export function moduleExport({
     gitLogOptions: {
       // ? Tell xrelease to exclude commits up to and including a special
       // ? "initial commit" that serves to divide repo history, with the portion
-      // ? at and/or after the [INIT] commit being ignored entirely (as if all
+      // ? at and/or after said commit being ignored entirely (as if all
       // ? commits before and including the initial commit didn't exist at all)
       flags:
         specialInitialCommit !== noSpecialInitialCommitIndicator
