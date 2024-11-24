@@ -127,9 +127,10 @@ function deriveVirtualPrettierignoreLines_(
  * You can optionally include paths unknown to git as well via
  * `includeUnknownPaths`.
  *
- * **NOTE: the result of this function is memoized! This does NOT _necessarily_ mean results will strictly equal each other. See `useCached` in this specific function's options for details.** To fetch fresh results,
- * set the `useCached` option to `false` or clear the internal cache with
- * {@link cache.clear}.
+ * **NOTE: the result of this function is memoized! This does NOT _necessarily_
+ * mean results will strictly equal each other. See `useCached` in this specific
+ * function's options for details.** To fetch fresh results, set the `useCached`
+ * option to `false` or clear the internal cache with {@link cache.clear}.
  */
 export function deriveVirtualPrettierignoreLines(
   ...args: ParametersNoFirst<typeof deriveVirtualPrettierignoreLines_>
@@ -144,7 +145,9 @@ export namespace deriveVirtualPrettierignoreLines {
    * an empty array if an error occurs. The string '.git' is prepended to the
    * result.
    *
-   * **NOTE: the result of this function is memoized! This does NOT _necessarily_ mean results will strictly equal each other. See `useCached` in this specific function's options for details.** To fetch fresh results,
+   * **NOTE: the result of this function is memoized! This does NOT
+   * _necessarily_ mean results will strictly equal each other. See `useCached`
+   * in this specific function's options for details.** To fetch fresh results,
    * set the `useCached` option to `false` or clear the internal cache with
    * {@link cache.clear}.
    */

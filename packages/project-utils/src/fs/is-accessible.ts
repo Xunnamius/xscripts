@@ -88,9 +88,10 @@ function isAccessible_(
  * Sugar for asynchronous `access(path, fsConstant)` that returns `true` or
  * `false` rather than rejecting or resolving to `undefined`.
  *
- * **NOTE: the result of this function is memoized! This does NOT _necessarily_ mean results will strictly equal each other. See `useCached` in this specific function's options for details.** To fetch fresh results,
- * set the `useCached` option to `false` or clear the internal cache with
- * {@link cache.clear}.
+ * **NOTE: the result of this function is memoized! This does NOT _necessarily_
+ * mean results will strictly equal each other. See `useCached` in this specific
+ * function's options for details.** To fetch fresh results, set the `useCached`
+ * option to `false` or clear the internal cache with {@link cache.clear}.
  */
 export function isAccessible(...args: ParametersNoFirst<typeof isAccessible_>) {
   return isAccessible_(false, ...args);
@@ -102,7 +103,9 @@ export namespace isAccessible {
    * Sugar for the synchronous `access(path, fsConstant)` that returns `true` or
    * `false` rather than throwing or returning `void`.
    *
-   * **NOTE: the result of this function is memoized! This does NOT _necessarily_ mean results will strictly equal each other. See `useCached` in this specific function's options for details.** To fetch fresh results,
+   * **NOTE: the result of this function is memoized! This does NOT
+   * _necessarily_ mean results will strictly equal each other. See `useCached`
+   * in this specific function's options for details.** To fetch fresh results,
    * set the `useCached` option to `false` or clear the internal cache with
    * {@link cache.clear}.
    */
