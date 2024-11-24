@@ -8,10 +8,10 @@ export default [
   ['`import-section-file`', '`--import-section-file`'],
   ['--output-file', '--changelog-file'],
   // ? Shoulda been a refactor
-  [/\n[^\n]+commit initial version of "test" command[^\n]+\n/i, '\n'],
+  [/^.+commit initial version of "test" command.+$\n/im, ''],
   // ? Too late to fixup/merge
   [
-    /\n[^\n]*(?<!actually )fix incorrect semantic-release plugin order during publish flow[^\n]+\n/gi,
-    '\n'
+    /^.*(?<!actually )fix incorrect semantic-release plugin order during publish flow.+$\n/gim,
+    ''
   ]
 ];
