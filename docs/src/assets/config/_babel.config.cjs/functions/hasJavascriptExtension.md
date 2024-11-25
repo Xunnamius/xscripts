@@ -24,4 +24,4 @@ Returns `true` if `path` points to a file with a JavaScript extension.
 
 ## Defined in
 
-[src/assets/config/\_babel.config.cjs.ts:54](https://github.com/Xunnamius/xscripts/blob/8feaaa78a9f524f02e4cc9204ef84f329d31ab94/src/assets/config/_babel.config.cjs.ts#L54)
+[src/assets/config/\_babel.config.cjs.ts:54](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/assets/config/_babel.config.cjs.ts#L54)
