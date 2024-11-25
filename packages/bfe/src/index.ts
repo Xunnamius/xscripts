@@ -1217,28 +1217,38 @@ export function withBuilderExtensions<
 /**
  * Generate command usage text consistently yet flexibly.
  *
- * Defaults to: `"$1."`
+ * Defaults to: `Usage: $000\n\n${altDescription}` where `altDescription` is
+ * `$1.`
  */
 export function withUsageExtensions(
   altDescription = '$1.',
   options?: {
     /**
+     * Whether the entire string will be trimmed or not.
+     *
      * @default true
      */
     trim?: boolean;
     /**
+     * Whether a period will be appended to `altDescription` or not.
      * @default true
      */
     appendPeriod?: boolean;
+    /**
+     * Whether newlines will be prepended to `altDescription` or not.
+     *
+     * @default true
+     */
+    prependNewlines?: boolean;
   }
 ) {
   if (options?.appendPeriod !== false && !altDescription.endsWith('.')) {
     altDescription += '.';
   }
 
-  return `Usage: $000\n\n${altDescription}`[
-    options?.trim !== false ? 'trim' : 'toString'
-  ]();
+  return `Usage: $000${
+    options?.prependNewlines !== false ? '\n\n' : ''
+  }${altDescription}`[options?.trim !== false ? 'trim' : 'toString']();
 }
 
 /**
