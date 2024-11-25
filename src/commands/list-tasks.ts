@@ -33,20 +33,32 @@ export default function command({
   state,
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
-  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
-    scope: { default: DefaultGlobalScope.Unlimited },
-    full: {
-      boolean: true,
-      description: 'List all tasks along with their implementation code',
-      default: false
+  const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
+    (blackFlag, _, argv) => {
+      blackFlag.strict(false);
+
+      return {
+        scope: { default: DefaultGlobalScope.Unlimited },
+        full: {
+          boolean: true,
+          description: 'List all tasks along with their implementation code',
+          default: argv?._.length ? true : false,
+          defaultDescription: '"true" if one or more task names passed; "false" otherwise'
+        }
+      };
     }
-  });
+  );
 
   return {
     builder,
     description: 'List all tasks (typically NPM scripts) supported by this project',
-    usage: withGlobalUsage(),
-    handler: withGlobalHandler(async function ({ $0: scriptFullName, scope, full }) {
+    usage: withGlobalUsage('$1 [task-name-1, task-name-2, ...]', { appendPeriod: false }),
+    handler: withGlobalHandler(async function ({
+      _: allowList,
+      $0: scriptFullName,
+      scope,
+      full
+    }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
@@ -59,6 +71,8 @@ export default function command({
       genericLogger([LogTag.IF_NOT_QUIETED], 'Gathering available tasks...');
 
       debug('scope: %O', scope);
+      debug('full: %O', full);
+      debug('allowList: %O', allowList);
 
       genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
@@ -95,14 +109,17 @@ export default function command({
 
         const tasks = Object.entries(scripts ?? {})
           .map(([name, script], index_, array) => {
-            let str = name;
+            if (!allowList.length || allowList.includes(name)) {
+              let str = name;
 
-            if (full) {
-              str += `\n${String(script)}${index_ < array.length - 1 ? '\n' : ''}`;
+              if (full) {
+                str += `\n${String(script)}${index_ < array.length - 1 ? '\n' : ''}`;
+              }
+
+              return str;
             }
-
-            return str;
           })
+          .filter(Boolean)
           .join(frontmatter);
 
         const output =
