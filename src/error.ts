@@ -108,6 +108,9 @@ export const ErrorMessage = {
   CleanCalledWithoutForce() {
     return 'no deletions were performed (try again with --force)';
   },
+  MonkeyPatchFailedToTake(filename: string) {
+    return `failed to acquire the patched global Proxy class in ${filename}`;
+  },
   WrongProjectAttributes(
     expected: ProjectAttribute[],
     actual: RootPackage['attributes'],

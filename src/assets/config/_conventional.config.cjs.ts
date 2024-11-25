@@ -43,12 +43,20 @@ const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:conventional`
 });
 
-// @ts-expect-error: part of a hack
-globalThis.previousSpawnChild ||= undefined as undefined | typeof childProcess.spawn;
-// @ts-expect-error: part of a hack
-globalThis.previousProxy ||= undefined as undefined | typeof Proxy;
-
-const proxiedTargets = new WeakMap<InstanceType<typeof Proxy>, object>();
+// ! Watch out for the dual package hazard! (relevant for xscripts local dev)
+const cubby = ((
+  globalThis as typeof globalThis & {
+    $$xspace?: {
+      previousSpawnChild: undefined | typeof childProcess.spawn;
+      previousProxy: undefined | typeof Proxy;
+      proxiedTargets: WeakMap<InstanceType<typeof Proxy>, object>;
+    };
+  }
+).$$xspace ||= {
+  previousSpawnChild: undefined,
+  previousProxy: undefined,
+  proxiedTargets: new WeakMap<InstanceType<typeof Proxy>, object>()
+});
 
 debug('conventional.config.cjs was freshly imported, running patchers...');
 patchProxy();
@@ -440,9 +448,12 @@ export function moduleExport(
       // ? Note that in recent versions of conventional-commits, the commit
       // ? object is now "immutable" (i.e. a Proxy); we do away with that below:
       transform(commit_, context) {
-        assert(proxiedTargets.has(commit_), ErrorMessage.GuruMeditation());
+        assert(
+          cubby.proxiedTargets.has(commit_),
+          ErrorMessage.MonkeyPatchFailedToTake(__filename)
+        );
 
-        const commit = safeDeepClone(proxiedTargets.get(commit_) as typeof commit_);
+        const commit = safeDeepClone(cubby.proxiedTargets.get(commit_) as typeof commit_);
 
         const debug_ = debug.extend('writerOpts:transform');
         debug_('pre-transform commit: %O', commit);
@@ -1055,26 +1066,24 @@ function safeDeepClone<T>(o: T): T {
  * @internal
  */
 function patchProxy() {
-  //@ts-expect-error: part of a hack
-  if (globalThis.previousProxy) {
+  if (cubby.previousProxy) {
     debug('global Proxy class was already patched in this runtime');
     return;
   }
 
-  //@ts-expect-error: part of a hack
-  const OldProxy = (globalThis.previousProxy = globalThis.Proxy);
+  const OldProxy = (cubby.previousProxy = globalThis.Proxy);
 
   // eslint-disable-next-line @typescript-eslint/no-extraneous-class
   globalThis.Proxy = class WrappedProxy {
     constructor(...args: ConstructorParameters<typeof Proxy>) {
       const result = new OldProxy(...args);
-      proxiedTargets.set(result, args[0]);
+      cubby.proxiedTargets.set(result, args[0]);
       return result;
     }
 
     static revocable(...args: Parameters<typeof Proxy.revocable>) {
       const result = OldProxy.revocable(...args);
-      proxiedTargets.set(result.proxy, args[0]);
+      cubby.proxiedTargets.set(result.proxy, args[0]);
       return result;
     }
   } as typeof Proxy;
@@ -1089,14 +1098,12 @@ function patchProxy() {
  * @internal
  */
 function patchSpawnChild() {
-  //@ts-expect-error: part of a hack
-  if (globalThis.previousSpawnChild) {
+  if (cubby.previousSpawnChild) {
     debug('global spawn function was already patched in this runtime');
     return;
   }
 
-  //@ts-expect-error: part of a hack
-  const spawn = (globalThis.previousSpawnChild = childProcess.spawn);
+  const spawn = (cubby.previousSpawnChild = childProcess.spawn);
   childProcess.spawn = function wrappedSpawnChild(...args: Parameters<typeof spawn>) {
     if (Array.isArray(args[1])) {
       const spawnArgs = args[1] as string[];
