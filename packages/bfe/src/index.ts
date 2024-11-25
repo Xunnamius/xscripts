@@ -1216,6 +1216,8 @@ export function withBuilderExtensions<
 
 /**
  * Generate command usage text consistently yet flexibly.
+ *
+ * Defaults to: `"$1."`
  */
 export function withUsageExtensions(
   altDescription = '$1.',
