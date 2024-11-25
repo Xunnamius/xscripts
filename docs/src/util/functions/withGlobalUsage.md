@@ -10,6 +10,9 @@
 
 Generate command usage text consistently yet flexibly.
 
+Defaults to: `Usage: $000\n\n${altDescription}` where `altDescription` is
+`$1.`
+
 ## Parameters
 
 • **altDescription**: `string` = `'$1.'`
@@ -18,6 +21,18 @@ Generate command usage text consistently yet flexibly.
 
 • **options.appendPeriod?**: `boolean`
 
+Whether a period will be appended to `altDescription` or not.
+
+**Default**
+
+```ts
+true
+```
+
+• **options.prependNewlines?**: `boolean`
+
+Whether newlines will be prepended to `altDescription` or not.
+
 **Default**
 
 ```ts
@@ -25,6 +40,8 @@ true
 ```
 
 • **options.trim?**: `boolean`
+
+Whether the entire string will be trimmed or not.
 
 **Default**
 
@@ -38,4 +55,4 @@ true
 
 ## Defined in
 
-[packages/bfe/src/index.ts:1220](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/packages/bfe/src/index.ts#L1220)
+[packages/bfe/src/index.ts:1223](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/packages/bfe/src/index.ts#L1223)

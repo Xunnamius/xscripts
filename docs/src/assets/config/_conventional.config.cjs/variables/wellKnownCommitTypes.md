@@ -36,4 +36,4 @@ Valid commit types are alphanumeric and may contain an underscore (_) or dash
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:259](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/assets/config/_conventional.config.cjs.ts#L259)
+[src/assets/config/\_conventional.config.cjs.ts:259](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/assets/config/_conventional.config.cjs.ts#L259)

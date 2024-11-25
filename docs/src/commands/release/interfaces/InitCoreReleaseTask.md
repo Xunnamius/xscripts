@@ -26,7 +26,7 @@ The description reported to the user when the task is run.
 
 #### Defined in
 
-[src/commands/release.ts:180](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/release.ts#L180)
+[src/commands/release.ts:180](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/release.ts#L180)
 
 ***
 
@@ -36,7 +36,7 @@ The description reported to the user when the task is run.
 
 #### Defined in
 
-[src/commands/release.ts:232](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/release.ts#L232)
+[src/commands/release.ts:232](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/release.ts#L232)
 
 ***
 
@@ -52,7 +52,7 @@ The description reported to the user when `--help` is called.
 
 #### Defined in
 
-[src/commands/release.ts:184](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/release.ts#L184)
+[src/commands/release.ts:184](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/release.ts#L184)
 
 ***
 
@@ -83,7 +83,7 @@ supplies `--hush`/`--quiet`/`--silent`.
 
 #### Defined in
 
-[src/commands/release.ts:204](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/release.ts#L204)
+[src/commands/release.ts:204](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/release.ts#L204)
 
 ***
 
@@ -93,7 +93,7 @@ supplies `--hush`/`--quiet`/`--silent`.
 
 #### Defined in
 
-[src/commands/release.ts:231](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/release.ts#L231)
+[src/commands/release.ts:231](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/release.ts#L231)
 
 ***
 
@@ -109,7 +109,7 @@ A function called when the task is triggered.
 
 #### Defined in
 
-[src/commands/release.ts:208](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/release.ts#L208)
+[src/commands/release.ts:208](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/release.ts#L208)
 
 ***
 
@@ -119,4 +119,4 @@ A function called when the task is triggered.
 
 #### Defined in
 
-[src/commands/release.ts:230](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/release.ts#L230)
+[src/commands/release.ts:230](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/release.ts#L230)

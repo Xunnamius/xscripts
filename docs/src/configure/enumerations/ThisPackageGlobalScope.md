@@ -25,4 +25,4 @@ checking commands that only operate in the "this-package" scope.
 
 #### Defined in
 
-[src/configure.ts:81](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/configure.ts#L81)
+[src/configure.ts:81](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/configure.ts#L81)

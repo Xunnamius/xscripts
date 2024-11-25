@@ -14,7 +14,7 @@
 
 #### Defined in
 
-[src/commands/lint.ts:50](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/lint.ts#L50)
+[src/commands/lint.ts:50](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/lint.ts#L50)
 
 ***
 
@@ -24,7 +24,7 @@
 
 #### Defined in
 
-[src/commands/lint.ts:48](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/lint.ts#L48)
+[src/commands/lint.ts:48](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/lint.ts#L48)
 
 ***
 
@@ -34,7 +34,7 @@
 
 #### Defined in
 
-[src/commands/lint.ts:49](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/lint.ts#L49)
+[src/commands/lint.ts:49](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/lint.ts#L49)
 
 ***
 
@@ -44,4 +44,4 @@
 
 #### Defined in
 
-[src/commands/lint.ts:47](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/lint.ts#L47)
+[src/commands/lint.ts:47](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/lint.ts#L47)

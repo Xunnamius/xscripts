@@ -14,4 +14,4 @@
 
 ## Defined in
 
-[src/commands/build/distributables.ts:134](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/src/commands/build/distributables.ts#L134)
+[src/commands/build/distributables.ts:134](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/build/distributables.ts#L134)

@@ -120,7 +120,7 @@ Ensures this test is run regardless of the invocation of
 
 #### Defined in
 
-[types/jest.patched.d.ts:15](https://github.com/Xunnamius/xscripts/blob/d89809b1811fb99fb24fbfe0c6960a0e087bcc27/types/jest.patched.d.ts#L15)
+[types/jest.patched.d.ts:15](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/types/jest.patched.d.ts#L15)
 
 ***
 
