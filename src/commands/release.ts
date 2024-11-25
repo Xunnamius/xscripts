@@ -1186,20 +1186,22 @@ const initPostreleaseTasks: InitPostreleaseTask[][] = [
         debug('currentBranch: %O', currentBranch);
         softAssert(currentBranch, ErrorMessage.ReleaseRepositoryNoCurrentBranch());
 
-        const flags = isRootPackage(cwdPackage)
-          ? [`project.${currentBranch}`, `package.${currentBranch}_root`]
-          : [`package.${currentBranch}_${cwdPackage.id}`];
+        // TODO: a new project-wide coverage tag; probably not so useful here:
+        // TODO: project.${currentBranch}
 
-        debug(`computed flags (before ${maxFlagSize}-character truncation): %O`, flags);
+        const flag = `package.${currentBranch}_${isRootPackage(cwdPackage) ? 'root' : cwdPackage.id}`;
+
+        debug(`computed flag (before ${maxFlagSize}-character truncation): %O`, flag);
 
         log([LogTag.IF_NOT_HUSHED], 'Running codecov executable...');
 
         await attemptToRun(
           codecovCommand,
           [
-            'do-upload',
+            'upload-process',
             '--fail-on-error',
-            ...flags.flatMap((flag) => ['--flag', flag.slice(0, maxFlagSize)]),
+            '--flag',
+            flag,
             '--branch',
             currentBranch,
             '--coverage-files-search-root-folder',

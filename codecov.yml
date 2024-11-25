@@ -7,9 +7,9 @@ coverage:
     patch:
       default:
         informational: true
-# * Well-known flags: project.<branch>, package.<branch>_<package-id>
-# * Flags that are always defined: project.main, package.main_root
-# ! Any upload using the "project.main" flag must also use "package.main_root"
+# TODO: project-wide flags like project.<branch>
+# * Well-known flag syntax: package.<branch>_<package-id>
+# * <package>-id will be the WorkspacePackageId or "root" for RootPackages
 flag_management:
   # * These rules will apply to all non-specially-configured flags
   default_rules:
