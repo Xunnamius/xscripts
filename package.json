@@ -101,7 +101,7 @@
     "test:packages:all": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --scope unlimited --coverage"
   },
   "dependencies": {
-    "@-xun/changelog": "^0.3.4",
+    "@-xun/changelog": "^1.0.0",
     "@-xun/run": "^0.0.1",
     "@arethetypeswrong/cli": "^0.17.0",
     "@babel/cli": "^7.25.9",
