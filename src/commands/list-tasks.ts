@@ -52,7 +52,9 @@ export default function command({
   return {
     builder,
     description: 'List all tasks (typically NPM scripts) supported by this project',
-    usage: withGlobalUsage('$1 [task-name-1, task-name-2, ...]', { appendPeriod: false }),
+    usage: withGlobalUsage(' [task-name-1, task-name-2, ...]\n\n$1', {
+      prependNewlines: false
+    }),
     handler: withGlobalHandler(async function ({
       _: allowList,
       $0: scriptFullName,
