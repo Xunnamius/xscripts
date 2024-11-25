@@ -246,7 +246,7 @@
     "validate-npm-package-name": "^6.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.29.1",
+    "@-xun/scripts": "^1.29.2",
     "execa-root": "npm:execa@^9.5.1"
   },
   "engines": {
