@@ -13,4 +13,4 @@ the changelog file.
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:136](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/assets/config/_conventional.config.cjs.ts#L136)
+[src/assets/config/\_conventional.config.cjs.ts:144](https://github.com/Xunnamius/xscripts/blob/89eebe76ad675b35907b3379b29bfde27fd5a5b8/src/assets/config/_conventional.config.cjs.ts#L144)

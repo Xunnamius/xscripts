@@ -12,4 +12,4 @@ A prerelease, release, or postrelease task to be executed by this command.
 
 ## Defined in
 
-[src/commands/release.ts:143](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/commands/release.ts#L143)
+[src/commands/release.ts:143](https://github.com/Xunnamius/xscripts/blob/89eebe76ad675b35907b3379b29bfde27fd5a5b8/src/commands/release.ts#L143)

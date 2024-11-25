@@ -46,4 +46,4 @@ Handlebars template data (not processed by our custom configuration).
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:277](https://github.com/Xunnamius/xscripts/blob/ba9f63839da3826ddc001b87c07464b3feaa49e7/src/assets/config/_conventional.config.cjs.ts#L277)
+[src/assets/config/\_conventional.config.cjs.ts:285](https://github.com/Xunnamius/xscripts/blob/89eebe76ad675b35907b3379b29bfde27fd5a5b8/src/assets/config/_conventional.config.cjs.ts#L285)
