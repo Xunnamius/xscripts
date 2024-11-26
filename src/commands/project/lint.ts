@@ -96,6 +96,7 @@ export default function command({
       // TODO (ensure x-link references all point to proper places in Markdown docs)
       // TODO (nested workspaces are not supported)
       // TODO (warn on package dependencies or devdependencies that are not ranges)
+      // TODO (flag unknown files (files that aren't supposed to exist or are not recognized or are old names for things that have since been moved) and also provide a flag to allow files based on regexp)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
