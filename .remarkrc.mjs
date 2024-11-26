@@ -9,11 +9,9 @@ import { analyzeProjectStructure } from './node_modules/@-xun/scripts/dist/packa
  */
 const debug = (await import('debug')).default('xscripts:config:remark');
 
+// {@xscripts/notExtraneous remark-cli}
+
 /**
- * {@xscripts/notExtraneous
- *   - remark-cli
- * }
- */
 
 export const noUndefinedReferencesPlugin = [
   // {@xscripts/notExtraneous remark-lint-no-undefined-references}
