@@ -42,4 +42,4 @@
 
 ## Defined in
 
-[src/commands/deploy.ts:65](https://github.com/Xunnamius/xscripts/blob/89eebe76ad675b35907b3379b29bfde27fd5a5b8/src/commands/deploy.ts#L65)
+[src/commands/deploy.ts:65](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/commands/deploy.ts#L65)

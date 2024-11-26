@@ -10,4 +10,4 @@
 
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:52](https://github.com/Xunnamius/xscripts/blob/89eebe76ad675b35907b3379b29bfde27fd5a5b8/src/assets/config/_eslint.config.mjs.ts#L52)
+[src/assets/config/\_eslint.config.mjs.ts:52](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_eslint.config.mjs.ts#L52)

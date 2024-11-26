@@ -16,4 +16,4 @@
 
 ## Defined in
 
-[src/commands/list-tasks.ts:26](https://github.com/Xunnamius/xscripts/blob/89eebe76ad675b35907b3379b29bfde27fd5a5b8/src/commands/list-tasks.ts#L26)
+[src/commands/list-tasks.ts:26](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/commands/list-tasks.ts#L26)

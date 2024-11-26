@@ -15,4 +15,4 @@ either `ChangelogPatches` or a [ChangelogPatcherFunction](ChangelogPatcherFuncti
 
 ## Defined in
 
-[src/commands/build/changelog.ts:537](https://github.com/Xunnamius/xscripts/blob/89eebe76ad675b35907b3379b29bfde27fd5a5b8/src/commands/build/changelog.ts#L537)
+[src/commands/build/changelog.ts:537](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/commands/build/changelog.ts#L537)
