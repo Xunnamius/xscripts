@@ -12,6 +12,19 @@ const debug = (await import('debug')).default('xscripts:config:remark');
 // {@xscripts/notExtraneous remark-cli}
 
 /**
+ * We track these so that we may prevent mdast-util-markdown from mangling them
+ * with an escape character, which sometimes does not render properly on GitHub
+ * or with GFM-compatible tooling.
+ *
+ * @see https://github.com/orgs/community/discussions/16925
+ */
+const wellKnownGithubAlerts = [
+  '[!NOTE]',
+  '[!TIP]',
+  '[!IMPORTANT]',
+  '[!WARNING]',
+  '[!CAUTION]'
+];
 
 export const noUndefinedReferencesPlugin = [
   // {@xscripts/notExtraneous remark-lint-no-undefined-references}
@@ -197,6 +210,24 @@ const config =
           rule: '-',
           strong: '*',
           tightDefinitions: true,
+
+          // ? Prevent mdast-util-markdown from mangling GFM alerts with an
+          // ? unneeded escape character "\" which causes problems on GitHub
+          handlers: {
+            text: (node, _, state, info) => {
+              const ancestry = state.stack.slice(-3).join('<-');
+              /**
+               * @type {string}
+               */
+              const value = node.value;
+
+              return ancestry === 'blockquote<-paragraph<-phrasing' &&
+                wellKnownGithubAlerts.includes(value)
+                ? value
+                : state.safe(value, info);
+            }
+          },
+
           ...(process.env.NODE_ENV === 'lint'
             ? lintConfig.settings
             : formatConfig.settings)
