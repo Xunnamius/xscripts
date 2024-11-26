@@ -27,7 +27,7 @@ using the yargs API imperatively when required.
 In exchange for straying a bit from the vanilla yargs API, BFE greatly increases
 Black Flag's declarative powers.
 
-> \[!NOTE]
+> [!NOTE]
 >
 > See also: [why are @black-flag/extensions and @black-flag/core separate
 > packages?][2]
@@ -65,7 +65,7 @@ npm install @black-flag/extensions
 
 ## Usage
 
-> \[!NOTE]
+> [!NOTE]
 >
 > See also: [differences between BFE and Yargs][3].
 
@@ -166,7 +166,7 @@ Note that the checks enabled by these configuration keys:
 
 **Logical Keys**
 
-> \[!NOTE]
+> [!NOTE]
 >
 > In the below definitions, `P`, `Q`, and `R` are arguments (or argument-value
 > pairs) configured via a hypothetical call to
@@ -197,12 +197,12 @@ Note that the checks enabled by these configuration keys:
 
 ##### `requires`
 
-> \[!IMPORTANT]
+> [!IMPORTANT]
 >
 > `requires` is a superset of and replacement for vanilla yargs's
 > [`implies`][21]. BFE also has [its own implication implementation][14].
 
-> \[!NOTE]
+> [!NOTE]
 >
 > `{ P: { requires: [Q, R] }}` can be read as `P ⟹ (Q ∧ R)` or `¬P ∨ (Q ∧ R)`,
 > with truth values denoting existence.
@@ -250,11 +250,11 @@ given in `argv` (e.g. via the command line).
 
 ##### `conflicts`
 
-> \[!IMPORTANT]
+> [!IMPORTANT]
 >
 > `conflicts` is a superset of vanilla yargs's [`conflicts`][22].
 
-> \[!NOTE]
+> [!NOTE]
 >
 > `{ P: { conflicts: [Q, R] }}` can be read as `P ⟹ (¬Q ∧ ¬R)` or
 > `¬P ∨ (¬Q ∧ ¬R)`, with truth values denoting existence.
@@ -303,7 +303,7 @@ preventing the two arguments from being given simultaneously.
 
 ##### `implies`
 
-> \[!IMPORTANT]
+> [!IMPORTANT]
 >
 > BFE's `implies` replaces vanilla yargs's `implies` in a breaking way. The two
 > implementations are nothing alike. If you're looking for vanilla yargs's
@@ -519,11 +519,11 @@ behavior for a specific option, set `vacuousImplications` to `true` (it is
 
 ##### `demandThisOptionIf`
 
-> \[!IMPORTANT]
+> [!IMPORTANT]
 >
 > `demandThisOptionIf` is a superset of vanilla yargs's [`demandOption`][25].
 
-> \[!NOTE]
+> [!NOTE]
 >
 > `{ P: { demandThisOptionIf: [Q, R] }}` can be read as `(Q ∨ R) ⟹ P` or
 > `P ∨ (¬Q ∧ ¬R)`, with truth values denoting existence.
@@ -571,12 +571,12 @@ achieved via [`subOptionOf`][19].
 
 ##### `demandThisOption`
 
-> \[!IMPORTANT]
+> [!IMPORTANT]
 >
 > `demandThisOption` is an alias of vanilla yargs's [`demandOption`][25].
 > `demandOption` is disallowed by intellisense.
 
-> \[!NOTE]
+> [!NOTE]
 >
 > `{ P: { demandThisOption: true }}` can be read as `P`, with truth values
 > denoting existence.
@@ -593,7 +593,7 @@ equivalent to `demandOption` from vanilla yargs. For example:
 
 This configuration will trigger a check to ensure that `‑x` is given.
 
-> \[!NOTE]
+> [!NOTE]
 >
 > As an alias of vanilla yargs's [`demandOption`][25], this check is outsourced
 > to yargs, which means it runs on Black Flag's _first and second parsing
@@ -603,11 +603,11 @@ This configuration will trigger a check to ensure that `‑x` is given.
 
 ##### `demandThisOptionOr`
 
-> \[!IMPORTANT]
+> [!IMPORTANT]
 >
 > `demandThisOptionOr` is a superset of vanilla yargs's [`demandOption`][25].
 
-> \[!NOTE]
+> [!NOTE]
 >
 > `{ P: { demandThisOptionOr: [Q, R] }}` can be read as `P ∨ Q ∨ R`, with truth
 > values denoting existence.
@@ -659,12 +659,12 @@ searched for said value. Otherwise, a strict deep equality check is performed.
 
 ##### `demandThisOptionXor`
 
-> \[!IMPORTANT]
+> [!IMPORTANT]
 >
 > `demandThisOptionXor` is a superset of vanilla yargs's [`demandOption`][25] +
 > [`conflicts`][22].
 
-> \[!NOTE]
+> [!NOTE]
 >
 > `{ P: { demandThisOptionXor: [Q, R] }}` can be read as `P ⊕ Q ⊕ R`, with truth
 > values denoting existence.
@@ -733,7 +733,7 @@ all updates to `argv` have been applied (including from [`subOptionOf`][19] and
 [BFE's `implies`][14]). This means `check` always sees the _final_ version of
 `argv`, which is the same version that the command's [`handler`][23] is passed.
 
-> \[!TIP]
+> [!TIP]
 >
 > `check` functions are skipped if their corresponding argument does not exist
 > in `argv`.
@@ -776,7 +776,7 @@ export const [builder, withHandlerExtensions] = withBuilderExtensions({
 You may also pass an array of check functions, each being executed after the
 other. This makes it easy to reuse checks between options. For example:
 
-> \[!WARNING]
+> [!WARNING]
 >
 > Providing an array with one or more _async_ check functions will result in
 > them all being awaited concurrently.
@@ -925,7 +925,7 @@ This is the goal of the `subOptionOf` configuration key. Using `subOptionOf`,
 developers can take advantage of dynamic options without sweating the
 implementation details.
 
-> \[!NOTE]
+> [!NOTE]
 >
 > `subOptionOf` updates are run and applied during Black Flag's [second parsing
 > pass][7].
@@ -1010,7 +1010,7 @@ export const [builder, withHandlerExtensions] = withBuilderExtensions({
 });
 ```
 
-> \[!IMPORTANT]
+> [!IMPORTANT]
 >
 > You cannot nest `subOptionOf` keys within each other nor return an object
 > containing `subOptionOf` from an `update` that did not already have one. Doing
@@ -1196,13 +1196,13 @@ The following arguments as given conflict with the implications of "generate-typ
 BFE (and, consequently, BF/yargs when not generating help text) will ignore the
 existence of the [`default`][8] key until near the end of BFE's execution.
 
-> \[!IMPORTANT]
+> [!IMPORTANT]
 >
 > This means the optional `customBuilder` function passed to
 > `withBuilderExtensions` will _not_ see any defaulted values. However, your
 > command handlers will.
 
-> \[!WARNING]
+> [!WARNING]
 >
 > An explicitly `undefined` default, i.e. `{ default: undefined }`, will be
 > deleted from the configuration object and completely ignored by BFE, Black
@@ -1258,7 +1258,7 @@ are strange and may not work as expected:
 
 #### Automatic Grouping of Related Options
 
-> \[!CAUTION]
+> [!CAUTION]
 >
 > To support this functionality, options must be described declaratively.
 > [Defining options imperatively][3] will break this feature.
@@ -1501,7 +1501,7 @@ Hence the purpose of `getInvocableExtendedHandler`. This function returns a
 version of the extended command's `handler` function that is ready to invoke
 immediately. It can be used with both BFE and normal Black Flag command exports.
 
-> \[!NOTE]
+> [!NOTE]
 >
 > Command `builder` and `handler` exports invoked via
 > `getInvocableExtendedHandler` will receive an `argv` containing the
@@ -2118,7 +2118,7 @@ export function builder(blackFlag) {
 }
 ```
 
-> \[!TIP]
+> [!TIP]
 >
 > The yargs API can and should still be invoked for purposes other than defining
 > options on a command, e.g. `blackFlag.strict(false)`.

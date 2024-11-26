@@ -63,7 +63,7 @@ release is necessary, and what the new version number will be, by analyzing git
 commit messages. With this in mind, **it is imperative you brush up on [the
 commit message convention][25] which drives our releases.**
 
-> \[!IMPORTANT]
+> [!IMPORTANT]
 >
 > **UNDER NO CIRCUMSTANCES** should any of your commit messages contain the
 > phrases `BREAKING:`, `BREAKING CHANGE:`, or `BREAKING CHANGES:` unless the
@@ -76,7 +76,7 @@ things get messed up (e.g. CI workflow / GitHub Actions breaks) and we need to
 trigger a release ourselves. When this happens, xrelease can be triggered
 locally.
 
-> \[!CAUTION]
+> [!CAUTION]
 >
 > Note that any manual releases generated outside of the CI/CD pipeline will be
 > published [_without established provenance_][21]! It is for that reason that,
