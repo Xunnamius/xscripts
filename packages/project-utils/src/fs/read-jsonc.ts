@@ -115,7 +115,15 @@ function readJsonc_<T>(
       const result = JSONC.parse(rawJson, errors, parseOptions);
 
       if (!ignoreNonExceptionErrors && errors.length) {
-        throw new Error('JSONC.parse returned with errors: ' + errors.join('; '));
+        throw new Error(
+          'JSONC.parse returned with errors: ' +
+            errors
+              .map(
+                ({ error: errorCode, offset: errorOffset }) =>
+                  `code ${errorCode} at offset ${errorOffset}`
+              )
+              .join('; ')
+        );
       }
 
       cache.set(CacheScope.ReadJsonc, [path, cacheIdComponentsObject], result);
