@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -13,7 +13,9 @@ The caller is expected to `await` the completion of `jest.isolateModulesAsync()`
 
 ## Parameters
 
-• **fn**
+### fn
+
+() => `Promise`\<`void`\>
 
 ## Returns
 

@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -16,11 +16,17 @@ Mocks a module with an auto-mocked version when it is being required.
 
 ## Parameters
 
-• **moduleName**: `string`
+### moduleName
 
-• **factory?**
+`string`
 
-• **options?**: [`MockOptions`](../interfaces/MockOptions.md)
+### factory?
+
+() => `T`
+
+### options?
+
+[`MockOptions`](../interfaces/MockOptions.md)
 
 ## Returns
 

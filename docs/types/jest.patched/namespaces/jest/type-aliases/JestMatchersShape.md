@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -26,9 +26,9 @@ matcher can be chained. If the promise is rejected the assertion fails.
 
 ## Type Parameters
 
-• **TNonPromise** *extends* `object` = `object`
+• **TNonPromise** *extends* `object` = \{\}
 
-• **TPromise** *extends* `object` = `object`
+• **TPromise** *extends* `object` = \{\}
 
 ## Defined in
 

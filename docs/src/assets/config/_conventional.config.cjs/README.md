@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../README.md)
 
 ***
 
@@ -7,10 +7,6 @@
 # src/assets/config/\_conventional.config.cjs
 
 ## Index
-
-### Type Aliases
-
-- [Context](type-aliases/Context.md)
 
 ### Variables
 
@@ -25,6 +21,7 @@
 
 ### Functions
 
+- [assertEnvironment](functions/assertEnvironment.md)
 - [getExclusionaryPathspecs](functions/getExclusionaryPathspecs.md)
 - [getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix](functions/getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix.md)
 - [moduleExport](functions/moduleExport.md)

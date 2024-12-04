@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -17,7 +17,9 @@ whether the module should receive a mock implementation or not.
 
 ## Parameters
 
-• **moduleName**: `string`
+### moduleName
+
+`string`
 
 ## Returns
 

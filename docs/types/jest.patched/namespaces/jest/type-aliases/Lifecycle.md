@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -10,9 +10,13 @@
 
 ## Parameters
 
-• **fn**: [`ProvidesHookCallback`](ProvidesHookCallback.md)
+### fn
 
-• **timeout?**: `number`
+[`ProvidesHookCallback`](ProvidesHookCallback.md)
+
+### timeout?
+
+`number`
 
 ## Returns
 

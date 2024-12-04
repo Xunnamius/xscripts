@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Type Alias: CustomCliArguments
 
-> **CustomCliArguments**: [`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md)\<[`ThisPackageGlobalScope`](../../../configure/enumerations/ThisPackageGlobalScope.md)\> & `object` & `object` \| `object`
+> **CustomCliArguments**: [`GlobalCliArguments`](../../../configure/type-aliases/GlobalCliArguments.md)\<[`ThisPackageGlobalScope`](../../../configure/enumerations/ThisPackageGlobalScope.md)\> & `object` & \{`preview`: `boolean`;`previewUrl`: `string`;`production`: `boolean`;`target`: [`Vercel`](../enumerations/DeployTarget.md#vercel); \} \| \{`host`: `string`;`target`: [`Ssh`](../enumerations/DeployTarget.md#ssh);`toPath`: `string`; \}
 
 ## Type declaration
 
@@ -20,4 +20,4 @@
 
 ## Defined in
 
-[src/commands/deploy.ts:48](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/commands/deploy.ts#L48)
+[src/commands/deploy.ts:48](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/deploy.ts#L48)

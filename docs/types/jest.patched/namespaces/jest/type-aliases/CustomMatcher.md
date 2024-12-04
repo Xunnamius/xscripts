@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -10,11 +10,17 @@
 
 ## Parameters
 
-• **this**: [`MatcherContext`](MatcherContext.md)
+### this
 
-• **received**: `any`
+[`MatcherContext`](MatcherContext.md)
 
-• ...**actual**: `any`[]
+### received
+
+`any`
+
+### actual
+
+...`any`[]
 
 ## Returns
 

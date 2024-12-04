@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../README.md)
 
 ***
 
@@ -10,13 +10,15 @@
 
 ### Type Aliases
 
-- [Context](type-aliases/Context.md)
+- [JestConfig](type-aliases/JestConfig.md)
 
 ### Variables
 
-- [baseConfig](variables/baseConfig.md)
+- [wellKnownNodeEnvValues](variables/wellKnownNodeEnvValues.md)
 
 ### Functions
 
+- [assertEnvironment](functions/assertEnvironment.md)
+- [baseConfig](functions/baseConfig.md)
 - [moduleExport](functions/moduleExport.md)
 - [transformer](functions/transformer.md)

@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -10,13 +10,19 @@
 
 ## Parameters
 
-• **pluginConfig**
+### pluginConfig
 
-• **pluginConfig.parserOpts**: `any`
+#### parserOpts
 
-• **pluginConfig.writerOpts**: `any`
+`any`
 
-• **context**: `VerifyReleaseContext`
+#### writerOpts
+
+`any`
+
+### context
+
+`VerifyReleaseContext`
 
 ## Returns
 
@@ -24,4 +30,4 @@
 
 ## Defined in
 
-[types/release-notes-generator.d.ts:5](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/types/release-notes-generator.d.ts#L5)
+[types/release-notes-generator.d.ts:5](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/types/release-notes-generator.d.ts#L5)

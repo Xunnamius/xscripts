@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -85,4 +85,4 @@ x: some-other-command, yet-another-command, a-5th-command
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:233](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_conventional.config.cjs.ts#L233)
+[src/assets/config/\_conventional.config.cjs.ts:230](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_conventional.config.cjs.ts#L230)

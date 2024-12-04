@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../README.md)
 
 ***
 
@@ -10,10 +10,17 @@
 
 ### Type Aliases
 
-- [Context](type-aliases/Context.md)
+- [PluggableListSupportingSpecifiers](type-aliases/PluggableListSupportingSpecifiers.md)
 - [RemarkConfig](type-aliases/RemarkConfig.md)
+
+### Variables
+
+- [noUndefinedReferencesPlugin](variables/noUndefinedReferencesPlugin.md)
+- [wellKnownGithubAlerts](variables/wellKnownGithubAlerts.md)
+- [wellKnownNodeEnvValues](variables/wellKnownNodeEnvValues.md)
 
 ### Functions
 
+- [assertEnvironment](functions/assertEnvironment.md)
 - [moduleExport](functions/moduleExport.md)
 - [transformer](functions/transformer.md)

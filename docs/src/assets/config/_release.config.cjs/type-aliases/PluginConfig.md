@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -11,11 +11,11 @@
 The custom configuration object expected by the custom semantic-release
 plugin steps defined below.
 
+## Type declaration
+
 ## Index Signature
 
  \[`key`: `string`\]: `unknown`
-
-## Type declaration
 
 ### parserOpts
 
@@ -31,4 +31,4 @@ plugin steps defined below.
 
 ## Defined in
 
-[src/assets/config/\_release.config.cjs.ts:231](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_release.config.cjs.ts#L231)
+[src/assets/config/\_release.config.cjs.ts:75](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_release.config.cjs.ts#L75)

@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -11,9 +11,13 @@
 Accepts an absolute path to the project root and returns a FlatCompat
 instance.
 
+Only useful when interfacing with legacy plugins built for `eslint@<9`.
+
 ## Parameters
 
-• **projectRoot**: `AbsolutePath`
+### projectRoot
+
+`AbsolutePath`
 
 ## Returns
 
@@ -21,4 +25,4 @@ instance.
 
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:513](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_eslint.config.mjs.ts#L513)
+[src/assets/config/\_eslint.config.mjs.ts:835](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_eslint.config.mjs.ts#L835)

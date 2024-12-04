@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -6,18 +6,36 @@
 
 # Function: moduleExport()
 
-> **moduleExport**(`mode`, `shouldRenumberReferences`): [`RemarkConfig`](../type-aliases/RemarkConfig.md)
+> **moduleExport**(`__namedParameters`): [`RemarkConfig`](../type-aliases/RemarkConfig.md)
 
 ## Parameters
 
-• **mode**: `"format"` \| `"lint"`
+### \_\_namedParameters
 
-• **shouldRenumberReferences**: `boolean`
+#### allowWarningComments
+
+`boolean`
+
+#### mode
+
+`"format"` \| `"lint"` \| `"lint-no-undef"`
+
+#### projectMetadata
+
+`ProjectMetadata`
+
+#### shouldRenumberReferences
+
+`boolean`
 
 ## Returns
 
 [`RemarkConfig`](../type-aliases/RemarkConfig.md)
 
+## See
+
+[assertEnvironment](assertEnvironment.md)
+
 ## Defined in
 
-[src/assets/config/\_.remarkrc.mjs.ts:79](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_.remarkrc.mjs.ts#L79)
+[src/assets/config/\_.remarkrc.mjs.ts:218](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_.remarkrc.mjs.ts#L218)

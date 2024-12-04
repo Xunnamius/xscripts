@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -8,12 +8,14 @@
 
 > **hasExtensionAcceptedByBabel**(`path`): `boolean`
 
-Returns `true` if `path` points to a file with an extension accepted by
-Babel.
+Returns `true` if `path` points to a file with an extension accepted by Babel
+(except `.d.ts`).
 
 ## Parameters
 
-• **path**: `string`
+### path
+
+`string`
 
 ## Returns
 
@@ -25,4 +27,4 @@ Babel.
 
 ## Defined in
 
-[src/assets/config/\_babel.config.cjs.ts:36](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_babel.config.cjs.ts#L36)
+[src/assets/config/\_babel.config.cjs.ts:122](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_babel.config.cjs.ts#L122)

@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -6,20 +6,26 @@
 
 # Function: transformer()
 
-> **transformer**(`this`, `context`, `options`): [`TransformerResult`](../../../type-aliases/TransformerResult.md)
+> **transformer**(`this`, `context`, `__namedParameters`): `Promise`\<`object`\>
 
 ## Parameters
 
-• **this**: `void`
+### this
 
-• **context**: `Partial`\<`EmptyObject`\> & [`RequiredTransformerContext`](../../../type-aliases/RequiredTransformerContext.md)
+`void`
 
-• **options**: `EmptyObject` = `{}`
+### context
+
+[`TransformerContext`](../../../type-aliases/TransformerContext.md)
+
+### \_\_namedParameters
+
+[`TransformerOptions`](../../../type-aliases/TransformerOptions.md) = `{}`
 
 ## Returns
 
-[`TransformerResult`](../../../type-aliases/TransformerResult.md)
+`Promise`\<`object`\>
 
 ## Defined in
 
-[src/assets/config/\_.husky.ts:7](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_.husky.ts#L7)
+[src/assets/config/\_.husky.ts:5](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_.husky.ts#L5)

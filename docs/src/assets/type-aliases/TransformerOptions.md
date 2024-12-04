@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -6,11 +6,24 @@
 
 # Type Alias: TransformerOptions
 
-> **TransformerOptions**: `EmptyObject`
+> **TransformerOptions**: `object`
 
-Options to tweak the runtime of [makeTransformer](../functions/makeTransformer.md) at xscripts project
-init-time (or renovate-time).
+Options to tweak the runtime of [makeTransformer](../functions/makeTransformer.md).
+
+## Type declaration
+
+### trimContents?
+
+> `optional` **trimContents**: `"start"` \| `"end"` \| `"both"` \| `"both-then-append-newline"` \| `false`
+
+Whether the resulting file contents should be trimmed and how.
+
+#### Default
+
+```ts
+'both-then-append-newline'
+```
 
 ## Defined in
 
-[src/assets.ts:80](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets.ts#L80)
+[src/assets.ts:95](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets.ts#L95)

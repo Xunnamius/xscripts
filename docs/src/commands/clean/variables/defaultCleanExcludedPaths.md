@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../README.md)
 
 ***
 
@@ -17,4 +17,4 @@ with `(^|/)`. Note that periods must be escaped (i.e. `'\\.'`).
 
 ## Defined in
 
-[src/commands/clean.ts:36](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/commands/clean.ts#L36)
+[src/commands/clean.ts:36](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/clean.ts#L36)

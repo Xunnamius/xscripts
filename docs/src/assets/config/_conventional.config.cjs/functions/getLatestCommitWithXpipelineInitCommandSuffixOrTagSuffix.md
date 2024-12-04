@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -15,7 +15,9 @@ Xpipeline command suffix `[INIT]`, or being pointed to by a
 
 ## Parameters
 
-• **tagPrefix**: `string`
+### tagPrefix
+
+`string`
 
 ## Returns
 
@@ -27,4 +29,4 @@ XchangelogConfig
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:966](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_conventional.config.cjs.ts#L966)
+[src/assets/config/\_conventional.config.cjs.ts:990](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_conventional.config.cjs.ts#L990)

@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../README.md)
 
 ***
 
@@ -17,4 +17,4 @@ within `./.transpiled` (with respect to the current working directory).
 
 #### Defined in
 
-[src/commands/test.ts:95](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/commands/test.ts#L95)
+[src/commands/test.ts:95](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/test.ts#L95)

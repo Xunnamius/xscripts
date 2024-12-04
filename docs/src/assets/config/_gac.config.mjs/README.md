@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../README.md)
 
 ***
 
@@ -8,10 +8,7 @@
 
 ## Index
 
-### Type Aliases
-
-- [Context](type-aliases/Context.md)
-
 ### Functions
 
+- [moduleExport](functions/moduleExport.md)
 - [transformer](functions/transformer.md)

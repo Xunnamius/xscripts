@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -17,9 +17,13 @@ for the specified module.
 
 ## Parameters
 
-• **moduleName**: `string`
+### moduleName
 
-• **moduleExports**: `T`
+`string`
+
+### moduleExports
+
+`T`
 
 ## Returns
 

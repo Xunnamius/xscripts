@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -21,81 +21,153 @@ of an Error instance, but are reported to the user in other ways
 (such as via `rejoinder`). They may not follow the same standard
 punctuation and capitalization rules as the other error messages.
 
-### specialized.BuildOutputIntermediates()
+#### specialized.BabelCorejsDependencyMissing()
 
-#### Returns
+##### Parameters
 
-`string`
-
-### specialized.BuildOutputPartial()
-
-#### Returns
+###### coreJsLibraryVersion
 
 `string`
 
-### specialized.BuildSucceededButOutputCheckFailed()
-
-#### Returns
+###### CORE\_JS\_LIBRARY\_VERSION
 
 `string`
 
-### specialized.DependenciesExtraneous()
+###### cwdPackageCoreJsDependency
 
-#### Parameters
+`undefined` | `string`
 
-• **packagesMeta**: [`string`, `string`][]
+###### packageName
 
-#### Returns
+`undefined` | `string`
 
-`string`
-
-### specialized.DistributablesSpecifiersDependenciesMissing()
-
-#### Parameters
-
-• **packageSpecifiers**: [`AbsolutePath`, `string`, `string`][]
-
-#### Returns
+###### packageRoot
 
 `string`
 
-### specialized.DistributablesSpecifiersPointOutsideDist()
-
-#### Parameters
-
-• **specifiers**: `ImportSpecifier`[]
-
-#### Returns
+##### Returns
 
 `string`
 
-### specialized.DistributablesSpecifiersPointToInaccessible()
+#### specialized.BabelCorejsEgregiousPackageJsonFileInBuildOutput()
 
-#### Parameters
+##### Parameters
 
-• **specifiers**: `ImportSpecifier`[]
-
-#### Returns
+###### originalSpecifier
 
 `string`
 
-### specialized.ExportSubpathsPointsToInaccessible()
-
-#### Parameters
-
-• **subpaths**: [`string`, `string`][]
-
-#### Returns
+###### inputFilepath
 
 `string`
 
-### specialized.OthersSpecifiersDependenciesMissing()
+##### Returns
 
-#### Parameters
+`string`
 
-• **packageSpecifiers**: [`AbsolutePath`, `string`, `string`][]
+#### specialized.BabelCorejsVersionUnresolvable()
 
-#### Returns
+##### Parameters
+
+###### coreJsLibraryVersion
+
+`string`
+
+###### CORE\_JS\_LIBRARY\_VERSION
+
+`string`
+
+##### Returns
+
+`string`
+
+#### specialized.BuildOutputIntermediates()
+
+##### Returns
+
+`string`
+
+#### specialized.BuildOutputPartial()
+
+##### Returns
+
+`string`
+
+#### specialized.BuildSucceededButOutputCheckFailed()
+
+##### Returns
+
+`string`
+
+#### specialized.DependenciesExtraneous()
+
+##### Parameters
+
+###### packagesMeta
+
+[`string`, `string`][]
+
+##### Returns
+
+`string`
+
+#### specialized.DistributablesSpecifiersDependenciesMissing()
+
+##### Parameters
+
+###### packageSpecifiers
+
+[`AbsolutePath`, `string`, `string`][]
+
+##### Returns
+
+`string`
+
+#### specialized.DistributablesSpecifiersPointOutsideDist()
+
+##### Parameters
+
+###### specifiers
+
+`ImportSpecifier`[]
+
+##### Returns
+
+`string`
+
+#### specialized.DistributablesSpecifiersPointToInaccessible()
+
+##### Parameters
+
+###### specifiers
+
+`ImportSpecifier`[]
+
+##### Returns
+
+`string`
+
+#### specialized.ExportSubpathsPointsToInaccessible()
+
+##### Parameters
+
+###### subpaths
+
+[`string`, `string`][]
+
+##### Returns
+
+`string`
+
+#### specialized.OthersSpecifiersDependenciesMissing()
+
+##### Parameters
+
+###### packageSpecifiers
+
+[`AbsolutePath`, `string`, `string`][]
+
+##### Returns
 
 `string`
 
@@ -103,7 +175,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **name**: `string`
+##### name
+
+`string`
 
 #### Returns
 
@@ -113,7 +187,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **name**: `string`
+##### name
+
+`string`
 
 #### Returns
 
@@ -123,7 +199,65 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **path**: `string`
+##### path
+
+`string`
+
+##### error
+
+`unknown`
+
+#### Returns
+
+`string`
+
+### BabelCorejsInstalledVersionRangeNotSatisfactory()
+
+#### Parameters
+
+##### coreJsLibraryVersion
+
+`string`
+
+##### CORE\_JS\_LIBRARY\_VERSION
+
+`string`
+
+##### cwdPackageCoreJsDependency
+
+`string`
+
+##### packageName
+
+`undefined` | `string`
+
+##### packageRoot
+
+`string`
+
+#### Returns
+
+`string`
+
+### BabelCorejsInstalledVersionTooOld()
+
+#### Parameters
+
+##### coreJsLibraryVersion
+
+`string`
+
+##### CORE\_JS\_LIBRARY\_VERSION
+
+`string`
+
+##### resolvedCoreJsVersion
+
+`string`
+
+##### packageRoot
+
+`string`
 
 #### Returns
 
@@ -133,7 +267,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **path**: `string`
+##### path
+
+`string`
 
 #### Returns
 
@@ -143,7 +279,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **key**: `string`
+##### key
+
+`string`
 
 #### Returns
 
@@ -153,7 +291,15 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **path**: `string`
+##### path
+
+`string`
+
+#### Returns
+
+`string`
+
+### BadEnginesNodeInPackageJson()
 
 #### Returns
 
@@ -175,7 +321,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **name**: `string`
+##### name
+
+`string`
 
 #### Returns
 
@@ -185,7 +333,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **path**: `string`
+##### path
+
+`string`
 
 #### Returns
 
@@ -213,7 +363,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **path**: `string`
+##### path
+
+`string`
 
 #### Returns
 
@@ -223,9 +375,13 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **from**: `string`
+##### from
 
-• **to**: `string`
+`string`
+
+##### to
+
+`string`
 
 #### Returns
 
@@ -235,7 +391,15 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **path**: `string`
+##### path
+
+`string`
+
+#### Returns
+
+`string`
+
+### CannotImportTsconfig()
 
 #### Returns
 
@@ -245,7 +409,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **path**: `string`
+##### path
+
+`string`
 
 #### Returns
 
@@ -255,7 +421,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **path**: `string`
+##### path
+
+`string`
 
 #### Returns
 
@@ -277,7 +445,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **path**: `string`
+##### path
+
+`string`
 
 #### Returns
 
@@ -305,7 +475,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **url**: `string`
+##### url
+
+`string`
 
 #### Returns
 
@@ -315,7 +487,29 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **command**: `string`
+##### command
+
+`string`
+
+#### Returns
+
+`string`
+
+### ConfigAssetEnvironmentValidationFailed()
+
+#### Parameters
+
+##### subject
+
+`string`
+
+##### badValue
+
+`string`
+
+##### validValues
+
+readonly `string`[]
 
 #### Returns
 
@@ -331,7 +525,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **identifier**: `string`
+##### identifier
+
+`string`
 
 #### Returns
 
@@ -353,7 +549,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **args**: `string`[]
+##### args
+
+`string`[]
 
 #### Returns
 
@@ -381,7 +579,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **path**: `string`
+##### path
+
+`string`
 
 #### Returns
 
@@ -391,7 +591,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **variableName**: `string`
+##### variableName
+
+`string`
 
 #### Returns
 
@@ -401,7 +603,9 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **filename**: `string`
+##### filename
+
+`string`
 
 #### Returns
 
@@ -411,9 +615,13 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **filename1**: `string`
+##### filename1
 
-• **filename2**: `string`
+`string`
+
+##### filename2
+
+`string`
 
 #### Returns
 
@@ -429,9 +637,13 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **option**: `string`
+##### option
 
-• **noun**: `string`
+`string`
+
+##### noun
+
+`string`
 
 #### Returns
 
@@ -441,9 +653,13 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **option**: `string`
+##### option
 
-• **noun**: `string`
+`string`
+
+##### noun
+
+`string`
 
 #### Returns
 
@@ -483,13 +699,21 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **name**: `string`
+##### name
 
-• **min**: `number`
+`string`
 
-• **given?**: `number`
+##### min
 
-• **adjective?**: `string`
+`number`
+
+##### given?
+
+`number`
+
+##### adjective?
+
+`string`
 
 #### Returns
 
@@ -499,9 +723,13 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **id**: `string`
+##### id
 
-• **npmScripts**: `string`[]
+`string`
+
+##### npmScripts
+
+`string`[]
 
 #### Returns
 
@@ -517,9 +745,13 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **sourcePath**: `string`
+##### sourcePath
 
-• **outputPath**: `string`
+`string`
+
+##### outputPath
+
+`string`
 
 #### Returns
 
@@ -529,9 +761,13 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **type**: `undefined` \| `string`
+##### type
 
-• **variableName**: `string`
+`undefined` | `string`
+
+##### variableName
+
+`string`
 
 #### Returns
 
@@ -547,31 +783,55 @@ punctuation and capitalization rules as the other error messages.
 
 #### Parameters
 
-• **expected**: `ProjectAttribute`[]
+##### expected
 
-• **actual**
+`ProjectAttribute`[]
 
-• **actual.cjs**: `undefined` \| `boolean`
+##### actual
 
-• **actual.cli**: `undefined` \| `boolean`
+###### cjs
 
-• **actual.esm**: `undefined` \| `boolean`
+`boolean`
 
-• **actual.hybridrepo**: `undefined` \| `boolean`
+###### cli
 
-• **actual.monorepo**: `undefined` \| `boolean`
+`boolean`
 
-• **actual.next**: `undefined` \| `boolean`
+###### esm
 
-• **actual.polyrepo**: `undefined` \| `boolean`
+`boolean`
 
-• **actual.private**: `undefined` \| `boolean`
+###### hybridrepo
 
-• **actual.vercel**: `undefined` \| `boolean`
+`boolean`
 
-• **actual.webpack**: `undefined` \| `boolean`
+###### monorepo
 
-• **preposition**: `string` = `'with'`
+`boolean`
+
+###### next
+
+`boolean`
+
+###### polyrepo
+
+`boolean`
+
+###### private
+
+`boolean`
+
+###### vercel
+
+`boolean`
+
+###### webpack
+
+`boolean`
+
+##### preposition
+
+`string` = `'with'`
 
 #### Returns
 
@@ -579,4 +839,4 @@ punctuation and capitalization rules as the other error messages.
 
 ## Defined in
 
-[src/error.ts:61](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/error.ts#L61)
+[src/error.ts:63](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/error.ts#L63)

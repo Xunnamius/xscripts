@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -10,9 +10,13 @@
 
 ## Parameters
 
-• **name**: `string` \| `number` \| `Function` \| [`FunctionLike`](FunctionLike.md)
+### name
 
-• **fn**: [`EmptyFunction`](../type-aliases/EmptyFunction.md)
+`string` | `number` | `Function` | [`FunctionLike`](FunctionLike.md)
+
+### fn
+
+[`EmptyFunction`](../type-aliases/EmptyFunction.md)
 
 ## Returns
 
@@ -43,7 +47,7 @@ invocation of `reconfigureJestGlobalsToSkipTestsInThisFileIfRequested`.
 
 #### Defined in
 
-[types/jest.patched.d.ts:7](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/types/jest.patched.d.ts#L7)
+[types/jest.patched.d.ts:7](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/types/jest.patched.d.ts#L7)
 
 ***
 

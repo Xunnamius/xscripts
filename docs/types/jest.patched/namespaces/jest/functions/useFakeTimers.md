@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -12,7 +12,9 @@ Instructs Jest to use fake versions of the standard timer functions.
 
 ## Parameters
 
-• **config?**: `FakeTimersConfig` \| `LegacyFakeTimersConfig`
+### config?
+
+`FakeTimersConfig` | `LegacyFakeTimersConfig`
 
 ## Returns
 

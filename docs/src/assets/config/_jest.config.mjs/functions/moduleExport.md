@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -6,556 +6,93 @@
 
 # Function: moduleExport()
 
-> **moduleExport**(): `object`
+> **moduleExport**(`__namedParameters`): `object`
+
+## Parameters
+
+### \_\_namedParameters
+
+#### derivedAliases
+
+\{\}
+
+#### isDebugging
+
+`boolean`
+
+#### skipSlowTestsLevel
+
+`number`
+
+Skip slow tests depending on the level given. `0` disables test skipping.
+`1` implements the skip by augmenting jest globals. `2` has the same effect
+as `1` while entirely skipping tests from files with names containing
+`-slow.`.
 
 ## Returns
 
 `object`
 
-### automock?
+### clearMocks
 
-> `optional` **automock**: `boolean`
+> **clearMocks**: `true` = `true`
 
-### bail?
+### collectCoverageFrom
 
-> `optional` **bail**: `number` \| `boolean`
+> **collectCoverageFrom**: [`"src/**/*.ts?(x)"`]
 
-### cache?
+### maxConcurrency
 
-> `optional` **cache**: `boolean`
+> **maxConcurrency**: `number`
 
-### cacheDirectory?
+### moduleNameMapper
 
-> `optional` **cacheDirectory**: `string`
-
-### changedFilesWithAncestor?
-
-> `optional` **changedFilesWithAncestor**: `boolean`
-
-### changedSince?
-
-> `optional` **changedSince**: `string`
-
-### ci?
-
-> `optional` **ci**: `boolean`
-
-### clearMocks?
-
-> `optional` **clearMocks**: `boolean`
-
-### collectCoverage?
-
-> `optional` **collectCoverage**: `boolean`
-
-### collectCoverageFrom?
-
-> `optional` **collectCoverageFrom**: `string`[]
-
-### coverageDirectory?
-
-> `optional` **coverageDirectory**: `string`
-
-### coveragePathIgnorePatterns?
-
-> `optional` **coveragePathIgnorePatterns**: `string`[]
-
-### coverageProvider?
-
-> `optional` **coverageProvider**: `"babel"` \| `"v8"`
-
-### coverageReporters?
-
-> `optional` **coverageReporters**: (`"json"` \| `"clover"` \| `"cobertura"` \| `"html-spa"` \| `"html"` \| `"json-summary"` \| `"lcov"` \| `"lcovonly"` \| `"none"` \| `"teamcity"` \| `"text"` \| `"text-lcov"` \| `"text-summary"` \| [`"json"` \| `"clover"` \| `"cobertura"` \| `"html-spa"` \| `"html"` \| `"json-summary"` \| `"lcov"` \| `"lcovonly"` \| `"none"` \| `"teamcity"` \| `"text"` \| `"text-lcov"` \| `"text-summary"`, `object`])[]
-
-### coverageThreshold?
-
-> `optional` **coverageThreshold**: `object`
+> **moduleNameMapper**: `object`
 
 #### Index Signature
 
- \[`path`: `string`\]: `object`
+ \[`k`: `string`\]: `string`
 
-### coverageThreshold.global
+### modulePathIgnorePatterns
 
-> **global**: `object`
+> **modulePathIgnorePatterns**: [`"/test/fixtures/"`, `"/.transpiled/"`, `string`]
 
-### coverageThreshold.global.branches?
+### resetMocks
 
-> `optional` **branches**: `number`
+> **resetMocks**: `true` = `true`
 
-### coverageThreshold.global.functions?
+### restoreMocks
 
-> `optional` **functions**: `number`
+> **restoreMocks**: `true` = `true`
 
-### coverageThreshold.global.lines?
+### setupFilesAfterEnv
 
-> `optional` **lines**: `number`
+> **setupFilesAfterEnv**: [`"./test/setup.ts"`]
 
-### coverageThreshold.global.statements?
+### testEnvironment
 
-> `optional` **statements**: `number`
+> **testEnvironment**: `"node"` = `'node'`
 
-### dependencyExtractor?
+### testPathIgnorePatterns
 
-> `optional` **dependencyExtractor**: `string`
+> **testPathIgnorePatterns**: [`"/node_modules/"`, `"/dist/"`, `"/src/"`, `"/.transpiled/"`, `string`, `string`]
 
-### detectLeaks?
+### testRunner
 
-> `optional` **detectLeaks**: `boolean`
+> **testRunner**: `"jest-circus/runner"` = `'jest-circus/runner'`
 
-### detectOpenHandles?
+### testTimeout
 
-> `optional` **detectOpenHandles**: `boolean`
+> **testTimeout**: `number`
 
-### displayName?
+### verbose
 
-> `optional` **displayName**: `string` \| `object`
+> **verbose**: `false` = `false`
 
-### errorOnDeprecated?
+## See
 
-> `optional` **errorOnDeprecated**: `boolean`
-
-### expand?
-
-> `optional` **expand**: `boolean`
-
-### extensionsToTreatAsEsm?
-
-> `optional` **extensionsToTreatAsEsm**: `string`[]
-
-### fakeTimers?
-
-> `optional` **fakeTimers**: \{ enableGlobally?: boolean \| undefined; \} & (\{ advanceTimers?: number \| boolean \| undefined; doNotFake?: ("Date" \| "hrtime" \| "nextTick" \| "performance" \| "queueMicrotask" \| "requestAnimationFrame" \| ... 8 more ... \| "clearTimeout")\[\] \| undefined; now?: number \| undefined; timerLimit?: number \| undefined; legacyFake...
-
-### filter?
-
-> `optional` **filter**: `string`
-
-### findRelatedTests?
-
-> `optional` **findRelatedTests**: `boolean`
-
-### forceCoverageMatch?
-
-> `optional` **forceCoverageMatch**: `string`[]
-
-### forceExit?
-
-> `optional` **forceExit**: `boolean`
-
-### globals?
-
-> `optional` **globals**: `object`
-
-### globalSetup?
-
-> `optional` **globalSetup**: `null` \| `string`
-
-### globalTeardown?
-
-> `optional` **globalTeardown**: `null` \| `string`
-
-### haste?
-
-> `optional` **haste**: `object`
-
-### haste.computeSha1?
-
-> `optional` **computeSha1**: `boolean`
-
-### haste.defaultPlatform?
-
-> `optional` **defaultPlatform**: `null` \| `string`
-
-### haste.enableSymlinks?
-
-> `optional` **enableSymlinks**: `boolean`
-
-### haste.forceNodeFilesystemAPI?
-
-> `optional` **forceNodeFilesystemAPI**: `boolean`
-
-### haste.hasteImplModulePath?
-
-> `optional` **hasteImplModulePath**: `string`
-
-### haste.hasteMapModulePath?
-
-> `optional` **hasteMapModulePath**: `string`
-
-### haste.platforms?
-
-> `optional` **platforms**: `string`[]
-
-### haste.retainAllFiles?
-
-> `optional` **retainAllFiles**: `boolean`
-
-### haste.throwOnModuleCollision?
-
-> `optional` **throwOnModuleCollision**: `boolean`
-
-### id?
-
-> `optional` **id**: `string`
-
-### injectGlobals?
-
-> `optional` **injectGlobals**: `boolean`
-
-### json?
-
-> `optional` **json**: `boolean`
-
-### lastCommit?
-
-> `optional` **lastCommit**: `boolean`
-
-### listTests?
-
-> `optional` **listTests**: `boolean`
-
-### logHeapUsage?
-
-> `optional` **logHeapUsage**: `boolean`
-
-### maxConcurrency?
-
-> `optional` **maxConcurrency**: `number`
-
-### maxWorkers?
-
-> `optional` **maxWorkers**: `string` \| `number`
-
-### moduleDirectories?
-
-> `optional` **moduleDirectories**: `string`[]
-
-### moduleFileExtensions?
-
-> `optional` **moduleFileExtensions**: `string`[]
-
-### moduleNameMapper?
-
-> `optional` **moduleNameMapper**: `object`
-
-### modulePathIgnorePatterns?
-
-> `optional` **modulePathIgnorePatterns**: `string`[]
-
-### modulePaths?
-
-> `optional` **modulePaths**: `string`[]
-
-### noStackTrace?
-
-> `optional` **noStackTrace**: `boolean`
-
-### notify?
-
-> `optional` **notify**: `boolean`
-
-### notifyMode?
-
-> `optional` **notifyMode**: `string`
-
-### onlyChanged?
-
-> `optional` **onlyChanged**: `boolean`
-
-### onlyFailures?
-
-> `optional` **onlyFailures**: `boolean`
-
-### openHandlesTimeout?
-
-> `optional` **openHandlesTimeout**: `number`
-
-### outputFile?
-
-> `optional` **outputFile**: `string`
-
-### passWithNoTests?
-
-> `optional` **passWithNoTests**: `boolean`
-
-### preset?
-
-> `optional` **preset**: `null` \| `string`
-
-### prettierPath?
-
-> `optional` **prettierPath**: `null` \| `string`
-
-### projects?
-
-> `optional` **projects**: (`string` \| `object`)[]
-
-### randomize?
-
-> `optional` **randomize**: `boolean`
-
-### replname?
-
-> `optional` **replname**: `null` \| `string`
-
-### reporters?
-
-> `optional` **reporters**: (`string` \| [`string`, `object`])[]
-
-### resetMocks?
-
-> `optional` **resetMocks**: `boolean`
-
-### resetModules?
-
-> `optional` **resetModules**: `boolean`
-
-### resolver?
-
-> `optional` **resolver**: `null` \| `string`
-
-### restoreMocks?
-
-> `optional` **restoreMocks**: `boolean`
-
-### rootDir?
-
-> `optional` **rootDir**: `string`
-
-### roots?
-
-> `optional` **roots**: `string`[]
-
-### runner?
-
-> `optional` **runner**: `string`
-
-### runTestsByPath?
-
-> `optional` **runTestsByPath**: `boolean`
-
-### runtime?
-
-> `optional` **runtime**: `string`
-
-### sandboxInjectedGlobals?
-
-> `optional` **sandboxInjectedGlobals**: `string`[]
-
-### setupFiles?
-
-> `optional` **setupFiles**: `string`[]
-
-### setupFilesAfterEnv?
-
-> `optional` **setupFilesAfterEnv**: `string`[]
-
-### showSeed?
-
-> `optional` **showSeed**: `boolean`
-
-### silent?
-
-> `optional` **silent**: `boolean`
-
-### skipFilter?
-
-> `optional` **skipFilter**: `boolean`
-
-### skipNodeResolution?
-
-> `optional` **skipNodeResolution**: `boolean`
-
-### slowTestThreshold?
-
-> `optional` **slowTestThreshold**: `number`
-
-### snapshotFormat?
-
-> `optional` **snapshotFormat**: `object`
-
-### snapshotFormat.callToJSON?
-
-> `optional` **callToJSON**: `boolean`
-
-### snapshotFormat.compareKeys?
-
-> `optional` **compareKeys**: `null`
-
-### snapshotFormat.escapeRegex?
-
-> `optional` **escapeRegex**: `boolean`
-
-### snapshotFormat.escapeString?
-
-> `optional` **escapeString**: `boolean`
-
-### snapshotFormat.highlight?
-
-> `optional` **highlight**: `boolean`
-
-### snapshotFormat.indent?
-
-> `optional` **indent**: `number`
-
-### snapshotFormat.maxDepth?
-
-> `optional` **maxDepth**: `number`
-
-### snapshotFormat.maxWidth?
-
-> `optional` **maxWidth**: `number`
-
-### snapshotFormat.min?
-
-> `optional` **min**: `boolean`
-
-### snapshotFormat.printBasicPrototype?
-
-> `optional` **printBasicPrototype**: `boolean`
-
-### snapshotFormat.printFunctionName?
-
-> `optional` **printFunctionName**: `boolean`
-
-### snapshotFormat.theme?
-
-> `optional` **theme**: `object`
-
-### snapshotFormat.theme.comment?
-
-> `optional` **comment**: `string`
-
-### snapshotFormat.theme.content?
-
-> `optional` **content**: `string`
-
-### snapshotFormat.theme.prop?
-
-> `optional` **prop**: `string`
-
-### snapshotFormat.theme.tag?
-
-> `optional` **tag**: `string`
-
-### snapshotFormat.theme.value?
-
-> `optional` **value**: `string`
-
-### snapshotResolver?
-
-> `optional` **snapshotResolver**: `string`
-
-### snapshotSerializers?
-
-> `optional` **snapshotSerializers**: `string`[]
-
-### testEnvironment?
-
-> `optional` **testEnvironment**: `string`
-
-### testEnvironmentOptions?
-
-> `optional` **testEnvironmentOptions**: `object`
-
-### testFailureExitCode?
-
-> `optional` **testFailureExitCode**: `string` \| `number`
-
-### testLocationInResults?
-
-> `optional` **testLocationInResults**: `boolean`
-
-### testMatch?
-
-> `optional` **testMatch**: `string`[]
-
-### testNamePattern?
-
-> `optional` **testNamePattern**: `string`
-
-### testPathIgnorePatterns?
-
-> `optional` **testPathIgnorePatterns**: `string`[]
-
-### testRegex?
-
-> `optional` **testRegex**: `string` \| `string`[]
-
-### testResultsProcessor?
-
-> `optional` **testResultsProcessor**: `string`
-
-### testRunner?
-
-> `optional` **testRunner**: `string`
-
-### testSequencer?
-
-> `optional` **testSequencer**: `string`
-
-### testTimeout?
-
-> `optional` **testTimeout**: `number`
-
-### transform?
-
-> `optional` **transform**: `object`
-
-### transformIgnorePatterns?
-
-> `optional` **transformIgnorePatterns**: `string`[]
-
-### unmockedModulePathPatterns?
-
-> `optional` **unmockedModulePathPatterns**: `string`[]
-
-### updateSnapshot?
-
-> `optional` **updateSnapshot**: `boolean`
-
-### useStderr?
-
-> `optional` **useStderr**: `boolean`
-
-### verbose?
-
-> `optional` **verbose**: `boolean`
-
-### waitNextEventLoopTurnForUnhandledRejectionEvents?
-
-> `optional` **waitNextEventLoopTurnForUnhandledRejectionEvents**: `boolean`
-
-### watch?
-
-> `optional` **watch**: `boolean`
-
-### watchAll?
-
-> `optional` **watchAll**: `boolean`
-
-### watchman?
-
-> `optional` **watchman**: `boolean`
-
-### watchPathIgnorePatterns?
-
-> `optional` **watchPathIgnorePatterns**: `string`[]
-
-### watchPlugins?
-
-> `optional` **watchPlugins**: (`string` \| [`string`, `unknown`])[]
-
-### workerIdleMemoryLimit?
-
-> `optional` **workerIdleMemoryLimit**: `string` \| `number`
-
-### workerThreads?
-
-> `optional` **workerThreads**: `boolean`
+[assertEnvironment](assertEnvironment.md)
 
 ## Defined in
 
-[src/assets/config/\_jest.config.mjs.ts:27](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_jest.config.mjs.ts#L27)
+[src/assets/config/\_jest.config.mjs.ts:101](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_jest.config.mjs.ts#L101)

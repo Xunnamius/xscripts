@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../README.md) • **Docs**
+[**@-xun/scripts**](../../README.md)
 
 ***
 
@@ -11,19 +11,21 @@
 ### Type Aliases
 
 - [MergeWithCustomizer](type-aliases/MergeWithCustomizer.md)
-- [RequiredTransformerContext](type-aliases/RequiredTransformerContext.md)
-- [StandardTransformerContext](type-aliases/StandardTransformerContext.md)
+- [RetrievalOptions](type-aliases/RetrievalOptions.md)
 - [TransformerContext](type-aliases/TransformerContext.md)
 - [TransformerOptions](type-aliases/TransformerOptions.md)
 - [TransformerResult](type-aliases/TransformerResult.md)
 
 ### Variables
 
-- [requiredTransformerContextKeys](variables/requiredTransformerContextKeys.md)
+- [assetConfigDirectory](variables/assetConfigDirectory.md)
+- [assetTemplateDirectory](variables/assetTemplateDirectory.md)
 
 ### Functions
 
-- [assertIsExpectedTransformerContext](functions/assertIsExpectedTransformerContext.md)
+- [compileTemplate](functions/compileTemplate.md)
+- [compileTemplateInMemory](functions/compileTemplateInMemory.md)
+- [compileTemplates](functions/compileTemplates.md)
 - [deepMergeConfig](functions/deepMergeConfig.md)
 - [makeTransformer](functions/makeTransformer.md)
 - [retrieveConfigAsset](functions/retrieveConfigAsset.md)

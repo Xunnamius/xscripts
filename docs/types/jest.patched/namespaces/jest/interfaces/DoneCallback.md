@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -10,7 +10,9 @@
 
 ## Parameters
 
-• ...**args**: `any`[]
+### args
+
+...`any`[]
 
 ## Returns
 
@@ -28,7 +30,9 @@ node\_modules/@types/jest/index.d.ts:495
 
 #### Parameters
 
-• **error?**: `string` \| `object`
+##### error?
+
+`string` | \{`message`: `string`; \}
 
 #### Returns
 

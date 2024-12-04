@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -8,10 +8,9 @@
 
 > **TransformerResult**: `Promisable`\<`object`\>
 
-A mapping between relative file paths and the contents of said files. These
-files will be created and/or overwritten at xscripts project init-time (or
-renovate-time).
+A mapping between file paths relative _to the project root_ and the contents
+of said files.
 
 ## Defined in
 
-[src/assets.ts:87](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets.ts#L87)
+[src/assets.ts:124](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets.ts#L124)

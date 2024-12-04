@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -28,15 +28,15 @@ Handlebars template data (not processed by our custom configuration).
 
 > **partials**: `object`
 
-### partials.host
+#### partials.host
 
 > **host**: `string` = `'{{~@root.host}}'`
 
-### partials.owner
+#### partials.owner
 
 > **owner**: `string` = `'{{#if this.owner}}{{~this.owner}}{{else}}{{~@root.owner}}{{/if}}'`
 
-### partials.repository
+#### partials.repository
 
 > **repository**: `string` = `'{{#if this.repository}}{{~this.repository}}{{else}}{{~@root.repository}}{{/if}}'`
 
@@ -46,4 +46,4 @@ Handlebars template data (not processed by our custom configuration).
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:285](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_conventional.config.cjs.ts#L285)
+[src/assets/config/\_conventional.config.cjs.ts:282](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_conventional.config.cjs.ts#L282)

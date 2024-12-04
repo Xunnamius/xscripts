@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -19,11 +19,15 @@ returning it (or throwing a CliError if undefined).
 
 ## Parameters
 
-• **\_\_namedParameters**
+### \_\_namedParameters
 
-• **\_\_namedParameters.debug\_**: `ExtendedDebugger`
+#### debug_
 
-• **\_\_namedParameters.projectMetadata\_**: `undefined` \| `ProjectMetadata`
+`ExtendedDebugger`
+
+#### projectMetadata_
+
+`undefined` \| `ProjectMetadata`
 
 ## Returns
 
@@ -35,4 +39,4 @@ returning it (or throwing a CliError if undefined).
 
 ## Defined in
 
-[src/util.ts:102](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/util.ts#L102)
+[src/util.ts:102](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/util.ts#L102)

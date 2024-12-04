@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -13,9 +13,13 @@ This is a custom semantic-release plugin step that replaces
 
 ## Parameters
 
-• **\_\_namedParameters**: [`PluginConfig`](../type-aliases/PluginConfig.md)
+### \_\_namedParameters
 
-• **context**: `VerifyReleaseContext`
+[`PluginConfig`](../type-aliases/PluginConfig.md)
+
+### context
+
+`VerifyReleaseContext`
 
 ## Returns
 
@@ -23,4 +27,4 @@ This is a custom semantic-release plugin step that replaces
 
 ## Defined in
 
-[src/assets/config/\_release.config.cjs.ts:277](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_release.config.cjs.ts#L277)
+[src/assets/config/\_release.config.cjs.ts:300](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_release.config.cjs.ts#L300)

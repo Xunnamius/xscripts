@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -6,19 +6,32 @@
 
 # Function: moduleExport()
 
-> **moduleExport**(`projectMetadata`?): `Promise`\<`ConfigArray`\>
+> **moduleExport**(`__namedParameters`): `ConfigArray`
 
 ## Parameters
 
-• **projectMetadata?**: `ProjectMetadata`
+### \_\_namedParameters
 
-An optional ProjectMetadata instance that, if given, will be used
-instead of calling analyzeProjectStructure.
+#### cwdTsconfigFile
+
+`AbsolutePath`
+
+#### derivedAliases
+
+`string`[][]
+
+#### packageJsonEnginesNode
+
+`string`
+
+#### shouldAllowWarningComments
+
+`boolean`
 
 ## Returns
 
-`Promise`\<`ConfigArray`\>
+`ConfigArray`
 
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:347](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_eslint.config.mjs.ts#L347)
+[src/assets/config/\_eslint.config.mjs.ts:477](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_eslint.config.mjs.ts#L477)

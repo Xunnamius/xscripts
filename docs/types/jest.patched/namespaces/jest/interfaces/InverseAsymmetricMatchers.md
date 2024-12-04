@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -24,7 +24,9 @@ You will rarely call `expect` by itself.
 
 ## Parameters
 
-• **actual**: `T`
+### actual
+
+`T`
 
 The value to apply matchers against.
 
@@ -35,6 +37,10 @@ The value to apply matchers against.
 ## Defined in
 
 node\_modules/jest-extended/types/index.d.ts:880
+
+## Indexable
+
+ \[`key`: `string`\]: `any`
 
 ## Properties
 
@@ -60,7 +66,9 @@ Adds a module to format application-specific data structures for serialization.
 
 #### Parameters
 
-• **serializer**: `Plugin_2`
+##### serializer
+
+`Plugin_2`
 
 #### Returns
 
@@ -85,7 +93,9 @@ You can use it inside `toEqual` or `toBeCalledWith` instead of a literal value.
 
 #### Parameters
 
-• **classType**: `any`
+##### classType
+
+`any`
 
 #### Returns
 
@@ -164,7 +174,9 @@ Optionally, you can provide a type for the elements via a generic.
 
 #### Parameters
 
-• **arr**: readonly `E`[]
+##### arr
+
+readonly `E`[]
 
 #### Returns
 
@@ -190,7 +202,9 @@ make sure that assertions in a callback actually got called.
 
 #### Parameters
 
-• **num**: `number`
+##### num
+
+`number`
 
 #### Returns
 
@@ -218,9 +232,13 @@ For the default value 2, the test criterion is `Math.abs(expected - received) < 
 
 #### Parameters
 
-• **num**: `number`
+##### num
 
-• **numDigits?**: `number`
+`number`
+
+##### numDigits?
+
+`number`
 
 #### Returns
 
@@ -244,7 +262,9 @@ You can use `expect.extend` to add your own matchers to Jest.
 
 #### Parameters
 
-• **obj**: [`ExpectExtendMap`](ExpectExtendMap.md)
+##### obj
+
+[`ExpectExtendMap`](ExpectExtendMap.md)
 
 #### Returns
 
@@ -269,7 +289,9 @@ Failing assertion
 
 #### Parameters
 
-• **message**: `string`
+##### message
+
+`string`
 
 #### Returns
 
@@ -340,11 +362,13 @@ This ensures that the object contains the desired structure.
 
 #### Type Parameters
 
-• **E** = `object`
+• **E** = \{\}
 
 #### Parameters
 
-• **obj**: `E`
+##### obj
+
+`E`
 
 #### Returns
 
@@ -369,7 +393,9 @@ Passing assertion
 
 #### Parameters
 
-• **message**: `string`
+##### message
+
+`string`
 
 #### Returns
 
@@ -391,7 +417,9 @@ node\_modules/jest-extended/types/index.d.ts:10
 
 #### Parameters
 
-• **state**: `object`
+##### state
+
+`object`
 
 #### Returns
 
@@ -417,7 +445,9 @@ that does not contain the exact expected string. It is the inverse of
 
 #### Parameters
 
-• **str**: `string`
+##### str
+
+`string`
 
 #### Returns
 
@@ -443,7 +473,9 @@ string that does not match the expected regexp. It is the inverse of
 
 #### Parameters
 
-• **str**: `string` \| `RegExp`
+##### str
+
+`string` | `RegExp`
 
 #### Returns
 
@@ -467,7 +499,9 @@ Use `.toBeAfter` when checking if a date occurs after `date`.
 
 #### Parameters
 
-• **date**: `Date`
+##### date
+
+`Date`
 
 #### Returns
 
@@ -491,7 +525,9 @@ Use `.toBeAfterOrEqualTo` when checking if a date equals to or occurs after `dat
 
 #### Parameters
 
-• **date**: `Date`
+##### date
+
+`Date`
 
 #### Returns
 
@@ -535,7 +571,9 @@ Use `.toBeArrayOfSize` when checking if a value is an `Array` of size x.
 
 #### Parameters
 
-• **x**: `number`
+##### x
+
+`number`
 
 #### Returns
 
@@ -559,7 +597,9 @@ Use `.toBeBefore` when checking if a date occurs before `date`.
 
 #### Parameters
 
-• **date**: `Date`
+##### date
+
+`Date`
 
 #### Returns
 
@@ -583,7 +623,9 @@ Use `.toBeBeforeOrEqualTo` when checking if a date equals to or occurs before `d
 
 #### Parameters
 
-• **date**: `Date`
+##### date
+
+`Date`
 
 #### Returns
 
@@ -607,9 +649,13 @@ Use `.toBeBetween` when checking if a date occurs between `startDate` and `endDa
 
 #### Parameters
 
-• **startDate**: `Date`
+##### startDate
 
-• **endDate**: `Date`
+`Date`
+
+##### endDate
+
+`Date`
 
 #### Returns
 
@@ -873,9 +919,13 @@ Use `.toBeInRange` when checking if an array has elements in range min (inclusiv
 
 #### Parameters
 
-• **min**: `number`
+##### min
 
-• **max**: `number`
+`number`
+
+##### max
+
+`number`
 
 #### Returns
 
@@ -1023,7 +1073,9 @@ Use .toBeOneOf when checking if a value is a member of a given Array.
 
 #### Parameters
 
-• **members**: readonly `E`[]
+##### members
+
+readonly `E`[]
 
 #### Returns
 
@@ -1167,9 +1219,13 @@ Use `.toBeWithin` when checking if a number is in between the given bounds of: s
 
 #### Parameters
 
-• **start**: `number`
+##### start
 
-• **end**: `number`
+`number`
+
+##### end
+
+`number`
 
 #### Returns
 
@@ -1197,7 +1253,9 @@ Use `.toContainAllEntries` when checking if an object only contains all of the p
 
 #### Parameters
 
-• **entries**: readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
+##### entries
+
+readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
 
 #### Returns
 
@@ -1225,7 +1283,9 @@ Use `.toContainAllKeys` when checking if an object only contains all of the prov
 
 #### Parameters
 
-• **keys**: readonly (`string` \| keyof `E`)[]
+##### keys
+
+readonly (`string` \| keyof `E`)[]
 
 #### Returns
 
@@ -1253,7 +1313,9 @@ Use `.toContainAllValues` when checking if an object only contains all of the pr
 
 #### Parameters
 
-• **values**: readonly `E`[]
+##### values
+
+readonly `E`[]
 
 #### Returns
 
@@ -1281,7 +1343,9 @@ Use `.toContainAnyEntries` when checking if an object contains at least one of t
 
 #### Parameters
 
-• **entries**: readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
+##### entries
+
+readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
 
 #### Returns
 
@@ -1309,7 +1373,9 @@ Use `.toContainAnyKeys` when checking if an object contains at least one of the 
 
 #### Parameters
 
-• **keys**: readonly (`string` \| keyof `E`)[]
+##### keys
+
+readonly (`string` \| keyof `E`)[]
 
 #### Returns
 
@@ -1337,7 +1403,9 @@ Use `.toContainAnyValues` when checking if an object contains at least one of th
 
 #### Parameters
 
-• **values**: readonly `E`[]
+##### values
+
+readonly `E`[]
 
 #### Returns
 
@@ -1365,7 +1433,9 @@ Use `.toContainEntries` when checking if an object contains all of the provided 
 
 #### Parameters
 
-• **entries**: readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
+##### entries
+
+readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
 
 #### Returns
 
@@ -1393,7 +1463,9 @@ Use `.toContainEntry` when checking if an object contains the provided entry.
 
 #### Parameters
 
-• **entry**: readonly [keyof `E`, `E`\[keyof `E`\]]
+##### entry
+
+readonly [keyof `E`, `E`\[keyof `E`\]]
 
 #### Returns
 
@@ -1417,7 +1489,9 @@ Use `.toContainKey` when checking if an object contains the provided key.
 
 #### Parameters
 
-• **key**: `string`
+##### key
+
+`string`
 
 #### Returns
 
@@ -1445,7 +1519,9 @@ Use `.toContainKeys` when checking if an object has all of the provided keys.
 
 #### Parameters
 
-• **keys**: readonly (`string` \| keyof `E`)[]
+##### keys
+
+readonly (`string` \| keyof `E`)[]
 
 #### Returns
 
@@ -1473,7 +1549,9 @@ Use `.toContainValue` when checking if an object contains the provided value.
 
 #### Parameters
 
-• **value**: `E`
+##### value
+
+`E`
 
 #### Returns
 
@@ -1501,7 +1579,9 @@ Use `.toContainValues` when checking if an object contains all of the provided v
 
 #### Parameters
 
-• **values**: readonly `E`[]
+##### values
+
+readonly `E`[]
 
 #### Returns
 
@@ -1525,7 +1605,9 @@ Use `.toEndWith` when checking if a `String` ends with a given `String` suffix.
 
 #### Parameters
 
-• **suffix**: `string`
+##### suffix
+
+`string`
 
 #### Returns
 
@@ -1549,7 +1631,9 @@ Use `.toEqualCaseInsensitive` when checking if a string is equal (===) to anothe
 
 #### Parameters
 
-• **string**: `string`
+##### string
+
+`string`
 
 #### Returns
 
@@ -1573,7 +1657,9 @@ Use `.toEqualIgnoringWhitespace` when checking if a `String` is equal (===) to g
 
 #### Parameters
 
-• **string**: `string`
+##### string
+
+`string`
 
 #### Returns
 
@@ -1599,9 +1685,13 @@ Note: Required Jest version >=23
 
 #### Parameters
 
-• **mock**: [`MockInstance`](MockInstance.md)\<`any`, `any`[], `any`\>
+##### mock
 
-• **failIfNoFirstInvocation?**: `boolean`
+[`MockInstance`](MockInstance.md)\<`any`, `any`[], `any`\>
+
+##### failIfNoFirstInvocation?
+
+`boolean`
 
 #### Returns
 
@@ -1627,9 +1717,13 @@ Note: Required Jest version >=23
 
 #### Parameters
 
-• **mock**: [`MockInstance`](MockInstance.md)\<`any`, `any`[], `any`\>
+##### mock
 
-• **failIfNoSecondInvocation?**: `boolean`
+[`MockInstance`](MockInstance.md)\<`any`, `any`[], `any`\>
+
+##### failIfNoSecondInvocation?
+
+`boolean`
 
 #### Returns
 
@@ -1653,7 +1747,9 @@ Use `.toHaveBeenCalledExactlyOnceWith` to check if a `Mock` was called exactly o
 
 #### Parameters
 
-• ...**args**: `unknown`[]
+##### args
+
+...`unknown`[]
 
 #### Returns
 
@@ -1697,7 +1793,9 @@ Use `.toInclude` when checking if a `String` includes the given `String` substri
 
 #### Parameters
 
-• **substring**: `string`
+##### substring
+
+`string`
 
 #### Returns
 
@@ -1725,7 +1823,9 @@ Use `.toIncludeAllMembers` when checking if an `Array` contains all of the same 
 
 #### Parameters
 
-• **members**: readonly `E`[]
+##### members
+
+readonly `E`[]
 
 #### Returns
 
@@ -1753,7 +1853,9 @@ Use `.toIncludeAnyMembers` when checking if an `Array` contains any of the membe
 
 #### Parameters
 
-• **members**: readonly `E`[]
+##### members
+
+readonly `E`[]
 
 #### Returns
 
@@ -1777,7 +1879,9 @@ Use `.toIncludeMultiple` when checking if a `String` includes all of the given s
 
 #### Parameters
 
-• **substring**: readonly `string`[]
+##### substring
+
+readonly `string`[]
 
 #### Returns
 
@@ -1801,9 +1905,13 @@ Use `.toIncludeRepeated` when checking if a `String` includes the given `String`
 
 #### Parameters
 
-• **substring**: `string`
+##### substring
 
-• **times**: `number`
+`string`
+
+##### times
+
+`number`
 
 #### Returns
 
@@ -1831,7 +1939,9 @@ Use `.toIncludeSameMembers` when checking if two arrays contain equal values, in
 
 #### Parameters
 
-• **members**: readonly `E`[]
+##### members
+
+readonly `E`[]
 
 #### Returns
 
@@ -1859,7 +1969,9 @@ Use `.toPartiallyContain` when checking if any array value matches the partial m
 
 #### Parameters
 
-• **member**: `E`
+##### member
+
+`E`
 
 #### Returns
 
@@ -1927,7 +2039,9 @@ Use `.toSatisfy` when you want to use a custom matcher by supplying a predicate 
 
 #### Parameters
 
-• **predicate**
+##### predicate
+
+(`x`) => `boolean`
 
 #### Returns
 
@@ -1955,7 +2069,9 @@ Use `.toSatisfyAll` when you want to use a custom matcher by supplying a predica
 
 #### Parameters
 
-• **predicate**
+##### predicate
+
+(`x`) => `boolean`
 
 #### Returns
 
@@ -1979,7 +2095,9 @@ Use `.toSatisfyAny` when you want to use a custom matcher by supplying a predica
 
 #### Parameters
 
-• **predicate**
+##### predicate
+
+(`x`) => `boolean`
 
 #### Returns
 
@@ -2003,7 +2121,9 @@ Use `.toStartWith` when checking if a `String` starts with a given `String` pref
 
 #### Parameters
 
-• **prefix**: `string`
+##### prefix
+
+`string`
 
 #### Returns
 
@@ -2027,9 +2147,13 @@ Use `.toThrowWithMessage` when checking if a callback function throws an error o
 
 #### Parameters
 
-• **type**
+##### type
 
-• **message**: `string` \| `RegExp`
+(...`args`) => `any`
+
+##### message
+
+`string` | `RegExp`
 
 #### Returns
 

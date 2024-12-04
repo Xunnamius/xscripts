@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -31,11 +31,17 @@ const eslintConfig = makeTsEslintConfig({
 
 ## Parameters
 
-• **configs**: `Config` \| `Config`[]
+### configs
 
-• **property**: `T`
+`Config` | `Config`[]
 
-• **value**: `Config`\[`T`\]
+### property
+
+`T`
+
+### value
+
+`Config`\[`T`\]
 
 ## Returns
 
@@ -43,4 +49,4 @@ const eslintConfig = makeTsEslintConfig({
 
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:544](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_eslint.config.mjs.ts#L544)
+[src/assets/config/\_eslint.config.mjs.ts:866](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_eslint.config.mjs.ts#L866)

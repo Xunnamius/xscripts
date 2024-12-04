@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -6,84 +6,28 @@
 
 # Function: moduleExport()
 
-> **moduleExport**(): `object`
+> **moduleExport**(`__namedParameters`): [`BabelConfig`](../interfaces/BabelConfig.md)
+
+## Parameters
+
+### \_\_namedParameters
+
+#### derivedAliases
+
+\{\}
+
+#### packageRoot
+
+`AbsolutePath`
+
+#### projectRoot
+
+`AbsolutePath`
 
 ## Returns
 
-`object`
-
-### assumptions
-
-> **assumptions**: `object`
-
-### assumptions.constantReexports
-
-> **constantReexports**: `boolean` = `true`
-
-### comments
-
-> **comments**: `boolean` = `false`
-
-### env
-
-> **env**: `object`
-
-### env.production-cjs
-
-> **production-cjs**: `object`
-
-### env.production-cjs.plugins
-
-> **plugins**: (`string` \| `object`)[][]
-
-### env.production-cjs.presets
-
-> **presets**: ((`string` \| `object`)[] \| (`string` \| `object`)[])[]
-
-### env.production-types
-
-> **production-types**: `object`
-
-### env.production-types.comments
-
-> **comments**: `boolean` = `true`
-
-### env.production-types.plugins
-
-> **plugins**: ((`string` \| `object`)[] \| (`string` \| `object`)[])[]
-
-### env.test
-
-> **test**: `object`
-
-### env.test.comments
-
-> **comments**: `boolean` = `true`
-
-### env.test.plugins
-
-> **plugins**: `string`[]
-
-### env.test.presets
-
-> **presets**: ((`string` \| `object`)[] \| (`string` \| `object`)[])[]
-
-### env.test.sourceMaps
-
-> **sourceMaps**: `string` = `'inline'`
-
-### parserOpts
-
-> **parserOpts**: `object`
-
-### parserOpts.strictMode
-
-> **strictMode**: `boolean` = `true`
-
-### plugins
-
-> **plugins**: (`string` \| (`string` \| `object`)[])[]
+[`BabelConfig`](../interfaces/BabelConfig.md)
 
 ## Defined in
 
-[src/assets/config/\_babel.config.cjs.ts:67](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_babel.config.cjs.ts#L67)
+[src/assets/config/\_babel.config.cjs.ts:230](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_babel.config.cjs.ts#L230)

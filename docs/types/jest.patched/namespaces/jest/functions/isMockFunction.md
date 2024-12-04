@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -12,7 +12,9 @@ Returns whether the given function is a mock function.
 
 ## Parameters
 
-• **fn**: `any`
+### fn
+
+`any`
 
 ## Returns
 

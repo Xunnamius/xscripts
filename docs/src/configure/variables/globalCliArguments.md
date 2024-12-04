@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -29,19 +29,19 @@ default configuration value in `globalCliArguments`.
 
 > **scope**: `object`
 
-### scope.choices
+#### scope.choices
 
 > **choices**: [`DefaultGlobalScope`](../enumerations/DefaultGlobalScope.md)[]
 
-### scope.default
+#### scope.default
 
 > **default**: [`DefaultGlobalScope`](../enumerations/DefaultGlobalScope.md) = `DefaultGlobalScope.ThisPackage`
 
-### scope.description
+#### scope.description
 
 > **description**: `string` = `'Which files this command will consider when scanning the filesystem'`
 
-### scope.string
+#### scope.string
 
 > **string**: `true` = `true`
 
@@ -51,4 +51,4 @@ StandardCommonCliArguments
 
 ## Defined in
 
-[src/configure.ts:129](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/configure.ts#L129)
+[src/configure.ts:129](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/configure.ts#L129)

@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -20,7 +20,9 @@ Change the value of the property.
 
 #### Parameters
 
-• **value**: `K`
+##### value
+
+`K`
 
 #### Returns
 

@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -16,7 +16,9 @@
 
 ## Parameters
 
-• ...**args**: [`RemoveFirstFromTuple`](RemoveFirstFromTuple.md)\<`Parameters`\<`TMatcher`\>\>
+### args
+
+...[`RemoveFirstFromTuple`](RemoveFirstFromTuple.md)\<`Parameters`\<`TMatcher`\>\>
 
 ## Returns
 

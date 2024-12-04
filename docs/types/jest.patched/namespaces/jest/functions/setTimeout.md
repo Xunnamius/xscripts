@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -13,7 +13,9 @@ Note: The default timeout interval is 5 seconds if this method is not called.
 
 ## Parameters
 
-• **timeout**: `number`
+### timeout
+
+`number`
 
 ## Returns
 

@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -10,9 +10,13 @@
 
 ## Parameters
 
-• **a**: `any`
+### a
 
-• **b**: `any`
+`any`
+
+### b
+
+`any`
 
 ## Returns
 

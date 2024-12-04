@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -16,4 +16,4 @@
 
 ## Defined in
 
-[src/commands/build/documentation.ts:33](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/commands/build/documentation.ts#L33)
+[src/commands/build/documentation.ts:33](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/build/documentation.ts#L33)

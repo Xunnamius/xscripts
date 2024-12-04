@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -14,15 +14,21 @@ Creates a test closure
 
 ## Parameters
 
-• **name**: `string`
+### name
+
+`string`
 
 The name of your test
 
-• **fn?**: [`ProvidesCallback`](../type-aliases/ProvidesCallback.md)
+### fn?
+
+[`ProvidesCallback`](../type-aliases/ProvidesCallback.md)
 
 The function for your test
 
-• **timeout?**: `number`
+### timeout?
+
+`number`
 
 The timeout for an async function test
 
@@ -120,7 +126,7 @@ Ensures this test is run regardless of the invocation of
 
 #### Defined in
 
-[types/jest.patched.d.ts:15](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/types/jest.patched.d.ts#L15)
+[types/jest.patched.d.ts:15](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/types/jest.patched.d.ts#L15)
 
 ***
 
@@ -156,7 +162,9 @@ Sketch out which tests to write in the future.
 
 #### Parameters
 
-• **name**: `string`
+##### name
+
+`string`
 
 #### Returns
 

@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Function: fn()
 
-## fn()
+## Call Signature
 
 > **fn**(): [`Mock`](../interfaces/Mock.md)
 
@@ -20,7 +20,7 @@ Creates a mock function. Optionally takes a mock implementation.
 
 node\_modules/@types/jest/index.d.ts:212
 
-## fn(implementation)
+## Call Signature
 
 > **fn**\<`T`, `Y`, `C`\>(`implementation`?): [`Mock`](../interfaces/Mock.md)\<`T`, `Y`, `C`\>
 
@@ -36,7 +36,9 @@ Creates a mock function. Optionally takes a mock implementation.
 
 ### Parameters
 
-• **implementation?**
+#### implementation?
+
+(`this`, ...`args`) => `T`
 
 ### Returns
 

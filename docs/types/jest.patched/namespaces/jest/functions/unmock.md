@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -13,7 +13,9 @@ the specified module from require() (e.g. that it should always return the real 
 
 ## Parameters
 
-• **moduleName**: `string`
+### moduleName
+
+`string`
 
 ## Returns
 

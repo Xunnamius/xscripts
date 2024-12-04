@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -19,7 +19,9 @@ jest.setSystemTime().
 
 ## Parameters
 
-• **now?**: `number` \| `Date`
+### now?
+
+`number` | `Date`
 
 ## Returns
 

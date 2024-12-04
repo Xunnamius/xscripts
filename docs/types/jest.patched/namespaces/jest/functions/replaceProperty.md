@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -18,11 +18,17 @@ Replaces property on an object with another value.
 
 ## Parameters
 
-• **obj**: `T`
+### obj
 
-• **key**: `K`
+`T`
 
-• **value**: `T`\[`K`\]
+### key
+
+`K`
+
+### value
+
+`T`\[`K`\]
 
 ## Returns
 

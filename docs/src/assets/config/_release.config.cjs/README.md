@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../README.md)
 
 ***
 
@@ -8,13 +8,17 @@
 
 ## Index
 
+### Interfaces
+
+- [ReleaseConfig](interfaces/ReleaseConfig.md)
+
 ### Type Aliases
 
-- [Context](type-aliases/Context.md)
 - [PluginConfig](type-aliases/PluginConfig.md)
 
 ### Functions
 
+- [assertEnvironment](functions/assertEnvironment.md)
 - [determineRepoWorkingTreeDirty](functions/determineRepoWorkingTreeDirty.md)
 - [generateNotes](functions/generateNotes.md)
 - [moduleExport](functions/moduleExport.md)

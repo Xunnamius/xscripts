@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -14,9 +14,13 @@ state.
 
 ## Parameters
 
-• **\_pluginConfig**: [`PluginConfig`](../type-aliases/PluginConfig.md)
+### \_pluginConfig
 
-• **context**: `VerifyReleaseContext`
+[`PluginConfig`](../type-aliases/PluginConfig.md)
+
+### context
+
+`VerifyReleaseContext`
 
 ## Returns
 
@@ -24,4 +28,4 @@ state.
 
 ## Defined in
 
-[src/assets/config/\_release.config.cjs.ts:396](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_release.config.cjs.ts#L396)
+[src/assets/config/\_release.config.cjs.ts:419](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_release.config.cjs.ts#L419)

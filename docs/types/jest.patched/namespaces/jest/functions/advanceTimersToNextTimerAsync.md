@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -13,7 +13,9 @@ allowing any scheduled promise callbacks to execute _before_ running the timers.
 
 ## Parameters
 
-• **steps?**: `number`
+### steps?
+
+`number`
 
 ## Returns
 

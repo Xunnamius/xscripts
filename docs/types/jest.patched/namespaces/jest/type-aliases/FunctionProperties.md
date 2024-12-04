@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Type Alias: FunctionProperties\<T\>
 
-> **FunctionProperties**\<`T`\>: `{ [K in keyof T as T[K] extends Function ? K : never]: T[K] }`
+> **FunctionProperties**\<`T`\>: `{ [K in keyof T as T[K] extends (args: any[]) => any ? K : never]: T[K] }`
 
 ## Type Parameters
 

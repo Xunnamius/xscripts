@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -10,9 +10,13 @@
 
 ## Parameters
 
-• **patterns**: `string` \| `string`[]
+### patterns
 
-• **options?**: `GlobOptions`
+`string` | `string`[]
+
+### options?
+
+`GlobOptions`
 
 ## Returns
 
@@ -20,4 +24,4 @@
 
 ## Defined in
 
-[types/glob-gitignore.d.ts:23](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/types/glob-gitignore.d.ts#L23)
+[types/glob-gitignore.d.ts:23](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/types/glob-gitignore.d.ts#L23)

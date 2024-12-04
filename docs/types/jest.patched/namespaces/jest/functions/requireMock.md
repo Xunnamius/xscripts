@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -17,7 +17,9 @@ on whether the module should be required normally or not.
 
 ## Parameters
 
-• **moduleName**: `string`
+### moduleName
+
+`string`
 
 ## Returns
 

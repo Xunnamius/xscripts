@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -13,4 +13,4 @@ repositories. This value is also duplicated in the commit.hbs template file.
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:134](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_conventional.config.cjs.ts#L134)
+[src/assets/config/\_conventional.config.cjs.ts:131](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_conventional.config.cjs.ts#L131)

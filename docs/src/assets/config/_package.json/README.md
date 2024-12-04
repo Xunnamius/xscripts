@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../README.md)
 
 ***
 
@@ -10,8 +10,20 @@
 
 ### Type Aliases
 
-- [Context](type-aliases/Context.md)
 - [XPackageJson](type-aliases/XPackageJson.md)
+- [XPackageJsonHybridrepoProjectRoot](type-aliases/XPackageJsonHybridrepoProjectRoot.md)
+- [XPackageJsonMonorepoPackageRoot](type-aliases/XPackageJsonMonorepoPackageRoot.md)
+- [XPackageJsonMonorepoProjectRoot](type-aliases/XPackageJsonMonorepoProjectRoot.md)
+- [XPackageJsonPolyrepoRoot](type-aliases/XPackageJsonPolyrepoRoot.md)
+- [XPackageJsonScripts](type-aliases/XPackageJsonScripts.md)
+
+### Variables
+
+- [baseHybridrepoProjectRootXPackageJson](variables/baseHybridrepoProjectRootXPackageJson.md)
+- [baseMonorepoPackageRootXPackageJson](variables/baseMonorepoPackageRootXPackageJson.md)
+- [baseMonorepoProjectRootXPackageJson](variables/baseMonorepoProjectRootXPackageJson.md)
+- [basePolyrepoXPackageJson](variables/basePolyrepoXPackageJson.md)
+- [baseXPackageJson](variables/baseXPackageJson.md)
 
 ### Functions
 

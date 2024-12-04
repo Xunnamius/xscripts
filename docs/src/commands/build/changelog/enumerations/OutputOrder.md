@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -19,7 +19,7 @@ release order.
 
 #### Defined in
 
-[src/commands/build/changelog.ts:82](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/commands/build/changelog.ts#L82)
+[src/commands/build/changelog.ts:82](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/build/changelog.ts#L82)
 
 ***
 
@@ -35,4 +35,4 @@ Such changelogs read as a "storybook".
 
 #### Defined in
 
-[src/commands/build/changelog.ts:77](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/commands/build/changelog.ts#L77)
+[src/commands/build/changelog.ts:77](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/build/changelog.ts#L77)

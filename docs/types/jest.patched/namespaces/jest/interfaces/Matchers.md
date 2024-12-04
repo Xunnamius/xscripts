@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -10,7 +10,7 @@
 
 • **R**
 
-• **T** = `object`
+• **T** = \{\}
 
 ## Methods
 
@@ -23,7 +23,9 @@ Failing assertion
 
 #### Parameters
 
-• **message**: `string`
+##### message
+
+`string`
 
 #### Returns
 
@@ -50,7 +52,9 @@ Note that the type must be either an array or a tuple.
 
 #### Parameters
 
-• ...**args**: `E`
+##### args
+
+...`E`
 
 #### Returns
 
@@ -81,7 +85,9 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **expected?**: `E`
+##### expected?
+
+`E`
 
 #### Returns
 
@@ -112,9 +118,13 @@ Note that the type must be either an array or a tuple.
 
 #### Parameters
 
-• **nthCall**: `number`
+##### nthCall
 
-• ...**params**: `E`
+`number`
+
+##### params
+
+...`E`
 
 #### Returns
 
@@ -145,9 +155,13 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **n**: `number`
+##### n
 
-• **expected?**: `E`
+`number`
+
+##### expected?
+
+`E`
 
 #### Returns
 
@@ -172,7 +186,9 @@ Passing assertion
 
 #### Parameters
 
-• **message**: `string`
+##### message
+
+`string`
 
 #### Returns
 
@@ -200,7 +216,9 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **expected**: `E`
+##### expected
+
+`E`
 
 #### Returns
 
@@ -220,7 +238,9 @@ Use `.toBeAfter` when checking if a date occurs after `date`.
 
 #### Parameters
 
-• **date**: `Date`
+##### date
+
+`Date`
 
 #### Returns
 
@@ -240,7 +260,9 @@ Use `.toBeAfterOrEqualTo` when checking if a date equals to or occurs after `dat
 
 #### Parameters
 
-• **date**: `Date`
+##### date
+
+`Date`
 
 #### Returns
 
@@ -276,7 +298,9 @@ Use `.toBeArrayOfSize` when checking if a value is an `Array` of size x.
 
 #### Parameters
 
-• **x**: `number`
+##### x
+
+`number`
 
 #### Returns
 
@@ -296,7 +320,9 @@ Use `.toBeBefore` when checking if a date occurs before `date`.
 
 #### Parameters
 
-• **date**: `Date`
+##### date
+
+`Date`
 
 #### Returns
 
@@ -316,7 +342,9 @@ Use `.toBeBeforeOrEqualTo` when checking if a date equals to or occurs before `d
 
 #### Parameters
 
-• **date**: `Date`
+##### date
+
+`Date`
 
 #### Returns
 
@@ -336,9 +364,13 @@ Use `.toBeBetween` when checking if a date occurs between `startDate` and `endDa
 
 #### Parameters
 
-• **startDate**: `Date`
+##### startDate
 
-• **endDate**: `Date`
+`Date`
+
+##### endDate
+
+`Date`
 
 #### Returns
 
@@ -394,7 +426,9 @@ Ensures that a mock function is called an exact number of times.
 
 #### Parameters
 
-• **expected**: `number`
+##### expected
+
+`number`
 
 #### Returns
 
@@ -425,7 +459,9 @@ Note that the type must be either an array or a tuple.
 
 #### Parameters
 
-• ...**args**: `E`
+##### args
+
+...`E`
 
 #### Returns
 
@@ -451,9 +487,13 @@ The default for numDigits is 2.
 
 #### Parameters
 
-• **expected**: `number`
+##### expected
 
-• **numDigits?**: `number`
+`number`
+
+##### numDigits?
+
+`number`
 
 #### Returns
 
@@ -666,7 +706,9 @@ For comparing floating point or big integer numbers.
 
 #### Parameters
 
-• **expected**: `number` \| `bigint`
+##### expected
+
+`number` | `bigint`
 
 #### Returns
 
@@ -686,7 +728,9 @@ For comparing floating point or big integer numbers.
 
 #### Parameters
 
-• **expected**: `number` \| `bigint`
+##### expected
+
+`number` | `bigint`
 
 #### Returns
 
@@ -722,9 +766,13 @@ Use `.toBeInRange` when checking if an array has elements in range min (inclusiv
 
 #### Parameters
 
-• **min**: `number`
+##### min
 
-• **max**: `number`
+`number`
+
+##### max
+
+`number`
 
 #### Returns
 
@@ -752,7 +800,9 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **expected**: `E`
+##### expected
+
+`E`
 
 #### Returns
 
@@ -788,7 +838,9 @@ For comparing floating point or big integer numbers.
 
 #### Parameters
 
-• **expected**: `number` \| `bigint`
+##### expected
+
+`number` | `bigint`
 
 #### Returns
 
@@ -808,7 +860,9 @@ For comparing floating point or big integer numbers.
 
 #### Parameters
 
-• **expected**: `number` \| `bigint`
+##### expected
+
+`number` | `bigint`
 
 #### Returns
 
@@ -822,7 +876,7 @@ node\_modules/@types/jest/index.d.ts:912
 
 ### toBeNaN()
 
-#### toBeNaN()
+#### Call Signature
 
 > **toBeNaN**(): `R`
 
@@ -836,7 +890,7 @@ Use `.toBeNaN` when checking a value is `NaN`.
 
 node\_modules/jest-extended/types/index.d.ts:613
 
-#### toBeNaN()
+#### Call Signature
 
 > **toBeNaN**(): `R`
 
@@ -961,7 +1015,9 @@ Use .toBeOneOf when checking if a value is a member of a given Array.
 
 #### Parameters
 
-• **members**: readonly `E`[]
+##### members
+
+readonly `E`[]
 
 #### Returns
 
@@ -1111,9 +1167,13 @@ Use `.toBeWithin` when checking if a number is in between the given bounds of: s
 
 #### Parameters
 
-• **start**: `number`
+##### start
 
-• **end**: `number`
+`number`
+
+##### end
+
+`number`
 
 #### Returns
 
@@ -1142,7 +1202,9 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **expected**: `E`
+##### expected
+
+`E`
 
 #### Returns
 
@@ -1166,7 +1228,9 @@ Use `.toContainAllEntries` when checking if an object only contains all of the p
 
 #### Parameters
 
-• **entries**: readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
+##### entries
+
+readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
 
 #### Returns
 
@@ -1190,7 +1254,9 @@ Use `.toContainAllKeys` when checking if an object only contains all of the prov
 
 #### Parameters
 
-• **keys**: readonly (`string` \| keyof `E`)[]
+##### keys
+
+readonly (`string` \| keyof `E`)[]
 
 #### Returns
 
@@ -1214,7 +1280,9 @@ Use `.toContainAllValues` when checking if an object only contains all of the pr
 
 #### Parameters
 
-• **values**: readonly `E`[]
+##### values
+
+readonly `E`[]
 
 #### Returns
 
@@ -1238,7 +1306,9 @@ Use `.toContainAnyEntries` when checking if an object contains at least one of t
 
 #### Parameters
 
-• **entries**: readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
+##### entries
+
+readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
 
 #### Returns
 
@@ -1262,7 +1332,9 @@ Use `.toContainAnyKeys` when checking if an object contains at least one of the 
 
 #### Parameters
 
-• **keys**: readonly (`string` \| keyof `E`)[]
+##### keys
+
+readonly (`string` \| keyof `E`)[]
 
 #### Returns
 
@@ -1286,7 +1358,9 @@ Use `.toContainAnyValues` when checking if an object contains at least one of th
 
 #### Parameters
 
-• **values**: readonly `E`[]
+##### values
+
+readonly `E`[]
 
 #### Returns
 
@@ -1310,7 +1384,9 @@ Use `.toContainEntries` when checking if an object contains all of the provided 
 
 #### Parameters
 
-• **entries**: readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
+##### entries
+
+readonly readonly [keyof `E`, `E`\[keyof `E`\]][]
 
 #### Returns
 
@@ -1334,7 +1410,9 @@ Use `.toContainEntry` when checking if an object contains the provided entry.
 
 #### Parameters
 
-• **entry**: readonly [keyof `E`, `E`\[keyof `E`\]]
+##### entry
+
+readonly [keyof `E`, `E`\[keyof `E`\]]
 
 #### Returns
 
@@ -1363,7 +1441,9 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **expected**: `E`
+##### expected
+
+`E`
 
 #### Returns
 
@@ -1387,7 +1467,9 @@ Use `.toContainKey` when checking if an object contains the provided key.
 
 #### Parameters
 
-• **key**: `string` \| keyof `E`
+##### key
+
+`string` | keyof `E`
 
 #### Returns
 
@@ -1411,7 +1493,9 @@ Use `.toContainKeys` when checking if an object has all of the provided keys.
 
 #### Parameters
 
-• **keys**: readonly (`string` \| keyof `E`)[]
+##### keys
+
+readonly (`string` \| keyof `E`)[]
 
 #### Returns
 
@@ -1435,7 +1519,9 @@ Use `.toContainValue` when checking if an object contains the provided value.
 
 #### Parameters
 
-• **value**: `E`
+##### value
+
+`E`
 
 #### Returns
 
@@ -1459,7 +1545,9 @@ Use `.toContainValues` when checking if an object contains all of the provided v
 
 #### Parameters
 
-• **values**: readonly `E`[]
+##### values
+
+readonly `E`[]
 
 #### Returns
 
@@ -1479,7 +1567,9 @@ Use `.toEndWith` when checking if a `String` ends with a given `String` suffix.
 
 #### Parameters
 
-• **suffix**: `string`
+##### suffix
+
+`string`
 
 #### Returns
 
@@ -1507,7 +1597,9 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **expected**: `E`
+##### expected
+
+`E`
 
 #### Returns
 
@@ -1527,7 +1619,9 @@ Use `.toEqualCaseInsensitive` when checking if a string is equal (===) to anothe
 
 #### Parameters
 
-• **string**: `string`
+##### string
+
+`string`
 
 #### Returns
 
@@ -1547,7 +1641,9 @@ Use `.toEqualIgnoringWhitespace` when checking if a `String` is equal (===) to g
 
 #### Parameters
 
-• **string**: `string`
+##### string
+
+`string`
 
 #### Returns
 
@@ -1585,9 +1681,13 @@ Note: Required Jest version >=23
 
 #### Parameters
 
-• **mock**: [`MockInstance`](MockInstance.md)\<`any`, `any`[], `any`\>
+##### mock
 
-• **failIfNoFirstInvocation?**: `boolean`
+[`MockInstance`](MockInstance.md)\<`any`, `any`[], `any`\>
+
+##### failIfNoFirstInvocation?
+
+`boolean`
 
 #### Returns
 
@@ -1609,9 +1709,13 @@ Note: Required Jest version >=23
 
 #### Parameters
 
-• **mock**: [`MockInstance`](MockInstance.md)\<`any`, `any`[], `any`\>
+##### mock
 
-• **failIfNoSecondInvocation?**: `boolean`
+[`MockInstance`](MockInstance.md)\<`any`, `any`[], `any`\>
+
+##### failIfNoSecondInvocation?
+
+`boolean`
 
 #### Returns
 
@@ -1631,7 +1735,9 @@ Use `.toHaveBeenCalledExactlyOnceWith` to check if a `Mock` was called exactly o
 
 #### Parameters
 
-• ...**args**: `unknown`[]
+##### args
+
+...`unknown`[]
 
 #### Returns
 
@@ -1667,7 +1773,9 @@ Ensures that a mock function is called an exact number of times.
 
 #### Parameters
 
-• **expected**: `number`
+##### expected
+
+`number`
 
 #### Returns
 
@@ -1694,7 +1802,9 @@ Note that the type must be either an array or a tuple.
 
 #### Parameters
 
-• ...**params**: `E`
+##### params
+
+...`E`
 
 #### Returns
 
@@ -1722,7 +1832,9 @@ Note that the type must be either an array or a tuple.
 
 #### Parameters
 
-• ...**params**: `E`
+##### params
+
+...`E`
 
 #### Returns
 
@@ -1749,9 +1861,13 @@ Note that the type must be either an array or a tuple.
 
 #### Parameters
 
-• **nthCall**: `number`
+##### nthCall
 
-• ...**params**: `E`
+`number`
+
+##### params
+
+...`E`
 
 #### Returns
 
@@ -1780,7 +1896,9 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **expected?**: `E`
+##### expected?
+
+`E`
 
 #### Returns
 
@@ -1801,7 +1919,9 @@ and it is set to a certain numeric value.
 
 #### Parameters
 
-• **expected**: `number`
+##### expected
+
+`number`
 
 #### Returns
 
@@ -1830,9 +1950,13 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **nthCall**: `number`
+##### nthCall
 
-• **expected?**: `E`
+`number`
+
+##### expected?
+
+`E`
 
 #### Returns
 
@@ -1862,9 +1986,13 @@ the equality of all fields.
 
 #### Parameters
 
-• **propertyPath**: `string` \| readonly `any`[]
+##### propertyPath
 
-• **value?**: `E`
+`string` | readonly `any`[]
+
+##### value?
+
+`E`
 
 #### Returns
 
@@ -1907,7 +2035,9 @@ Any calls to the mock function that throw an error are not counted toward the nu
 
 #### Parameters
 
-• **expected**: `number`
+##### expected
+
+`number`
 
 #### Returns
 
@@ -1934,7 +2064,9 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **expected?**: `E`
+##### expected?
+
+`E`
 
 #### Returns
 
@@ -1954,7 +2086,9 @@ Use `.toInclude` when checking if a `String` includes the given `String` substri
 
 #### Parameters
 
-• **substring**: `string`
+##### substring
+
+`string`
 
 #### Returns
 
@@ -1978,7 +2112,9 @@ Use `.toIncludeAllMembers` when checking if an `Array` contains all of the same 
 
 #### Parameters
 
-• **members**: readonly `E`[]
+##### members
+
+readonly `E`[]
 
 #### Returns
 
@@ -2002,7 +2138,9 @@ Use `.toIncludeAllPartialMembers` when checking if an `Array` contains all of th
 
 #### Parameters
 
-• **members**: readonly `E`[]
+##### members
+
+readonly `E`[]
 
 #### Returns
 
@@ -2026,7 +2164,9 @@ Use `.toIncludeAnyMembers` when checking if an `Array` contains any of the membe
 
 #### Parameters
 
-• **members**: readonly `E`[]
+##### members
+
+readonly `E`[]
 
 #### Returns
 
@@ -2046,7 +2186,9 @@ Use `.toIncludeMultiple` when checking if a `String` includes all of the given s
 
 #### Parameters
 
-• **substring**: readonly `string`[]
+##### substring
+
+readonly `string`[]
 
 #### Returns
 
@@ -2066,9 +2208,13 @@ Use `.toIncludeRepeated` when checking if a `String` includes the given `String`
 
 #### Parameters
 
-• **substring**: `string`
+##### substring
 
-• **times**: `number`
+`string`
+
+##### times
+
+`number`
 
 #### Returns
 
@@ -2092,7 +2238,9 @@ Use `.toIncludeSameMembers` when checking if two arrays contain equal values, in
 
 #### Parameters
 
-• **members**: readonly `E`[]
+##### members
+
+readonly `E`[]
 
 #### Returns
 
@@ -2112,7 +2260,9 @@ Check that a string matches a regular expression.
 
 #### Parameters
 
-• **expected**: `string` \| `RegExp`
+##### expected
+
+`string` | `RegExp`
 
 #### Returns
 
@@ -2126,7 +2276,7 @@ node\_modules/@types/jest/index.d.ts:1054
 
 ### toMatchInlineSnapshot()
 
-#### toMatchInlineSnapshot(propertyMatchers, snapshot)
+#### Call Signature
 
 > **toMatchInlineSnapshot**\<`U`\>(`propertyMatchers`, `snapshot`?): `R`
 
@@ -2140,9 +2290,13 @@ Check out [the Snapshot Testing guide](http://facebook.github.io/jest/docs/snaps
 
 ##### Parameters
 
-• **propertyMatchers**: `Partial`\<`U`\>
+###### propertyMatchers
 
-• **snapshot?**: `string`
+`Partial`\<`U`\>
+
+###### snapshot?
+
+`string`
 
 ##### Returns
 
@@ -2152,7 +2306,7 @@ Check out [the Snapshot Testing guide](http://facebook.github.io/jest/docs/snaps
 
 node\_modules/@types/jest/index.d.ts:1094
 
-#### toMatchInlineSnapshot(snapshot)
+#### Call Signature
 
 > **toMatchInlineSnapshot**(`snapshot`?): `R`
 
@@ -2162,7 +2316,9 @@ Check out [the Snapshot Testing guide](http://facebook.github.io/jest/docs/snaps
 
 ##### Parameters
 
-• **snapshot?**: `string`
+###### snapshot?
+
+`string`
 
 ##### Returns
 
@@ -2185,11 +2341,13 @@ This ensures that the matching object matches the structure of the provided obje
 
 #### Type Parameters
 
-• **E** *extends* `object` \| `any`[]
+• **E** *extends* \{\} \| `any`[]
 
 #### Parameters
 
-• **expected**: `E`
+##### expected
+
+`E`
 
 #### Returns
 
@@ -2219,7 +2377,7 @@ node\_modules/@types/jest/index.d.ts:1076
 
 ### toMatchSnapshot()
 
-#### toMatchSnapshot(propertyMatchers, snapshotName)
+#### Call Signature
 
 > **toMatchSnapshot**\<`U`\>(`propertyMatchers`, `snapshotName`?): `R`
 
@@ -2232,9 +2390,13 @@ Check out [the Snapshot Testing guide](http://facebook.github.io/jest/docs/snaps
 
 ##### Parameters
 
-• **propertyMatchers**: `Partial`\<`U`\>
+###### propertyMatchers
 
-• **snapshotName?**: `string`
+`Partial`\<`U`\>
+
+###### snapshotName?
+
+`string`
 
 ##### Returns
 
@@ -2244,7 +2406,7 @@ Check out [the Snapshot Testing guide](http://facebook.github.io/jest/docs/snaps
 
 node\_modules/@types/jest/index.d.ts:1082
 
-#### toMatchSnapshot(snapshotName)
+#### Call Signature
 
 > **toMatchSnapshot**(`snapshotName`?): `R`
 
@@ -2253,7 +2415,9 @@ Check out [the Snapshot Testing guide](http://facebook.github.io/jest/docs/snaps
 
 ##### Parameters
 
-• **snapshotName?**: `string`
+###### snapshotName?
+
+`string`
 
 ##### Returns
 
@@ -2277,7 +2441,9 @@ Use `.toPartiallyContain` when checking if any array value matches the partial m
 
 #### Parameters
 
-• **member**: `E`
+##### member
+
+`E`
 
 #### Returns
 
@@ -2349,7 +2515,9 @@ Ensure that a mock function has returned (as opposed to thrown) a specified numb
 
 #### Parameters
 
-• **count**: `number`
+##### count
+
+`number`
 
 #### Returns
 
@@ -2380,7 +2548,9 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **value?**: `E`
+##### value?
+
+`E`
 
 #### Returns
 
@@ -2408,7 +2578,9 @@ Use `.toSatisfy` when you want to use a custom matcher by supplying a predicate 
 
 #### Parameters
 
-• **predicate**
+##### predicate
+
+(`x`) => `boolean`
 
 #### Returns
 
@@ -2432,7 +2604,9 @@ Use `.toSatisfyAll` when you want to use a custom matcher by supplying a predica
 
 #### Parameters
 
-• **predicate**
+##### predicate
+
+(`x`) => `boolean`
 
 #### Returns
 
@@ -2452,7 +2626,9 @@ Use `.toSatisfyAny` when you want to use a custom matcher by supplying a predica
 
 #### Parameters
 
-• **predicate**
+##### predicate
+
+(`x`) => `boolean`
 
 #### Returns
 
@@ -2472,7 +2648,9 @@ Use `.toStartWith` when checking if a `String` starts with a given `String` pref
 
 #### Parameters
 
-• **prefix**: `string`
+##### prefix
+
+`string`
 
 #### Returns
 
@@ -2499,7 +2677,9 @@ This is particularly useful for ensuring expected objects have the right structu
 
 #### Parameters
 
-• **expected**: `E`
+##### expected
+
+`E`
 
 #### Returns
 
@@ -2519,7 +2699,9 @@ Used to test that a function throws when it is called.
 
 #### Parameters
 
-• **error?**: `string` \| `RegExp` \| `Error` \| [`Constructable`](Constructable.md)
+##### error?
+
+`string` | `RegExp` | `Error` | [`Constructable`](Constructable.md)
 
 #### Returns
 
@@ -2539,7 +2721,9 @@ If you want to test that a specific error is thrown inside a function.
 
 #### Parameters
 
-• **error?**: `string` \| `RegExp` \| `Error` \| [`Constructable`](Constructable.md)
+##### error?
+
+`string` | `RegExp` | `Error` | [`Constructable`](Constructable.md)
 
 #### Returns
 
@@ -2564,7 +2748,9 @@ Instead of writing the snapshot value to a .snap file, it will be written into t
 
 #### Parameters
 
-• **snapshot?**: `string`
+##### snapshot?
+
+`string`
 
 #### Returns
 
@@ -2584,7 +2770,9 @@ Used to test that a function throws a error matching the most recent snapshot wh
 
 #### Parameters
 
-• **snapshotName?**: `string`
+##### snapshotName?
+
+`string`
 
 #### Returns
 
@@ -2604,9 +2792,13 @@ Use `.toThrowWithMessage` when checking if a callback function throws an error o
 
 #### Parameters
 
-• **type**: (...`args`) => `object` \| (...`args`) => `object` \| (...`args`) => `object`
+##### type
 
-• **message**: `string` \| `RegExp`
+(...`args`) => `object` | (...`args`) => `object` | (...`args`) => `object`
+
+##### message
+
+`string` | `RegExp`
 
 #### Returns
 

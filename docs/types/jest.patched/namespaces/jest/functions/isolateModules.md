@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -13,7 +13,9 @@ This is useful to isolate specific modules for every test so that local module s
 
 ## Parameters
 
-• **fn**
+### fn
+
+() => `void`
 
 ## Returns
 

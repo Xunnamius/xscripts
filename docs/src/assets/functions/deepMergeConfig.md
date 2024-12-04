@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -17,11 +17,17 @@ A thin wrapper around lodash's mergeWith that does not mutate
 
 ## Parameters
 
-• **originalConfiguration**: `ConfigurationType`
+### originalConfiguration
 
-• **overwrites**: `EmptyObject` \| `ConfigurationType` = `{}`
+`ConfigurationType`
 
-• **customReplacer?**
+### overwrites
+
+`ConfigurationType` | `EmptyObject`
+
+### customReplacer?
+
+(`value`, `srcValue`, `key`, `object`, `source`) => `any`
 
 ## Returns
 
@@ -29,4 +35,4 @@ A thin wrapper around lodash's mergeWith that does not mutate
 
 ## Defined in
 
-[src/assets.ts:186](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets.ts#L186)
+[src/assets.ts:292](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets.ts#L292)

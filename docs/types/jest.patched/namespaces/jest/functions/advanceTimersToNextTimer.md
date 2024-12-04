@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -13,7 +13,9 @@ Optionally, you can provide steps, so it will run steps amount of next timeouts/
 
 ## Parameters
 
-• **step?**: `number`
+### step?
+
+`number`
 
 ## Returns
 

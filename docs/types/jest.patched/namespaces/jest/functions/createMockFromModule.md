@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -16,7 +16,9 @@ Use the automatic mocking system to generate a mocked version of the given modul
 
 ## Parameters
 
-• **moduleName**: `string`
+### moduleName
+
+`string`
 
 ## Returns
 

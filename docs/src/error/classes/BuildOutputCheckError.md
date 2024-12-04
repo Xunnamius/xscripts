@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -30,7 +30,7 @@ Represents encountering a project that is not a git repository.
 
 #### Defined in
 
-[src/error.ts:45](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/error.ts#L45)
+[src/error.ts:47](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/error.ts#L47)
 
 ### new BuildOutputCheckError()
 
@@ -41,7 +41,9 @@ via `super`.
 
 #### Parameters
 
-• **message**: `string`
+##### message
+
+`string`
 
 #### Returns
 
@@ -53,7 +55,7 @@ via `super`.
 
 #### Defined in
 
-[src/error.ts:50](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/error.ts#L50)
+[src/error.ts:52](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/error.ts#L52)
 
 ## Properties
 
@@ -67,7 +69,7 @@ via `super`.
 
 #### Defined in
 
-[src/error.ts:41](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/error.ts#L41)
+[src/error.ts:43](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/error.ts#L43)
 
 ***
 
@@ -135,9 +137,13 @@ Optional override for formatting stack traces
 
 #### Parameters
 
-• **err**: `Error`
+##### err
 
-• **stackTraces**: `CallSite`[]
+`Error`
+
+##### stackTraces
+
+`CallSite`[]
 
 #### Returns
 
@@ -179,9 +185,13 @@ Create .stack property on a target object
 
 #### Parameters
 
-• **targetObject**: `object`
+##### targetObject
 
-• **constructorOpt?**: `Function`
+`object`
+
+##### constructorOpt?
+
+`Function`
 
 #### Returns
 

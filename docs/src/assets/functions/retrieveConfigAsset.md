@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -8,25 +8,30 @@
 
 > **retrieveConfigAsset**(`__namedParameters`): `Promise`\<[`TransformerResult`](../type-aliases/TransformerResult.md)\>
 
-Retrieve an asset via its filename. For example, to retrieve an
-`eslint.config.mjs` file (the transformer source for which exists in
-`./config/_eslint.config.mjs.ts`), pass `"eslint.config.mjs"` as the `name`
-parameter.
+Retrieve an asset via its identifier (typically a filename). For example, to
+retrieve an `eslint.config.mjs` file, the transformer source for which exists
+in `./config/_eslint.config.mjs.ts`, pass `"eslint.config.mjs"` as the
+`asset` parameter.
 
-Throws if no corresponding transformer for `name` can be found.
+Throws if no corresponding transformer for `asset` can be found.
 
-Expects an xscripts project init-time (or renovate-time) context object (i.e.
-[TransformerContext](../type-aliases/TransformerContext.md) + [RequiredTransformerContext](../type-aliases/RequiredTransformerContext.md)).
+Expects a full context object (i.e. [TransformerContext](../type-aliases/TransformerContext.md)).
 
 ## Parameters
 
-• **\_\_namedParameters**
+### \_\_namedParameters
 
-• **\_\_namedParameters.context**: [`TransformerContext`](../type-aliases/TransformerContext.md) & [`RequiredTransformerContext`](../type-aliases/RequiredTransformerContext.md)
+#### asset
 
-• **\_\_namedParameters.name**: `string`
+`string`
 
-• **\_\_namedParameters.options?**: `EmptyObject` = `{}`
+#### context
+
+`Omit`\<[`TransformerContext`](../type-aliases/TransformerContext.md), `"asset"`\>
+
+#### options
+
+[`TransformerOptions`](../type-aliases/TransformerOptions.md) & [`RetrievalOptions`](../type-aliases/RetrievalOptions.md) = `{}`
 
 ## Returns
 
@@ -34,4 +39,4 @@ Expects an xscripts project init-time (or renovate-time) context object (i.e.
 
 ## Defined in
 
-[src/assets.ts:102](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets.ts#L102)
+[src/assets.ts:138](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets.ts#L138)

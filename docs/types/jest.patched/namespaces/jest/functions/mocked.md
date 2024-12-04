@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Function: mocked()
 
-## mocked(source, options)
+## Call Signature
 
 > **mocked**\<`T`\>(`source`, `options`?): [`MaybeMockedDeep`](../type-aliases/MaybeMockedDeep.md)\<`T`\>
 
@@ -20,11 +20,15 @@ mocked behavior.
 
 ### Parameters
 
-• **source**: `T`
+#### source
 
-• **options?**
+`T`
 
-• **options.shallow?**: `false`
+#### options?
+
+##### shallow
+
+`false`
 
 ### Returns
 
@@ -34,7 +38,7 @@ mocked behavior.
 
 node\_modules/@types/jest/index.d.ts:248
 
-## mocked(source, options)
+## Call Signature
 
 > **mocked**\<`T`\>(`source`, `options`): [`MaybeMocked`](../type-aliases/MaybeMocked.md)\<`T`\>
 
@@ -46,11 +50,15 @@ Wraps types of the `source` object with type definitions of Jest mock function.
 
 ### Parameters
 
-• **source**: `T`
+#### source
 
-• **options**
+`T`
 
-• **options.shallow**: `true`
+#### options
+
+##### shallow
+
+`true`
 
 ### Returns
 

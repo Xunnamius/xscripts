@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../README.md) • **Docs**
+[**@-xun/scripts**](../../README.md)
 
 ***
 
@@ -13,3 +13,7 @@
 - [globalCliName](variables/globalCliName.md)
 - [globalDebuggerNamespace](variables/globalDebuggerNamespace.md)
 - [globalLoggerNamespace](variables/globalLoggerNamespace.md)
+
+### Functions
+
+- [makeGeneratedAliasesWarningComment](functions/makeGeneratedAliasesWarningComment.md)

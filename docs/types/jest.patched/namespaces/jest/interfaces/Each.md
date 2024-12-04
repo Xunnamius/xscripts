@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -14,7 +14,9 @@
 
 ## Parameters
 
-• **cases**: readonly `T`[]
+### cases
+
+readonly `T`[]
 
 ## Returns
 
@@ -22,11 +24,17 @@
 
 ### Parameters
 
-• **name**: `string`
+#### name
 
-• **fn**
+`string`
 
-• **timeout?**: `number`
+#### fn
+
+(...`args`) => `any`
+
+#### timeout?
+
+`number`
 
 ### Returns
 
@@ -44,7 +52,9 @@ node\_modules/@types/jest/index.d.ts:511
 
 ## Parameters
 
-• **cases**: readonly `T`[]
+### cases
+
+readonly `T`[]
 
 ## Returns
 
@@ -52,11 +62,17 @@ node\_modules/@types/jest/index.d.ts:511
 
 ### Parameters
 
-• **name**: `string`
+#### name
 
-• **fn**
+`string`
 
-• **timeout?**: `number`
+#### fn
+
+(...`args`) => `any`
+
+#### timeout?
+
+`number`
 
 ### Returns
 
@@ -74,7 +90,9 @@ node\_modules/@types/jest/index.d.ts:516
 
 ## Parameters
 
-• **cases**: readonly `T`[]
+### cases
+
+readonly `T`[]
 
 ## Returns
 
@@ -82,11 +100,17 @@ node\_modules/@types/jest/index.d.ts:516
 
 ### Parameters
 
-• **name**: `string`
+#### name
 
-• **fn**
+`string`
 
-• **timeout?**: `number`
+#### fn
+
+(`arg`, `done`) => `any`
+
+#### timeout?
+
+`number`
 
 ### Returns
 
@@ -100,7 +124,9 @@ node\_modules/@types/jest/index.d.ts:522
 
 ## Parameters
 
-• **cases**: readonly readonly `any`[][]
+### cases
+
+readonly readonly `any`[][]
 
 ## Returns
 
@@ -108,11 +134,17 @@ node\_modules/@types/jest/index.d.ts:522
 
 ### Parameters
 
-• **name**: `string`
+#### name
 
-• **fn**
+`string`
 
-• **timeout?**: `number`
+#### fn
+
+(...`args`) => `any`
+
+#### timeout?
+
+`number`
 
 ### Returns
 
@@ -126,9 +158,13 @@ node\_modules/@types/jest/index.d.ts:523
 
 ## Parameters
 
-• **strings**: `TemplateStringsArray`
+### strings
 
-• ...**placeholders**: `any`[]
+`TemplateStringsArray`
+
+### placeholders
+
+...`any`[]
 
 ## Returns
 
@@ -136,11 +172,17 @@ node\_modules/@types/jest/index.d.ts:523
 
 ### Parameters
 
-• **name**: `string`
+#### name
 
-• **fn**
+`string`
 
-• **timeout?**: `number`
+#### fn
+
+(`arg`, `done`) => `any`
+
+#### timeout?
+
+`number`
 
 ### Returns
 

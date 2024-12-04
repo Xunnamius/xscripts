@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -8,8 +8,8 @@
 
 > **legacyExtendsFactory**(`flatCompat`): (`extension`, `name`) => `Config`
 
-Returns a function that, when invoked, returns an eslint@>=9 configuration
-object that adapts a legacy eslint@<9 plugin's exposed rule extension.
+Returns a function that, when invoked, returns an `eslint@>=9` configuration
+object that adapts a legacy `eslint@<9` plugin's exposed rule extension.
 
 For example:
 
@@ -22,7 +22,9 @@ const eslintConfig = makeTsEslintConfig(
 
 ## Parameters
 
-• **flatCompat**: `FlatCompat`
+### flatCompat
+
+`FlatCompat`
 
 ## Returns
 
@@ -30,9 +32,13 @@ const eslintConfig = makeTsEslintConfig(
 
 ### Parameters
 
-• **extension**: `string`
+#### extension
 
-• **name**: `string`
+`string`
+
+#### name
+
+`string`
 
 ### Returns
 
@@ -40,4 +46,4 @@ const eslintConfig = makeTsEslintConfig(
 
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:568](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_eslint.config.mjs.ts#L568)
+[src/assets/config/\_eslint.config.mjs.ts:890](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_eslint.config.mjs.ts#L890)

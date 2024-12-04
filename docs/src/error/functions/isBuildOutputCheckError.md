@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -12,7 +12,9 @@ Type guard for ProjectError.
 
 ## Parameters
 
-• **parameter**: `unknown`
+### parameter
+
+`unknown`
 
 ## Returns
 
@@ -20,4 +22,4 @@ Type guard for ProjectError.
 
 ## Defined in
 
-[src/error.ts:28](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/error.ts#L28)
+[src/error.ts:30](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/error.ts#L30)

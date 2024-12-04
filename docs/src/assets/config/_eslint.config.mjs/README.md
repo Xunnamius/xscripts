@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../README.md)
 
 ***
 
@@ -10,20 +10,13 @@
 
 ### Type Aliases
 
-- [Context](type-aliases/Context.md)
 - [EslintConfig](type-aliases/EslintConfig.md)
-
-### Variables
-
-- [eslintPlugins](variables/eslintPlugins.md)
-- [genericRules](variables/genericRules.md)
-- [globals](variables/globals.md)
-- [jestRules](variables/jestRules.md)
-- [jsFileExtensions](variables/jsFileExtensions.md)
-- [tsconfigProject](variables/tsconfigProject.md)
+- [PathGroup](type-aliases/PathGroup.md)
+- [PathGroupOverride](type-aliases/PathGroupOverride.md)
 
 ### Functions
 
+- [assertEnvironment](functions/assertEnvironment.md)
 - [legacyExtendsFactory](functions/legacyExtendsFactory.md)
 - [makeEslintFlatCompat](functions/makeEslintFlatCompat.md)
 - [moduleExport](functions/moduleExport.md)

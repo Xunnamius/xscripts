@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -18,7 +18,9 @@
 
 ## Parameters
 
-• **actual**: `TActual`
+### actual
+
+`TActual`
 
 ## Returns
 

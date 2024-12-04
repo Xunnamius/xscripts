@@ -1,4 +1,4 @@
-**@-xun/scripts** • **Docs**
+**@-xun/scripts**
 
 ***
 
@@ -8,7 +8,7 @@
 
 - [src/assets](src/assets/README.md)
 - [src/assets/config/\_.all-contributorsrc](src/assets/config/_.all-contributorsrc/README.md)
-- [src/assets/config/\_.browserslist.config.cjs](src/assets/config/_.browserslist.config.cjs/README.md)
+- [src/assets/config/\_.browserslistrc](src/assets/config/_.browserslistrc/README.md)
 - [src/assets/config/\_.codecov.yml](src/assets/config/_.codecov.yml/README.md)
 - [src/assets/config/\_.editorconfig](src/assets/config/_.editorconfig/README.md)
 - [src/assets/config/\_.env.default](src/assets/config/_.env.default/README.md)
@@ -35,7 +35,6 @@
 - [src/assets/config/\_MAINTAINING.md](src/assets/config/_MAINTAINING.md/README.md)
 - [src/assets/config/\_next.config.mjs](src/assets/config/_next.config.mjs/README.md)
 - [src/assets/config/\_package.json](src/assets/config/_package.json/README.md)
-- [src/assets/config/\_packages](src/assets/config/_packages/README.md)
 - [src/assets/config/\_postcss.config.mjs](src/assets/config/_postcss.config.mjs/README.md)
 - [src/assets/config/\_prettier.config.mjs](src/assets/config/_prettier.config.mjs/README.md)
 - [src/assets/config/\_README.md](src/assets/config/_README.md/README.md)
@@ -46,9 +45,9 @@
 - [src/assets/config/\_test](src/assets/config/_test/README.md)
 - [src/assets/config/\_tsconfig.json](src/assets/config/_tsconfig.json/README.md)
 - [src/assets/config/\_tstyche.config.json](src/assets/config/_tstyche.config.json/README.md)
-- [src/assets/config/\_turbo.config.js](src/assets/config/_turbo.config.js/README.md)
+- [src/assets/config/\_turbo.json](src/assets/config/_turbo.json/README.md)
 - [src/assets/config/\_types](src/assets/config/_types/README.md)
-- [src/assets/config/\_webpack.config.js](src/assets/config/_webpack.config.js/README.md)
+- [src/assets/config/\_webpack.config.mjs](src/assets/config/_webpack.config.mjs/README.md)
 - [src/cli](src/cli/README.md)
 - [src/commands](src/commands/README.md)
 - [src/commands/build](src/commands/build/README.md)

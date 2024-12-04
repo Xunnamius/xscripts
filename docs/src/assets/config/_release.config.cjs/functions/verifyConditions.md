@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -13,9 +13,13 @@ passed via `release.config.cjs`.
 
 ## Parameters
 
-• **pluginConfig**: `Partial`\<[`PluginConfig`](../type-aliases/PluginConfig.md)\>
+### pluginConfig
 
-• **\_context**: `VerifyConditionsContext`
+`Partial`\<[`PluginConfig`](../type-aliases/PluginConfig.md)\>
+
+### \_context
+
+`VerifyConditionsContext`
 
 ## Returns
 
@@ -23,4 +27,4 @@ passed via `release.config.cjs`.
 
 ## Defined in
 
-[src/assets/config/\_release.config.cjs.ts:242](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_release.config.cjs.ts#L242)
+[src/assets/config/\_release.config.cjs.ts:264](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_release.config.cjs.ts#L264)

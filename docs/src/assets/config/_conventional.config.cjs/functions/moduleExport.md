@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -6,7 +6,7 @@
 
 # Function: moduleExport()
 
-> **moduleExport**(`configOverrides`): `XchangelogConfig`
+> **moduleExport**(`__namedParameters`): `XchangelogConfig`
 
 This function returns a `@-xun/changelog` configuration preset. See the
 documentation for details.
@@ -16,8 +16,8 @@ partially initialized XchangelogConfig object (overwriting same keys)
 using `lodash.mergeWith`.
 
 If `configOverrides` is a function, it will be passed said partially
-initialized XchangelogConfig object and must return a an object of
-the same type.
+initialized XchangelogConfig object and must return an object of the
+same type.
 
 If you are consuming this configuration object with the intent to invoke
 `@-xun/changelog` directly (i.e. via its Node.js API), such as in the
@@ -25,15 +25,27 @@ If you are consuming this configuration object with the intent to invoke
 patchSpawnChild as soon as possible** upon entering the handler and
 call unpatchSpawnChild towards the end of the same scope.
 
-This function also modifies the global `Proxy` class so that it returns the
-object its proxying as a property on the proxy object accessible via the
-$proxiedTarget symbol. This is used to hack our way around some
-questionable attempts at implementing immutable commit objects in
-conventional-commits-writer.
+This function also relies on a patched version of the global `Proxy` class so
+that it returns the object its proxying as a property on the proxy object
+accessible via the $proxiedTarget symbol. This is used to hack our
+way around some questionable attempts at implementing immutable commit
+objects in upstream conventional-commits-writer.
 
 ## Parameters
 
-• **configOverrides**: (`config`) => `XchangelogConfig` \| `Partial`\<`XchangelogConfig`\> = `{}`
+### \_\_namedParameters
+
+#### configOverrides
+
+(`config`) => `XchangelogConfig` \| `Partial`\<`XchangelogConfig`\> = `{}`
+
+#### projectMetadata
+
+`ProjectMetadata`
+
+#### specialInitialCommit
+
+`string`
 
 ## Returns
 
@@ -41,4 +53,4 @@ conventional-commits-writer.
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:357](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_conventional.config.cjs.ts#L357)
+[src/assets/config/\_conventional.config.cjs.ts:382](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_conventional.config.cjs.ts#L382)

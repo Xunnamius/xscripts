@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -6,21 +6,19 @@
 
 # Function: makeTransformer()
 
-> **makeTransformer**\<`CustomTransformContext`\>(`__namedParameters`): `object`
+> **makeTransformer**(`__namedParameters`): `object`
 
 Create a transformer function that takes a custom [TransformerContext](../type-aliases/TransformerContext.md)
 instance, and an optional [TransformerOptions](../type-aliases/TransformerOptions.md), and returns a
 [TransformerResult](../type-aliases/TransformerResult.md).
 
-## Type Parameters
-
-• **CustomTransformContext** *extends* [`TransformerContext`](../type-aliases/TransformerContext.md) = [`TransformerContext`](../type-aliases/TransformerContext.md)
-
 ## Parameters
 
-• **\_\_namedParameters**
+### \_\_namedParameters
 
-• **\_\_namedParameters.transform**
+#### transform
+
+(`context`) => [`TransformerResult`](../type-aliases/TransformerResult.md)
 
 ## Returns
 
@@ -30,16 +28,22 @@ instance, and an optional [TransformerOptions](../type-aliases/TransformerOption
 
 #### Parameters
 
-• **this**: `void`
+##### this
 
-• **context**: `Partial`\<`CustomTransformContext`\> & [`RequiredTransformerContext`](../type-aliases/RequiredTransformerContext.md)
+`void`
 
-• **options**: `EmptyObject` = `{}`
+##### context
+
+[`TransformerContext`](../type-aliases/TransformerContext.md)
+
+##### \_\_namedParameters
+
+[`TransformerOptions`](../type-aliases/TransformerOptions.md) = `{}`
 
 #### Returns
 
-[`TransformerResult`](../type-aliases/TransformerResult.md)
+`Promise`\<`object`\>
 
 ## Defined in
 
-[src/assets.ts:140](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets.ts#L140)
+[src/assets.ts:253](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets.ts#L253)

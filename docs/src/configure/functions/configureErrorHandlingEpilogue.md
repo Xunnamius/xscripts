@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -10,17 +10,27 @@
 
 ## Parameters
 
-• **meta**
+### meta
 
-• **meta.error**: `unknown`
+#### error
 
-• **meta.exitCode**: `number`
+`unknown`
 
-• **meta.message**: `string`
+#### exitCode
 
-• **argv**: `Omit`\<`Partial`\<`Arguments`\>, *typeof* [`$executionContext`](../variables/$executionContext.md)\> & `object`
+`number`
 
-• **context**: [`GlobalExecutionContext`](../type-aliases/GlobalExecutionContext.md)
+#### message
+
+`string`
+
+### argv
+
+`Omit`\<`Partial`\<`Arguments`\>, *typeof* [`$executionContext`](../variables/$executionContext.md)\> & `object`
+
+### context
+
+[`GlobalExecutionContext`](../type-aliases/GlobalExecutionContext.md)
 
 ## Returns
 
@@ -28,4 +38,4 @@
 
 ## Defined in
 
-[src/configure.ts:198](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/configure.ts#L198)
+[src/configure.ts:198](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/configure.ts#L198)

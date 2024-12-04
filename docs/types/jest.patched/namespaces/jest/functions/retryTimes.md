@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -13,11 +13,15 @@ This only works with jest-circus!
 
 ## Parameters
 
-• **numRetries**: `number`
+### numRetries
 
-• **options?**
+`number`
 
-• **options.logErrorsBeforeRetry?**: `boolean`
+### options?
+
+#### logErrorsBeforeRetry
+
+`boolean`
 
 ## Returns
 

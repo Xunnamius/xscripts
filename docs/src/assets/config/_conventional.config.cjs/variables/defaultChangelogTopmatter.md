@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -12,4 +12,4 @@ The preamble prefixed to any generated the changelog file.
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:149](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/assets/config/_conventional.config.cjs.ts#L149)
+[src/assets/config/\_conventional.config.cjs.ts:146](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_conventional.config.cjs.ts#L146)

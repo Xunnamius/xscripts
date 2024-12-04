@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -18,7 +18,9 @@
 
 ## Parameters
 
-• ...**args**: [`ArgumentsOf`](../type-aliases/ArgumentsOf.md)\<`T`\>
+### args
+
+...[`ArgumentsOf`](../type-aliases/ArgumentsOf.md)\<`T`\>
 
 ## Returns
 
@@ -36,7 +38,9 @@ node\_modules/@types/jest/index.d.ts:446
 
 #### Parameters
 
-• ...**args**: [`ConstructorArgumentsOf`](../type-aliases/ConstructorArgumentsOf.md)\<`T`\>
+##### args
+
+...[`ConstructorArgumentsOf`](../type-aliases/ConstructorArgumentsOf.md)\<`T`\>
 
 #### Returns
 
@@ -146,7 +150,9 @@ Note: `jest.fn(implementation)` is a shorthand for `jest.fn().mockImplementation
 
 #### Parameters
 
-• **fn?**
+##### fn?
+
+(...`args`) => `ReturnType`\<`T`\>
 
 #### Returns
 
@@ -171,7 +177,9 @@ Can be chained so that multiple function calls produce different results.
 
 #### Parameters
 
-• **fn**
+##### fn
+
+(...`args`) => `ReturnType`\<`T`\>
 
 #### Returns
 
@@ -208,7 +216,9 @@ Sets the name of the mock.
 
 #### Parameters
 
-• **name**: `string`
+##### name
+
+`string`
 
 #### Returns
 
@@ -232,7 +242,9 @@ Simple sugar function for: `jest.fn().mockImplementation(() => Promise.reject(va
 
 #### Parameters
 
-• **value**: [`RejectedValue`](../type-aliases/RejectedValue.md)\<`ReturnType`\<`T`\>\>
+##### value
+
+[`RejectedValue`](../type-aliases/RejectedValue.md)\<`ReturnType`\<`T`\>\>
 
 #### Returns
 
@@ -266,7 +278,9 @@ Simple sugar function for: `jest.fn().mockImplementationOnce(() => Promise.rejec
 
 #### Parameters
 
-• **value**: [`RejectedValue`](../type-aliases/RejectedValue.md)\<`ReturnType`\<`T`\>\>
+##### value
+
+[`RejectedValue`](../type-aliases/RejectedValue.md)\<`ReturnType`\<`T`\>\>
 
 #### Returns
 
@@ -330,7 +344,9 @@ Simple sugar function for: `jest.fn().mockImplementation(() => Promise.resolve(v
 
 #### Parameters
 
-• **value**: [`ResolvedValue`](../type-aliases/ResolvedValue.md)\<`ReturnType`\<`T`\>\>
+##### value
+
+[`ResolvedValue`](../type-aliases/ResolvedValue.md)\<`ReturnType`\<`T`\>\>
 
 #### Returns
 
@@ -354,7 +370,9 @@ Simple sugar function for: `jest.fn().mockImplementationOnce(() => Promise.resol
 
 #### Parameters
 
-• **value**: [`ResolvedValue`](../type-aliases/ResolvedValue.md)\<`ReturnType`\<`T`\>\>
+##### value
+
+[`ResolvedValue`](../type-aliases/ResolvedValue.md)\<`ReturnType`\<`T`\>\>
 
 #### Returns
 
@@ -451,7 +469,9 @@ Accepts a value that will be returned whenever the mock function is called.
 
 #### Parameters
 
-• **value**: `ReturnType`\<`T`\>
+##### value
+
+`ReturnType`\<`T`\>
 
 #### Returns
 
@@ -487,7 +507,9 @@ successive calls to the mock function return different values. When there are no
 
 #### Parameters
 
-• **value**: `ReturnType`\<`T`\>
+##### value
+
+`ReturnType`\<`T`\>
 
 #### Returns
 
@@ -517,7 +539,7 @@ node\_modules/@types/jest/index.d.ts:1435
 
 ### withImplementation()
 
-#### withImplementation(fn, callback)
+#### Call Signature
 
 > **withImplementation**(`fn`, `callback`): `Promise`\<`void`\>
 
@@ -526,9 +548,13 @@ then restores its previous implementation.
 
 ##### Parameters
 
-• **fn**
+###### fn
 
-• **callback**
+(...`args`) => `ReturnType`\<`T`\>
+
+###### callback
+
+() => `Promise`\<`unknown`\>
 
 ##### Returns
 
@@ -547,7 +573,7 @@ Awaiting the promise will await the callback and reset the implementation.
 
 node\_modules/@types/jest/index.d.ts:1390
 
-#### withImplementation(fn, callback)
+#### Call Signature
 
 > **withImplementation**(`fn`, `callback`): `void`
 
@@ -556,9 +582,13 @@ then restores its previous implementation.
 
 ##### Parameters
 
-• **fn**
+###### fn
 
-• **callback**
+(...`args`) => `ReturnType`\<`T`\>
+
+###### callback
+
+() => `void`
 
 ##### Returns
 

@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
@@ -25,4 +25,4 @@ checking commands that only operate in the "this-package" scope.
 
 #### Defined in
 
-[src/configure.ts:81](https://github.com/Xunnamius/xscripts/blob/5720c37375b8ffddbde03f8e53002853e0eeabbc/src/configure.ts#L81)
+[src/configure.ts:81](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/configure.ts#L81)

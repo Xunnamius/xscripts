@@ -1,4 +1,4 @@
-[**@-xun/scripts**](../../../../../README.md) • **Docs**
+[**@-xun/scripts**](../../../../../README.md)
 
 ***
 
@@ -14,7 +14,9 @@ within this time frame will be executed.
 
 ## Parameters
 
-• **msToRun**: `number`
+### msToRun
+
+`number`
 
 ## Returns
 
