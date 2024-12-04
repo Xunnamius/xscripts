@@ -1,18 +1,14 @@
 /* eslint-disable unicorn/filename-case */
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { type RelativePath } from 'multiverse+project-utils:fs.ts';
 
-import type { EmptyObject } from 'type-fest';
+import { compileTemplate, makeTransformer } from 'universe:assets.ts';
 
-export type Context = EmptyObject;
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
+export const { transformer } = makeTransformer({
+  async transform(context) {
+    const { asset } = context;
 
     return {
-      [name]: `
-
-`.trimStart()
+      [asset]: await compileTemplate('CONTRIBUTING.md' as RelativePath, context)
     };
   }
 });

@@ -12,11 +12,16 @@ import { run } from '@-xun/run';
 import { type ExecutionContext } from '@black-flag/core/util';
 
 import { getInvocableExtendedHandler } from 'multiverse+bfe';
-import { analyzeProjectStructure } from 'multiverse+project-utils:analyze.ts';
+
+import {
+  analyzeProjectStructure,
+  type ProjectMetadata
+} from 'multiverse+project-utils:analyze.ts';
 
 import {
   conventionalChangelogConfigProjectBase,
   releaseConfigProjectBase,
+  toAbsolutePath,
   toPath
 } from 'multiverse+project-utils:fs.ts';
 
@@ -27,7 +32,7 @@ import {
   noSpecialInitialCommitIndicator
 } from 'universe:assets/config/_conventional.config.cjs.ts';
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer } from 'universe:assets.ts';
 
 import {
   default as buildChangelog,
@@ -57,28 +62,36 @@ import type {
   VerifyConditionsContext
 } from 'semantic-release' with { 'resolution-mode': 'import' };
 
-import type { EmptyObject } from 'type-fest';
-
 const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:release`
 });
 
-export type Context = EmptyObject;
+export type { ReleaseConfig };
 
+/**
+ * The custom configuration object expected by the custom semantic-release
+ * plugin steps defined below.
+ */
+export type PluginConfig = {
+  releaseSectionPath: string;
+  parserOpts: NonNullable<XchangelogConfigOptions['parserOpts']>;
+  writerOpts: NonNullable<XchangelogConfigOptions['writerOpts']>;
+  [key: string]: unknown;
+};
+
+/**
+ * @see {@link assertEnvironment}
+ */
 export function moduleExport({
   parserOpts,
-  writerOpts
-}: Partial<Pick<PluginConfig, 'parserOpts' | 'writerOpts'>>): ReleaseConfig {
-  const specialInitialCommit = process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT;
-  debug('incoming specialInitialCommit (from env): %O', specialInitialCommit);
-
-  assert(
-    specialInitialCommit && typeof specialInitialCommit === 'string',
-    ErrorMessage.MissingXscriptsEnvironmentVariable('XSCRIPTS_SPECIAL_INITIAL_COMMIT')
-  );
-
-  assert(parserOpts, ErrorMessage.BadParameter('parserOpts'));
-  assert(writerOpts, ErrorMessage.BadParameter('writerOpts'));
+  writerOpts,
+  specialInitialCommit,
+  projectMetadata
+}: Pick<PluginConfig, 'parserOpts' | 'writerOpts'> & {
+  specialInitialCommit: string;
+  projectMetadata: ProjectMetadata;
+}): ReleaseConfig {
+  debug('specialInitialCommit: %O', specialInitialCommit);
 
   const releaseSectionPath = toPath(
     os.tmpdir(),
@@ -87,11 +100,12 @@ export function moduleExport({
 
   debug('releaseSectionPath: %O', releaseSectionPath);
 
-  const { cwdPackage } = analyzeProjectStructure.sync({ useCached: true });
-  const gitLogPathspecs = getExclusionaryPathspecs();
+  const gitLogPathspecs = getExclusionaryPathspecs({ projectMetadata });
 
+  const { cwdPackage } = projectMetadata;
   const cwdPackageName = cwdPackage.json.name;
-  assert(cwdPackageName);
+
+  assert(cwdPackageName, ErrorMessage.GuruMeditation());
 
   const finalConfig = {
     // ? Tell xrelease what package-specific tags look like
@@ -183,57 +197,65 @@ export function moduleExport({
     ]
   } satisfies ReleaseConfig;
 
-  debug('finalConfig: %O', finalConfig);
   return finalConfig;
 }
 
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
     return {
-      [name]: /*js*/ `
+      [asset]: /*js*/ `
 // @ts-check
 'use strict';
 
-const os = require('node:os');
-const path = require('node:path');
-const crypto = require('node:crypto');
-
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/config/${name}');
-
+const { moduleExport } = require('@-xun/scripts/assets/config/${asset}');
 // TODO: publish latest rejoinder package first, then update configs to use it
-/*const { createDebugLogger } = require('debug');
-const debug = createDebugLogger({
-  namespace: '${globalDebuggerNamespace}:config:release'
-});*/
+//const { createDebugLogger } = require('rejoinder');
 
-const { parserOpts, writerOpts } = require('./${conventionalChangelogConfigProjectBase}');
+/*const debug = createDebugLogger({ namespace: '${globalDebuggerNamespace}:config:release' });*/
 
 module.exports = deepMergeConfig(
-  moduleExport({ parserOpts, writerOpts }),
+  moduleExport(assertEnvironment({ projectRoot: __dirname })),
+  /**
+   * @type {import('@-xun/scripts/assets/config/${asset}').ReleaseConfig}
+   */
   {
     // Any custom configs here will be deep merged with moduleExport's result
   }
 );
 
 /*debug('exported config: %O', module.exports);*/
-`.trimStart()
+`
     };
   }
 });
 
 /**
- * The custom configuration object expected by the custom semantic-release
- * plugin steps defined below.
+ * @see {@link moduleExport}
  */
-export type PluginConfig = {
-  releaseSectionPath: string;
-  parserOpts: NonNullable<XchangelogConfigOptions['parserOpts']>;
-  writerOpts: NonNullable<XchangelogConfigOptions['writerOpts']>;
-  [key: string]: unknown;
-};
+export function assertEnvironment({
+  projectRoot
+}: {
+  projectRoot: string;
+}): Omit<Parameters<typeof moduleExport>[0], 'derivedAliases'> {
+  const specialInitialCommit = process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT;
+
+  assert(
+    specialInitialCommit && typeof specialInitialCommit === 'string',
+    ErrorMessage.MissingXscriptsEnvironmentVariable('XSCRIPTS_SPECIAL_INITIAL_COMMIT')
+  );
+
+  const { parserOpts, writerOpts } = require(
+    toAbsolutePath(projectRoot, conventionalChangelogConfigProjectBase)
+  );
+
+  assert(parserOpts, ErrorMessage.BadParameter('parserOpts'));
+  assert(writerOpts, ErrorMessage.BadParameter('writerOpts'));
+
+  const projectMetadata = analyzeProjectStructure.sync({ useCached: true });
+
+  return { specialInitialCommit, parserOpts, writerOpts, projectMetadata };
+}
 
 /**
  * This is a custom semantic-release plugin step that validates the options
@@ -250,6 +272,7 @@ export function verifyConditions(
   pluginDebug('parserOpts: %O', pluginConfig.parserOpts);
   pluginDebug('writerOpts: %O', pluginConfig.writerOpts);
 
+  // TODO: replace with ErrorMessage.X
   assert(
     pluginConfig.releaseSectionPath?.endsWith('.md'),
     'the @-xun/scripts semantic-release plugin requires the "releaseSectionPath" option be a non-empty string ending with ".md"'
@@ -291,7 +314,7 @@ export async function generateNotes(
   const pseudoBfGlobalExecutionContext = await configureExecutionContext({
     commands: new Map(),
     state: {},
-    debug: createDebugLogger({ namespace: 'pseudo-bf' })
+    debug: createDebugLogger({ namespace: '${globalDebuggerNamespace}:pseudo-bf' })
   } as unknown as ExecutionContext);
 
   const buildChangelogHandler = await getInvocableExtendedHandler<
@@ -383,7 +406,7 @@ export async function generateNotes(
       .split('\n')
       .slice(1)
       .join('\n')
-      .trimStart()
+
       .replaceAll(/^#+/gm, '##')
   );
 }

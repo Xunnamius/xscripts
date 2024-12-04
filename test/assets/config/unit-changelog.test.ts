@@ -22,6 +22,8 @@ import {
   wellKnownCommitTypes
 } from 'universe:assets/config/_conventional.config.cjs.ts';
 
+import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
+
 import type {
   XchangelogConfig,
   XchangelogOptions
@@ -44,13 +46,26 @@ const commitTypeSections: Record<
     .filter((item) => !!item)
 );
 
-beforeEach(() => {
-  process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT = noSpecialInitialCommitIndicator;
-});
-
-afterEach(() => delete process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT);
-
 // TODO: need to do monorepo tests too
+
+const dummyPackageJson = {
+  name: 'fake-pkg',
+  version: '0.0.0',
+  description: 'fake',
+  repository: {
+    type: 'git',
+    url: 'https://github.com/fake-user/fake-repo.git'
+  }
+};
+
+const dummyModuleExportConfig = {
+  configOverrides: {},
+  projectMetadata: fixtureToProjectMetadata('goodPolyrepo'),
+  specialInitialCommit: noSpecialInitialCommitIndicator
+} as Parameters<typeof moduleExport>[0];
+
+dummyModuleExportConfig.projectMetadata.cwdPackage.json = dummyPackageJson;
+dummyModuleExportConfig.projectMetadata.rootPackage.json = dummyPackageJson;
 
 it('matches changelog snapshot when there are no semver tags in the repo', async () => {
   expect.hasAssertions();
@@ -58,7 +73,7 @@ it('matches changelog snapshot when there are no semver tags in the repo', async
   await withMockedFixtureWrapper(
     {
       async test() {
-        const config = moduleExport({});
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config);
         expect(changelog).toMatchSnapshot();
       }
@@ -73,7 +88,7 @@ it('matches changelog snapshot when there are semver tags in the repo', async ()
   await withMockedFixtureWrapper(
     {
       async test() {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
         expect(changelog).toMatchSnapshot();
       }
@@ -88,7 +103,7 @@ it('appends commit short-hash and repo link to the end of commits of non-hidden 
   await withMockedFixtureWrapper(
     {
       async test({ git }) {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
 
         const changelog = await runConventionalChangelog(config, {
           makeReplacements: false
@@ -159,7 +174,7 @@ it('translates each semver tag into a super-section link prefixed with package n
   await withMockedFixtureWrapper(
     {
       async test({ git }) {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
         const tags = await git.tags();
 
@@ -180,7 +195,7 @@ it('groups types sections by default order', async () => {
   await withMockedFixtureWrapper(
     {
       async test(context) {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
 
         await createBasicCommit('mytype: new type from @Xunnamius', context);
         const changelog = await runConventionalChangelog(config);
@@ -219,7 +234,10 @@ it('can overwrite types using object override form', async () => {
     {
       async test(context) {
         const config = moduleExport({
-          types: [{ type: 'mytype', section: 'FAKE TYPE SECTION', hidden: false }]
+          ...dummyModuleExportConfig,
+          configOverrides: {
+            types: [{ type: 'mytype', section: 'FAKE TYPE SECTION', hidden: false }]
+          }
         });
 
         await createBasicCommit('mytype: new type from Xunnamius', context);
@@ -241,10 +259,13 @@ it('can overwrite types using callback override form', async () => {
   await withMockedFixtureWrapper(
     {
       async test(context) {
-        const config = moduleExport((config) => ({
-          ...config,
-          types: [{ type: 'mytype', section: 'FAKE TYPE SECTION', hidden: false }]
-        }));
+        const config = moduleExport({
+          ...dummyModuleExportConfig,
+          configOverrides: (config) => ({
+            ...config,
+            types: [{ type: 'mytype', section: 'FAKE TYPE SECTION', hidden: false }]
+          })
+        });
 
         await createBasicCommit('mytype: new type from Xunnamius', context);
         await createBasicCommit('mytype(some-scope): new type from Xunnamius', context);
@@ -265,13 +286,16 @@ it('handles aliased types with the same section name', async () => {
   await withMockedFixtureWrapper(
     {
       async test(context) {
-        const config = moduleExport((config) => ({
-          ...config,
-          types: [
-            ...(config.types ?? []),
-            { type: 'mytype', section: wellKnownCommitTypes[0].section, hidden: false }
-          ]
-        }));
+        const config = moduleExport({
+          ...dummyModuleExportConfig,
+          configOverrides: (config) => ({
+            ...config,
+            types: [
+              ...(config.types ?? []),
+              { type: 'mytype', section: wellKnownCommitTypes[0].section, hidden: false }
+            ]
+          })
+        });
 
         await createBasicCommit('mytype: new type from Xunnamius', context);
         await createBasicCommit('mytype(some-scope): new type from Xunnamius', context);
@@ -298,13 +322,16 @@ it('recognizes scope setting with multiple matching types in types configuration
         const regexp = /### Dependencies\n+\* \*\*deps:\*\* upgrade example from 1 to 2/;
 
         {
-          const config = moduleExport((config) => ({
-            ...config,
-            types: [
-              { type: 'chore', scope: 'deps', section: 'Dependencies', hidden: false },
-              ...(config.types ?? [])
-            ]
-          }));
+          const config = moduleExport({
+            ...dummyModuleExportConfig,
+            configOverrides: (config) => ({
+              ...config,
+              types: [
+                { type: 'chore', scope: 'deps', section: 'Dependencies', hidden: false },
+                ...(config.types ?? [])
+              ]
+            })
+          });
 
           const changelog = await runConventionalChangelog(config);
           expect(changelog).toMatch(regexp);
@@ -312,13 +339,16 @@ it('recognizes scope setting with multiple matching types in types configuration
         }
 
         {
-          const config = moduleExport((config) => ({
-            ...config,
-            types: [
-              { type: 'chore', scope: 'reps', section: 'Dependencies', hidden: false },
-              ...(config.types ?? [])
-            ]
-          }));
+          const config = moduleExport({
+            ...dummyModuleExportConfig,
+            configOverrides: (config) => ({
+              ...config,
+              types: [
+                { type: 'chore', scope: 'reps', section: 'Dependencies', hidden: false },
+                ...(config.types ?? [])
+              ]
+            })
+          });
 
           const changelog = await runConventionalChangelog(config);
           expect(changelog).not.toMatch(regexp);
@@ -336,7 +366,7 @@ it('indents majors with h2, minors with h3, and adjusts section heading level as
   await withMockedFixtureWrapper(
     {
       async test() {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
 
         expect(changelog).toMatch(/## fake-pkg\[@0.2.0][^#]+\n### /);
@@ -353,7 +383,7 @@ it('makes bold, lowercases, and appends colon for scope strings in non-breaking 
   await withMockedFixtureWrapper(
     {
       async test() {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config);
         expect(changelog).toInclude('\n* **ngoptions:** make it faster ([X]');
       }
@@ -368,7 +398,7 @@ it('removes scope strings in and capitalizes first letter of breaking commits', 
   await withMockedFixtureWrapper(
     {
       async test() {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config, { releaseCount: 2 });
         expect(changelog).toInclude('\n* This completely changes the API\n');
       }
@@ -383,7 +413,7 @@ it('capitalizes commit subject if no scope present', async () => {
   await withMockedFixtureWrapper(
     {
       async test() {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config);
         expect(changelog).toInclude('\n* Amazing new module ([X]');
       }
@@ -402,7 +432,7 @@ it('discards commits that have been reverted', async () => {
         await createBasicCommit('feat: this commit is gonna get reverted!', context);
 
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config);
           expect(changelog).not.toInclude('*"feat: this commit is gonna get reverted!"*');
           expect(changelog).toInclude('* This commit is gonna get reverted!');
@@ -411,7 +441,7 @@ it('discards commits that have been reverted', async () => {
         await git.revert('HEAD');
 
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config);
           expect(changelog).toInclude('*"feat: this commit is gonna get reverted!"*');
           expect(changelog).not.toInclude('* This commit is gonna get reverted!');
@@ -435,7 +465,7 @@ it('discards commits that have been reverted even if they contain breaking chang
         );
 
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config);
 
           expect(changelog).not.toInclude('*"feat: this commit is gonna get reverted!"*');
@@ -446,7 +476,7 @@ it('discards commits that have been reverted even if they contain breaking chang
         await git.revert('HEAD');
 
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config);
 
           expect(changelog).toInclude('*"chore!: this commit is gonna get reverted!"*');
@@ -508,7 +538,7 @@ it('discards revert commits that seem to target unknown/hidden non-breaking comm
         await git.revert('HEAD');
 
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config);
 
           expect(changelog).toInclude('*"feat: this commit is gonna get reverted 1"*');
@@ -554,7 +584,7 @@ it('populates breaking change notes if "!" is present', async () => {
   await withMockedFixtureWrapper(
     {
       async test() {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config, { releaseCount: 2 });
         expect(changelog).toInclude('* Incredible new flag FIXES: [#33](');
       }
@@ -569,7 +599,7 @@ it('does not list breaking change twice if "!" is used', async () => {
   await withMockedFixtureWrapper(
     {
       async test() {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config);
         expect(changelog).toInclude('* New build system.\n');
         expect(changelog).not.toInclude('* First build setup\n');
@@ -585,7 +615,7 @@ it('outputs as one line all lines of multi-line breaking change notes with each 
   await withMockedFixtureWrapper(
     {
       async test() {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config, { releaseCount: 2 });
         expect(changelog).toInclude(
           '* The Change is huge. Big. Really big.\n\nReally. Like super big. Wow!\n\nHere are some extra details!'
@@ -602,7 +632,7 @@ it('linkifies all external issue references in and adds a data image to subjects
   await withMockedFixtureWrapper(
     {
       async test() {
-        const config = moduleExport();
+        const config = moduleExport(dummyModuleExportConfig);
         const changelog = await runConventionalChangelog(config);
 
         expect(changelog).toMatch(
@@ -633,7 +663,7 @@ it('linkifies all internal issue references in subjects and breaking notes', asy
     {
       async test() {
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
 
           expect(changelog).toInclude(
@@ -678,8 +708,14 @@ it('linkifies all internal and external issues in subjects and breaking notes gi
       async test() {
         {
           const config = moduleExport({
-            issuePrefixes: ['#', 'GH-'],
-            issueUrlFormat: 'issues://{{repository}}/issues/{{id}}'
+            ...dummyModuleExportConfig,
+            configOverrides(config) {
+              return {
+                ...config,
+                issuePrefixes: ['#', 'GH-'],
+                issueUrlFormat: 'issues://{{repository}}/issues/{{id}}'
+              };
+            }
           });
 
           const changelog = await runConventionalChangelog(config);
@@ -700,8 +736,14 @@ it('linkifies all internal and external issues in subjects and breaking notes gi
 
         {
           const config = moduleExport({
-            issueUrlFormat: 'https://example.com/browse/{{prefix}}{{id}}',
-            issuePrefixes: ['EXAMPLE-']
+            ...dummyModuleExportConfig,
+            configOverrides(config) {
+              return {
+                ...config,
+                issueUrlFormat: 'https://example.com/browse/{{prefix}}{{id}}',
+                issuePrefixes: ['EXAMPLE-']
+              };
+            }
           });
 
           const changelog = await runConventionalChangelog(config);
@@ -727,7 +769,7 @@ it('linkifies issue references as internal even when they are given using extern
     {
       async test() {
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
           expect(changelog).toInclude(
             '[#551](https://github.com/fake-user/fake-repo/issues/551)'
@@ -746,7 +788,7 @@ it('removes issue refs from superscript that already appear in the subject', asy
     {
       async test() {
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
 
           expect(changelog).toInclude(
@@ -770,10 +812,13 @@ it('linkifies @user with configured userUrlFormat', async () => {
     {
       async test() {
         {
-          const config = moduleExport((config) => ({
-            ...config,
-            userUrlFormat: 'https://foo/{{user}}'
-          }));
+          const config = moduleExport({
+            ...dummyModuleExportConfig,
+            configOverrides: (config) => ({
+              ...config,
+              userUrlFormat: 'https://foo/{{user}}'
+            })
+          });
 
           const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
 
@@ -802,7 +847,7 @@ it('does not linkify @string if it is a scoped package (including with hyphens)'
     {
       async test(context) {
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
 
           await createBasicCommit(
             'fix: update @typescript-eslint/some-pkg and @-xun/scripts and @eslint/js@5 and npm@beta',
@@ -834,7 +879,7 @@ it('parses default, customized, and malformed revert commits', async () => {
     {
       async test() {
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
 
           expect(changelog).toInclude('*"feat: default revert format"*');
@@ -856,7 +901,7 @@ it('does not take the type/scope case into consideration (always lowercased)', a
     {
       async test() {
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
           expect(changelog).toInclude('* **foo:** incredible new flag');
         }
@@ -873,7 +918,7 @@ it('supports multiple lines of footer information', async () => {
     {
       async test() {
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
 
           expect(changelog).toInclude('see [#99]');
@@ -893,7 +938,7 @@ it('removes xpipeline command suffixes from commit subjects', async () => {
     {
       async test() {
         {
-          const config = moduleExport();
+          const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config, { releaseCount: 0 });
 
           expect(changelog).toInclude('* Something else skip1\n');
@@ -976,15 +1021,7 @@ async function withMockedFixtureWrapper(
   const { test: customFn } = incomingConfig;
   const config = getBaseEnvironmentConfig(incomingConfig);
 
-  config.options.initialFileContents['package.json'] = JSON.stringify({
-    name: 'fake-pkg',
-    version: '0.0.0',
-    description: 'fake',
-    repository: {
-      type: 'git',
-      url: 'https://github.com/fake-user/fake-repo.git'
-    }
-  });
+  config.options.initialFileContents['package.json'] = JSON.stringify(dummyPackageJson);
 
   return withMockedFixture({
     ...config,

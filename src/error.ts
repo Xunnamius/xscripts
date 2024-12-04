@@ -1,3 +1,5 @@
+import { isNativeError } from 'node:util/types';
+
 import { makeNamedError } from 'named-app-errors';
 
 import { ErrorMessage as UpstreamErrorMessage } from 'multiverse+cli-utils:error.ts';
@@ -63,6 +65,33 @@ export const ErrorMessage = {
   EslintPluginReturnedSomethingUnexpected(identifier: string) {
     return `assertion failed: the eslint plugin "${identifier}" returned something unexpected`;
   },
+  BabelCorejsInstalledVersionTooOld(
+    coreJsLibraryVersion: string,
+    CORE_JS_LIBRARY_VERSION: string,
+    resolvedCoreJsVersion: string,
+    packageRoot: string
+  ) {
+    return `babel is configured to use core-js@${coreJsLibraryVersion} ("${
+      CORE_JS_LIBRARY_VERSION
+    }") but the resolved core-js version is ${
+      resolvedCoreJsVersion
+    }; please update dependencies.core-js in ${packageRoot}/package.json`;
+  },
+  BabelCorejsInstalledVersionRangeNotSatisfactory(
+    coreJsLibraryVersion: string,
+    CORE_JS_LIBRARY_VERSION: string,
+    cwdPackageCoreJsDependency: string,
+    packageName: string | undefined,
+    packageRoot: string
+  ) {
+    return `babel is configured to use core-js@${coreJsLibraryVersion} ("${
+      CORE_JS_LIBRARY_VERSION
+    }") but the ${
+      packageName ? `"${packageName}"` : 'current'
+    } package has a "core-js" field in its package.json "dependencies" object that will result in a potentially-incompatible version of core-js being installed by downstream consumers; saw: "${
+      cwdPackageCoreJsDependency
+    }" in ${packageRoot}/package.json`;
+  },
   BadSkipArgs() {
     return 'impossible combination of skipIgnored and skipUnknown was encountered';
   },
@@ -124,6 +153,9 @@ export const ErrorMessage = {
   BadPackageExportsInPackageJson() {
     return `the distributable package.json file does not contain a valid "exports" field`;
   },
+  BadEnginesNodeInPackageJson() {
+    return 'this package has a missing or invalid "engines.node" field in its package.json';
+  },
   MustChooseDeployEnvironment() {
     return 'must choose either --preview or --production deployment environment';
   },
@@ -160,6 +192,13 @@ export const ErrorMessage = {
   BuildOutputChecksFailed() {
     return 'one or more build output integrity checks failed';
   },
+  ConfigAssetEnvironmentValidationFailed(
+    subject: string,
+    badValue: string,
+    validValues: readonly string[]
+  ) {
+    return `${subject} expects NODE_ENV to be one of: ${validValues.join(', ')} (saw: "${badValue}")`;
+  },
   ReleaseEnvironmentValidationFailed() {
     return 'one or more runtime environment validation checks failed';
   },
@@ -184,8 +223,9 @@ export const ErrorMessage = {
   CodecovRetrievalFailed(url: string) {
     return `failed to download a suitable codecov binary from ${url}`;
   },
-  AssetRetrievalFailed(path: string) {
-    return `failed to retrieve asset at ${path}`;
+  AssetRetrievalFailed(path: string, error: unknown) {
+    const errorMessage = isNativeError(error) ? error.message : String(error);
+    return `failed to retrieve asset at ${path}: ${errorMessage}`;
   },
   UnmatchedCommitType(type: string | undefined, variableName: string) {
     return `unmatched commit type ${type ? `"${type}" ` : ''}in ${variableName}`;
@@ -195,6 +235,9 @@ export const ErrorMessage = {
   },
   CannotImportConventionalConfig(path: string) {
     return `failed to import conventional configuration file: ${path}`;
+  },
+  CannotImportTsconfig() {
+    return `failed to locate a suitable tsconfig file`;
   },
   DefaultImportFalsy() {
     return 'default import was falsy';
@@ -217,6 +260,35 @@ export const ErrorMessage = {
    * punctuation and capitalization rules as the other error messages.
    */
   specialized: {
+    BabelCorejsVersionUnresolvable(
+      coreJsLibraryVersion: string,
+      CORE_JS_LIBRARY_VERSION: string
+    ) {
+      return `⚠️🚧 Babel is configured to use core-js@${coreJsLibraryVersion} ("${
+        CORE_JS_LIBRARY_VERSION
+      }"), but an attempt to resolve "version" from "core-js/package.json" failed`;
+    },
+    BabelCorejsDependencyMissing(
+      coreJsLibraryVersion: string,
+      CORE_JS_LIBRARY_VERSION: string,
+      cwdPackageCoreJsDependency: string | undefined,
+      packageName: string | undefined,
+      packageRoot: string
+    ) {
+      return `⚠️🚧 Babel is configured to use core-js@${coreJsLibraryVersion} ("${
+        CORE_JS_LIBRARY_VERSION
+      }"), but the ${
+        packageName ? `"${packageName}"` : 'current'
+      } package is missing a semver-valid "core-js" field in its package.json "dependencies" object; saw: "${String(
+        cwdPackageCoreJsDependency
+      )}" in ${packageRoot}/package.json`;
+    },
+    BabelCorejsEgregiousPackageJsonFileInBuildOutput(
+      originalSpecifier: string,
+      inputFilepath: string
+    ) {
+      return `\n🚨 WARNING 🚨: importing "${originalSpecifier}" from "${inputFilepath}" will cause additional package.json files to be included in build output. This may SIGNIFICANTLY increase the size of distributables!\n`;
+    },
     BuildOutputIntermediates() {
       return '⚠️🚧 Build output consists of intermediate files NOT SUITABLE FOR DISTRIBUTION OR PRODUCTION';
     },

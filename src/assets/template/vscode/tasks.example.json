@@ -7,16 +7,7 @@
       "label": "lint: discover problems",
       "type": "process",
       "command": "npx",
-      "args": [
-        "xscripts",
-        "lint",
-        "--scope",
-        "all",
-        "--linter",
-        "tsc",
-        "eslint",
-        "--run-to-completion"
-      ],
+      "args": ["xscripts", "lint", "--scope", "unlimited"],
       "presentation": {
         "echo": true,
         "reveal": "never"

@@ -31,6 +31,11 @@ import {
 
 import packageJson from './package.json' with { type: 'json' };
 
+// TODO: add these back:
+// TODO: specific to this project; delete these after generalization
+//'**/dummy-repo/**/*',
+//'src/assets/template/.remarkrc.mjs'
+
 // TODO: import this from project-utils:alias instead
 const uriSchemeDelimiter = ':';
 
@@ -76,9 +81,6 @@ const config = deepMergeConfig(moduleExport, {
 // *   - next.config.mjs    (ESM)
 // *   - webpack.config.mjs (ESM)
 // TODO: replace this with the auto-generated unified alias configuration
-/**
- * @renovate eslint-aliases
- */
 // ? Aliases come from tsconfig's paths now, but this is still needed for
 // ? analytical purposes.
 const wellKnownPackageAliases = [
@@ -438,7 +440,9 @@ const genericRules = {
   // ? I know what I'm doing, but thanks though
   'unicorn/no-negation-in-equality-check': 'off',
   // ? test() and exec() are stateful, match() is not. So this is a bad check.
-  'unicorn/prefer-regexp-test': 'off'
+  'unicorn/prefer-regexp-test': 'off',
+  // ? Of limited use; when I want to reduce, it's usually for a good reason
+  'unicorn/no-array-reduce': 'warn'
 };
 
 if (process.env.XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS !== 'true') {
@@ -682,14 +686,16 @@ const config = makeTsEslintConfig(
       }
     }
   ].flatMap((configs) =>
-    overwriteProperty(configs, 'files', [`**/*.{${toExtensionList(extensionsTsAndJs)}}`])
+    overwriteProperty(configs, 'files', [
+      `**/*.{${toCommaSeparatedExtensionList(extensionsTsAndJs)}}`
+    ])
   ),
 
   // * Early configs, likely overridden applying only to ANY JavaScript file
   // ? These do not apply to TypeScript files, and likely get overridden later
   {
     name: '@-xun/scripts:any-js-no-ts',
-    files: [`**/*.{${toExtensionList(extensionsJavascript)}}`],
+    files: [`**/*.{${toCommaSeparatedExtensionList(extensionsJavascript)}}`],
     rules: earlyJsOnlyRules
   },
 
@@ -736,7 +742,7 @@ const config = makeTsEslintConfig(
   // * Rules applying only to TypeScript files
   {
     name: 'node/custom:typescript-only',
-    files: [`**/*.{${toExtensionList(extensionsTypescript)}}`],
+    files: [`**/*.{${toCommaSeparatedExtensionList(extensionsTypescript)}}`],
     plugins: eslintPluginNodeRecommendedExtMjs.plugins,
     rules: {
       ...eslintPluginNodeRecommendedExtMjs.rules,
@@ -750,8 +756,8 @@ const config = makeTsEslintConfig(
   {
     ...eslintPluginJestAll,
     name: '@-xun/scripts:jest',
-    files: [`**/*.test.{${toExtensionList(extensionsTsAndJs)}}`],
-    ignores: [`**/type-*.test.{${toExtensionList(extensionsTsAndJs)}}`],
+    files: [`**/*.test.{${toCommaSeparatedExtensionList(extensionsTsAndJs)}}`],
+    ignores: [`**/type-*.test.{${toCommaSeparatedExtensionList(extensionsTsAndJs)}}`],
     rules: {
       ...eslintPluginJestAll.rules,
       ...jestRules
@@ -766,6 +772,6 @@ export default config;
 /**
  * @returns {string}
  */
-function toExtensionList(array) {
+function toCommaSeparatedExtensionList(array) {
   return array.map((extension) => extension.slice(1)).join(',');
 }

@@ -1,38 +1,38 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer } from 'universe:assets.ts';
 
-import type { EmptyObject } from 'type-fest';
-
-export type Context = EmptyObject;
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
     return {
-      [name]: `
-# Paths below are ignored by prettier as well as remark and doctoc when called
-# with \`xscripts format\`
+      [asset]: `
+# * Paths below are ignored by prettier as well as remark and doctoc when called
+# * with \`xscripts format\`.
 
-# Ignore temporary files by giving them a special name
+# ! Note that any pattern with a / in the beginning OR MIDDLE (but not end) will
+# ! be consider relative to the this file ONLY. Matching subdirs will NOT match!
+# ! Otherwise, patterns will match entities in any directory or subdirectory.
+# ! Prepend ** (or **/) if advanced subdir matching of complex paths is desired.
+# ! See https://git-scm.com/docs/gitignore#_pattern_format
+
+# Ignore temporary files in any subdir by giving them a special name
 *.ignore
 *.ignore.*
 ignore.*
 
-# Ignore sensitive files
+# Ignore sensitive files in any subdir
 .env
 .npmrc
 *.local
 
-# Ignore transpiled source (used for advanced debugging)
+# Ignore transpiled source in any subdir (used for advanced debugging)
 .transpiled
 
-# Ignore any external scripts
-external-scripts/bin
-
-# Ignore relevant build artifacts (except under src)
+# Ignore relevant build artifacts in any subdir (with exceptions)
 *.tsbuildinfo
-build/**
-!src/build
+# ? Preceding AND proceeding asterisks (**) are needed to match any build subdir
+# ? in monorepos and allow subsequent negations to be interpreted properly.
+**/build/**
+# ? This negation must end in "/**" to be interpreted properly.
+!**/src/**/build/**
 docs
 dist
 coverage
@@ -40,14 +40,22 @@ coverage
 .next
 next-env.d.ts
 CHANGELOG.md
+LICENSE
+LICENSE.md
 
-# Ignore relevant NPM artifacts
+# Ignore relevant NPM artifacts in any subdir
 node_modules
 package-lock.json
 
-# Ignore test fixtures (which may depend on remaining as they are)
+# Ignore test fixtures in any subdir (which may depend on remaining as they are)
 fixtures
-`.trimStart()
+
+# Ignore things that prettier isn't good at in any subdir
+*.hbs
+
+# Ignore random nothingness in any subdir
+.DS_Store
+`
     };
   }
 });

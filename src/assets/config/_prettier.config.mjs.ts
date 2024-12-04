@@ -1,29 +1,59 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 
-import type { EmptyObject } from 'type-fest';
+import type { Config as PrettierConfig } from 'prettier';
 
-export type Context = EmptyObject;
+export type { PrettierConfig };
 
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
+export function moduleExport() {
+  return {
+    endOfLine: 'lf',
+    printWidth: 80,
+    proseWrap: 'always',
+    semi: true,
+    singleQuote: true,
+    tabWidth: 2,
+    trailingComma: 'none',
+    overrides: [
+      {
+        files: '**/*.?(@(c|m))@(ts|js)?(x)',
+        options: {
+          parser: 'babel-ts',
+          printWidth: 90
+        }
+      }
+    ]
+  } as const satisfies PrettierConfig;
+}
 
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
     return {
-      [name]: /*js*/ `
+      [asset]: /*js*/ `
 // @ts-check
 'use strict';
 
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/${asset}';
 // TODO: publish latest rejoinder package first, then update configs to use it
-/*const { createDebugLogger } = require('debug');
-const debug = createDebugLogger({
-  namespace: '${globalDebuggerNamespace}:config:prettier'
-});*/
+//import { createDebugLogger } from 'rejoinder';
 
-// TODO
+/*const debug = createDebugLogger({ namespace: '${globalDebuggerNamespace}:config:prettier' });*/
 
-/*debug('exported config: %O', module.exports);*/
-`.trimStart()
+const config = deepMergeConfig(
+  moduleExport(),
+  /**
+   * @type {import('@-xun/scripts/assets/config/${asset}').PrettierConfig}
+   */
+  {
+    // Any custom configs here will be deep merged with moduleExport's result
+  }
+);
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+`
     };
   }
 });

@@ -3,5 +3,5 @@
 const { moduleExport } = require('@-xun/scripts/assets/config/conventional.config.cjs');
 
 module.exports = moduleExport({
-  // * Your customizations here
+  // Any custom configs here will be deep merged with moduleExport
 });

@@ -1,0 +1,2493 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`::retrieveConfigAsset ::<config assets> .all-contributorsrc 1`] = `
+".all-contributorsrc
+⏶⏷⏶⏷⏶
+{
+  "projectName": "package-name",
+  "projectOwner": "Xunnamius",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "Xunnamius",
+      "name": "Bernard",
+      "avatar_url": "https://avatars.githubusercontent.com/u/656017?v=4",
+      "profile": "https://xunn.io/",
+      "contributions": [
+        "infra",
+        "code",
+        "doc",
+        "maintenance",
+        "test",
+        "review"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "linkToUsage": true
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .browserslistrc 1`] = `
+".browserslistrc
+⏶⏷⏶⏷⏶
+[production]
+last 2 versions
+>0.2%
+not dead
+
+[development]
+last 2 versions
+>0.2%
+not dead
+
+[test]
+current node
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .codecov.yml 1`] = `
+".codecov.yml
+⏶⏷⏶⏷⏶
+coverage:
+  range: '75...100'
+  status:
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+# * Well-known flag syntax: package.<branch>_<package-id>
+# * <package>-id will be the WorkspacePackageId or "root" for RootPackages
+flag_management:
+  # * These rules will apply to all non-specially-configured flags
+  default_rules:
+    carryforward: true
+    statuses:
+      - type: project
+        target: auto
+      - type: patch
+        target: auto
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .editorconfig 1`] = `
+".editorconfig
+⏶⏷⏶⏷⏶
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+indent_style = space
+indent_size = 2
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .env.default 1`] = `
+".env.default
+⏶⏷⏶⏷⏶
+# shellcheck disable=all
+
+# Codecov test analysis token
+#
+# Required: if deploying
+# On-Sync: mirror
+#
+# The token used during CI/CD to analyze and upload build artifact code quality
+# data to Codecov.
+CODECOV_TOKEN=
+
+# GitHub deploy token
+#
+# Alias: GH_TOKEN
+# Required: if deploying
+# On-Sync: mirror
+#
+# The token used during CI/CD to interact with GitHub's API.
+GITHUB_TOKEN=
+
+# NPM deploy token
+#
+# Required: if deploying
+# On-Sync: mirror
+#
+# The token used during CD to login to NPM. Not referenced during non-CI/CD
+# (i.e. local, manual) deployments.
+NPM_TOKEN=
+
+# Git push author name
+#
+# Required: if deploying
+# On-Sync: mirror
+#
+# The token used during CD to set the author name of the git push.
+GIT_AUTHOR_NAME=
+
+# Git commit committer name
+#
+# Required: if deploying
+# On-Sync: mirror
+#
+# The token used during CD to set the name attached to any git commits.
+GIT_COMMITTER_NAME=
+
+# Git push author email
+#
+# Required: if deploying
+# On-Sync: mirror
+#
+# The token used during CD to set the author email of the git push.
+GIT_AUTHOR_EMAIL=
+
+# Git commit committer email
+#
+# Required: if deploying
+# On-Sync: mirror
+#
+# The token used during CD to set the email attached to any git commits.
+GIT_COMMITTER_EMAIL=
+
+# GPG private key passphrase
+#
+# Required: if deploying with CI/CD
+# On-Sync: mirror
+#
+# The passphrase used to unlock GPG_PRIVATE_KEY. Not referenced during non-CI/CD
+# (i.e. local, manual) deployments.
+GPG_PASSPHRASE=
+
+# GPG private key
+#
+# Required: if deploying with CI/CD
+# On-Sync: mirror
+#
+# The GPG key used to sign all git commits and releases. Not referenced during
+# non-CI/CD (i.e. local, manual) deployments.
+GPG_PRIVATE_KEY=
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .gitattributes 1`] = `
+".gitattributes
+⏶⏷⏶⏷⏶
+* text=auto eol=lf
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 1`] = `
+".github/ISSUE_TEMPLATE/BUG_REPORT.md
+⏶⏷⏶⏷⏶
+---
+name: 🤯 Bug report
+about: Alert us about an issue
+labels: bug
+---
+
+<!-- THANK YOU for taking a moment to improve this project. 🤘🏿 You rock! 🎸 -->
+
+<details open><summary><strong>The problem</strong></summary>
+
+<!--
+🚩 Required (1 of 2): please replace this comment with a clear and concise
+description of your issue. If applicable, add code samples and relevant error
+log lines to help explain the problem. Favor code samples over code screenshots.
+-->
+
+</details>
+
+<details><summary><strong>Reproduction steps</strong></summary>
+
+<!--
+🚩 Required (2 of 2): please replace this comment with a link to a repo
+demonstrating your issue *using as few lines of code as possible*. If we can't
+reproduce the problem on our side, how can we ever hope to fix it for you 🤷🏾?
+
+If your issue is simple enough that it doesn't warrant a demo repo, include
+instead the simplest most basic possible steps to reproduce your problem; e.g.:
+
+1. Clone the dummy repo I made: https://github.com/…
+2. Run \`npm install\`
+3. Run \`npx jest\`
+4. See error "xyz" at test 2, which shouldn't be happening
+-->
+
+</details>
+
+<!--
+<details><summary><strong>Expected behavior</strong></summary>
+
+Optional: uncomment this block and replace this text with a clear and concise
+description of what you expected to happen if not included above. If applicable,
+add screenshots and code samples to help explain the problem.
+
+</details>
+|-->
+
+<!--
+<details><summary><strong>Suggested solution</strong></summary>
+
+Optional: uncomment this block and replace this text with a clear and concise
+proposal of how your issue might be solved, including any unnoted workarounds.
+If applicable, add code samples and screenshots.
+
+</details>
+|-->
+
+<!--
+<details><summary><strong>Additional context</strong></summary>
+
+Optional: uncomment this block and replace this text with any additional
+information that might help us figure out what's going on. This could be dense
+runtime details, lengthy error logs, assets links, or what have you; e.g.:
+
+- OS: ubuntu 26.04
+- Node version: 20
+- Babel: yes, version 8.1.0
+- TypeScript: yes, version 5.2.0
+- Browser: firefox 171, chrome 190
+- List of installed packages: https://github.com/…/main/package.json
+
+Relevant log lines:
+\`\`\`
+(super long error log lines pasted here)
+\`\`\`
+
+</details>
+-->
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 2`] = `
+".github/ISSUE_TEMPLATE/config.yml
+⏶⏷⏶⏷⏶
+blank_issues_enabled: true
+contact_links:
+  - name: Security Channel
+    url: 'mailto:security@ergodark.com?subject=SECURITY%20INCIDENT%3A%20%28five%20word%20summary%29'
+    about: Report security-related issues here!
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 3`] = `
+".github/ISSUE_TEMPLATE/FEATURE_REQUEST.md
+⏶⏷⏶⏷⏶
+---
+name: 🤩 Feature request
+about: Tell us about your awesome idea
+labels: enhancement
+---
+
+<!-- THANK YOU for taking a moment to improve this project. 🤘🏿 You rock! 🎸 |-->
+
+<!--
+Replace this comment with a clear and concise description of what you're
+suggesting. Be sure to include sample code, screenshots, related PR/issue
+links, etc.
+
+🚩 If you encountered a bug, please report it as a bug instead of a feature
+request.
+|-->
+
+<!--
+<details><summary><strong>Alternatives and workarounds</strong></summary>
+
+For posterity, uncomment this block and replace this text with a clear and
+concise description of any alternative solutions you've encountered or any
+temporary workarounds you've come up with.
+
+</details>
+-->
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 4`] = `
+".github/workflows/README.md
+⏶⏷⏶⏷⏶
+Details on pipeline design and operation can be found [here][1].
+
+[1]: https://github.com/Xunnamius/xscripts/wiki
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 5`] = `
+".github/CODE_OF_CONDUCT.md
+⏶⏷⏶⏷⏶
+# Contributor Covenant Code of Conduct
+
+## Our Pledge
+
+In the interest of fostering an open and welcoming environment, we as
+contributors and maintainers pledge to making participation in our project and
+our community a harassment-free experience for everyone, regardless of age, body
+size, disability, ethnicity, sex characteristics, gender identity and
+expression, level of experience, education, socioeconomic status, nationality,
+personal appearance, race, religion, or sexual identity and orientation.
+
+## Our Standards
+
+Examples of behavior that contributes to creating a positive environment
+include:
+
+- Using welcoming and inclusive language.
+- Being respectful of differing viewpoints and experiences.
+- Gracefully accepting constructive criticism.
+- Focusing on what is best for the community.
+- Showing empathy towards other community members.
+
+Examples of unacceptable behavior by participants include:
+
+- Racism or sexism in any shape or form.
+- The use of sexualized language or imagery and unwelcome sexual attention or
+  advances.
+- Trolling, insulting/derogatory comments, and personal or political attacks.
+- Public or private harassment.
+- Publishing others' private information, such as a physical or electronic
+  address, without explicit permission.
+- Other conduct which could reasonably be considered inappropriate in a
+  professional setting.
+
+## Our Responsibilities
+
+Project maintainers are responsible for clarifying the standards of acceptable
+behavior and are expected to take appropriate and fair corrective action in
+response to any instances of unacceptable behavior.
+
+Project maintainers have the right and responsibility to remove, edit, or reject
+comments, commits, code, wiki edits, issues, and other contributions that are
+not aligned to this Code of Conduct, or to ban temporarily or permanently any
+contributor for other behaviors that they deem inappropriate, threatening,
+offensive, or harmful.
+
+## Scope
+
+This Code of Conduct applies both within project spaces and in public spaces
+when an individual is representing the project or its community. Examples of
+representing a project or community include using an official project e-mail
+address, posting via an official social media account, or acting as an appointed
+representative at an online or offline event. Representation of a project may be
+further defined and clarified by project maintainers.
+
+## Enforcement
+
+Instances of abusive, harassing, or otherwise unacceptable behavior may be
+reported by contacting the project team at
+[Xunnamius@users.noreply.github.com][1]. All complaints will be reviewed and
+investigated and will result in a response that is deemed necessary and
+appropriate to the circumstances. The project team is obligated to maintain
+confidentiality with regard to the reporter of an incident. Further details of
+specific enforcement policies may be posted separately.
+
+Project maintainers who do not follow or enforce the Code of Conduct in good
+faith may face temporary or permanent repercussions as determined by other
+members of the project's leadership.
+
+## Attribution
+
+This Code of Conduct is adapted from the [Contributor Covenant][homepage],
+version 1.4, available at
+[https://www.contributor-covenant.org/version/1/4/code-of-conduct.html][2]
+
+For answers to common questions about this code of conduct, see
+[https://www.contributor-covenant.org/faq][3]
+
+[homepage]: https://www.contributor-covenant.org
+[1]: mailto:Xunnamius@users.noreply.github.com
+[2]: https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
+[3]: https://www.contributor-covenant.org/faq
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 6`] = `
+".github/CODEOWNERS
+⏶⏷⏶⏷⏶
+# See https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners
+
+*   @Xunnamius
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 7`] = `
+".github/dependabot.yml
+⏶⏷⏶⏷⏶
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: 'chore'
+      prefix-development: 'chore'
+      include: 'scope'
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: 'build'
+      prefix-development: 'chore'
+      include: 'scope'
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 8`] = `
+".github/FUNDING.yml
+⏶⏷⏶⏷⏶
+# These are supported funding model platforms
+
+github: [Xunnamius]
+patreon: # Replace with a single Patreon username
+open_collective: # Replace with a single Open Collective username
+ko_fi: # Replace with a single Ko-fi username
+tidelift: # Replace with a single Tidelift platform-name/package-name e.g., npm/babel
+community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
+liberapay: # Replace with a single Liberapay username
+issuehunt: # Replace with a single IssueHunt username
+otechie: # Replace with a single Otechie username
+lfx_crowdfunding: # Replace with a single LFX Crowdfunding project-name e.g., cloud-foundry
+custom: # Replace with up to 4 custom sponsorship URLs e.g., ['link1', 'link2']
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 9`] = `
+".github/pipeline.config.js
+⏶⏷⏶⏷⏶
+/**
+ * This object is used to configure the GitHub Actions that comprise the
+ * build-test-deploy pipeline. Each property is optional.
+ */
+module.exports = {
+  // * The name and email used to author commits and interact with GitHub.
+  // ! This should correspond to the identity of the GH_TOKEN secret.
+  // committer: {
+  //   name: 'xunn-bot',
+  //   email: 'bot@xunn.io'
+  // },
+  //
+  // * Selectively enable debugger verbose output in the pipeline.
+  // ? To enable debugging across all source in this repo (excluding
+  // ? node_modules) without having to type the package name, use a boolean:
+  // debugString: true, // false is treated the same as null/commented out
+  // ? Or you can type out a custom debug namespace string instead, e.g.:
+  // debugString: '@your-namespace/some-package:*',
+  // ? This key can only appear in local pipeline config and not global.
+  // ? See also: https://www.npmjs.com/package/debug#wildcards
+  // ? For even more debugging tools, see: https://bit.ly/2R6NAdZ
+  //
+  // * The semver version of node to install and setup before each job.
+  // nodeCurrentVersion: '18.x',
+  //
+  // * Node semver versions to run unit and integration tests against.
+  // nodeTestVersions: ['14.x', '16.x'],
+  //
+  // * Webpack semver versions to run unit and integration tests against.
+  // webpackTestVersions: ['5.x'],
+  //
+  // * Regular expressions for skipping CI/CD. To skip CL, use git with the
+  // * \`--no-verify\` option.
+  // ciSkipRegex: /\\[skip ci\\]|\\[ci skip\\]/i,
+  // cdSkipRegex: /\\[skip cd\\]|\\[cd skip\\]/i,
+  //
+  // * Should auto-merge be retried on failure even when the PR appears
+  // * unmergeable? If \`true\`, uses exponential back-off internally.
+  // ! WARNING: leaving this as \`true\` might waste Actions minutes and $$$ in
+  // ! private repositories. Watch your usage numbers!
+  // canRetryAutomerge: true,
+  //
+  // * Npm audit will fail upon encountering problems of at least the specified
+  // * severity.
+  // npmAuditFailLevel: 'high',
+  //
+  // * Attempt to upload project coverage data to codecov if \`true\`.
+  // canUploadCoverage: true,
+  //
+  // * The maximum amount of time in seconds any "retry"-type operation can
+  // * continue retrying. This includes all exponential backoff steps.
+  // ! A 5 minute limit is hardcoded into pipeline workflows, so values above
+  // ! ~250 might lead to undesirable VM hard stops.
+  // retryCeilingSeconds: 180,
+  //
+  // * How many days GitHub should keep uploaded artifacts around.
+  // ! 90 days is GitHub's default, but this should be lowered to 1 day for
+  // ! private repos where artifact storage costs $$$.
+  // artifactRetentionDays: 90
+};
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 10`] = `
+".github/PULL_REQUEST_TEMPLATE.md
+⏶⏷⏶⏷⏶
+<!-- Add a brief description of your PR here |-->
+
+<!-- If this PR closes any issues, please enumerate them; i.e. "Closes #4" |-->
+
+<!-- If this PR involves or references any other issues, list them as well -->
+
+---
+
+<!-- Replace \`[ ]\` with \`[x]\` in all the following boxes that apply to you -->
+
+- [ ] I have read **[CONTRIBUTING.md][1]**.
+- [ ] This PR is not security related (see [SECURITY.md][2]).
+
+[1]: /CONTRIBUTING.md
+[2]: /SECURITY.md
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .github 11`] = `
+".github/SUPPORT.md
+⏶⏷⏶⏷⏶
+# Support [![Average issue resolution time][badge-issue-resolution]][link-issue-resolution] [![Issue open percentage][badge-issue-percentage]][open-issues]
+
+Need help? Want to help this project? See below!
+
+## Reporting an Issue
+
+Before you begin, please [search open and past issues][open-issues] to see if
+your issue or feature request is already being talked about.
+
+If you find your issue already exists, make sure to [bump the issue by adding a
+reaction][github-blog]. **If you're serious about wanting an issue to get
+attention, use a reaction in place of a "+1" or other similar comment.**
+
+If you cannot find an existing issue that describes your bug or feature, then
+you're clear to create your issue using the guidelines below.
+
+### Standard Reactions
+
+Analysis of issue popularity (by tooling or otherwise) relies on the following
+reaction emojis being present on issues, PRs, and replies:
+
+\`:+1:\` 👍🏿👍🏾👍🏽👍🏼👍🏻👍 — up vote (AKA: _approve_, _like_, _+1_)
+
+\`:-1:\` 👎🏿👎🏾👎🏽👎🏼👎🏻👎 — down vote (AKA: _disapprove_, _dislike_, _-1_)
+
+### Bug Reports and Feature Requests
+
+For the timeliest resolution to bug reports specifically, please make a good
+faith effort to [follow the template][choose-new-issue]. The more quality
+information you can provide, the quicker a fix will be found. Additionally:
+
+- Ensure you file one issue per problem or feature request.
+- Do not enumerate multiple bugs or feature requests in the same issue.
+- Do not add your issue as a comment to an existing issue unless you're
+  experiencing identical behavior or behavior that stems from the exact same
+  problem.
+
+That's it! You are now ready to [submit a new issue][choose-new-issue]! Thank
+you for contribution 🎉, your efforts are greatly appreciated! 🙌🏿
+
+#### Closure Policy
+
+- Issues that do not follow the appropriate template or contain necessary
+  information may be closed immediately and the poster directed to these
+  guidelines.
+- Issues that go for an extended period without activity are subject to closure.
+
+[badge-issue-percentage]:
+  https://isitmaintained.com/badge/open/Xunnamius/repo-name.svg
+  'Open issues as a percentage of all issues'
+[badge-issue-resolution]:
+  https://isitmaintained.com/badge/resolution/Xunnamius/repo-name.svg
+  'Average time to resolve an issue'
+[choose-new-issue]: repo-url/issues/new/choose
+[github-blog]:
+  https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments
+[link-issue-resolution]:
+  https://isitmaintained.com/project/Xunnamius/repo-name
+[open-issues]: repo-url/issues?q=
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .gitignore 1`] = `
+".gitignore
+⏶⏷⏶⏷⏶
+# ! Note that any pattern with a / in the beginning OR MIDDLE (but not end) will
+# ! be consider relative to the this file ONLY. Matching subdirs will NOT match!
+# ! Otherwise, patterns will match entities in any directory or subdirectory.
+# ! Prepend ** (or **/) if advanced subdir matching of complex paths is desired.
+# ! See https://git-scm.com/docs/gitignore#_pattern_format
+
+# Ignore temporary files in any subdir by giving them a special name
+*.ignore
+*.ignore.*
+ignore.*
+tmp
+
+# Ignore sensitive files in any subdir
+.env
+.npmrc
+*.local
+
+# Ignore transpiled source in any subdir (used for advanced debugging)
+.transpiled
+
+# Ignore packaged files that probably shouldn't be committed
+*.tgz
+
+# Ignore relevant build artifacts in any subdir (with exceptions)
+*.tsbuildinfo
+# ? Preceding asterisks "**/" are needed to match any build subdir in monorepos
+# ? and proceeding asterisks "/**" allow subsequent negations to be interpreted
+# ? properly. See: https://git-scm.com/docs/gitignore#_pattern_format
+**/build/**
+# ? This and other negations must end in "/**" to be interpreted properly.
+!**/src/**/build/**
+# ? This and other negations must end in "/**" to be interpreted properly.
+!**/docs/**/build/**
+dist
+coverage
+lib-cov
+.nyc_output
+.grunt
+bower_components
+.lock-wscript
+build/Release
+.vercel
+.next
+next-env.d.ts
+
+# Ignore cloned GitHub wiki (do not regard it as a so-called "submodule")
+# ? Note that this complex path is relative to this file
+/.wiki
+
+# Ignore local vscode configuration
+# ? Note that this complex path is relative to this file
+/.vscode/**
+# ? Note that this complex path is relative to this file
+!/.vscode/*.example.json
+
+# Ignore relevant NPM and JSPM artifacts in any subdir
+.npm
+node_modules
+jspm_packages
+
+# Ignore logs in any subdir
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore random nothingness in any subdir
+.eslintcache
+.node_repl_history
+.yarn-integrity
+*.DS_Store
+.AppleDouble
+.LSOverride
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+pids
+*.pid
+*.seed
+*.pid.lock
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+_book
+CertificateAuthorityCertificate.pem
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .husky 1`] = `
+".husky/commit-msg
+⏶⏷⏶⏷⏶
+#!/bin/sh
+
+# TODO: make this work natively on Windows
+
+beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
+
+if beginswith 'rebase' "$GIT_REFLOG_ACTION"; then
+  echo 'husky-hook::commit-msg: skipped commit-msg hook due to rebase'
+  exit 0
+fi
+
+NODE_NO_WARNINGS=1 commitlint -e
+if [ -z $GAC_VERIFY_SIMPLE ]; then npm run test; fi
+echo
+NODE_NO_WARNINGS=1 node spellcheck-commit.cjs
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .husky 2`] = `
+".husky/pre-commit
+⏶⏷⏶⏷⏶
+#!/bin/sh
+
+# TODO: make this work natively on Windows
+
+beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
+
+if beginswith 'rebase' "$GIT_REFLOG_ACTION"; then
+  echo 'husky-hook::commit-msg: skipped pre-commit hook due to rebase'
+  exit 0
+fi
+
+if [ -z $GAC_VERIFY_SIMPLE ]; then npm run lint:package:source; fi
+NODE_NO_WARNINGS=1 lint-staged --concurrent false
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .husky 3`] = `
+".husky/pre-push
+⏶⏷⏶⏷⏶
+#!/bin/sh
+
+# TODO: make this work natively on Windows
+
+beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
+
+if beginswith 'rebase' "$GIT_REFLOG_ACTION"; then
+  echo 'husky-hook::pre-push: pushing commits in the middle of a rebase is not allowed!'
+  exit 1
+fi
+
+echo 'husky-hook::pre-push: checking for commits that should not be pushed...'
+log=$(git log HEAD --oneline --not --remotes)
+
+# ? Make sure no commits to be pushed contain "mergeme" in their headers
+if echo "$log" | grep -q -i -e 'mergeme' -e '\\[WIP\\]' -e '\\[NOPUSH\\]'; then
+  echo 'husky-hook::pre-push: BAD COMMIT(S) DETECTED!'
+  echo 'husky-hook::pre-push: merge, delete, reword, or otherwise rectify the following commits before trying again:'
+  echo
+  echo "$log" | grep -i -e 'mergeme' -e '\\[WIP\\]' -e '\\[NOPUSH\\]'
+  echo
+  exit 2;
+else
+  echo 'husky-hook::pre-push: ✅'
+  exit 0;
+fi
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .ncurc.cjs 1`] = `
+".ncurc.cjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+// TODO: publish latest rejoinder package first, then update configs to use it
+//const { createDebugLogger } = require('rejoinder');
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:ncurc' });*/
+
+// * https://www.npmjs.com/package/npm-check-updates#configuration-files
+module.exports = {
+  install: 'never',
+  reject: [
+    // ? Reject any super-pinned dependencies (e.g. find-up~5 and execa~7)
+    '*~*'
+  ]
+};
+
+/*debug('exported config: %O', module.exports);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .prettierignore 1`] = `
+".prettierignore
+⏶⏷⏶⏷⏶
+# * Paths below are ignored by prettier as well as remark and doctoc when called
+# * with \`xscripts format\`.
+
+# ! Note that any pattern with a / in the beginning OR MIDDLE (but not end) will
+# ! be consider relative to the this file ONLY. Matching subdirs will NOT match!
+# ! Otherwise, patterns will match entities in any directory or subdirectory.
+# ! Prepend ** (or **/) if advanced subdir matching of complex paths is desired.
+# ! See https://git-scm.com/docs/gitignore#_pattern_format
+
+# Ignore temporary files in any subdir by giving them a special name
+*.ignore
+*.ignore.*
+ignore.*
+
+# Ignore sensitive files in any subdir
+.env
+.npmrc
+*.local
+
+# Ignore transpiled source in any subdir (used for advanced debugging)
+.transpiled
+
+# Ignore relevant build artifacts in any subdir (with exceptions)
+*.tsbuildinfo
+# ? Preceding AND proceeding asterisks (**) are needed to match any build subdir
+# ? in monorepos and allow subsequent negations to be interpreted properly.
+**/build/**
+# ? This negation must end in "/**" to be interpreted properly.
+!**/src/**/build/**
+docs
+dist
+coverage
+.vercel
+.next
+next-env.d.ts
+CHANGELOG.md
+LICENSE
+LICENSE.md
+
+# Ignore relevant NPM artifacts in any subdir
+node_modules
+package-lock.json
+
+# Ignore test fixtures in any subdir (which may depend on remaining as they are)
+fixtures
+
+# Ignore things that prettier isn't good at in any subdir
+*.hbs
+
+# Ignore random nothingness in any subdir
+.DS_Store
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .remarkrc.mjs 1`] = `
+".remarkrc.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+
+import { deepMergeConfig } from '@-xun/scripts/assets';
+
+import {
+  moduleExport,
+  assertEnvironment
+} from '@-xun/scripts/assets/config/.remarkrc.mjs';
+
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:remarkrc' });*/
+
+const config = deepMergeConfig(
+  moduleExport(await assertEnvironment()),
+  /**
+   * @type {import('@-xun/scripts/assets/config/.remarkrc.mjs').RemarkConfig}
+   */
+  {
+    // Any custom configs here will be deep merged with moduleExport
+  }
+);
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .spellcheckignore 1`] = `
+".spellcheckignore
+⏶⏷⏶⏷⏶
+
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .vscode 1`] = `
+".vscode/launch.example.json
+⏶⏷⏶⏷⏶
+{
+  "configurations": [
+    {
+      "type": "node",
+      "name": "vscode-jest-tests.v2",
+      "request": "launch",
+      "program": "\${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "--runInBand",
+        "--watchAll=false",
+        "--testNamePattern",
+        "\${jest.testNamePattern}",
+        "--runTestsByPath",
+        "\${jest.testFile}"
+      ],
+      "cwd": "\${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test",
+        "NODE_OPTIONS": "--no-warnings --experimental-vm-modules",
+        "DEBUG_COLORS": "false"
+      },
+      "windows": {
+        "program": "\${workspaceFolder}/node_modules/jest/bin/jest"
+      },
+
+      // ! Note that these settings do NOT affect MANUALLY LAUNCHED debug
+      // ! terminals! To affect stepping while using the debug terminal
+      // ! manually, you'll need to configure settings.json (non-workspace) or
+      // ! *.code-workspace (workspace) and set
+      // ! \`debug.javascript.terminalOptions.skipFiles/smartStep\` appropriately.
+      // * You MAY need to reload vscode/vscode-jest before changes take effect!
+      // ? Set to false to step through node internals
+      "smartStep": true,
+      // ? Selectively comment out entries for deeper debugging
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**"
+        //"!**/node_modules/@-xun/**"
+      ]
+    },
+    {
+      "type": "node",
+      "name": "jest-active-file",
+      "request": "launch",
+      "program": "\${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["--runInBand", "--watchAll=false", "\${file}"],
+      "cwd": "\${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "NODE_ENV": "test",
+        "NODE_OPTIONS": "--no-warnings --experimental-vm-modules",
+        "DEBUG_COLORS": "false"
+      },
+      "windows": {
+        "program": "\${workspaceFolder}/node_modules/jest/bin/jest"
+      },
+
+      // ! Note that these settings do NOT affect MANUALLY LAUNCHED debug
+      // ! terminals! To affect stepping while using the debug terminal
+      // ! manually, you'll need to configure settings.json (non-workspace) or
+      // ! *.code-workspace (workspace) and set
+      // ! \`debug.javascript.terminalOptions.skipFiles/smartStep\` appropriately.
+      // * You MAY need to reload vscode/vscode-jest before changes take effect!
+      // ? Set to false to step through node internals
+      "smartStep": true,
+      // ? Selectively comment out entries for deeper debugging
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**"
+        //"!**/node_modules/@-xun/**"
+      ]
+    },
+    {
+      "type": "node",
+      "name": "jest-transpiled",
+      "request": "launch",
+      "program": "\${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["--runInBand", "--watchAll=false", "\${file}"],
+      "cwd": "\${workspaceFolder}",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": false,
+      "env": {
+        "NODE_ENV": "test",
+        "NODE_OPTIONS": "--no-warnings --experimental-vm-modules",
+        "DEBUG_COLORS": "false",
+        "XSCRIPTS_TEST_JEST_TRANSPILED": "true"
+      },
+      "windows": {
+        "program": "\${workspaceFolder}/node_modules/jest/bin/jest"
+      },
+
+      // ! Note that these settings do NOT affect MANUALLY LAUNCHED debug
+      // ! terminals! To affect stepping while using the debug terminal
+      // ! manually, you'll need to configure settings.json (non-workspace) or
+      // ! *.code-workspace (workspace) and set
+      // ! \`debug.javascript.terminalOptions.skipFiles/smartStep\` appropriately.
+      // * You MAY need to reload vscode/vscode-jest before changes take effect!
+      // ? Set to false to step through node internals
+      "smartStep": true,
+      // ? Selectively comment out entries for deeper debugging
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**"
+        //"!**/node_modules/@-xun/**"
+      ]
+    }
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .vscode 2`] = `
+".vscode/settings.json
+⏶⏷⏶⏷⏶
+{
+  // ! Note that some of these configurations are ignored when the project is
+  // ! opened as part of a vscode workspace (especially multi-root). In such a
+  // ! case, look to the workspace's configuration file for tweakable settings.
+
+  "debug.javascript.terminalOptions": {
+    //"skipFiles": ["<node_internals>/**", "**/node_modules/**"]
+    "skipFiles": []
+  },
+  "cSpell.words": [],
+  // ? Use the version of TypeScript that is installed alongside the project
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> .vscode 3`] = `
+".vscode/tasks.example.json
+⏶⏷⏶⏷⏶
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "lint: discover problems",
+      "type": "process",
+      "command": "npx",
+      "args": ["xscripts", "lint", "--scope", "unlimited"],
+      "presentation": {
+        "echo": true,
+        "reveal": "never"
+      },
+      "echoCommand": true,
+      "icon": { "id": "zap", "color": "terminal.ansiCyan" },
+      "problemMatcher": ["$eslint-stylish", "$tsc"]
+    }
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> ARCHITECTURE.md 1`] = `
+"ARCHITECTURE.md
+⏶⏷⏶⏷⏶
+# 📐 Project Architecture
+
+Before continuing with this document, see the document on the [generic project
+architecture][1] expected by projects (like this repository) that leverage
+Xscripts.
+
+What follows are any notable additions and/or deviations from the aforementioned
+document.
+
+<br />
+
+---
+
+There are as of yet no notable deviations or additions. See the linked document
+(above) for information on the architecture of this project.
+
+[1]: https://github.com/Xunnamius/xscripts/wiki/Generic-Project-Architecture
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> CONTRIBUTING.md 1`] = `
+"CONTRIBUTING.md
+⏶⏷⏶⏷⏶
+# Contributing
+
+Hi there! First off, we're thrilled 🤩 you want contribute to this project!
+
+First time contributor to a GitHub project? If you could use some help getting
+started, [take a look at this quick and easy guide][how-to-contribute]. 💜
+
+## Briefly: Submitting a Pull Request (Pr)
+
+> See also: [CODE_OF_CONDUCT.md][code-of-conduct]
+
+This repository uses a [fully automated][github-actions] [continuous
+linting][husky-cl] (CL), integration testing (CI), and deployment (CD)
+[xpipeline][xpipeline]-based pipeline for integrating PRs and publishing
+releases. The neat thing about a fully automated pipeline is that anyone
+anywhere can make a contribution quickly and with minimal tedium.
+
+This repository makes extensive use of [debug][pkg-debug]. Should you wish to
+view all possible debugging output, [export
+\`DEBUG='*,*:*'\`][pkg-debug-wildcards].
+
+The ideal contributor flow is as follows:
+
+1. [Fork][fork] this repository and [clone it locally][how-to-clone].
+   - If there is a custom Docker image available for this project and you're
+     comfortable with Docker, consider using it instead.
+2. Configure and install dependencies with \`npm ci\`.
+   - You use \`npm ci\` here instead of \`npm install\` to [prevent unnecessary
+     updates to \`package.json\` and \`package-lock.json\`][npm-ci], but if it makes
+     more sense to use \`npm install\` feel free to use that instead.
+     - **If you're getting an EINTEGRITY error from npm, you need to delete
+       package-lock.json before running \`npm install\` (not \`npm ci\`).**
+   - If \`.env.example\` exists, consider copying it to \`.env\` and configuring
+     sensible defaults.
+3. Before making any changes, ensure all unit tests are passing with
+   \`npm run test\`.
+4. _(optional but recommended)_ Create a new branch, usually off \`main\`.
+   - Example: \`git checkout -b contrib-feature-1\`.
+5. Make your changes and commit. Your work will be checked as you commit; any
+   problems will abort the commit/push attempt.
+   - Ensure any new tests still pass even when the \`DEBUG\` environment variable
+     is defined.
+6. Push your commits to your fork and, when you're ready, [_fearlessly_ submit
+   your PR][pr-compare]! Your changes will be tested in our CI pipeline.
+7. Pat yourself on the back! Your hard work is well on its way to being reviewed
+   and, if everything looks good, merged and released 🚀
+
+Additionally, there are a few things you can do to greatly increase the
+likelihood your PR passes review:
+
+- **Do** [open an issue][choose-new-issue] and discuss your proposed changes (to
+  prevent wasting your valuable time, e.g. _maybe we're already working on a
+  fix!_), and [search][open-issues] to see if there are any existing issues
+  related to your concerns.
+- **Do** practice [atomic committing][atomic-commits].
+- **Do not** reduce code coverage ([codecov][codecov] checks are performed
+  during CI).
+- **Do** [follow convention][conventional-commits] when coming up with your
+  commit messages.
+- **Do not** circumvent CL, i.e. automated pre-commit linting, formatting, and
+  unit testing.
+- **Do** ensure \`README.md\` and other documentation that isn't autogenerated is
+  kept consistent with your changes.
+- **Do not** create a PR to introduce [_purely_ cosmetic
+  commits][cosmetic-commits].
+  - Code de-duplication and other potential optimizations we **do not** consider
+    _purely_ cosmetic 🙂
+- **Do** keep your PR as narrow and focused as possible.
+  - If you ran \`npm install\` instead of \`npm ci\` and it updated \`package.json\`
+    or \`package-lock.json\` and those updates have nothing to do with your PR
+    (e.g. random nested deps were updated), **do not** stage changes to those
+    files.
+  - If there are multiple related changes to be made but (1) they do not
+    immediately depend on one another or (2) one implements extended/alternative
+    functionality based on the other, consider submitting them as separate PRs
+    instead.
+
+At this point, you're ready to create your PR and ✨ contribute ✨!
+
+[atomic-commits]: https://www.codewithjason.com/atomic-commits-testing
+[choose-new-issue]: repo-url/issues/new/choose
+[code-of-conduct]: repo-url/.github/CODE_OF_CONDUCT.md
+[codecov]: https://about.codecov.io
+[conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0#summary
+[cosmetic-commits]:
+  https://github.com/rails/rails/pull/13771#issuecomment-32746700
+[fork]: repo-url/fork
+[github-actions]: https://github.com/features/actions
+[how-to-clone]:
+  https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/cloning-a-repository
+[how-to-contribute]: https://www.dataschool.io/how-to-contribute-on-github
+[husky-cl]: repo-url/tree/main/.husky
+[npm-ci]: https://docs.npmjs.com/cli/v6/commands/npm-ci
+[open-issues]: repo-url/issues?q=
+[pkg-debug]: https://www.npmjs.com/package/debug
+[pkg-debug-wildcards]: https://www.npmjs.com/package/debug#wildcards
+[pr-compare]: repo-url/compare
+[xpipeline]: https://github.com/Xunnamius/xpipeline#readme
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> LICENSE 1`] = `
+"LICENSE
+⏶⏷⏶⏷⏶
+MIT License
+
+Copyright (c) 2024 Bernard Dickens III
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> MAINTAINING.md 1`] = `
+"MAINTAINING.md
+⏶⏷⏶⏷⏶
+# Maintaining
+
+This is documentation for maintainers of this project.
+
+## Code of Conduct
+
+Please [review][1], understand, and be an example of it. Violations of the code
+of conduct are taken seriously, even (especially) for maintainers.
+
+## Issues
+
+We want to support and build the community. We do that best by helping people
+learn to solve their own problems. We have an issue template and hopefully most
+folks follow it. If it's not clear what the issue is, invite them to create a
+minimal reproduction of what they're trying to accomplish or the bug they think
+they've found.
+
+Once it's determined that a code change is necessary, point people to
+[makeapullrequest.com][2] and invite them to make a pull request. If they're the
+one who needs the feature, they're the one who can build it. If they need some
+hand holding and you have time to lend a hand, please do so. It's an investment
+into another human being, and an investment into a potential maintainer.
+
+Remember that this is open source, so the code is not yours, it's ours. If
+someone needs a change in the codebase, you don't have to make it happen
+yourself. Commit as much time to the project as you want/need to. Nobody can ask
+any more of you than that.
+
+## Pull Requests
+
+As a maintainer, you're fine to make your branches on the main repo or on your
+own fork. Either way is fine.
+
+When we receive a pull request, a GitHub Actions build is kicked off
+automatically (see [\`.github/workflows\`][3]). We avoid merging anything that
+fails the Actions workflow.
+
+Please review PRs and focus on the code rather than the individual. You never
+know when this is someone's first ever PR and we want their experience to be as
+positive as possible, so be uplifting and constructive.
+
+When you merge the pull request, 99% of the time you should use the [rebase and
+merge][4] feature. This keeps our git history clean. If commit messages need to
+be adjusted, maintainers should force push new commits with adjusted messages to
+the PR branch before merging it in.
+
+The [squash and merge][5] feature can also be used, but keep in mind that
+squashing commits will likely damage the [generated][6] [CHANGELOG.md][7],
+hinder [bisection][8], and result in [non-atomic commits][9], so use it
+sparingly.
+
+## Release
+
+Our releases are automatic. They happen whenever code lands into \`master\`. A
+GitHub Actions build gets kicked off and, if it's successful, a tool called
+[\`semantic-release\`][10] is used to automatically publish a new release to npm
+and GitHub along with an updated changelog. It is only able to determine the
+version and whether a release is necessary by the git commit messages. With this
+in mind, **please brush up on [the commit message convention][commit] which
+drives our releases.**
+
+> One important note about this: please make sure that commit messages do NOT
+> contain the words "BREAKING CHANGE" in them unless we want to push a major
+> version. I've been burned by this more than once where someone will include
+> "BREAKING CHANGE: None" and it will end up releasing a new major version. Do
+> not do this!
+
+### Manual Releases
+
+This project has an automated release set up. That means things are only
+released when there are useful changes in the code that justify a release. See
+[the release rules][11] for a list of commit types that trigger releases.
+
+However, sometimes things get messed up (e.g. CI workflow / GitHub Actions
+breaks) and we need to trigger a release ourselves. When this happens,
+semantic-release can be triggered locally:
+
+#### Manual Release Using Xscripts
+
+\`\`\`bash
+# Either:
+npm run release
+# Or:
+npx -p @-xun/scripts xscripts project release # ... custom config flags...
+\`\`\`
+
+#### Manual Release by Hand
+
+> If one of these steps fails, you should address the failure before running the
+> next step.
+
+\`\`\`bash
+# These commands must be run from the project root. It is recommended to clone a
+# fresh version of the repo to a temp directory and run these commands from
+# there.
+
+# 1. Install dependencies and add your auth tokens to the .env file.
+# ! DO NOT COMMIT THE .env FILE !
+cp .env.default .env
+npm ci
+
+# 2. Reset the working tree to a clean state.
+npm run clean -- --force
+
+# 3. Lint all files.
+npm run lint:source:all
+
+# 4. Build distributables.
+npm run build:dist
+
+# 5. Build any external executables (used in GitHub Actions workflows).
+npm run build:externals
+
+# 6. Format all files.
+npm run format
+
+# 7. Build auxiliary documentation (AFTER format so line numbers are correct).
+npm run build:docs
+
+# 8. Lint project structure and distributables
+npm run lint:project
+
+# 9. Run all possible tests and generate coverage information.
+npm run test:all
+
+# 10. Trigger semantic-release locally and generate a new release. This requires
+# having valid tokens for NPM and GitHub with the appropriate permissions.
+#
+# Do a dry run first:
+NPM_TOKEN="$(npx --yes dotenv-cli -p NPM_TOKEN)" GH_TOKEN="$(npx --yes dotenv-cli -p GITHUB_TOKEN)" HUSKY=0 UPDATE_CHANGELOG=true GIT_AUTHOR_NAME="$(npx --yes dotenv-cli -p GIT_AUTHOR_NAME)" GIT_COMMITTER_NAME="$(npx --yes dotenv-cli -p GIT_COMMITTER_NAME)" GIT_AUTHOR_EMAIL="$(npx --yes dotenv-cli -p GIT_AUTHOR_EMAIL)" GIT_COMMITTER_EMAIL="$(npx --yes dotenv-cli -p GIT_COMMITTER_EMAIL)" npx --no-install semantic-release --no-ci --extends "$(pwd)/release.config.cjs" --dry-run
+# Then do the actual publish:
+NPM_TOKEN="$(npx --yes dotenv-cli -p NPM_TOKEN)" GH_TOKEN="$(npx --yes dotenv-cli -p GITHUB_TOKEN)" HUSKY=0 UPDATE_CHANGELOG=true GIT_AUTHOR_NAME="$(npx --yes dotenv-cli -p GIT_AUTHOR_NAME)" GIT_COMMITTER_NAME="$(npx --yes dotenv-cli -p GIT_COMMITTER_NAME)" GIT_AUTHOR_EMAIL="$(npx --yes dotenv-cli -p GIT_AUTHOR_EMAIL)" GIT_COMMITTER_EMAIL="$(npx --yes dotenv-cli -p GIT_COMMITTER_EMAIL)" npx --no-install semantic-release --no-ci --extends "$(pwd)/release.config.cjs"
+
+# 11. Upload coverage information to codecov (only if you have a valid token).
+CODECOV_TOKEN=$(npx --yes dotenv-cli -p CODECOV_TOKEN) codecov
+\`\`\`
+
+<!-- lint ignore -->
+
+## Thanks!
+
+Thank you so much for helping to maintain this project!
+
+[commit]:
+  https://github.com/conventional-changelog-archived-repos/conventional-changelog-angular/blob/ed32559941719a130bb0327f886d6a32a8cbc2ba/convention.md
+[1]: repo-url/.github/CODE_OF_CONDUCT.md
+[2]: http://makeapullrequest.com
+[3]: repo-url/.github/workflows
+[4]:
+  https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#rebase-and-merge-your-commits
+[5]:
+  https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/about-pull-request-merges#squash-and-merge-your-commits
+[6]: https://github.com/conventional-changelog/conventional-changelog
+[7]: https://www.conventionalcommits.org/en/v1.0.0
+[8]:
+  https://www.metaltoad.com/blog/beginners-guide-git-bisect-process-elimination
+[9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
+[10]: https://github.com/semantic-release/semantic-release
+[11]:
+  https://github.com/Xunnamius/black-flag/blob/eec78609146a92cab29caa9d1fa05a0581e5bd3f/release.config.cjs#L27
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> README.md 1`] = `
+"README.md
+⏶⏷⏶⏷⏶
+<!-- badges-start -->
+
+{{badges}}
+
+<!-- badges-end -->
+
+# pretty-name
+
+<!-- TODO -->
+
+package-description
+
+---
+
+<!-- remark-ignore-start -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Install](#install)
+- [Usage](#usage)
+- [Appendix](#appendix)
+  - [Published Package Details](#published-package-details)
+  - [License](#license)
+- [Contributing and Support](#contributing-and-support)
+  - [Contributors](#contributors)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- remark-ignore-end -->
+
+## Install
+
+<!-- TODO -->
+
+\`\`\`shell
+npm install package-name
+\`\`\`
+
+## Usage
+
+<!-- TODO -->
+
+TODO
+
+## Appendix
+
+Further documentation can be found under {{repoReferenceDocs:\`docs/\`}}.
+
+### Published Package Details
+
+<!-- TODO -->
+
+package-build-details-short
+
+<details><summary>Expand details</summary>
+
+<!-- TODO -->
+
+package-build-details-long
+
+</details>
+
+### License
+
+See {{repoReferenceLicense:LICENSE}}.
+
+## Contributing and Support
+
+**{{repoReferenceNewIssue:New issues}} and
+{{repoReferencePrCompare:pull requests}} are always welcome and greatly
+appreciated! 🤩** Just as well, you can
+{{repoReferenceSelf:star 🌟 this project}} to let me know you found it useful!
+✊🏿 Or you could consider {{repoReferenceSponsor:buying me a beer}}. Thank you!
+
+See {{repoReferenceContributing:CONTRIBUTING.md}} and
+{{repoReferenceSupport:SUPPORT.md}} for more information.
+
+### Contributors
+
+<!-- remark-ignore-start -->
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+<!-- remark-ignore-end -->
+
+Thanks goes to these wonderful people
+({{repoReferenceAllContributorsEmojis:emoji key}}):
+
+<!-- remark-ignore-start -->
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<table></table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- remark-ignore-end -->
+
+This project follows the {{repoReferenceAllContributors:all-contributors}}
+specification. Contributions of any kind welcome!
+
+repo-reference-definitions-badge
+
+repo-reference-definitions-package
+
+repo-reference-definitions-repo
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> SECURITY.md 1`] = `
+"SECURITY.md
+⏶⏷⏶⏷⏶
+# Security ☠️ [![Known Vulnerabilities][2]][1]
+
+If the issue is related to a public alert from OWASP/GitHub/Dependabot/CVE/etc
+and [does not already have an open issue][3], feel free to [open a new
+issue][4]. Otherwise, please report any security vulnerability, other
+security-related incident, or otherwise sensitive subject to us [via email][5].
+
+Thank you for your contribution!
+
+[1]: repo-snyk-url
+[2]: repo-snyk-url/badge.svg
+[3]: repo-url/issues?q=
+[4]: repo-url/issues/new/choose
+[5]:
+  mailto:security@ergodark.com?subject=ALERT%3A%20SECURITY%20INCIDENT%3A%20%28five%20word%20summary%29
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> babel.config.cjs 1`] = `
+"babel.config.cjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+const { deepMergeConfig } = require('@-xun/scripts/assets');
+
+const {
+  moduleExport,
+  assertEnvironment
+} = require('@-xun/scripts/assets/config/babel.config.cjs');
+
+// TODO: publish latest rejoinder package first, then update configs to use it
+//const { createDebugLogger } = require('rejoinder');
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:babel' });*/
+
+module.exports = deepMergeConfig(
+  moduleExport({
+    derivedAliases: getBabelAliases(),
+    ...assertEnvironment({ projectRoot: __dirname })
+  }),
+  /**
+   * @type {import('@-xun/scripts/assets/config/babel.config.cjs').BabelConfig}
+   */
+  {
+    // Any custom configs here will be deep merged with moduleExport's result
+  }
+);
+
+/*debug('exported config: %O', module.exports);*/
+
+function getBabelAliases() {
+  // ! The aliases described in "paths" are auto-generated by xscripts.
+  // ! Instead of modifying it directly, consider regenerating aliases across
+  // ! the entire project: \`xscripts project renovate --task
+  // ! regenerate-aliases\`; you can include custom aliases using the
+  // ! \`--with-alias\` parameter.
+  // * These aliases appear in:
+  // *   - tsconfig.json      (JSON)
+  // *   - babel.config.cjs   (CJS)
+  // *   - eslint.config.mjs  (ESM)
+  // *   - jest.config.mjs    (ESM)
+  // *   - next.config.mjs    (ESM)
+  // *   - webpack.config.mjs (ESM)
+  return {
+    "^universe:(.+)$": "./src/$1",
+    "^universe$": "./src/index.js",
+    "^multiverse+webpack:(.+)$": "./packages/webpack/src/$1",
+    "^multiverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/src/$1",
+    "^multiverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/src/$1",
+    "^multiverse+private:(.+)$": "./packages/private/src/$1",
+    "^multiverse+cli:(.+)$": "./packages/cli/src/$1",
+    "^multiverse+webpack$": "./packages/webpack/src/index.js",
+    "^multiverse+unnamed-esm$": "./packages/unnamed-esm/src/index.js",
+    "^multiverse+unnamed-cjs$": "./packages/unnamed-cjs/src/index.js",
+    "^multiverse+private$": "./packages/private/src/index.js",
+    "^multiverse+cli$": "./packages/cli/src/index.js",
+    "^rootverse+webpack:(.+)$": "./packages/webpack/$1",
+    "^rootverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/$1",
+    "^rootverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/$1",
+    "^rootverse+private:(.+)$": "./packages/private/$1",
+    "^rootverse+cli:(.+)$": "./packages/cli/$1",
+    "^rootverse:(.+)$": "./$1",
+    "^testverse+webpack:(.+)$": "./packages/webpack/test/$1",
+    "^testverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/test/$1",
+    "^testverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/test/$1",
+    "^testverse+private:(.+)$": "./packages/private/test/$1",
+    "^testverse+cli:(.+)$": "./packages/cli/test/$1",
+    "^testverse:(.+)$": "./test/$1",
+    "^typeverse:(.+)$": "./types/$1"
+  },
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> changelog.patch.mjs 1`] = `
+"changelog.patch.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+
+/**
+ * @type {import('@-xun/scripts/commands/build/changelog').ChangelogPatches}
+ */
+export default [
+  ///// ? Oops
+  //[/ --file /g, ' --files '],
+  //['--output-file', '--changelog-file'],
+];
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> commitlint.config.mjs 1`] = `
+"commitlint.config.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+import { deepMergeConfig } = from '@-xun/scripts/assets';
+import { moduleExport } = from '@-xun/scripts/assets/config/commitlint.config.mjs';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } = from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
+
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> conventional.config.cjs 1`] = `
+"conventional.config.cjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+const {
+  moduleExport,
+  assertEnvironment
+} = require('@-xun/scripts/assets/config/conventional.config.cjs');
+
+// TODO: publish latest rejoinder package first, then update configs to use it
+//const { createDebugLogger } = require('rejoinder');
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:conventional' });*/
+
+module.exports = moduleExport({
+  ...assertEnvironment(),
+  configOverrides: {
+    // Any custom configs here will be deep merged with moduleExport with
+    // special considerations for certain keys. \`configOverrides\` can also
+    // be a function instead of an object.
+  }
+});
+
+/*debug('exported config: %O', module.exports);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> eslint.config.mjs 1`] = `
+"eslint.config.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+
+import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+
+import {
+  moduleExport,
+  assertEnvironment
+} from '@-xun/scripts/assets/config/eslint.config.mjs';
+
+// TODO: publish latest rejoinder package first, then update configs to use it
+/*import { createDebugLogger } from 'rejoinder';*/
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:eslint' });*/
+
+const config = deepMergeConfig(
+  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  /**
+   * @type {import('@-xun/scripts/assets/config/eslint.config.mjs').EslintConfig}
+   */
+  {
+    // Any custom configs here will be deep merged with moduleExport
+  }
+);
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+
+function getEslintAliases() {
+  // ! The aliases described in "paths" are auto-generated by xscripts.
+  // ! Instead of modifying it directly, consider regenerating aliases across
+  // ! the entire project: \`xscripts project renovate --task
+  // ! regenerate-aliases\`; you can include custom aliases using the
+  // ! \`--with-alias\` parameter.
+  // * These aliases appear in:
+  // *   - tsconfig.json      (JSON)
+  // *   - babel.config.cjs   (CJS)
+  // *   - eslint.config.mjs  (ESM)
+  // *   - jest.config.mjs    (ESM)
+  // *   - next.config.mjs    (ESM)
+  // *   - webpack.config.mjs (ESM)
+  return [
+    [
+        "universe:*",
+        "./src/*"
+    ],
+    [
+        "universe",
+        "./src/index.ts"
+    ],
+    [
+        "multiverse+webpack:*",
+        "./packages/webpack/src/*"
+    ],
+    [
+        "multiverse+unnamed-esm:*",
+        "./packages/unnamed-esm/src/*"
+    ],
+    [
+        "multiverse+unnamed-cjs:*",
+        "./packages/unnamed-cjs/src/*"
+    ],
+    [
+        "multiverse+private:*",
+        "./packages/private/src/*"
+    ],
+    [
+        "multiverse+cli:*",
+        "./packages/cli/src/*"
+    ],
+    [
+        "multiverse+webpack",
+        "./packages/webpack/src/index.ts"
+    ],
+    [
+        "multiverse+unnamed-esm",
+        "./packages/unnamed-esm/src/index.ts"
+    ],
+    [
+        "multiverse+unnamed-cjs",
+        "./packages/unnamed-cjs/src/index.ts"
+    ],
+    [
+        "multiverse+private",
+        "./packages/private/src/index.ts"
+    ],
+    [
+        "multiverse+cli",
+        "./packages/cli/src/index.ts"
+    ],
+    [
+        "rootverse+webpack:*",
+        "./packages/webpack/*"
+    ],
+    [
+        "rootverse+unnamed-esm:*",
+        "./packages/unnamed-esm/*"
+    ],
+    [
+        "rootverse+unnamed-cjs:*",
+        "./packages/unnamed-cjs/*"
+    ],
+    [
+        "rootverse+private:*",
+        "./packages/private/*"
+    ],
+    [
+        "rootverse+cli:*",
+        "./packages/cli/*"
+    ],
+    [
+        "rootverse:*",
+        "./*"
+    ],
+    [
+        "testverse+webpack:*",
+        "./packages/webpack/test/*"
+    ],
+    [
+        "testverse+unnamed-esm:*",
+        "./packages/unnamed-esm/test/*"
+    ],
+    [
+        "testverse+unnamed-cjs:*",
+        "./packages/unnamed-cjs/test/*"
+    ],
+    [
+        "testverse+private:*",
+        "./packages/private/test/*"
+    ],
+    [
+        "testverse+cli:*",
+        "./packages/cli/test/*"
+    ],
+    [
+        "testverse:*",
+        "./test/*"
+    ],
+    [
+        "typeverse:*",
+        "./types/*"
+    ]
+  },
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> gac.config.mjs 1`] = `
+"gac.config.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/gac.config.mjs';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:gac' });*/
+
+const config = deepMergeConfig(moduleExport(),
+/**
+ * @type {import('@-xun/scripts/assets/config/gac.config.mjs').GacConfig}
+ */
+{
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> jest.config.mjs 1`] = `
+"jest.config.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+import { deepMergeConfig } from '@-xun/scripts/assets';
+
+import {
+  moduleExport,
+  assertEnvironment
+} from '@-xun/scripts/assets/config/jest.config.mjs';
+
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:jest' });*/
+
+const config = deepMergeConfig(
+  moduleExport({ derivedAliases: getJestAliases(), ...assertEnvironment() }),
+  /**
+   * @type {import('@-xun/scripts/assets/config/jest.config.mjs').JestConfig}
+   */
+  {
+    // Any custom configs here will be deep merged with moduleExport's result
+  }
+);
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+
+function getJestAliases() {
+  // ! The aliases described in "paths" are auto-generated by xscripts.
+  // ! Instead of modifying it directly, consider regenerating aliases across
+  // ! the entire project: \`xscripts project renovate --task
+  // ! regenerate-aliases\`; you can include custom aliases using the
+  // ! \`--with-alias\` parameter.
+  // * These aliases appear in:
+  // *   - tsconfig.json      (JSON)
+  // *   - babel.config.cjs   (CJS)
+  // *   - eslint.config.mjs  (ESM)
+  // *   - jest.config.mjs    (ESM)
+  // *   - next.config.mjs    (ESM)
+  // *   - webpack.config.mjs (ESM)
+  return {
+    "^universe:(.+)$": "<rootDir>/src/$1",
+    "^universe$": "<rootDir>/src/index.ts",
+    "^multiverse+webpack:(.+)$": "<rootDir>/packages/webpack/src/$1",
+    "^multiverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/src/$1",
+    "^multiverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/src/$1",
+    "^multiverse+private:(.+)$": "<rootDir>/packages/private/src/$1",
+    "^multiverse+cli:(.+)$": "<rootDir>/packages/cli/src/$1",
+    "^multiverse+webpack$": "<rootDir>/packages/webpack/src/index.ts",
+    "^multiverse+unnamed-esm$": "<rootDir>/packages/unnamed-esm/src/index.ts",
+    "^multiverse+unnamed-cjs$": "<rootDir>/packages/unnamed-cjs/src/index.ts",
+    "^multiverse+private$": "<rootDir>/packages/private/src/index.ts",
+    "^multiverse+cli$": "<rootDir>/packages/cli/src/index.ts",
+    "^rootverse+webpack:(.+)$": "<rootDir>/packages/webpack/$1",
+    "^rootverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/$1",
+    "^rootverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/$1",
+    "^rootverse+private:(.+)$": "<rootDir>/packages/private/$1",
+    "^rootverse+cli:(.+)$": "<rootDir>/packages/cli/$1",
+    "^rootverse:(.+)$": "<rootDir>/$1",
+    "^testverse+webpack:(.+)$": "<rootDir>/packages/webpack/test/$1",
+    "^testverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/test/$1",
+    "^testverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/test/$1",
+    "^testverse+private:(.+)$": "<rootDir>/packages/private/test/$1",
+    "^testverse+cli:(.+)$": "<rootDir>/packages/cli/test/$1",
+    "^testverse:(.+)$": "<rootDir>/test/$1",
+    "^typeverse:(.+)$": "<rootDir>/types/$1"
+  },
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> lint-staged.config.mjs 1`] = `
+"lint-staged.config.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/lint-staged.config.mjs';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:lint-staged' });*/
+
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> next.config.mjs 1`] = `
+"next.config.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/next.config.mjs';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:next' });*/
+
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> package.json 1`] = `
+"package.json
+⏶⏷⏶⏷⏶
+{
+  "name": "package-name",
+  "version": "1.2.3-fake",
+  "description": "package-description",
+  "keywords": [],
+  "homepage": "repo-url#readme",
+  "bugs": {
+    "url": "repo-url/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+repo-url.git"
+  },
+  "license": "MIT",
+  "author": "Xunnamius",
+  "sideEffects": false,
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./package": "./package.json",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "dist/src/index.d.ts"
+      ],
+      "package": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "/dist",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
+  "scripts": {
+    "build": "npm run build:dist --",
+    "build:changelog": "NODE_NO_WARNINGS=1 xscripts build changelog",
+    "build:dist": "NODE_NO_WARNINGS=1 xscripts build distributables",
+    "build:docs": "NODE_NO_WARNINGS=1 xscripts build docs",
+    "clean": "NODE_NO_WARNINGS=1 xscripts clean",
+    "format": "NODE_NO_WARNINGS=1 xscripts format --hush",
+    "info": "NODE_NO_WARNINGS=1 xscripts project info",
+    "lint": "npm run lint:package --",
+    "lint:package": "NODE_NO_WARNINGS=1 xscripts lint",
+    "lint:packages": "NODE_NO_WARNINGS=1 xscripts lint --scope unlimited",
+    "lint:project": "NODE_NO_WARNINGS=1 xscripts project lint",
+    "list-tasks": "NODE_NO_WARNINGS=1 xscripts list-tasks",
+    "prepare": "NODE_NO_WARNINGS=1 xscripts project prepare",
+    "release": "NODE_NO_WARNINGS=1 xscripts release",
+    "renovate": "NODE_NO_WARNINGS=1 xscripts project renovate",
+    "start": "NODE_NO_WARNINGS=1 xscripts start --",
+    "test": "npm run test:package:unit --",
+    "test:package:all": "NODE_NO_WARNINGS=1 xscripts test --coverage",
+    "test:package:e2e": "NODE_NO_WARNINGS=1 xscripts test --tests end-to-end",
+    "test:package:integration": "NODE_NO_WARNINGS=1 xscripts test --tests integration",
+    "test:package:unit": "NODE_NO_WARNINGS=1 xscripts test --tests unit",
+    "test:packages:all": "NODE_NO_WARNINGS=1 xscripts test --scope unlimited --coverage"
+  },
+  "engines": {
+    "node": "^18.20.0 || ^20.15.0 || >=22.5.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "dependencies": {}
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> postcss.config.mjs 1`] = `
+"postcss.config.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/postcss.config.mjs';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:postcss' });*/
+
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> prettier.config.mjs 1`] = `
+"prettier.config.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/prettier.config.mjs';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:prettier' });*/
+
+const config = deepMergeConfig(
+  moduleExport(),
+  /**
+   * @type {import('@-xun/scripts/assets/config/prettier.config.mjs').PrettierConfig}
+   */
+  {
+    // Any custom configs here will be deep merged with moduleExport's result
+  }
+);
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> release.config.cjs 1`] = `
+"release.config.cjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+const { deepMergeConfig } = require('@-xun/scripts/assets');
+const { moduleExport } = require('@-xun/scripts/assets/config/release.config.cjs');
+// TODO: publish latest rejoinder package first, then update configs to use it
+//const { createDebugLogger } = require('rejoinder');
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:release' });*/
+
+module.exports = deepMergeConfig(
+  moduleExport(assertEnvironment({ projectRoot: __dirname })),
+  /**
+   * @type {import('@-xun/scripts/assets/config/release.config.cjs').ReleaseConfig}
+   */
+  {
+    // Any custom configs here will be deep merged with moduleExport's result
+  }
+);
+
+/*debug('exported config: %O', module.exports);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> src 1`] = `
+"src/index.ts
+⏶⏷⏶⏷⏶
+export {};
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> tailwind.config.mjs 1`] = `
+"tailwind.config.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/tailwind.config.mjs';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:tailwind' });*/
+
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> test 1`] = `
+"test/index.ts
+⏶⏷⏶⏷⏶
+/**
+ ** This file exports test utilities specific to this project and beyond what is
+ ** exported by @-xun/test; these can be imported using \`testverse\` aliases.
+ */
+
+export {};
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> test 2`] = `
+"test/setup.ts
+⏶⏷⏶⏷⏶
+// ? https://github.com/jest-community/jest-extended#typescript
+import 'jest-extended';
+import 'jest-extended/all';
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 1`] = `
+"tsconfig.json
+⏶⏷⏶⏷⏶
+{
+  "compilerOptions": {
+    // ? Needed to type check our various .js files
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    // ? Due to paths, the effect of this prop is limited (already covered)
+    "allowImportingTsExtensions": true,
+    // ? Due to paths, the effect of this prop is limited (often ignored)
+    "allowArbitraryExtensions": true,
+    "alwaysStrict": true,
+    "baseUrl": ".",
+    // ? Does too much; opt-in (provided by allowJs) is better
+    "checkJs": false,
+    "jsx": "preserve",
+    "declaration": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "inlineSourceMap": true,
+    "isolatedModules": true,
+    // ? Tried it. Not a fan. Also conflicts with allowJs
+    "isolatedDeclarations": false,
+    "lib": [
+      "ESNext",
+      "DOM",
+      "WebWorker.ImportScripts",
+      "ScriptHost",
+      "DOM.Iterable"
+    ],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+        // ! The aliases described in "paths" are auto-generated by xscripts.
+    // ! Instead of modifying it directly, consider regenerating aliases across
+    // ! the entire project: \`xscripts project renovate --task
+    // ! regenerate-aliases\`; you can include custom aliases using the
+    // ! \`--with-alias\` parameter.
+    // * These aliases appear in:
+    // *   - tsconfig.json      (JSON)
+    // *   - babel.config.cjs   (CJS)
+    // *   - eslint.config.mjs  (ESM)
+    // *   - jest.config.mjs    (ESM)
+    // *   - next.config.mjs    (ESM)
+    // *   - webpack.config.mjs (ESM)
+    "paths": {
+      "universe:*": ["src/*"],
+      "universe": ["src/index.ts"],
+      "multiverse+webpack:*": ["packages/webpack/src/*"],
+      "multiverse+unnamed-esm:*": ["packages/unnamed-esm/src/*"],
+      "multiverse+unnamed-cjs:*": ["packages/unnamed-cjs/src/*"],
+      "multiverse+private:*": ["packages/private/src/*"],
+      "multiverse+cli:*": ["packages/cli/src/*"],
+      "multiverse+webpack": ["packages/webpack/src/index.ts"],
+      "multiverse+unnamed-esm": ["packages/unnamed-esm/src/index.ts"],
+      "multiverse+unnamed-cjs": ["packages/unnamed-cjs/src/index.ts"],
+      "multiverse+private": ["packages/private/src/index.ts"],
+      "multiverse+cli": ["packages/cli/src/index.ts"],
+      "rootverse+webpack:*": ["packages/webpack/*"],
+      "rootverse+unnamed-esm:*": ["packages/unnamed-esm/*"],
+      "rootverse+unnamed-cjs:*": ["packages/unnamed-cjs/*"],
+      "rootverse+private:*": ["packages/private/*"],
+      "rootverse+cli:*": ["packages/cli/*"],
+      "rootverse:*": ["*"],
+      "testverse+webpack:*": ["packages/webpack/test/*"],
+      "testverse+unnamed-esm:*": ["packages/unnamed-esm/test/*"],
+      "testverse+unnamed-cjs:*": ["packages/unnamed-cjs/test/*"],
+      "testverse+private:*": ["packages/private/test/*"],
+      "testverse+cli:*": ["packages/cli/test/*"],
+      "testverse:*": ["test/*"],
+      "typeverse:*": ["types/*"]
+    },
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNext"
+  },
+  "include": [
+    "types/**/*",
+    "src/**/*",
+    "test/**/*",
+    "packages/*/src/**/*",
+    "packages/*/test/**/*"
+  ],
+  "exclude": [
+    "**/dist/**/*",
+    "**/node_modules/**/*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 2`] = `
+"tsc.project.lint.json
+⏶⏷⏶⏷⏶
+/**
+ ** This file extends the project root tsconfig.json file for use with linting
+ ** all files at the project level.
+ **
+ ** Use this file to exert some control over which files will have their errors
+ ** reported and which files will be ignored when linting an entire project
+ ** repository at once.
+ */
+
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "include": ["**/*", "**/.*/**/*", "**/.*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 3`] = `
+"tsc.package.types.json
+⏶⏷⏶⏷⏶
+/**
+ ** This file extends the project root tsconfig.json file for use with tsc at
+ ** the package level.
+ **
+ ** Use this file to exert some control over how tsc generates package-specific
+ ** definition files.
+ */
+
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "isolatedModules": false,
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "./"
+  },
+  "include": ["types/**/*", "src/**/*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "packages/**/*",
+    "packages/**/.*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 4`] = `
+"tsc.package.lint.json
+⏶⏷⏶⏷⏶
+/**
+ ** This file extends the project root tsconfig.json file for use with linting
+ ** all files at the package level. Only tsc gets its paths from this file.
+ **
+ ** Use this file to exert some control over which files are considered
+ ** part of the current package and which will be ignored.
+ */
+
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "include": ["**/*", "**/.*/**/*", "**/.*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "packages/**/*",
+    "packages/**/.*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 5`] = `
+"tsc.package.docs.json
+⏶⏷⏶⏷⏶
+/**
+ ** This file extends the project root tsconfig.json file for use with
+ ** typedoc at the package level.
+ **
+ ** Use this file to exert some control over how typedoc generates
+ ** package-specific documentation.
+ */
+
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "include": ["types/**/*", "src/**/*", "test/**/*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "packages/**/*",
+    "packages/**/.*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> tstyche.config.json 1`] = `
+"tstyche.config.json
+⏶⏷⏶⏷⏶
+{"$schema":"https://tstyche.org/schemas/config.json","testFileMatch":["**/type-*.test.ts","**/type-*.test.tsx"]}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> turbo.json 1`] = `
+"turbo.json
+⏶⏷⏶⏷⏶
+{}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> types 1`] = `
+"types/global.ts
+⏶⏷⏶⏷⏶
+export type {};
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> types 2`] = `
+"types/example
+⏶⏷⏶⏷⏶
+declare module 'glob-gitignore' {
+  import type { GlobOptions } from 'glob';
+
+  export type GlobGitignoreOptions = Omit<GlobOptions, 'ignore'> & {
+    /**
+     * A string or array of strings used to determine which globbed paths are
+     * ignored. Typically this is the result of parsing a .gitignore file (or file
+     * with compatible format) split by \`"
+"\`.
+     */
+    ignore?: string | string[];
+  };
+
+  export async function glob(
+    patterns: string | string[],
+    options: GlobGitignoreOptions
+  ): Promise<string[]>;
+
+  export function sync(
+    patterns: string | string[],
+    options: GlobGitignoreOptions
+  ): string[];
+
+  export function hasMagic(patterns: string | string[], options?: GlobOptions): string;
+}
+"
+`;
+
+exports[`::retrieveConfigAsset ::<config assets> webpack.config.mjs 1`] = `
+"webpack.config.mjs
+⏶⏷⏶⏷⏶
+// @ts-check
+'use strict';
+
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/webpack.config.mjs';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:webpack' });*/
+
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+"
+`;

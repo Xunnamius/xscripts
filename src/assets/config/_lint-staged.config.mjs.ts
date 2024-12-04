@@ -1,29 +1,42 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 
-import type { EmptyObject } from 'type-fest';
+// {@xscripts/notExtraneous lint-staged}
 
-export type Context = EmptyObject;
+export function moduleExport() {
+  return {
+    '*.md': 'npx xscripts format --only-markdown --files',
+    'package.json': 'npx xscripts format --only-package-json --files',
+    '*': 'npx xscripts format --only-prettier --files'
+  } as const;
+}
 
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
+/**
+ * The scripts returned by this function are the constituent parts of the \`npm
+ * run format\` xscripts command.
+ */
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
     return {
-      [name]: /*js*/ `
+      [asset]: /*js*/ `
 // @ts-check
 'use strict';
 
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/${asset}';
 // TODO: publish latest rejoinder package first, then update configs to use it
-/*const { createDebugLogger } = require('debug');
-const debug = createDebugLogger({
-  namespace: '${globalDebuggerNamespace}:config:lint-staged'
-});*/
+//import { createDebugLogger } from 'rejoinder';
 
-// TODO
+/*const debug = createDebugLogger({ namespace: '${globalDebuggerNamespace}:config:lint-staged' });*/
 
-/*debug('exported config: %O', module.exports);*/
-`.trimStart()
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+`
     };
   }
 });

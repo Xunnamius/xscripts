@@ -1,7 +1,7 @@
 declare module 'eslint-plugin-jest' {
   // {@xscripts/notExtraneous @types/eslint}
-  import { type ESLint } from 'eslint';
+  import { type Linter } from 'eslint';
 
-  const eslintPlugin: ESLint.Plugin;
+  const eslintPlugin: { configs?: Record<string, Linter.Config> };
   export default eslintPlugin;
 }

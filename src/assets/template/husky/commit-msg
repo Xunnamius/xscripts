@@ -1,5 +1,6 @@
 #!/bin/sh
-. "$(dirname $0)/_/husky.sh"
+
+# TODO: make this work natively on Windows
 
 beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
 
@@ -8,7 +9,7 @@ if beginswith 'rebase' "$GIT_REFLOG_ACTION"; then
   exit 0
 fi
 
-NODE_NO_WARNINGS=1 npx commitlint -e
-if [ -z $GAC_VERIFY_SIMPLE ]; then npm run test; fi
+NODE_NO_WARNINGS=1 commitlint -e
+if [ -z "$GAC_VERIFY_SIMPLE" ]; then npm run test; fi
 echo
-NODE_NO_WARNINGS=1 npx commit-spell
+NODE_NO_WARNINGS=1 node spellcheck-commit.cjs

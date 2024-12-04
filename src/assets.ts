@@ -1,15 +1,34 @@
 import { CliError } from '@black-flag/core';
 import mergeWith from 'lodash.mergewith';
 
-import { hardAssert } from 'multiverse+cli-utils:error.ts';
+import { type ProjectAttribute, type ProjectMetadata } from 'multiverse+project-utils';
+
+import {
+  toAbsolutePath,
+  toPath,
+  type RelativePath
+} from 'multiverse+project-utils:fs.ts';
+
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
+import { readFile } from 'universe:util.ts';
 
 import type { EmptyObject, Promisable } from 'type-fest';
 
-// TODO: ensure no usage of hardAssert or softAssert in asset configs
+/**
+ * @see {@link TransformerContext}
+ */
+export const assetConfigDirectory = toAbsolutePath(__dirname, 'assets', 'config');
+
+/**
+ * @see {@link TransformerContext}
+ */
+export const assetTemplateDirectory = toAbsolutePath(__dirname, 'assets', 'template');
+
+// TODO: ensure no usage of hardAssert, softAssert, or CliError in asset configs (use
+// TODO: eslint esquery for this)
 
 /**
  * The `MergeWithCustomizer` type from lodash's {@link mergeWith}.
@@ -17,24 +36,14 @@ import type { EmptyObject, Promisable } from 'type-fest';
 export type MergeWithCustomizer = Parameters<typeof mergeWith<unknown, unknown>>[2];
 
 /**
- * A collection of key-value pairs that will always be available via a
- * transformer's context.
+ * A union of well-known context keys passed directly to each transformer (which
+ * are returned by {@link makeTransformer}).
  */
-export type RequiredTransformerContext = {
+export type TransformerContext = {
   /**
-   * The value of the `name` parameter passed to {@link retrieveConfigAsset}.
+   * The value of the `asset` parameter passed to {@link retrieveConfigAsset}.
    */
-  name: string;
-};
-
-export const requiredTransformerContextKeys = ['name'];
-
-/**
- * A union of well-known context keys. You should extract common
- * {@link TransformerContext} keys from this option, e.g.
- * `Pick<StandardTransformerContext, 'packageName' | 'repoUrl'>;`
- */
-export type StandardTransformerContext = {
+  asset: string;
   /**
    * From `package.json`
    */
@@ -42,14 +51,23 @@ export type StandardTransformerContext = {
   /**
    * From `package.json`
    */
+  packageVersion: string;
+  /**
+   * From `package.json`
+   */
   packageDescription: string;
   packageBuildDetailsShort: string;
   packageBuildDetailsLong: string;
+  projectMetadata: ProjectMetadata;
   /**
    * The contents of a potential top-level heading
    */
   prettyName: string;
   repoName: string;
+  repoType:
+    | ProjectAttribute.Polyrepo
+    | ProjectAttribute.Monorepo
+    | ProjectAttribute.Hybridrepo;
   repoUrl: string;
   repoSnykUrl: string;
   repoReferenceDocs: string;
@@ -65,56 +83,79 @@ export type StandardTransformerContext = {
   repoReferenceDefinitionsBadge: string;
   repoReferenceDefinitionsPackage: string;
   repoReferenceDefinitionsRepo: string;
+  /**
+   * Whether or not to derive aliases and inject them into the configuration.
+   */
+  shouldDeriveAliases: boolean;
 };
 
 /**
- * The xscripts project init-time (or renovate-time) context object passed
- * directly to each transformer. Will be wrapped with {@link Partial}.
+ * Options to tweak the runtime of {@link makeTransformer}.
  */
-export type TransformerContext = Record<string, string>;
+export type TransformerOptions = {
+  /**
+   * Whether the resulting file contents should be trimmed and how.
+   *
+   * @default 'both-then-append-newline'
+   */
+  trimContents?: 'start' | 'end' | 'both' | 'both-then-append-newline' | false;
+};
 
 /**
- * Options to tweak the runtime of {@link makeTransformer} at xscripts project
- * init-time (or renovate-time).
+ * Options to tweak the runtime of {@link retrieveConfigAsset}.
  */
-export type TransformerOptions = EmptyObject;
+export type RetrievalOptions = {
+  /**
+   * Whether an attempt should be made to retrieve an asset ending in `.js`
+   * versus `.ts`.
+   *
+   * This is primarily useful in testing contexts where we do not have access to
+   * the transpiled `.js` versions of the source `.ts` files.
+   *
+   * @default 'js'
+   */
+  assetContainerFiletype?: 'js' | 'ts';
+};
 
 /**
- * A mapping between relative file paths and the contents of said files. These
- * files will be created and/or overwritten at xscripts project init-time (or
- * renovate-time).
+ * A mapping between file paths relative _to the project root_ and the contents
+ * of said files.
  */
 export type TransformerResult = Promisable<{
-  [fileRelativePath: string]: string;
+  [projectRootRelativePath: string]: string;
 }>;
 
 /**
- * Retrieve an asset via its filename. For example, to retrieve an
- * `eslint.config.mjs` file (the transformer source for which exists in
- * `./config/_eslint.config.mjs.ts`), pass `"eslint.config.mjs"` as the `name`
- * parameter.
+ * Retrieve an asset via its identifier (typically a filename). For example, to
+ * retrieve an `eslint.config.mjs` file, the transformer source for which exists
+ * in `./config/_eslint.config.mjs.ts`, pass `"eslint.config.mjs"` as the
+ * `asset` parameter.
  *
- * Throws if no corresponding transformer for `name` can be found.
+ * Throws if no corresponding transformer for `asset` can be found.
  *
- * Expects an xscripts project init-time (or renovate-time) context object (i.e.
- * {@link TransformerContext} + {@link RequiredTransformerContext}).
+ * Expects a full context object (i.e. {@link TransformerContext}).
  */
 export async function retrieveConfigAsset({
-  name,
+  asset,
   context,
-  options = {}
+  options: _options = {}
 }: {
-  name: string;
-  context: TransformerContext & RequiredTransformerContext;
-  options?: TransformerOptions;
+  asset: string;
+  context: Omit<TransformerContext, 'asset'>;
+  options?: TransformerOptions & RetrievalOptions;
 }): Promise<TransformerResult> {
   const debug = createDebugLogger({
-    namespace: `${globalDebuggerNamespace}:retrieveConfigAsset`
+    namespace: `${globalDebuggerNamespace}:config-asset`
   });
 
-  const transformerPath = `./config/_${name}.js`;
+  const { assetContainerFiletype = 'js', ...options } = _options;
 
-  debug('retrieving asset');
+  const transformerPath = toPath(
+    assetConfigDirectory,
+    `_${asset}.${assetContainerFiletype}`
+  );
+
+  debug('retrieving config asset');
   debug('transformerPath: %O', transformerPath);
 
   try {
@@ -124,12 +165,84 @@ export async function retrieveConfigAsset({
 
     debug('transformer import succeeded. Executing transformer...');
 
-    return await transformer(context, options);
+    return await transformer({ ...context, asset }, options);
   } catch (error) {
-    throw new CliError(ErrorMessage.AssetRetrievalFailed(transformerPath), {
+    throw new CliError(ErrorMessage.AssetRetrievalFailed(transformerPath, error), {
       cause: error
     });
   }
+}
+
+/**
+ * Takes a path relative to the `src/assets/template` directory and returns the
+ * asset at that path with all handlebars-style template variables (e.g.
+ * `{{variableName}}`) with matching keys in `TemplateContext` replaced with
+ * their contextual values.
+ */
+export async function compileTemplate(
+  templatePath: RelativePath,
+  context: TransformerContext
+) {
+  const debug = createDebugLogger({
+    namespace: `${globalDebuggerNamespace}:config-template`
+  });
+
+  const templatePathActual = toPath(assetTemplateDirectory, templatePath);
+
+  debug('retrieving template asset');
+  debug('templatePath: %O', templatePath);
+  debug('templatePathActual: %O', templatePathActual);
+
+  return compileTemplateInMemory(await readFile(templatePathActual), context);
+}
+
+/**
+ * Takes a string and returns that string with all handlebars-style template
+ * variables (e.g. `{{variableName}}`) with matching keys in `TemplateContext`
+ * replaced with their contextual values.
+ */
+export function compileTemplateInMemory(
+  rawTemplate: string,
+  context: TransformerContext
+) {
+  const debug = createDebugLogger({
+    namespace: `${globalDebuggerNamespace}:config-template`
+  });
+
+  debug('rawTemplate: %O', rawTemplate);
+
+  // eslint-disable-next-line unicorn/no-array-reduce
+  const compiledTemplate = Object.entries(context).reduce((result, [key, value]) => {
+    // ? If caller wants to replace {{projectMetadata}} with [object Object],
+    // ? that's their business.
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    return result.replaceAll(`{{${key}}}`, String(value));
+  }, rawTemplate);
+
+  debug('compiledTemplate: %O', compiledTemplate);
+  return compiledTemplate;
+}
+
+/**
+ * Takes an object of name-path pairs, each representing the name of a template
+ * and the path to its contents (relative to the template asset directory), and
+ * returns that same object with each path value replaced by the result of
+ * calling {@link compileTemplate} with said path as an argument.
+ */
+export async function compileTemplates(
+  templates: Record<string, RelativePath>,
+  context: TransformerContext
+) {
+  const finalTemplates = templates as Record<string, string>;
+
+  await Promise.all(
+    Object.entries(templates).map(async function ([name, path]) {
+      const compiledTemplate = await compileTemplate(path, context);
+      finalTemplates[name] = compiledTemplate;
+    })
+  );
+
+  return finalTemplates;
 }
 
 /**
@@ -137,46 +250,39 @@ export async function retrieveConfigAsset({
  * instance, and an optional {@link TransformerOptions}, and returns a
  * {@link TransformerResult}.
  */
-export function makeTransformer<
-  CustomTransformContext extends TransformerContext = TransformerContext
->({
+export function makeTransformer({
   transform
 }: {
-  transform: (
-    context: Partial<CustomTransformContext> &
-      RequiredTransformerContext &
-      TransformerOptions
-  ) => TransformerResult;
+  transform: (context: TransformerContext) => TransformerResult;
 }) {
   return {
-    transformer(
+    async transformer(
       this: void,
-      context: Partial<CustomTransformContext> & RequiredTransformerContext,
-      options: TransformerOptions = {}
+      context: TransformerContext,
+      { trimContents }: TransformerOptions = {}
     ) {
-      return transform({ ...context, ...options });
+      const transformed = await transform(context);
+
+      Object.entries(transformed).forEach(([file, fileContents]) => {
+        transformed[file] =
+          fileContents[
+            trimContents === 'start'
+              ? 'trimStart'
+              : trimContents === 'end'
+                ? 'trimEnd'
+                : trimContents === false
+                  ? 'toString'
+                  : 'trim'
+          ]();
+
+        if (trimContents === 'both-then-append-newline' || trimContents === undefined) {
+          transformed[file] += '\n';
+        }
+      });
+
+      return transformed;
     }
   };
-}
-
-/**
- * Asserts `record` (a `Record<string, unknown>`) is actually a `Record<string,
- * string> & RequiredTransformerContext` that contains each string in
- * `expectedKeys` as a property with a non-empty string value.
- */
-export function assertIsExpectedTransformerContext<const U extends string[] = never[]>(
-  record: Record<string, unknown>,
-  expectedKeys?: U
-) {
-  [...(expectedKeys ?? []), ...requiredTransformerContextKeys].forEach((key) => {
-    const value = record[key];
-    hardAssert(
-      typeof value === 'string' && value.length > 0,
-      ErrorMessage.BadAssetContextKey(key)
-    );
-  });
-
-  return record as unknown as Record<U[number], string> & RequiredTransformerContext;
 }
 
 /**

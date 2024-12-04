@@ -1,15 +1,11 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer } from 'universe:assets.ts';
 
-import type { EmptyObject } from 'type-fest';
+// {@xscripts/notExtraneous dotenv-cli}
 
-export type Context = EmptyObject;
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
     return {
-      [name]: `
+      [asset]: `
 # shellcheck disable=all
 
 # Codecov test analysis token
@@ -88,7 +84,7 @@ GPG_PASSPHRASE=
 # The GPG key used to sign all git commits and releases. Not referenced during
 # non-CI/CD (i.e. local, manual) deployments.
 GPG_PRIVATE_KEY=
-`.trimStart()
+`
     };
   }
 });

@@ -1,34 +1,31 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 
-import type { EmptyObject } from 'type-fest';
+// {@xscripts/notExtraneous npm-check-updates}
 
-export type Context = EmptyObject;
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
     return {
-      [name]: /*js*/ `
+      [asset]: /*js*/ `
 // @ts-check
-// * https://www.npmjs.com/package/npm-check-updates#configuration-files
 'use strict';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
-/*const { createDebugLogger } = require('debug');
-const debug = createDebugLogger({
-  namespace: '${globalDebuggerNamespace}:config:ncurc'
-});*/
+//const { createDebugLogger } = require('rejoinder');
 
+/*const debug = createDebugLogger({ namespace: '${globalDebuggerNamespace}:config:ncurc' });*/
+
+// * https://www.npmjs.com/package/npm-check-updates#configuration-files
 module.exports = {
+  install: 'never',
   reject: [
-    // Specify an array of pinned packages
+    // ? Reject any super-pinned dependencies (e.g. find-up~5 and execa~7)
+    '*~*'
   ]
 };
 
 /*debug('exported config: %O', module.exports);*/
-`.trimStart()
+`
     };
   }
 });

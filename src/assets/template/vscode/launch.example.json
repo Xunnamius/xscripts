@@ -36,10 +36,8 @@
       // ? Selectively comment out entries for deeper debugging
       "skipFiles": [
         "<node_internals>/**",
-        "**/node_modules/**",
-        "!**/node_modules/@-xun/**",
-        "!**/node_modules/semantic-release/**",
-        "!**/node_modules/@semantic-release/**"
+        "**/node_modules/**"
+        //"!**/node_modules/@-xun/**"
       ]
     },
     {
@@ -71,10 +69,8 @@
       // ? Selectively comment out entries for deeper debugging
       "skipFiles": [
         "<node_internals>/**",
-        "**/node_modules/**",
-        "!**/node_modules/@-xun/**",
-        "!**/node_modules/semantic-release/**",
-        "!**/node_modules/@semantic-release/**"
+        "**/node_modules/**"
+        //"!**/node_modules/@-xun/**"
       ]
     },
     {
@@ -108,10 +104,8 @@
       // ? Selectively comment out entries for deeper debugging
       "skipFiles": [
         "<node_internals>/**",
-        "**/node_modules/**",
-        "!**/node_modules/@-xun/**",
-        "!**/node_modules/semantic-release/**",
-        "!**/node_modules/@semantic-release/**"
+        "**/node_modules/**"
+        //"!**/node_modules/@-xun/**"
       ]
     }
   ]

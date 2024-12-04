@@ -3,7 +3,6 @@
 // {@xscripts/notExtraneous npm-check-updates}
 
 // * https://www.npmjs.com/package/npm-check-updates#configuration-files
-// @renovate
 module.exports = {
   install: 'never',
   reject: [

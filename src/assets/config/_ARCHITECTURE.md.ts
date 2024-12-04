@@ -1,5 +1,14 @@
 /* eslint-disable unicorn/filename-case */
+import { compileTemplate, makeTransformer } from 'universe:assets.ts';
 
-// TODO: see ARCHITECTURE.md
+import type { RelativePath } from 'multiverse+project-utils:fs.ts';
 
-export {};
+export const { transformer } = makeTransformer({
+  async transform(context) {
+    const { asset } = context;
+
+    return {
+      [asset]: await compileTemplate('ARCHITECTURE.md' as RelativePath, context)
+    };
+  }
+});

@@ -57,13 +57,13 @@ const lintNoUndefConfig = {
 const lintConfig = {
   plugins: [
     // {@xscripts/notExtraneous remark-ignore}
-    'ignore',
+    'remark-ignore',
     // {@xscripts/notExtraneous remark-frontmatter}
-    'frontmatter',
+    'remark-frontmatter',
     // {@xscripts/notExtraneous remark-gfm}
-    'gfm',
+    'remark-gfm',
     // {@xscripts/notExtraneous remark-lint}
-    'lint',
+    'remark-lint',
     // {@xscripts/notExtraneous remark-lint-definition-case}
     'remark-lint-definition-case',
     // {@xscripts/notExtraneous remark-lint-fenced-code-flag}

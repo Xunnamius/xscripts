@@ -1,19 +1,34 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer } from 'universe:assets.ts';
+import { globalDebuggerNamespace } from 'universe:constant.ts';
 
-import type { EmptyObject } from 'type-fest';
+export function moduleExport() {
+  return {
+    // TODO
+  };
+}
 
-export type Context = EmptyObject;
-
-// TODO ("type": "module")
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
     return {
-      [name]: `
+      [asset]: /*js*/ `
+// @ts-check
+'use strict';
 
-`.trimStart()
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/config/${asset}';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: '${globalDebuggerNamespace}:config:next' });*/
+
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+`
     };
   }
 });

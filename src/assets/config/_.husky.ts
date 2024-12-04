@@ -1,15 +1,16 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { toRelativePath } from 'multiverse+project-utils:fs.ts';
 
-import type { EmptyObject } from 'type-fest';
+import { compileTemplates, makeTransformer } from 'universe:assets.ts';
 
-export type Context = EmptyObject;
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-    void name;
-    return {
-      // TODO
-    };
+export const { transformer } = makeTransformer({
+  async transform(context) {
+    return compileTemplates(
+      {
+        '.husky/commit-msg': toRelativePath('husky/commit-msg'),
+        '.husky/pre-commit': toRelativePath('husky/pre-commit'),
+        '.husky/pre-push': toRelativePath('husky/pre-push')
+      },
+      context
+    );
   }
 });

@@ -1,18 +1,31 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer } from 'universe:assets.ts';
 
-import type { EmptyObject } from 'type-fest';
-
-export type Context = EmptyObject;
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
+    // TODO: project-wide flags like project.<branch>
     return {
-      [name]: `
+      [asset]: `
 coverage:
-range: '75...100'
-`.trimStart()
+  range: '75...100'
+  status:
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+# * Well-known flag syntax: package.<branch>_<package-id>
+# * <package>-id will be the WorkspacePackageId or "root" for RootPackages
+flag_management:
+  # * These rules will apply to all non-specially-configured flags
+  default_rules:
+    carryforward: true
+    statuses:
+      - type: project
+        target: auto
+      - type: patch
+        target: auto
+`
     };
   }
 });

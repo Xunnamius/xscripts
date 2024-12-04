@@ -13,7 +13,8 @@ import { interpolateTemplate, toSentenceCase } from 'multiverse+cli-utils:util.t
 import {
   analyzeProjectStructure,
   isRootPackage,
-  WorkspaceAttribute
+  WorkspaceAttribute,
+  type ProjectMetadata
 } from 'multiverse+project-utils';
 
 import {
@@ -26,7 +27,7 @@ import {
 
 import { createDebugLogger } from 'multiverse+rejoinder';
 
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
 import { __read_file_sync } from 'universe:util.ts';
@@ -36,8 +37,6 @@ import type {
   XchangelogConfig,
   XchangelogSpec
 } from '@-xun/changelog' with { 'resolution-mode': 'import' };
-
-import type { EmptyObject } from 'type-fest';
 
 const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:conventional`
@@ -124,8 +123,6 @@ const specialArgumentMarkerForPaths = '_paths_';
 const specialArgumentRegExp = new RegExp(
   `^-?-(${specialArgumentMarkerForFlags}|${specialArgumentMarkerForPaths})=?(.*)`
 );
-
-export type Context = EmptyObject;
 
 /**
  * The inline image HTML element appended to links leading to external
@@ -297,31 +294,59 @@ export const defaultTemplates = {
   }
 };
 
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
+/**
+ * @see {@link assertEnvironment}
+ */
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
     return {
-      [name]: /*js*/ `
+      [asset]: /*js*/ `
 // @ts-check
 'use strict';
 
-// TODO: publish latest rejoinder package first, then update configs to use it
-/*const { createDebugLogger } = require('debug');
-const debug = createDebugLogger({
-  namespace: '${globalDebuggerNamespace}:config:conventional'
-});*/
+const {
+  moduleExport,
+  assertEnvironment
+} = require('@-xun/scripts/assets/config/${asset}');
 
-const { moduleExport } = require('@-xun/scripts/assets/config/${name}');
+// TODO: publish latest rejoinder package first, then update configs to use it
+//const { createDebugLogger } = require('rejoinder');
+
+/*const debug = createDebugLogger({ namespace: '${globalDebuggerNamespace}:config:conventional' });*/
+
 module.exports = moduleExport({
-  // * Your customizations here
+  ...assertEnvironment(),
+  configOverrides: {
+    // Any custom configs here will be deep merged with moduleExport with
+    // special considerations for certain keys. \`configOverrides\` can also
+    // be a function instead of an object.
+  }
 });
 
 /*debug('exported config: %O', module.exports);*/
-`.trimStart()
+`
     };
   }
 });
+
+/**
+ * @see {@link moduleExport}
+ */
+export function assertEnvironment(): Omit<
+  Parameters<typeof moduleExport>[0],
+  'configOverrides'
+> {
+  const specialInitialCommit = process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT;
+
+  assert(
+    specialInitialCommit && typeof specialInitialCommit === 'string',
+    ErrorMessage.MissingXscriptsEnvironmentVariable('XSCRIPTS_SPECIAL_INITIAL_COMMIT')
+  );
+
+  const projectMetadata = analyzeProjectStructure.sync({ useCached: true });
+
+  return { specialInitialCommit, projectMetadata };
+}
 
 /**
  * The value populating the XSCRIPTS_SPECIAL_INITIAL_COMMIT environment variable
@@ -339,8 +364,8 @@ export const noSpecialInitialCommitIndicator = 'N/A';
  * using `lodash.mergeWith`.
  *
  * If `configOverrides` is a function, it will be passed said partially
- * initialized {@link XchangelogConfig} object and must return a an object of
- * the same type.
+ * initialized {@link XchangelogConfig} object and must return an object of the
+ * same type.
  *
  * If you are consuming this configuration object with the intent to invoke
  * `@-xun/changelog` directly (i.e. via its Node.js API), such as in the
@@ -348,24 +373,24 @@ export const noSpecialInitialCommitIndicator = 'N/A';
  * {@link patchSpawnChild} as soon as possible** upon entering the handler and
  * call {@link unpatchSpawnChild} towards the end of the same scope.
  *
- * This function also modifies the global `Proxy` class so that it returns the
- * object its proxying as a property on the proxy object accessible via the
- * {@link $proxiedTarget} symbol. This is used to hack our way around some
- * questionable attempts at implementing immutable commit objects in
- * conventional-commits-writer.
+ * This function also relies on a patched version of the global `Proxy` class so
+ * that it returns the object its proxying as a property on the proxy object
+ * accessible via the {@link $proxiedTarget} symbol. This is used to hack our
+ * way around some questionable attempts at implementing immutable commit
+ * objects in upstream conventional-commits-writer.
  */
-export function moduleExport(
+export function moduleExport({
+  configOverrides = {},
+  specialInitialCommit,
+  projectMetadata
+}: {
   configOverrides:
     | ((config: XchangelogConfig) => XchangelogConfig)
-    | Partial<XchangelogConfig> = {}
-) {
-  const specialInitialCommit = process.env.XSCRIPTS_SPECIAL_INITIAL_COMMIT;
-  debug('incoming specialInitialCommit (from env): %O', specialInitialCommit);
-
-  assert(
-    specialInitialCommit && typeof specialInitialCommit === 'string',
-    ErrorMessage.MissingXscriptsEnvironmentVariable('XSCRIPTS_SPECIAL_INITIAL_COMMIT')
-  );
+    | Partial<XchangelogConfig>;
+  specialInitialCommit: string;
+  projectMetadata: ProjectMetadata;
+}) {
+  debug('specialInitialCommit: %O', specialInitialCommit);
 
   // ? Later on we'll be keep'n reverter commits but discarding reverted commits
   const revertedCommitHashesSet = new Set<string>();
@@ -373,7 +398,7 @@ export function moduleExport(
   // ? in both parserOpts and in finalConfig itself simultaneously
   let sharedIssuePrefixes = defaultIssuePrefixes;
 
-  const { cwdPackage } = analyzeProjectStructure.sync({ useCached: true });
+  const { cwdPackage } = projectMetadata;
   const cwdPackageName = cwdPackage.json.name;
 
   assert(cwdPackageName);
@@ -395,7 +420,7 @@ export function moduleExport(
           : [],
       // ? Pathspecs passed to git log; used to ignore changes in other packages
       // ? See: https://github.com/sindresorhus/dargs#usage
-      [specialArgumentMarkerForPaths]: getExclusionaryPathspecs()
+      [specialArgumentMarkerForPaths]: getExclusionaryPathspecs({ projectMetadata })
     },
 
     // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#options
@@ -814,7 +839,6 @@ export function moduleExport(
     }
   }
 
-  debug('final config: %O', finalConfig);
   return finalConfig;
 
   /**
@@ -913,11 +937,11 @@ export function moduleExport(
  * Useful for narrowing the scope of `@-xun/changelog` and semantic-release
  * -based tooling like xchangelog and xrelease.
  */
-export function getExclusionaryPathspecs() {
-  const { cwdPackage, rootPackage, subRootPackages } = analyzeProjectStructure.sync({
-    useCached: true
-  });
-
+export function getExclusionaryPathspecs({
+  projectMetadata: { cwdPackage, rootPackage, subRootPackages }
+}: {
+  projectMetadata: ProjectMetadata;
+}) {
   const { root: projectRoot } = rootPackage;
   const isCwdPackageTheRootPackage = isRootPackage(cwdPackage);
   const excludedPathspecs: string[] = [];

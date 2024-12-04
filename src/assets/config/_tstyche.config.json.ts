@@ -1,29 +1,12 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
-import { globalDebuggerNamespace } from 'universe:constant.ts';
+import { makeTransformer } from 'universe:assets.ts';
 
-import type { EmptyObject } from 'type-fest';
-
-export type Context = EmptyObject;
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
     return {
-      [name]: /*js*/ `
-// @ts-check
-'use strict';
-
-// TODO: publish latest rejoinder package first, then update configs to use it
-/*const { createDebugLogger } = require('debug');
-const debug = createDebugLogger({
-  namespace: '${globalDebuggerNamespace}:config:conventional'
-});*/
-
-// TODO
-
-/*debug('exported config: %O', module.exports);*/
-`.trimStart()
+      [asset]: JSON.stringify({
+        $schema: 'https://tstyche.org/schemas/config.json',
+        testFileMatch: ['**/type-*.test.ts', '**/type-*.test.tsx']
+      })
     };
   }
 });

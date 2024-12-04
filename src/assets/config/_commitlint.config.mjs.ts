@@ -1,8 +1,8 @@
 import { wellKnownCommitTypes } from 'universe:assets/config/_conventional.config.cjs.ts';
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 
-import type { EmptyObject } from 'type-fest';
+// {@xscripts/notExtraneous @commitlint/cli @commitlint/config-conventional}
 
 /**
  * @see https://github.com/conventional-changelog/commitlint/blob/master/docs/reference/rules-configuration.md
@@ -21,44 +21,46 @@ export enum Applicable {
   FailIfNotEncountered = 'never'
 }
 
-export const moduleExport = {
-  extends: ['@commitlint/config-conventional'],
-  rules: {
-    'body-case': [ErrorLevel.Warn, Applicable.FailIfEncountered, 'sentence-case'],
-    'body-full-stop': [ErrorLevel.Warn, Applicable.FailIfEncountered],
-    'header-trim': [ErrorLevel.Warn, Applicable.FailIfEncountered],
-    'body-leading-blank': [ErrorLevel.Error, Applicable.FailIfEncountered],
-    'footer-leading-blank': [ErrorLevel.Error, Applicable.FailIfEncountered],
-    'type-enum': [
-      ErrorLevel.Error,
-      Applicable.FailIfEncountered,
-      wellKnownCommitTypes.map(({ type }) => type)
-    ]
-  }
-};
+export function moduleExport() {
+  return {
+    extends: ['@commitlint/config-conventional'],
+    rules: {
+      'body-case': [ErrorLevel.Warn, Applicable.FailIfEncountered, 'sentence-case'],
+      'body-full-stop': [ErrorLevel.Warn, Applicable.FailIfEncountered],
+      'header-trim': [ErrorLevel.Warn, Applicable.FailIfEncountered],
+      'body-leading-blank': [ErrorLevel.Error, Applicable.FailIfEncountered],
+      'footer-leading-blank': [ErrorLevel.Error, Applicable.FailIfEncountered],
+      'type-enum': [
+        ErrorLevel.Error,
+        Applicable.FailIfEncountered,
+        wellKnownCommitTypes.map(({ type }) => type)
+      ]
+    }
+  } as const;
+}
 
-export type Context = EmptyObject;
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-
+export const { transformer } = makeTransformer({
+  transform({ asset }) {
     return {
-      [name]: /*js*/ `
+      [asset]: /*js*/ `
 // @ts-check
 'use strict';
 
+import { deepMergeConfig } = from '@-xun/scripts/assets';
+import { moduleExport } = from '@-xun/scripts/assets/config/${asset}';
 // TODO: publish latest rejoinder package first, then update configs to use it
-/*const { createDebugLogger } = require('debug');
-const debug = createDebugLogger({
-  namespace: '${globalDebuggerNamespace}:config:commitlint'
-});*/
+//import { createDebugLogger } = from 'rejoinder';
 
-const { moduleExport } = require('@-xun/scripts/assets/config/${name}');
-module.exports = moduleExport;
+/*const debug = createDebugLogger({ namespace: '${globalDebuggerNamespace}:config:commitlint' });*/
 
-/*debug('exported config: %O', module.exports);*/
-`.trimStart()
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/
+`
     };
   }
 });

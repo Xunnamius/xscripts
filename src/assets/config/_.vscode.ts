@@ -1,15 +1,16 @@
-import { assertIsExpectedTransformerContext, makeTransformer } from 'universe:assets.ts';
+import { toRelativePath } from 'multiverse+project-utils:fs.ts';
 
-import type { EmptyObject } from 'type-fest';
+import { compileTemplates, makeTransformer } from 'universe:assets.ts';
 
-export type Context = EmptyObject;
-
-export const { transformer } = makeTransformer<Context>({
-  transform(context) {
-    const { name } = assertIsExpectedTransformerContext(context);
-    void name;
-    return {
-      // TODO
-    };
+export const { transformer } = makeTransformer({
+  async transform(context) {
+    return compileTemplates(
+      {
+        '.vscode/launch.example.json': toRelativePath('vscode/launch.example.json'),
+        '.vscode/settings.json': toRelativePath('vscode/settings.json'),
+        '.vscode/tasks.example.json': toRelativePath('vscode/tasks.example.json')
+      },
+      context
+    );
   }
 });
