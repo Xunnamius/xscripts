@@ -360,6 +360,7 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
         });
 
         const npxRemarkArguments = [
+          // {@xscripts/notExtraneous remark-cli}
           'remark',
           ...(isHushed ? ['--quiet'] : []),
           '--color',

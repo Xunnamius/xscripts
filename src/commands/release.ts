@@ -416,7 +416,7 @@ The only available scope is "${ReleaseScope.ThisPackage}"; hence, when invoking 
 
 Provide --dry-run to ensure no permanent changes to the project are made, no release is cut, and no publishing or git write operations occur. Use --dry-run to test what would happen if you were to cut a release. Note that --dry-run will NOT prevent prerelease tasks from running; however, postrelease tasks that exclusively run NPM scripts are always skipped.
 
-Further, note the minimum package version this command will release will always be 1.0.0. This is because xrelease (nor upstream semantic-release) does not officially support "experimental packages," which are packages with versions below semver 1.0.0. If you attempt to release a package with a version below 0.0.1, it will be released as a 1.0.0 (breaking change) instead. It is not wise to use experimental package versions with xrelease or xscripts.
+Further, note the minimum package version this command will release will always be 1.0.0. This is because xrelease (nor upstream semantic-release) does not officially support "experimental packages," which are packages with versions below semver 1.0.0. If you attempt to release a package with a version below 1.0.0 (e.g. 0.0.1), it will be released as a 1.0.0 (breaking change) instead. It is not wise to use experimental package versions with xrelease or xscripts.
 
 WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME GIT REPOSITORY IN A SAFE MANNER. DO NOT run multiple instances of this command on the same repository or project. If using a tool like Turbo, ensure it runs all NPM "release" scripts serially (and ideally topologically).
 `.trim()

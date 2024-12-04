@@ -76,7 +76,7 @@ export default function command({
       // TODO (--interactive (default) to trigger an interactive fix of anything from project lint that is fixable (also offer to overwrite/replace, merge, etc; similar to apt) or --no-interactive to do the same but fail if any problem is not automatically resolvable; can also call --no-interactive --force to do the same but force through any changes and overwrite existing configs without regard for their contents (SUPER DANGEROUS))
       // TODO (does nothing if called without at least one "Task Options" (--tasks) argument; i.e. must specify each thing that you want done
       // TODO (--task X where X includes: modernize (run tasks that bring the repo up to date, deprecate (automate deprecation described in docs), undeprecate (opposite of "deprecate"))
-      // TODO (--task regenerate-aliases to (re)generate project aliases; also has the sub-option --with-alias X:Y which defines a new base alias (aliases cannot contain colons or dollar signs); use custom babel plugin @-xun/scripts/babel-plugin-renovate to apply renovations by looking for statements prefixed with @renovate block comments)
+      // TODO (--task regenerate-aliases to (re)generate project aliases; also has the sub-option --with-alias X:Y which defines a new base alias (aliases cannot contain colons or dollar signs))
       //
       // TODO: Automatically update project dependencies in an xo-like way if
       // TODO: --task dependency-updates provided. Works kinda like "doctor" mode:

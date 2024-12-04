@@ -298,6 +298,7 @@ With respect to .prettierignore being the single source of truth for formatters:
         const { all, exitCode } = await runNoRejectOnBadExit(
           'npx',
           [
+            // {@xscripts/notExtraneous remark-cli}
             'remark',
             ...(isHushed ? ['--quiet'] : []),
             '--no-stdout',
@@ -446,6 +447,7 @@ With respect to .prettierignore being the single source of truth for formatters:
           await run(
             'npx',
             [
+              // {@xscripts/notExtraneous remark-cli}
               'remark',
               ...(isHushed ? ['--quiet'] : []),
               '--output',
