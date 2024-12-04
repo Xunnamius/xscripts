@@ -1655,7 +1655,7 @@ distrib root: ${absoluteOutputDirPath}
         const nonSourceTypescriptEntries = gatherImportEntriesFromFiles.sync(
           nonSourceTypescriptFiles,
           {
-            // ? Ensure specifierOk checks are also performed on type-only imports
+            // ? Ensure specifierOk checks also performed on type-only imports
             excludeTypeImports: false,
             useCached: true
           }
@@ -1670,6 +1670,8 @@ distrib root: ${absoluteOutputDirPath}
 
           for (const specifier of specifiers.values()) {
             ensureRawSpecifierOk(wellKnownAliases, specifier, {
+              // ? Allow testverse imports in non-source typescript files
+              errorIfTestverseEncountered: false,
               packageId: specifierPackageId,
               path
             });
