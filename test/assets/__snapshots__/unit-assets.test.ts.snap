@@ -742,7 +742,7 @@ if beginswith 'rebase' "$GIT_REFLOG_ACTION"; then
 fi
 
 NODE_NO_WARNINGS=1 commitlint -e
-if [ -z $GAC_VERIFY_SIMPLE ]; then npm run test; fi
+if [ -z "$GAC_VERIFY_SIMPLE" ]; then npm run test; fi
 echo
 NODE_NO_WARNINGS=1 node spellcheck-commit.cjs
 "
@@ -762,7 +762,7 @@ if beginswith 'rebase' "$GIT_REFLOG_ACTION"; then
   exit 0
 fi
 
-if [ -z $GAC_VERIFY_SIMPLE ]; then npm run lint:package:source; fi
+if [ -z "$GAC_VERIFY_SIMPLE" ]; then npm run lint:package:source; fi
 NODE_NO_WARNINGS=1 lint-staged --concurrent false
 "
 `;
