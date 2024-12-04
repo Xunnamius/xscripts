@@ -382,7 +382,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
       // ! Test path patterns should begin with a slash (/)
       const jestTestPathPatterns: string[] = [];
-      const { testPathIgnorePatterns = [] } = baseConfig;
+      const testPathIgnorePatterns: string[] = baseConfig().testPathIgnorePatterns;
       const isCwdTheProjectRoot = isRootPackage(cwdPackage);
       const npxJestArguments = ['jest'];
 
