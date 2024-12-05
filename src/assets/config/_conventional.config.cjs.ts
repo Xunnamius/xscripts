@@ -232,7 +232,7 @@ export const commandHeaderPattern = /^(.*) \[([^\]]*)]$/is;
 /**
  * The character(s) used to reference issues by number on GitHub.
  */
-export const defaultIssuePrefixes = ['#'];
+export const defaultIssuePrefixes = ['#'] as const;
 
 /**
  * These are the only conventional commit types supported by xscripts-based
@@ -394,9 +394,6 @@ export function moduleExport({
 
   // ? Later on we'll be keep'n reverter commits but discarding reverted commits
   const revertedCommitHashesSet = new Set<string>();
-  // ? When issuePrefix is updated in one config area, we use this to update it
-  // ? in both parserOpts and in finalConfig itself simultaneously
-  let sharedIssuePrefixes = defaultIssuePrefixes;
 
   const { cwdPackage } = projectMetadata;
   const cwdPackageName = cwdPackage.json.name;
@@ -438,14 +435,9 @@ export function moduleExport({
         'BREAKING-CHANGE',
         'BREAKING',
         noteTitleForBreakingChange
-      ],
-      // ? Used to synchronize the value of issuePrefixes across config objects
-      get issuePrefixes() {
-        return sharedIssuePrefixes;
-      },
-      set issuePrefixes(value) {
-        sharedIssuePrefixes = value;
-      }
+      ]
+      // ? Defined below so that we can synchronize this value across configs
+      //issuePrefixes: ...
     },
 
     // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-writer#options
@@ -707,14 +699,9 @@ export function moduleExport({
     compareUrlFormat:
       '{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}',
     issueUrlFormat: '{{host}}/{{owner}}/{{repository}}/issues/{{id}}',
-    userUrlFormat: '{{host}}/{{user}}',
-    // ? Used to synchronize the value of issuePrefixes across config objects
-    get issuePrefixes() {
-      return sharedIssuePrefixes;
-    },
-    set issuePrefixes(value) {
-      sharedIssuePrefixes = value;
-    }
+    userUrlFormat: '{{host}}/{{user}}'
+    // ? Defined below so that we can synchronize this value across configs
+    //issuePrefixes: ...
   };
 
   intermediateConfig.recommendedBumpOpts = {
@@ -785,7 +772,10 @@ export function moduleExport({
     'i'
   );
 
-  const issuePattern = finalConfig.issuePrefixes
+  finalConfig.issuePrefixes = finalConfig.parserOpts.issuePrefixes =
+    finalConfig.issuePrefixes || [...defaultIssuePrefixes];
+
+  const issuePattern = finalConfig.issuePrefixes.length
     ? new RegExp(
         `(?:\\b([a-z0-9_.-]+)\\/([a-z0-9_.-]+))?(${finalConfig.issuePrefixes.map((str) => escapeStringRegExp(str)).join('|')})([0-9]+)`,
         'gi'
