@@ -700,7 +700,7 @@ it('linkifies all internal issue references in subjects and breaking notes', asy
   );
 });
 
-it.only('linkifies all internal and external issues in subjects and breaking notes given custom issueUrlFormat and prefix', async () => {
+it('linkifies all internal and external issues in subjects and breaking notes given custom issueUrlFormat and prefix', async () => {
   expect.hasAssertions();
 
   await withMockedFixtureWrapper(
