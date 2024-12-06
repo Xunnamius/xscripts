@@ -2,8 +2,12 @@
 // * These tests ensure universe assets exports function as expected
 
 import { ProjectAttribute } from 'multiverse+project-utils:analyze.ts';
+import { type RelativePath } from 'multiverse+project-utils:fs.ts';
 
 import {
+  compileTemplate,
+  compileTemplateInMemory,
+  compileTemplates,
   deepMergeConfig,
   makeTransformer,
   retrieveConfigAsset,
@@ -12,6 +16,35 @@ import {
 } from 'universe:assets.ts';
 
 import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
+
+const dummyContext: Omit<TransformerContext, 'asset'> = {
+  badges: 'badges',
+  packageName: 'package-name',
+  packageVersion: '1.2.3-fake',
+  packageDescription: 'package-description',
+  packageBuildDetailsShort: 'package-build-details-short',
+  packageBuildDetailsLong: 'package-build-details-long',
+  projectMetadata: fixtureToProjectMetadata('goodHybridrepo'),
+  prettyName: 'pretty-name',
+  repoName: 'repo-name',
+  repoType: ProjectAttribute.Polyrepo,
+  repoUrl: 'repo-url',
+  repoSnykUrl: 'repo-snyk-url',
+  repoReferenceDocs: 'repo-reference-docs',
+  repoReferenceLicense: 'repo-reference-license',
+  repoReferenceNewIssue: 'repo-reference-new-issue',
+  repoReferencePrCompare: 'repo-reference-pr-compare',
+  repoReferenceSelf: 'repo-reference-self',
+  repoReferenceSponsor: 'repo-reference-sponsor',
+  repoReferenceContributing: 'repo-reference-contributing',
+  repoReferenceSupport: 'repo-reference-support',
+  repoReferenceAllContributors: 'repo-reference-all-contributors',
+  repoReferenceAllContributorsEmojis: 'repo-reference-all-contributors-emojis',
+  repoReferenceDefinitionsBadge: 'repo-reference-definitions-badge',
+  repoReferenceDefinitionsPackage: 'repo-reference-definitions-package',
+  repoReferenceDefinitionsRepo: 'repo-reference-definitions-repo',
+  shouldDeriveAliases: true
+};
 
 describe('::retrieveConfigAsset', () => {
   it('retrieve an asset via its filename', async () => {
@@ -49,35 +82,7 @@ describe('::retrieveConfigAsset', () => {
     });
   });
 
-  describe('::<config assets>', () => {
-    const dummyContext: Omit<TransformerContext, 'asset'> = {
-      packageName: 'package-name',
-      packageVersion: '1.2.3-fake',
-      packageDescription: 'package-description',
-      packageBuildDetailsShort: 'package-build-details-short',
-      packageBuildDetailsLong: 'package-build-details-long',
-      projectMetadata: fixtureToProjectMetadata('goodHybridrepo'),
-      prettyName: 'pretty-name',
-      repoName: 'repo-name',
-      repoType: ProjectAttribute.Polyrepo,
-      repoUrl: 'repo-url',
-      repoSnykUrl: 'repo-snyk-url',
-      repoReferenceDocs: 'repo-reference-docs',
-      repoReferenceLicense: 'repo-reference-license',
-      repoReferenceNewIssue: 'repo-reference-new-issue',
-      repoReferencePrCompare: 'repo-reference-pr-compare',
-      repoReferenceSelf: 'repo-reference-self',
-      repoReferenceSponsor: 'repo-reference-sponsor',
-      repoReferenceContributing: 'repo-reference-contributing',
-      repoReferenceSupport: 'repo-reference-support',
-      repoReferenceAllContributors: 'repo-reference-all-contributors',
-      repoReferenceAllContributorsEmojis: 'repo-reference-all-contributors-emojis',
-      repoReferenceDefinitionsBadge: 'repo-reference-definitions-badge',
-      repoReferenceDefinitionsPackage: 'repo-reference-definitions-package',
-      repoReferenceDefinitionsRepo: 'repo-reference-definitions-repo',
-      shouldDeriveAliases: true
-    };
-
+  describe('<config assets>', () => {
     it('.all-contributorsrc', async () => {
       expect.hasAssertions();
 
@@ -572,6 +577,109 @@ describe('::retrieveConfigAsset', () => {
   });
 });
 
+describe('::compileTemplate', () => {
+  it('accepts a template file path and returns a compilation result string', async () => {
+    expect.hasAssertions();
+
+    const asset = 'README.md' as RelativePath;
+
+    await expect(
+      compileTemplate(asset, { ...dummyContext, asset })
+    ).resolves.toMatchSnapshot(asset);
+  });
+});
+
+describe('::compileTemplates', () => {
+  it('accepts an object of template file path values and returns the same object with corresponding compilation result string values', async () => {
+    expect.hasAssertions();
+
+    const assets = {
+      'README.md': 'README.md',
+      'CONTRIBUTING.md': 'CONTRIBUTING.md',
+      'SECURITY.md': 'SECURITY.md',
+      '.github/SUPPORT.md': 'github/SUPPORT.md'
+    } as Record<RelativePath, RelativePath>;
+
+    await expect(
+      compileTemplates(assets, { ...dummyContext, asset: 'combined' })
+    ).resolves.toMatchSnapshot();
+  });
+});
+
+describe('::compileTemplateInMemory', () => {
+  it('accepts a template string and returns a compilation result string', async () => {
+    expect.hasAssertions();
+
+    const templateString = `
+{{badges}}
+
+# {{prettyName}}
+
+{{packageDescription}}
+
+npm install {{packageName}}
+
+Further documentation can be found under {{repoReferenceDocs:\`docs/\`}}.
+
+{{packageBuildDetailsShort}}
+
+See {{repoReferenceLicense:LICENSE}}.
+
+**{{repoReferenceNewIssue:New issues}} and
+{{repoReferencePrCompare:pull requests}} are always welcome and greatly
+appreciated! 🤩** Just as well, you can
+{{repoReferenceSelf:star 🌟 this project}} to let me know you found it useful!
+✊🏿 Or you could consider {{repoReferenceSponsor:buying me a beer}}. Thank you!
+
+See {{repoReferenceContributing:CONTRIBUTING.md}} and
+{{repoReferenceSupport:SUPPORT.md}} for more information.
+
+{{repoReferenceSupport}}
+
+Thanks goes to these wonderful people
+({{repoReferenceAllContributorsEmojis:emoji key}})
+
+This project follows the {{repoReferenceAllContributors:all-contributors}}
+specification. Contributions of any kind welcome!
+`.trim();
+
+    expect(
+      compileTemplateInMemory(templateString, { ...dummyContext, asset: 'in-memory' })
+    ).toMatchInlineSnapshot(`
+      "badges
+
+      # pretty-name
+
+      package-description
+
+      npm install package-name
+
+      Further documentation can be found under [\`docs/\`](repo-reference-docs).
+
+      package-build-details-short
+
+      See [LICENSE](repo-reference-license).
+
+      **[New issues](repo-reference-new-issue) and
+      [pull requests](repo-reference-pr-compare) are always welcome and greatly
+      appreciated! 🤩** Just as well, you can
+      [star 🌟 this project](repo-reference-self) to let me know you found it useful!
+      ✊🏿 Or you could consider [buying me a beer](repo-reference-sponsor). Thank you!
+
+      See [CONTRIBUTING.md](repo-reference-contributing) and
+      [SUPPORT.md](repo-reference-support) for more information.
+
+      repo-reference-support
+
+      Thanks goes to these wonderful people
+      ([emoji key](repo-reference-all-contributors-emojis))
+
+      This project follows the [all-contributors](repo-reference-all-contributors)
+      specification. Contributions of any kind welcome!"
+    `);
+  });
+});
+
 describe('::makeTransformer', () => {
   it('returns a transformer', async () => {
     expect.hasAssertions();
@@ -711,6 +819,6 @@ describe('::deepMergeConfig', () => {
 
 function expectAssetsToMatchSnapshots(assets: Awaited<TransformerResult>) {
   for (const [key, asset] of Object.entries(assets)) {
-    expect(key + '\n⏶⏷⏶⏷⏶\n' + asset).toMatchSnapshot();
+    expect(key + '\n⏶⏷⏶⏷⏶\n' + asset).toMatchSnapshot(key);
   }
 }

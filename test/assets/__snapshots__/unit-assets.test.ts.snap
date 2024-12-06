@@ -1,6 +1,409 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`::retrieveConfigAsset ::<config assets> .all-contributorsrc 1`] = `
+exports[`::compileTemplate accepts a template file path and returns a compilation result string: README.md 1`] = `
+"<!-- badges-start -->
+
+badges
+
+<!-- badges-end -->
+
+# pretty-name
+
+<!-- TODO -->
+
+package-description
+
+---
+
+<!-- remark-ignore-start -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Install](#install)
+- [Usage](#usage)
+- [Appendix](#appendix)
+  - [Published Package Details](#published-package-details)
+  - [License](#license)
+- [Contributing and Support](#contributing-and-support)
+  - [Contributors](#contributors)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- remark-ignore-end -->
+
+## Install
+
+<!-- TODO -->
+
+\`\`\`shell
+npm install package-name
+\`\`\`
+
+## Usage
+
+<!-- TODO -->
+
+TODO
+
+## Appendix
+
+Further documentation can be found under [\`docs/\`](repo-reference-docs).
+
+### Published Package Details
+
+<!-- TODO -->
+
+package-build-details-short
+
+<details><summary>Expand details</summary>
+
+<!-- TODO -->
+
+package-build-details-long
+
+</details>
+
+### License
+
+See [LICENSE](repo-reference-license).
+
+## Contributing and Support
+
+**[New issues](repo-reference-new-issue) and
+[pull requests](repo-reference-pr-compare) are always welcome and greatly
+appreciated! 🤩** Just as well, you can
+[star 🌟 this project](repo-reference-self) to let me know you found it useful!
+✊🏿 Or you could consider [buying me a beer](repo-reference-sponsor). Thank you!
+
+See [CONTRIBUTING.md](repo-reference-contributing) and
+[SUPPORT.md](repo-reference-support) for more information.
+
+### Contributors
+
+<!-- remark-ignore-start -->
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+<!-- remark-ignore-end -->
+
+Thanks goes to these wonderful people
+([emoji key](repo-reference-all-contributors-emojis)):
+
+<!-- remark-ignore-start -->
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<table></table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- remark-ignore-end -->
+
+This project follows the [all-contributors](repo-reference-all-contributors)
+specification. Contributions of any kind welcome!
+
+repo-reference-definitions-badge
+
+repo-reference-definitions-package
+
+repo-reference-definitions-repo
+"
+`;
+
+exports[`::compileTemplates accepts an object of template file path values and returns the same object with corresponding compilation result string values 1`] = `
+{
+  ".github/SUPPORT.md": "# Support [![Average issue resolution time][badge-issue-resolution]][link-issue-resolution] [![Issue open percentage][badge-issue-percentage]][open-issues]
+
+Need help? Want to help this project? See below!
+
+## Reporting an Issue
+
+Before you begin, please [search open and past issues][open-issues] to see if
+your issue or feature request is already being talked about.
+
+If you find your issue already exists, make sure to [bump the issue by adding a
+reaction][github-blog]. **If you're serious about wanting an issue to get
+attention, use a reaction in place of a "+1" or other similar comment.**
+
+If you cannot find an existing issue that describes your bug or feature, then
+you're clear to create your issue using the guidelines below.
+
+### Standard Reactions
+
+Analysis of issue popularity (by tooling or otherwise) relies on the following
+reaction emojis being present on issues, PRs, and replies:
+
+\`:+1:\` 👍🏿👍🏾👍🏽👍🏼👍🏻👍 — up vote (AKA: _approve_, _like_, _+1_)
+
+\`:-1:\` 👎🏿👎🏾👎🏽👎🏼👎🏻👎 — down vote (AKA: _disapprove_, _dislike_, _-1_)
+
+### Bug Reports and Feature Requests
+
+For the timeliest resolution to bug reports specifically, please make a good
+faith effort to [follow the template][choose-new-issue]. The more quality
+information you can provide, the quicker a fix will be found. Additionally:
+
+- Ensure you file one issue per problem or feature request.
+- Do not enumerate multiple bugs or feature requests in the same issue.
+- Do not add your issue as a comment to an existing issue unless you're
+  experiencing identical behavior or behavior that stems from the exact same
+  problem.
+
+That's it! You are now ready to [submit a new issue][choose-new-issue]! Thank
+you for contribution 🎉, your efforts are greatly appreciated! 🙌🏿
+
+#### Closure Policy
+
+- Issues that do not follow the appropriate template or contain necessary
+  information may be closed immediately and the poster directed to these
+  guidelines.
+- Issues that go for an extended period without activity are subject to closure.
+
+[badge-issue-percentage]:
+  https://isitmaintained.com/badge/open/Xunnamius/repo-name.svg
+  'Open issues as a percentage of all issues'
+[badge-issue-resolution]:
+  https://isitmaintained.com/badge/resolution/Xunnamius/repo-name.svg
+  'Average time to resolve an issue'
+[choose-new-issue]: repo-url/issues/new/choose
+[github-blog]:
+  https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments
+[link-issue-resolution]:
+  https://isitmaintained.com/project/Xunnamius/repo-name
+[open-issues]: repo-url/issues?q=
+",
+  "CONTRIBUTING.md": "# Contributing
+
+Hi there! First off, we're thrilled 🤩 you want contribute to this project!
+
+First time contributor to a GitHub project? If you could use some help getting
+started, [take a look at this quick and easy guide][how-to-contribute]. 💜
+
+## Briefly: Submitting a Pull Request (Pr)
+
+> See also: [CODE_OF_CONDUCT.md][code-of-conduct]
+
+This repository uses a [fully automated][github-actions] [continuous
+linting][husky-cl] (CL), integration testing (CI), and deployment (CD)
+[xpipeline][xpipeline]-based pipeline for integrating PRs and publishing
+releases. The neat thing about a fully automated pipeline is that anyone
+anywhere can make a contribution quickly and with minimal tedium.
+
+This repository makes extensive use of [debug][pkg-debug]. Should you wish to
+view all possible debugging output, [export
+\`DEBUG='*,*:*'\`][pkg-debug-wildcards].
+
+The ideal contributor flow is as follows:
+
+1. [Fork][fork] this repository and [clone it locally][how-to-clone].
+   - If there is a custom Docker image available for this project and you're
+     comfortable with Docker, consider using it instead.
+2. Configure and install dependencies with \`npm ci\`.
+   - You use \`npm ci\` here instead of \`npm install\` to [prevent unnecessary
+     updates to \`package.json\` and \`package-lock.json\`][npm-ci], but if it makes
+     more sense to use \`npm install\` feel free to use that instead.
+     - **If you're getting an EINTEGRITY error from npm, you need to delete
+       package-lock.json before running \`npm install\` (not \`npm ci\`).**
+   - If \`.env.example\` exists, consider copying it to \`.env\` and configuring
+     sensible defaults.
+3. Before making any changes, ensure all unit tests are passing with
+   \`npm run test\`.
+4. _(optional but recommended)_ Create a new branch, usually off \`main\`.
+   - Example: \`git checkout -b contrib-feature-1\`.
+5. Make your changes and commit. Your work will be checked as you commit; any
+   problems will abort the commit/push attempt.
+   - Ensure any new tests still pass even when the \`DEBUG\` environment variable
+     is defined.
+6. Push your commits to your fork and, when you're ready, [_fearlessly_ submit
+   your PR][pr-compare]! Your changes will be tested in our CI pipeline.
+7. Pat yourself on the back! Your hard work is well on its way to being reviewed
+   and, if everything looks good, merged and released 🚀
+
+Additionally, there are a few things you can do to greatly increase the
+likelihood your PR passes review:
+
+- **Do** [open an issue][choose-new-issue] and discuss your proposed changes (to
+  prevent wasting your valuable time, e.g. _maybe we're already working on a
+  fix!_), and [search][open-issues] to see if there are any existing issues
+  related to your concerns.
+- **Do** practice [atomic committing][atomic-commits].
+- **Do not** reduce code coverage ([codecov][codecov] checks are performed
+  during CI).
+- **Do** [follow convention][conventional-commits] when coming up with your
+  commit messages.
+- **Do not** circumvent CL, i.e. automated pre-commit linting, formatting, and
+  unit testing.
+- **Do** ensure \`README.md\` and other documentation that isn't autogenerated is
+  kept consistent with your changes.
+- **Do not** create a PR to introduce [_purely_ cosmetic
+  commits][cosmetic-commits].
+  - Code de-duplication and other potential optimizations we **do not** consider
+    _purely_ cosmetic 🙂
+- **Do** keep your PR as narrow and focused as possible.
+  - If you ran \`npm install\` instead of \`npm ci\` and it updated \`package.json\`
+    or \`package-lock.json\` and those updates have nothing to do with your PR
+    (e.g. random nested deps were updated), **do not** stage changes to those
+    files.
+  - If there are multiple related changes to be made but (1) they do not
+    immediately depend on one another or (2) one implements extended/alternative
+    functionality based on the other, consider submitting them as separate PRs
+    instead.
+
+At this point, you're ready to create your PR and ✨ contribute ✨!
+
+[atomic-commits]: https://www.codewithjason.com/atomic-commits-testing
+[choose-new-issue]: repo-url/issues/new/choose
+[code-of-conduct]: repo-url/.github/CODE_OF_CONDUCT.md
+[codecov]: https://about.codecov.io
+[conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0#summary
+[cosmetic-commits]:
+  https://github.com/rails/rails/pull/13771#issuecomment-32746700
+[fork]: repo-url/fork
+[github-actions]: https://github.com/features/actions
+[how-to-clone]:
+  https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/cloning-a-repository
+[how-to-contribute]: https://www.dataschool.io/how-to-contribute-on-github
+[husky-cl]: repo-url/tree/main/.husky
+[npm-ci]: https://docs.npmjs.com/cli/v6/commands/npm-ci
+[open-issues]: repo-url/issues?q=
+[pkg-debug]: https://www.npmjs.com/package/debug
+[pkg-debug-wildcards]: https://www.npmjs.com/package/debug#wildcards
+[pr-compare]: repo-url/compare
+[xpipeline]: https://github.com/Xunnamius/xpipeline#readme
+",
+  "README.md": "<!-- badges-start -->
+
+badges
+
+<!-- badges-end -->
+
+# pretty-name
+
+<!-- TODO -->
+
+package-description
+
+---
+
+<!-- remark-ignore-start -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Install](#install)
+- [Usage](#usage)
+- [Appendix](#appendix)
+  - [Published Package Details](#published-package-details)
+  - [License](#license)
+- [Contributing and Support](#contributing-and-support)
+  - [Contributors](#contributors)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- remark-ignore-end -->
+
+## Install
+
+<!-- TODO -->
+
+\`\`\`shell
+npm install package-name
+\`\`\`
+
+## Usage
+
+<!-- TODO -->
+
+TODO
+
+## Appendix
+
+Further documentation can be found under [\`docs/\`](repo-reference-docs).
+
+### Published Package Details
+
+<!-- TODO -->
+
+package-build-details-short
+
+<details><summary>Expand details</summary>
+
+<!-- TODO -->
+
+package-build-details-long
+
+</details>
+
+### License
+
+See [LICENSE](repo-reference-license).
+
+## Contributing and Support
+
+**[New issues](repo-reference-new-issue) and
+[pull requests](repo-reference-pr-compare) are always welcome and greatly
+appreciated! 🤩** Just as well, you can
+[star 🌟 this project](repo-reference-self) to let me know you found it useful!
+✊🏿 Or you could consider [buying me a beer](repo-reference-sponsor). Thank you!
+
+See [CONTRIBUTING.md](repo-reference-contributing) and
+[SUPPORT.md](repo-reference-support) for more information.
+
+### Contributors
+
+<!-- remark-ignore-start -->
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+<!-- remark-ignore-end -->
+
+Thanks goes to these wonderful people
+([emoji key](repo-reference-all-contributors-emojis)):
+
+<!-- remark-ignore-start -->
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<table></table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- remark-ignore-end -->
+
+This project follows the [all-contributors](repo-reference-all-contributors)
+specification. Contributions of any kind welcome!
+
+repo-reference-definitions-badge
+
+repo-reference-definitions-package
+
+repo-reference-definitions-repo
+",
+  "SECURITY.md": "# Security ☠️ [![Known Vulnerabilities][2]][1]
+
+If the issue is related to a public alert from OWASP/GitHub/Dependabot/CVE/etc
+and [does not already have an open issue][3], feel free to [open a new
+issue][4]. Otherwise, please report any security vulnerability, other
+security-related incident, or otherwise sensitive subject to us [via email][5].
+
+Thank you for your contribution!
+
+[1]: repo-snyk-url
+[2]: repo-snyk-url/badge.svg
+[3]: repo-url/issues?q=
+[4]: repo-url/issues/new/choose
+[5]:
+  mailto:security@ergodark.com?subject=ALERT%3A%20SECURITY%20INCIDENT%3A%20%28five%20word%20summary%29
+",
+}
+`;
+
+exports[`::retrieveConfigAsset <config assets> .all-contributorsrc: .all-contributorsrc 1`] = `
 ".all-contributorsrc
 ⏶⏷⏶⏷⏶
 {
@@ -36,7 +439,7 @@ exports[`::retrieveConfigAsset ::<config assets> .all-contributorsrc 1`] = `
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .browserslistrc 1`] = `
+exports[`::retrieveConfigAsset <config assets> .browserslistrc: .browserslistrc 1`] = `
 ".browserslistrc
 ⏶⏷⏶⏷⏶
 [production]
@@ -54,7 +457,7 @@ current node
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .codecov.yml 1`] = `
+exports[`::retrieveConfigAsset <config assets> .codecov.yml: .codecov.yml 1`] = `
 ".codecov.yml
 ⏶⏷⏶⏷⏶
 coverage:
@@ -80,7 +483,7 @@ flag_management:
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .editorconfig 1`] = `
+exports[`::retrieveConfigAsset <config assets> .editorconfig: .editorconfig 1`] = `
 ".editorconfig
 ⏶⏷⏶⏷⏶
 root = true
@@ -95,7 +498,7 @@ indent_size = 2
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .env.default 1`] = `
+exports[`::retrieveConfigAsset <config assets> .env.default: .env.default 1`] = `
 ".env.default
 ⏶⏷⏶⏷⏶
 # shellcheck disable=all
@@ -179,149 +582,14 @@ GPG_PRIVATE_KEY=
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .gitattributes 1`] = `
+exports[`::retrieveConfigAsset <config assets> .gitattributes: .gitattributes 1`] = `
 ".gitattributes
 ⏶⏷⏶⏷⏶
 * text=auto eol=lf
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .github 1`] = `
-".github/ISSUE_TEMPLATE/BUG_REPORT.md
-⏶⏷⏶⏷⏶
----
-name: 🤯 Bug report
-about: Alert us about an issue
-labels: bug
----
-
-<!-- THANK YOU for taking a moment to improve this project. 🤘🏿 You rock! 🎸 -->
-
-<details open><summary><strong>The problem</strong></summary>
-
-<!--
-🚩 Required (1 of 2): please replace this comment with a clear and concise
-description of your issue. If applicable, add code samples and relevant error
-log lines to help explain the problem. Favor code samples over code screenshots.
--->
-
-</details>
-
-<details><summary><strong>Reproduction steps</strong></summary>
-
-<!--
-🚩 Required (2 of 2): please replace this comment with a link to a repo
-demonstrating your issue *using as few lines of code as possible*. If we can't
-reproduce the problem on our side, how can we ever hope to fix it for you 🤷🏾?
-
-If your issue is simple enough that it doesn't warrant a demo repo, include
-instead the simplest most basic possible steps to reproduce your problem; e.g.:
-
-1. Clone the dummy repo I made: https://github.com/…
-2. Run \`npm install\`
-3. Run \`npx jest\`
-4. See error "xyz" at test 2, which shouldn't be happening
--->
-
-</details>
-
-<!--
-<details><summary><strong>Expected behavior</strong></summary>
-
-Optional: uncomment this block and replace this text with a clear and concise
-description of what you expected to happen if not included above. If applicable,
-add screenshots and code samples to help explain the problem.
-
-</details>
-|-->
-
-<!--
-<details><summary><strong>Suggested solution</strong></summary>
-
-Optional: uncomment this block and replace this text with a clear and concise
-proposal of how your issue might be solved, including any unnoted workarounds.
-If applicable, add code samples and screenshots.
-
-</details>
-|-->
-
-<!--
-<details><summary><strong>Additional context</strong></summary>
-
-Optional: uncomment this block and replace this text with any additional
-information that might help us figure out what's going on. This could be dense
-runtime details, lengthy error logs, assets links, or what have you; e.g.:
-
-- OS: ubuntu 26.04
-- Node version: 20
-- Babel: yes, version 8.1.0
-- TypeScript: yes, version 5.2.0
-- Browser: firefox 171, chrome 190
-- List of installed packages: https://github.com/…/main/package.json
-
-Relevant log lines:
-\`\`\`
-(super long error log lines pasted here)
-\`\`\`
-
-</details>
--->
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> .github 2`] = `
-".github/ISSUE_TEMPLATE/config.yml
-⏶⏷⏶⏷⏶
-blank_issues_enabled: true
-contact_links:
-  - name: Security Channel
-    url: 'mailto:security@ergodark.com?subject=SECURITY%20INCIDENT%3A%20%28five%20word%20summary%29'
-    about: Report security-related issues here!
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> .github 3`] = `
-".github/ISSUE_TEMPLATE/FEATURE_REQUEST.md
-⏶⏷⏶⏷⏶
----
-name: 🤩 Feature request
-about: Tell us about your awesome idea
-labels: enhancement
----
-
-<!-- THANK YOU for taking a moment to improve this project. 🤘🏿 You rock! 🎸 |-->
-
-<!--
-Replace this comment with a clear and concise description of what you're
-suggesting. Be sure to include sample code, screenshots, related PR/issue
-links, etc.
-
-🚩 If you encountered a bug, please report it as a bug instead of a feature
-request.
-|-->
-
-<!--
-<details><summary><strong>Alternatives and workarounds</strong></summary>
-
-For posterity, uncomment this block and replace this text with a clear and
-concise description of any alternative solutions you've encountered or any
-temporary workarounds you've come up with.
-
-</details>
--->
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> .github 4`] = `
-".github/workflows/README.md
-⏶⏷⏶⏷⏶
-Details on pipeline design and operation can be found [here][1].
-
-[1]: https://github.com/Xunnamius/xscripts/wiki
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> .github 5`] = `
+exports[`::retrieveConfigAsset <config assets> .github: .github/CODE_OF_CONDUCT.md 1`] = `
 ".github/CODE_OF_CONDUCT.md
 ⏶⏷⏶⏷⏶
 # Contributor Covenant Code of Conduct
@@ -409,7 +677,7 @@ For answers to common questions about this code of conduct, see
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .github 6`] = `
+exports[`::retrieveConfigAsset <config assets> .github: .github/CODEOWNERS 1`] = `
 ".github/CODEOWNERS
 ⏶⏷⏶⏷⏶
 # See https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners
@@ -418,7 +686,238 @@ exports[`::retrieveConfigAsset ::<config assets> .github 6`] = `
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .github 7`] = `
+exports[`::retrieveConfigAsset <config assets> .github: .github/FUNDING.yml 1`] = `
+".github/FUNDING.yml
+⏶⏷⏶⏷⏶
+# These are supported funding model platforms
+
+github: [Xunnamius]
+patreon: # Replace with a single Patreon username
+open_collective: # Replace with a single Open Collective username
+ko_fi: # Replace with a single Ko-fi username
+tidelift: # Replace with a single Tidelift platform-name/package-name e.g., npm/babel
+community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
+liberapay: # Replace with a single Liberapay username
+issuehunt: # Replace with a single IssueHunt username
+otechie: # Replace with a single Otechie username
+lfx_crowdfunding: # Replace with a single LFX Crowdfunding project-name e.g., cloud-foundry
+custom: # Replace with up to 4 custom sponsorship URLs e.g., ['link1', 'link2']
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> .github: .github/ISSUE_TEMPLATE/BUG_REPORT.md 1`] = `
+".github/ISSUE_TEMPLATE/BUG_REPORT.md
+⏶⏷⏶⏷⏶
+---
+name: 🤯 Bug report
+about: Alert us about an issue
+labels: bug
+---
+
+<!-- THANK YOU for taking a moment to improve this project. 🤘🏿 You rock! 🎸 -->
+
+<details open><summary><strong>The problem</strong></summary>
+
+<!--
+🚩 Required (1 of 2): please replace this comment with a clear and concise
+description of your issue. If applicable, add code samples and relevant error
+log lines to help explain the problem. Favor code samples over code screenshots.
+-->
+
+</details>
+
+<details><summary><strong>Reproduction steps</strong></summary>
+
+<!--
+🚩 Required (2 of 2): please replace this comment with a link to a repo
+demonstrating your issue *using as few lines of code as possible*. If we can't
+reproduce the problem on our side, how can we ever hope to fix it for you 🤷🏾?
+
+If your issue is simple enough that it doesn't warrant a demo repo, include
+instead the simplest most basic possible steps to reproduce your problem; e.g.:
+
+1. Clone the dummy repo I made: https://github.com/…
+2. Run \`npm install\`
+3. Run \`npx jest\`
+4. See error "xyz" at test 2, which shouldn't be happening
+-->
+
+</details>
+
+<!--
+<details><summary><strong>Expected behavior</strong></summary>
+
+Optional: uncomment this block and replace this text with a clear and concise
+description of what you expected to happen if not included above. If applicable,
+add screenshots and code samples to help explain the problem.
+
+</details>
+|-->
+
+<!--
+<details><summary><strong>Suggested solution</strong></summary>
+
+Optional: uncomment this block and replace this text with a clear and concise
+proposal of how your issue might be solved, including any unnoted workarounds.
+If applicable, add code samples and screenshots.
+
+</details>
+|-->
+
+<!--
+<details><summary><strong>Additional context</strong></summary>
+
+Optional: uncomment this block and replace this text with any additional
+information that might help us figure out what's going on. This could be dense
+runtime details, lengthy error logs, assets links, or what have you; e.g.:
+
+- OS: ubuntu 26.04
+- Node version: 20
+- Babel: yes, version 8.1.0
+- TypeScript: yes, version 5.2.0
+- Browser: firefox 171, chrome 190
+- List of installed packages: https://github.com/…/main/package.json
+
+Relevant log lines:
+\`\`\`
+(super long error log lines pasted here)
+\`\`\`
+
+</details>
+-->
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> .github: .github/ISSUE_TEMPLATE/FEATURE_REQUEST.md 1`] = `
+".github/ISSUE_TEMPLATE/FEATURE_REQUEST.md
+⏶⏷⏶⏷⏶
+---
+name: 🤩 Feature request
+about: Tell us about your awesome idea
+labels: enhancement
+---
+
+<!-- THANK YOU for taking a moment to improve this project. 🤘🏿 You rock! 🎸 |-->
+
+<!--
+Replace this comment with a clear and concise description of what you're
+suggesting. Be sure to include sample code, screenshots, related PR/issue
+links, etc.
+
+🚩 If you encountered a bug, please report it as a bug instead of a feature
+request.
+|-->
+
+<!--
+<details><summary><strong>Alternatives and workarounds</strong></summary>
+
+For posterity, uncomment this block and replace this text with a clear and
+concise description of any alternative solutions you've encountered or any
+temporary workarounds you've come up with.
+
+</details>
+-->
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> .github: .github/ISSUE_TEMPLATE/config.yml 1`] = `
+".github/ISSUE_TEMPLATE/config.yml
+⏶⏷⏶⏷⏶
+blank_issues_enabled: true
+contact_links:
+  - name: Security Channel
+    url: 'mailto:security@ergodark.com?subject=SECURITY%20INCIDENT%3A%20%28five%20word%20summary%29'
+    about: Report security-related issues here!
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> .github: .github/PULL_REQUEST_TEMPLATE.md 1`] = `
+".github/PULL_REQUEST_TEMPLATE.md
+⏶⏷⏶⏷⏶
+<!-- Add a brief description of your PR here |-->
+
+<!-- If this PR closes any issues, please enumerate them; i.e. "Closes #4" |-->
+
+<!-- If this PR involves or references any other issues, list them as well -->
+
+---
+
+<!-- Replace \`[ ]\` with \`[x]\` in all the following boxes that apply to you -->
+
+- [ ] I have read **[CONTRIBUTING.md][1]**.
+- [ ] This PR is not security related (see [SECURITY.md][2]).
+
+[1]: /CONTRIBUTING.md
+[2]: /SECURITY.md
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> .github: .github/SUPPORT.md 1`] = `
+".github/SUPPORT.md
+⏶⏷⏶⏷⏶
+# Support [![Average issue resolution time][badge-issue-resolution]][link-issue-resolution] [![Issue open percentage][badge-issue-percentage]][open-issues]
+
+Need help? Want to help this project? See below!
+
+## Reporting an Issue
+
+Before you begin, please [search open and past issues][open-issues] to see if
+your issue or feature request is already being talked about.
+
+If you find your issue already exists, make sure to [bump the issue by adding a
+reaction][github-blog]. **If you're serious about wanting an issue to get
+attention, use a reaction in place of a "+1" or other similar comment.**
+
+If you cannot find an existing issue that describes your bug or feature, then
+you're clear to create your issue using the guidelines below.
+
+### Standard Reactions
+
+Analysis of issue popularity (by tooling or otherwise) relies on the following
+reaction emojis being present on issues, PRs, and replies:
+
+\`:+1:\` 👍🏿👍🏾👍🏽👍🏼👍🏻👍 — up vote (AKA: _approve_, _like_, _+1_)
+
+\`:-1:\` 👎🏿👎🏾👎🏽👎🏼👎🏻👎 — down vote (AKA: _disapprove_, _dislike_, _-1_)
+
+### Bug Reports and Feature Requests
+
+For the timeliest resolution to bug reports specifically, please make a good
+faith effort to [follow the template][choose-new-issue]. The more quality
+information you can provide, the quicker a fix will be found. Additionally:
+
+- Ensure you file one issue per problem or feature request.
+- Do not enumerate multiple bugs or feature requests in the same issue.
+- Do not add your issue as a comment to an existing issue unless you're
+  experiencing identical behavior or behavior that stems from the exact same
+  problem.
+
+That's it! You are now ready to [submit a new issue][choose-new-issue]! Thank
+you for contribution 🎉, your efforts are greatly appreciated! 🙌🏿
+
+#### Closure Policy
+
+- Issues that do not follow the appropriate template or contain necessary
+  information may be closed immediately and the poster directed to these
+  guidelines.
+- Issues that go for an extended period without activity are subject to closure.
+
+[badge-issue-percentage]:
+  https://isitmaintained.com/badge/open/Xunnamius/repo-name.svg
+  'Open issues as a percentage of all issues'
+[badge-issue-resolution]:
+  https://isitmaintained.com/badge/resolution/Xunnamius/repo-name.svg
+  'Average time to resolve an issue'
+[choose-new-issue]: repo-url/issues/new/choose
+[github-blog]:
+  https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments
+[link-issue-resolution]:
+  https://isitmaintained.com/project/Xunnamius/repo-name
+[open-issues]: repo-url/issues?q=
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> .github: .github/dependabot.yml 1`] = `
 ".github/dependabot.yml
 ⏶⏷⏶⏷⏶
 version: 2
@@ -443,26 +942,7 @@ updates:
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .github 8`] = `
-".github/FUNDING.yml
-⏶⏷⏶⏷⏶
-# These are supported funding model platforms
-
-github: [Xunnamius]
-patreon: # Replace with a single Patreon username
-open_collective: # Replace with a single Open Collective username
-ko_fi: # Replace with a single Ko-fi username
-tidelift: # Replace with a single Tidelift platform-name/package-name e.g., npm/babel
-community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
-liberapay: # Replace with a single Liberapay username
-issuehunt: # Replace with a single IssueHunt username
-otechie: # Replace with a single Otechie username
-lfx_crowdfunding: # Replace with a single LFX Crowdfunding project-name e.g., cloud-foundry
-custom: # Replace with up to 4 custom sponsorship URLs e.g., ['link1', 'link2']
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> .github 9`] = `
+exports[`::retrieveConfigAsset <config assets> .github: .github/pipeline.config.js 1`] = `
 ".github/pipeline.config.js
 ⏶⏷⏶⏷⏶
 /**
@@ -528,93 +1008,16 @@ module.exports = {
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .github 10`] = `
-".github/PULL_REQUEST_TEMPLATE.md
+exports[`::retrieveConfigAsset <config assets> .github: .github/workflows/README.md 1`] = `
+".github/workflows/README.md
 ⏶⏷⏶⏷⏶
-<!-- Add a brief description of your PR here |-->
+Details on pipeline design and operation can be found [here][1].
 
-<!-- If this PR closes any issues, please enumerate them; i.e. "Closes #4" |-->
-
-<!-- If this PR involves or references any other issues, list them as well -->
-
----
-
-<!-- Replace \`[ ]\` with \`[x]\` in all the following boxes that apply to you -->
-
-- [ ] I have read **[CONTRIBUTING.md][1]**.
-- [ ] This PR is not security related (see [SECURITY.md][2]).
-
-[1]: /CONTRIBUTING.md
-[2]: /SECURITY.md
+[1]: https://github.com/Xunnamius/xscripts/wiki
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .github 11`] = `
-".github/SUPPORT.md
-⏶⏷⏶⏷⏶
-# Support [![Average issue resolution time][badge-issue-resolution]][link-issue-resolution] [![Issue open percentage][badge-issue-percentage]][open-issues]
-
-Need help? Want to help this project? See below!
-
-## Reporting an Issue
-
-Before you begin, please [search open and past issues][open-issues] to see if
-your issue or feature request is already being talked about.
-
-If you find your issue already exists, make sure to [bump the issue by adding a
-reaction][github-blog]. **If you're serious about wanting an issue to get
-attention, use a reaction in place of a "+1" or other similar comment.**
-
-If you cannot find an existing issue that describes your bug or feature, then
-you're clear to create your issue using the guidelines below.
-
-### Standard Reactions
-
-Analysis of issue popularity (by tooling or otherwise) relies on the following
-reaction emojis being present on issues, PRs, and replies:
-
-\`:+1:\` 👍🏿👍🏾👍🏽👍🏼👍🏻👍 — up vote (AKA: _approve_, _like_, _+1_)
-
-\`:-1:\` 👎🏿👎🏾👎🏽👎🏼👎🏻👎 — down vote (AKA: _disapprove_, _dislike_, _-1_)
-
-### Bug Reports and Feature Requests
-
-For the timeliest resolution to bug reports specifically, please make a good
-faith effort to [follow the template][choose-new-issue]. The more quality
-information you can provide, the quicker a fix will be found. Additionally:
-
-- Ensure you file one issue per problem or feature request.
-- Do not enumerate multiple bugs or feature requests in the same issue.
-- Do not add your issue as a comment to an existing issue unless you're
-  experiencing identical behavior or behavior that stems from the exact same
-  problem.
-
-That's it! You are now ready to [submit a new issue][choose-new-issue]! Thank
-you for contribution 🎉, your efforts are greatly appreciated! 🙌🏿
-
-#### Closure Policy
-
-- Issues that do not follow the appropriate template or contain necessary
-  information may be closed immediately and the poster directed to these
-  guidelines.
-- Issues that go for an extended period without activity are subject to closure.
-
-[badge-issue-percentage]:
-  https://isitmaintained.com/badge/open/Xunnamius/repo-name.svg
-  'Open issues as a percentage of all issues'
-[badge-issue-resolution]:
-  https://isitmaintained.com/badge/resolution/Xunnamius/repo-name.svg
-  'Average time to resolve an issue'
-[choose-new-issue]: repo-url/issues/new/choose
-[github-blog]:
-  https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments
-[link-issue-resolution]:
-  https://isitmaintained.com/project/Xunnamius/repo-name
-[open-issues]: repo-url/issues?q=
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> .gitignore 1`] = `
+exports[`::retrieveConfigAsset <config assets> .gitignore: .gitignore 1`] = `
 ".gitignore
 ⏶⏷⏶⏷⏶
 # ! Note that any pattern with a / in the beginning OR MIDDLE (but not end) will
@@ -727,7 +1130,7 @@ CertificateAuthorityCertificate.pem
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .husky 1`] = `
+exports[`::retrieveConfigAsset <config assets> .husky: .husky/commit-msg 1`] = `
 ".husky/commit-msg
 ⏶⏷⏶⏷⏶
 #!/bin/sh
@@ -748,7 +1151,7 @@ NODE_NO_WARNINGS=1 node spellcheck-commit.cjs
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .husky 2`] = `
+exports[`::retrieveConfigAsset <config assets> .husky: .husky/pre-commit 1`] = `
 ".husky/pre-commit
 ⏶⏷⏶⏷⏶
 #!/bin/sh
@@ -767,7 +1170,7 @@ NODE_NO_WARNINGS=1 lint-staged --concurrent false
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .husky 3`] = `
+exports[`::retrieveConfigAsset <config assets> .husky: .husky/pre-push 1`] = `
 ".husky/pre-push
 ⏶⏷⏶⏷⏶
 #!/bin/sh
@@ -799,7 +1202,7 @@ fi
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .ncurc.cjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> .ncurc.cjs: .ncurc.cjs 1`] = `
 ".ncurc.cjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -823,7 +1226,7 @@ module.exports = {
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .prettierignore 1`] = `
+exports[`::retrieveConfigAsset <config assets> .prettierignore: .prettierignore 1`] = `
 ".prettierignore
 ⏶⏷⏶⏷⏶
 # * Paths below are ignored by prettier as well as remark and doctoc when called
@@ -880,7 +1283,7 @@ fixtures
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .remarkrc.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> .remarkrc.mjs: .remarkrc.mjs 1`] = `
 ".remarkrc.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -913,14 +1316,14 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .spellcheckignore 1`] = `
+exports[`::retrieveConfigAsset <config assets> .spellcheckignore: .spellcheckignore 1`] = `
 ".spellcheckignore
 ⏶⏷⏶⏷⏶
 
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .vscode 1`] = `
+exports[`::retrieveConfigAsset <config assets> .vscode: .vscode/launch.example.json 1`] = `
 ".vscode/launch.example.json
 ⏶⏷⏶⏷⏶
 {
@@ -1038,7 +1441,7 @@ exports[`::retrieveConfigAsset ::<config assets> .vscode 1`] = `
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .vscode 2`] = `
+exports[`::retrieveConfigAsset <config assets> .vscode: .vscode/settings.json 1`] = `
 ".vscode/settings.json
 ⏶⏷⏶⏷⏶
 {
@@ -1057,7 +1460,7 @@ exports[`::retrieveConfigAsset ::<config assets> .vscode 2`] = `
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> .vscode 3`] = `
+exports[`::retrieveConfigAsset <config assets> .vscode: .vscode/tasks.example.json 1`] = `
 ".vscode/tasks.example.json
 ⏶⏷⏶⏷⏶
 {
@@ -1069,7 +1472,15 @@ exports[`::retrieveConfigAsset ::<config assets> .vscode 3`] = `
       "label": "lint: discover problems",
       "type": "process",
       "command": "npx",
-      "args": ["xscripts", "lint", "--scope", "unlimited"],
+      "args": [
+        "xscripts",
+        "lint",
+        "--scope",
+        "unlimited",
+        "--linters",
+        "eslint",
+        "tsc"
+      ],
       "presentation": {
         "echo": true,
         "reveal": "never"
@@ -1083,7 +1494,7 @@ exports[`::retrieveConfigAsset ::<config assets> .vscode 3`] = `
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> ARCHITECTURE.md 1`] = `
+exports[`::retrieveConfigAsset <config assets> ARCHITECTURE.md: ARCHITECTURE.md 1`] = `
 "ARCHITECTURE.md
 ⏶⏷⏶⏷⏶
 # 📐 Project Architecture
@@ -1106,7 +1517,7 @@ There are as of yet no notable deviations or additions. See the linked document
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> CONTRIBUTING.md 1`] = `
+exports[`::retrieveConfigAsset <config assets> CONTRIBUTING.md: CONTRIBUTING.md 1`] = `
 "CONTRIBUTING.md
 ⏶⏷⏶⏷⏶
 # Contributing
@@ -1210,7 +1621,7 @@ At this point, you're ready to create your PR and ✨ contribute ✨!
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> LICENSE 1`] = `
+exports[`::retrieveConfigAsset <config assets> LICENSE: LICENSE 1`] = `
 "LICENSE
 ⏶⏷⏶⏷⏶
 MIT License
@@ -1237,7 +1648,7 @@ SOFTWARE.
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> MAINTAINING.md 1`] = `
+exports[`::retrieveConfigAsset <config assets> MAINTAINING.md: MAINTAINING.md 1`] = `
 "MAINTAINING.md
 ⏶⏷⏶⏷⏶
 # Maintaining
@@ -1403,12 +1814,12 @@ Thank you so much for helping to maintain this project!
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> README.md 1`] = `
+exports[`::retrieveConfigAsset <config assets> README.md: README.md 1`] = `
 "README.md
 ⏶⏷⏶⏷⏶
 <!-- badges-start -->
 
-{{badges}}
+badges
 
 <!-- badges-end -->
 
@@ -1451,7 +1862,7 @@ TODO
 
 ## Appendix
 
-Further documentation can be found under {{repoReferenceDocs:\`docs/\`}}.
+Further documentation can be found under [\`docs/\`](repo-reference-docs).
 
 ### Published Package Details
 
@@ -1469,18 +1880,18 @@ package-build-details-long
 
 ### License
 
-See {{repoReferenceLicense:LICENSE}}.
+See [LICENSE](repo-reference-license).
 
 ## Contributing and Support
 
-**{{repoReferenceNewIssue:New issues}} and
-{{repoReferencePrCompare:pull requests}} are always welcome and greatly
+**[New issues](repo-reference-new-issue) and
+[pull requests](repo-reference-pr-compare) are always welcome and greatly
 appreciated! 🤩** Just as well, you can
-{{repoReferenceSelf:star 🌟 this project}} to let me know you found it useful!
-✊🏿 Or you could consider {{repoReferenceSponsor:buying me a beer}}. Thank you!
+[star 🌟 this project](repo-reference-self) to let me know you found it useful!
+✊🏿 Or you could consider [buying me a beer](repo-reference-sponsor). Thank you!
 
-See {{repoReferenceContributing:CONTRIBUTING.md}} and
-{{repoReferenceSupport:SUPPORT.md}} for more information.
+See [CONTRIBUTING.md](repo-reference-contributing) and
+[SUPPORT.md](repo-reference-support) for more information.
 
 ### Contributors
 
@@ -1493,7 +1904,7 @@ See {{repoReferenceContributing:CONTRIBUTING.md}} and
 <!-- remark-ignore-end -->
 
 Thanks goes to these wonderful people
-({{repoReferenceAllContributorsEmojis:emoji key}}):
+([emoji key](repo-reference-all-contributors-emojis)):
 
 <!-- remark-ignore-start -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -1507,7 +1918,7 @@ Thanks goes to these wonderful people
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 <!-- remark-ignore-end -->
 
-This project follows the {{repoReferenceAllContributors:all-contributors}}
+This project follows the [all-contributors](repo-reference-all-contributors)
 specification. Contributions of any kind welcome!
 
 repo-reference-definitions-badge
@@ -1518,7 +1929,7 @@ repo-reference-definitions-repo
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> SECURITY.md 1`] = `
+exports[`::retrieveConfigAsset <config assets> SECURITY.md: SECURITY.md 1`] = `
 "SECURITY.md
 ⏶⏷⏶⏷⏶
 # Security ☠️ [![Known Vulnerabilities][2]][1]
@@ -1539,7 +1950,7 @@ Thank you for your contribution!
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> babel.config.cjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> babel.config.cjs: babel.config.cjs 1`] = `
 "babel.config.cjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1616,7 +2027,7 @@ function getBabelAliases() {
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> changelog.patch.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> changelog.patch.mjs: changelog.patch.mjs 1`] = `
 "changelog.patch.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1632,7 +2043,7 @@ export default [
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> commitlint.config.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> commitlint.config.mjs: commitlint.config.mjs 1`] = `
 "commitlint.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1655,7 +2066,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> conventional.config.cjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> conventional.config.cjs: conventional.config.cjs 1`] = `
 "conventional.config.cjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1684,7 +2095,7 @@ module.exports = moduleExport({
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> eslint.config.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> eslint.config.mjs: eslint.config.mjs 1`] = `
 "eslint.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1834,7 +2245,7 @@ function getEslintAliases() {
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> gac.config.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> gac.config.mjs: gac.config.mjs 1`] = `
 "gac.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1861,7 +2272,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> jest.config.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> jest.config.mjs: jest.config.mjs 1`] = `
 "jest.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1937,7 +2348,7 @@ function getJestAliases() {
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> lint-staged.config.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> lint-staged.config.mjs: lint-staged.config.mjs 1`] = `
 "lint-staged.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1960,7 +2371,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> next.config.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> next.config.mjs: next.config.mjs 1`] = `
 "next.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1983,7 +2394,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> package.json 1`] = `
+exports[`::retrieveConfigAsset <config assets> package.json: package.json 1`] = `
 "package.json
 ⏶⏷⏶⏷⏶
 {
@@ -2063,7 +2474,7 @@ exports[`::retrieveConfigAsset ::<config assets> package.json 1`] = `
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> postcss.config.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> postcss.config.mjs: postcss.config.mjs 1`] = `
 "postcss.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -2086,7 +2497,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> prettier.config.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> prettier.config.mjs: prettier.config.mjs 1`] = `
 "prettier.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -2115,7 +2526,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> release.config.cjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> release.config.cjs: release.config.cjs 1`] = `
 "release.config.cjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -2142,14 +2553,14 @@ module.exports = deepMergeConfig(
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> src 1`] = `
+exports[`::retrieveConfigAsset <config assets> src: src/index.ts 1`] = `
 "src/index.ts
 ⏶⏷⏶⏷⏶
 export {};
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> tailwind.config.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> tailwind.config.mjs: tailwind.config.mjs 1`] = `
 "tailwind.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -2172,7 +2583,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> test 1`] = `
+exports[`::retrieveConfigAsset <config assets> test: test/index.ts 1`] = `
 "test/index.ts
 ⏶⏷⏶⏷⏶
 /**
@@ -2184,7 +2595,7 @@ export {};
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> test 2`] = `
+exports[`::retrieveConfigAsset <config assets> test: test/setup.ts 1`] = `
 "test/setup.ts
 ⏶⏷⏶⏷⏶
 // ? https://github.com/jest-community/jest-extended#typescript
@@ -2193,7 +2604,132 @@ import 'jest-extended/all';
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 1`] = `
+exports[`::retrieveConfigAsset <config assets> tsconfig.json: tsc.package.docs.json 1`] = `
+"tsc.package.docs.json
+⏶⏷⏶⏷⏶
+/**
+ ** This file extends the project root tsconfig.json file for use with
+ ** typedoc at the package level.
+ **
+ ** Use this file to exert some control over how typedoc generates
+ ** package-specific documentation.
+ */
+
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "include": ["types/**/*", "src/**/*", "test/**/*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "packages/**/*",
+    "packages/**/.*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> tsconfig.json: tsc.package.lint.json 1`] = `
+"tsc.package.lint.json
+⏶⏷⏶⏷⏶
+/**
+ ** This file extends the project root tsconfig.json file for use with linting
+ ** all files at the package level. Only tsc gets its paths from this file.
+ **
+ ** Use this file to exert some control over which files are considered
+ ** part of the current package and which will be ignored.
+ */
+
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "include": ["**/*", "**/.*/**/*", "**/.*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "packages/**/*",
+    "packages/**/.*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> tsconfig.json: tsc.package.types.json 1`] = `
+"tsc.package.types.json
+⏶⏷⏶⏷⏶
+/**
+ ** This file extends the project root tsconfig.json file for use with tsc at
+ ** the package level.
+ **
+ ** Use this file to exert some control over how tsc generates package-specific
+ ** definition files.
+ */
+
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "isolatedModules": false,
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "./"
+  },
+  "include": ["types/**/*", "src/**/*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "packages/**/*",
+    "packages/**/.*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> tsconfig.json: tsc.project.lint.json 1`] = `
+"tsc.project.lint.json
+⏶⏷⏶⏷⏶
+/**
+ ** This file extends the project root tsconfig.json file for use with linting
+ ** all files at the project level.
+ **
+ ** Use this file to exert some control over which files will have their errors
+ ** reported and which files will be ignored when linting an entire project
+ ** repository at once.
+ */
+
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "include": ["**/*", "**/.*/**/*", "**/.*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
+}
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> tsconfig.json: tsconfig.json 1`] = `
 "tsconfig.json
 ⏶⏷⏶⏷⏶
 {
@@ -2292,153 +2828,21 @@ exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 1`] = `
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 2`] = `
-"tsc.project.lint.json
-⏶⏷⏶⏷⏶
-/**
- ** This file extends the project root tsconfig.json file for use with linting
- ** all files at the project level.
- **
- ** Use this file to exert some control over which files will have their errors
- ** reported and which files will be ignored when linting an entire project
- ** repository at once.
- */
-
-{
-  "$schema": "https://json.schemastore.org/tsconfig.json",
-  "extends": "./tsconfig.json",
-  "include": ["**/*", "**/.*/**/*", "**/.*"],
-  "exclude": [
-    "**/dist/**/*",
-    "**/test/fixtures/**/*",
-    "**/node_modules/**/*",
-    "**/*.ignore",
-    "**/*.ignore.*/**/*",
-    "**/ignore.*"
-  ]
-}
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 3`] = `
-"tsc.package.types.json
-⏶⏷⏶⏷⏶
-/**
- ** This file extends the project root tsconfig.json file for use with tsc at
- ** the package level.
- **
- ** Use this file to exert some control over how tsc generates package-specific
- ** definition files.
- */
-
-{
-  "$schema": "https://json.schemastore.org/tsconfig.json",
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "allowJs": false,
-    "checkJs": false,
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "isolatedModules": false,
-    "noEmit": false,
-    "outDir": "dist",
-    "rootDir": "./"
-  },
-  "include": ["types/**/*", "src/**/*"],
-  "exclude": [
-    "**/dist/**/*",
-    "**/test/fixtures/**/*",
-    "**/node_modules/**/*",
-    "packages/**/*",
-    "packages/**/.*",
-    "**/*.ignore",
-    "**/*.ignore.*/**/*",
-    "**/ignore.*"
-  ]
-}
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 4`] = `
-"tsc.package.lint.json
-⏶⏷⏶⏷⏶
-/**
- ** This file extends the project root tsconfig.json file for use with linting
- ** all files at the package level. Only tsc gets its paths from this file.
- **
- ** Use this file to exert some control over which files are considered
- ** part of the current package and which will be ignored.
- */
-
-{
-  "$schema": "https://json.schemastore.org/tsconfig.json",
-  "extends": "./tsconfig.json",
-  "include": ["**/*", "**/.*/**/*", "**/.*"],
-  "exclude": [
-    "**/dist/**/*",
-    "**/test/fixtures/**/*",
-    "**/node_modules/**/*",
-    "packages/**/*",
-    "packages/**/.*",
-    "**/*.ignore",
-    "**/*.ignore.*/**/*",
-    "**/ignore.*"
-  ]
-}
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> tsconfig.json 5`] = `
-"tsc.package.docs.json
-⏶⏷⏶⏷⏶
-/**
- ** This file extends the project root tsconfig.json file for use with
- ** typedoc at the package level.
- **
- ** Use this file to exert some control over how typedoc generates
- ** package-specific documentation.
- */
-
-{
-  "$schema": "https://json.schemastore.org/tsconfig.json",
-  "extends": "./tsconfig.json",
-  "include": ["types/**/*", "src/**/*", "test/**/*"],
-  "exclude": [
-    "**/dist/**/*",
-    "**/test/fixtures/**/*",
-    "**/node_modules/**/*",
-    "packages/**/*",
-    "packages/**/.*",
-    "**/*.ignore",
-    "**/*.ignore.*/**/*",
-    "**/ignore.*"
-  ]
-}
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> tstyche.config.json 1`] = `
+exports[`::retrieveConfigAsset <config assets> tstyche.config.json: tstyche.config.json 1`] = `
 "tstyche.config.json
 ⏶⏷⏶⏷⏶
 {"$schema":"https://tstyche.org/schemas/config.json","testFileMatch":["**/type-*.test.ts","**/type-*.test.tsx"]}
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> turbo.json 1`] = `
+exports[`::retrieveConfigAsset <config assets> turbo.json: turbo.json 1`] = `
 "turbo.json
 ⏶⏷⏶⏷⏶
 {}
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> types 1`] = `
-"types/global.ts
-⏶⏷⏶⏷⏶
-export type {};
-"
-`;
-
-exports[`::retrieveConfigAsset ::<config assets> types 2`] = `
+exports[`::retrieveConfigAsset <config assets> types: types/example 1`] = `
 "types/example
 ⏶⏷⏶⏷⏶
 declare module 'glob-gitignore' {
@@ -2469,7 +2873,14 @@ declare module 'glob-gitignore' {
 "
 `;
 
-exports[`::retrieveConfigAsset ::<config assets> webpack.config.mjs 1`] = `
+exports[`::retrieveConfigAsset <config assets> types: types/global.ts 1`] = `
+"types/global.ts
+⏶⏷⏶⏷⏶
+export type {};
+"
+`;
+
+exports[`::retrieveConfigAsset <config assets> webpack.config.mjs: webpack.config.mjs 1`] = `
 "webpack.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check

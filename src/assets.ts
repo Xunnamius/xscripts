@@ -42,46 +42,119 @@ export type MergeWithCustomizer = Parameters<typeof mergeWith<unknown, unknown>>
 export type TransformerContext = {
   /**
    * The value of the `asset` parameter passed to {@link retrieveConfigAsset}.
+   *
+   * Note that it's usually better to specify a string literal rather than reuse
+   * `asset` when defining a {@link TransformerResult}.
    */
   asset: string;
   /**
-   * From `package.json`
+   * The markdown badge references that are standard for every xscripts-powered
+   * project.
+   */
+  badges: string;
+  /**
+   * `package.json::name`.
    */
   packageName: string;
   /**
-   * From `package.json`
+   * `package.json::version`.
    */
   packageVersion: string;
   /**
-   * From `package.json`
+   * `package.json::description`.
    */
   packageDescription: string;
+  /**
+   * A short description of distributables.
+   */
   packageBuildDetailsShort: string;
+  /**
+   * A technical description of distributables.
+   */
   packageBuildDetailsLong: string;
+  /**
+   * @see {@link ProjectMetadata}.
+   */
   projectMetadata: ProjectMetadata;
   /**
-   * The contents of a potential top-level heading
+   * The "branding version" of `packageName` (e.g. `xscripts` vs
+   * `@-xun/scripts`).
    */
   prettyName: string;
+  /**
+   * The name of the repository on GitHub or other service.
+   */
   repoName: string;
+  /**
+   * The repository type.
+   *
+   * @see {@link ProjectAttribute}
+   */
   repoType:
     | ProjectAttribute.Polyrepo
     | ProjectAttribute.Monorepo
     | ProjectAttribute.Hybridrepo;
+  /**
+   * The url of the repository on GitHub or other service.
+   */
   repoUrl: string;
+  /**
+   * The url of the repository on Snyk.
+   */
   repoSnykUrl: string;
+  /**
+   * The entry point (url) of the repository's documentation.
+   */
   repoReferenceDocs: string;
+  /**
+   * The url of the repository's license.
+   */
   repoReferenceLicense: string;
+  /**
+   * The url to create a new issue against the repository.
+   */
   repoReferenceNewIssue: string;
+  /**
+   * The url to create a new PR against the repository.
+   */
   repoReferencePrCompare: string;
+  /**
+   * The url of the repository's `README.md` file.
+   */
   repoReferenceSelf: string;
+  /**
+   * The url of a donation/sponsorship service associated with the repository.
+   */
   repoReferenceSponsor: string;
+  /**
+   * The url of the repository's `CONTRIBUTING.md` file.
+   */
   repoReferenceContributing: string;
+  /**
+   * The url of the repository's `SUPPORT.md` file.
+   */
   repoReferenceSupport: string;
+  /**
+   * The url of the all-contributors repository
+   */
   repoReferenceAllContributors: string;
+  /**
+   * The url of the all-contributors emoji key
+   */
   repoReferenceAllContributorsEmojis: string;
+  /**
+   * The well-known badge-specific reference definitions used in `{{badges}}`.
+   */
   repoReferenceDefinitionsBadge: string;
+  /**
+   * The well-known package-specific reference definitions used throughout this
+   * context object.
+   */
   repoReferenceDefinitionsPackage: string;
+  /**
+   * The well-known repo-specific reference definitions throughout this context
+   * object.
+   */
   repoReferenceDefinitionsRepo: string;
   /**
    * Whether or not to derive aliases and inject them into the configuration.
@@ -178,6 +251,11 @@ export async function retrieveConfigAsset({
  * asset at that path with all handlebars-style template variables (e.g.
  * `{{variableName}}`) with matching keys in `TemplateContext` replaced with
  * their contextual values.
+ *
+ * Template variables accept an optional parameter which, if given, will be
+ * replaced by a link of the form `[parameter](contextual-value)`; e.g.
+ * `{{variableName:link text}}` will be replaced with `[link
+ * text](variableName's-contextual-value)`.
  */
 export async function compileTemplate(
   templatePath: RelativePath,
@@ -197,37 +275,15 @@ export async function compileTemplate(
 }
 
 /**
- * Takes a string and returns that string with all handlebars-style template
- * variables (e.g. `{{variableName}}`) with matching keys in `TemplateContext`
- * replaced with their contextual values.
- */
-export function compileTemplateInMemory(
-  rawTemplate: string,
-  context: TransformerContext
-) {
-  const debug = createDebugLogger({
-    namespace: `${globalDebuggerNamespace}:config-template`
-  });
-
-  debug('rawTemplate: %O', rawTemplate);
-
-  // eslint-disable-next-line unicorn/no-array-reduce
-  const compiledTemplate = Object.entries(context).reduce((result, [key, value]) => {
-    // ? If caller wants to replace {{projectMetadata}} with [object Object],
-    // ? that's their business.
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    return result.replaceAll(`{{${key}}}`, String(value));
-  }, rawTemplate);
-
-  debug('compiledTemplate: %O', compiledTemplate);
-  return compiledTemplate;
-}
-
-/**
  * Takes an object of name-path pairs, each representing the name of a template
  * and the path to its contents (relative to the template asset directory), and
  * returns that same object with each path value replaced by the result of
  * calling {@link compileTemplate} with said path as an argument.
+ *
+ * Template variables accept an optional parameter which, if given, will be
+ * replaced by a link of the form `[parameter](contextual-value)`; e.g.
+ * `{{variableName:link text}}` will be replaced with `[link
+ * text](variableName's-contextual-value)`.
  */
 export async function compileTemplates(
   templates: Record<string, RelativePath>,
@@ -243,6 +299,44 @@ export async function compileTemplates(
   );
 
   return finalTemplates;
+}
+
+/**
+ * Takes a string and returns that string with all handlebars-style template
+ * variables (e.g. `{{variableName}}`) with matching keys in `TemplateContext`
+ * replaced with their contextual values.
+ *
+ * Template variables accept an optional parameter which, if given, will be
+ * replaced by a link of the form `[parameter](contextual-value)`; e.g.
+ * `{{variableName:link text}}` will be replaced with `[link
+ * text](variableName's-contextual-value)`.
+ */
+export function compileTemplateInMemory(
+  rawTemplate: string,
+  context: TransformerContext
+) {
+  const debug = createDebugLogger({
+    namespace: `${globalDebuggerNamespace}:config-template`
+  });
+
+  debug('rawTemplate: %O', rawTemplate);
+
+  // eslint-disable-next-line unicorn/no-array-reduce
+  const compiledTemplate = Object.entries(context).reduce((result, [key, value_]) => {
+    // ? If caller wants to replace {{projectMetadata}} with [object Object],
+    // ? that's their business.
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    const value = String(value_);
+    return result.replaceAll(
+      new RegExp(`{{${key}(?:|:|:(.+?(?=}})))}}`, 'g'),
+      (_matchText, linkText: string | undefined) => {
+        return linkText ? `[${linkText}](${value})` : value;
+      }
+    );
+  }, rawTemplate);
+
+  debug('compiledTemplate: %O', compiledTemplate);
+  return compiledTemplate;
 }
 
 /**
