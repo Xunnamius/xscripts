@@ -69,21 +69,21 @@ export type TransformerContext = {
   /**
    * A short description of distributables.
    *
-   * **This context variable is defined as a string array and therefore will
-   * offer the user several choices that they must narrow down manually.** To
-   * avoid noisy diffs during renovation, the user's choice should correspond
-   * with their choice in {@link TransformerContext.packageBuildDetailsLong}.
+   * **This context variable can be defined as a string array which will offer
+   * the user several choices that they must narrow down manually.** To avoid
+   * noisy diffs during renovation, the user's choice should correspond with
+   * their choice in {@link TransformerContext.packageBuildDetailsLong}.
    */
-  packageBuildDetailsShort: string[];
+  packageBuildDetailsShort: string | string[];
   /**
    * A technical description of distributables.
    *
-   * **This context variable is defined as a string array and therefore will
-   * offer the user several choices that they must narrow down manually.** To
-   * avoid noisy diffs during renovation, the user's choice should correspond
-   * with their choice in {@link TransformerContext.packageBuildDetailsShort}.
+   * **This context variable can be defined as a string array which will offer
+   * the user several choices that they must narrow down manually.** To avoid
+   * noisy diffs during renovation, the user's choice should correspond with
+   * their choice in {@link TransformerContext.packageBuildDetailsShort}.
    */
-  packageBuildDetailsLong: string[];
+  packageBuildDetailsLong: string | string[];
   /**
    * @see {@link ProjectMetadata}.
    */
