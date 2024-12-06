@@ -73,7 +73,6 @@ npm install package-name@1.2.3
 ## Usage
 
 <!-- xscripts-renovate-stop -->
-
 <!-- TODO -->
 
 TODO
@@ -86,7 +85,7 @@ Further documentation can be found under [\`docs/\`](repo-reference-docs).
 
 ### Published Package Details
 
-<!-- TODO: Choose one of the following and delete the others: -->
+<!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
 package-build-details-short-1
 
@@ -104,7 +103,7 @@ package-build-details-short-4
 
 <details><summary>Expand details</summary>
 
-<!-- TODO: Choose one of the following and delete the others: -->
+<!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
 package-build-details-long-1
 
@@ -398,7 +397,6 @@ npm install package-name@1.2.3
 ## Usage
 
 <!-- xscripts-renovate-stop -->
-
 <!-- TODO -->
 
 TODO
@@ -411,7 +409,7 @@ Further documentation can be found under [\`docs/\`](repo-reference-docs).
 
 ### Published Package Details
 
-<!-- TODO: Choose one of the following and delete the others: -->
+<!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
 package-build-details-short-1
 
@@ -429,7 +427,7 @@ package-build-details-short-4
 
 <details><summary>Expand details</summary>
 
-<!-- TODO: Choose one of the following and delete the others: -->
+<!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
 package-build-details-long-1
 
@@ -1605,7 +1603,7 @@ exports[`::retrieveConfigAsset <config assets> ARCHITECTURE.md: ARCHITECTURE.md 
 
 Before continuing with this document, see the document on the [generic project
 architecture][1] expected by projects (like this repository) that leverage
-[xscripts](https://github.com/Xunnamius/xscripts).
+[xscripts][2].
 
 What follows are any notable additions and/or deviations from the aforementioned
 document.
@@ -1622,6 +1620,7 @@ There are as of yet no notable deviations or additions. See the linked document
 <!-- xscripts-renovate-start -->
 
 [1]: https://github.com/Xunnamius/xscripts/wiki/Generic-Project-Architecture
+[2]: https://github.com/Xunnamius/xscripts
 "
 `;
 
@@ -1811,8 +1810,7 @@ commits with adjusted messages to the PR branch before merging it in.
 > **Always favor rebase over squash for large and/or complex contributions**
 > since squashing commits may damage the [generated][6] [CHANGELOG.md][7],
 > hinder [bisection][8], yield [non-atomic commits][9], and could even result in
-> [the wrong version](https://github.com/semantic-release/commit-analyzer) being
-> [released](https://github.com/Xunnamius/xrelease).
+> [the wrong version][26] being [released][10].
 
 ## Releases
 
@@ -2122,6 +2120,7 @@ Thank you so much for helping to maintain this project!
 [24]: #manual-release-method-1-semi-automated
 [25]:
   https://github.com/conventional-changelog-archived-repos/conventional-changelog-angular/blob/ed32559941719a130bb0327f886d6a32a8cbc2ba/convention.md
+[26]: https://github.com/semantic-release/commit-analyzer
 "
 `;
 
@@ -2200,7 +2199,6 @@ npm install package-name@1.2.3
 ## Usage
 
 <!-- xscripts-renovate-stop -->
-
 <!-- TODO -->
 
 TODO
@@ -2213,7 +2211,7 @@ Further documentation can be found under [\`docs/\`](repo-reference-docs).
 
 ### Published Package Details
 
-<!-- TODO: Choose one of the following and delete the others: -->
+<!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
 package-build-details-short-1
 
@@ -2231,7 +2229,7 @@ package-build-details-short-4
 
 <details><summary>Expand details</summary>
 
-<!-- TODO: Choose one of the following and delete the others: -->
+<!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
 package-build-details-long-1
 

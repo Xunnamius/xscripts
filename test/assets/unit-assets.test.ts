@@ -661,7 +661,7 @@ specification. Contributions of any kind welcome!
 
       Further documentation can be found under [\`docs/\`](repo-reference-docs).
 
-      <!-- TODO: Choose one of the following and delete the others: -->
+      <!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
       package-build-details-short-1
 

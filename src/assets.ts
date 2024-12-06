@@ -368,7 +368,7 @@ export function compileTemplateInMemory(
       return result.replaceAll(
         `{{${key}}}`,
         `
-<!-- TODO: Choose one of the following and delete the others: -->
+<!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
 ${value.join('\n\n---✄---\n\n')}
 `.trim()
