@@ -116,7 +116,7 @@ export type ReleaseTaskContext = {
 };
 
 /**
- * A reified {@link InitReleaseTaskRunner}. Generated automatically by tooling.
+ * A reified {@link ProtoReleaseTaskRunner}. Generated automatically by tooling.
  */
 export type ReleaseTaskRunner = (
   argv: Parameters<ReturnType<typeof command>['handler']>[0],
@@ -131,7 +131,7 @@ export type ExecutionContextWithProjectMetadata = Merge<
 /**
  * A partial release task with loose typings for quickly authoring new tasks.
  */
-export type InitReleaseTaskRunner = (
+export type ProtoReleaseTaskRunner = (
   executionContext: ExecutionContextWithProjectMetadata,
   argv: Parameters<ReturnType<typeof command>['handler']>[0],
   taskContext: ReleaseTaskContext
@@ -164,7 +164,7 @@ export type ReleaseTask =
       run?: ReleaseTaskRunner;
     };
 
-export interface BaseInitTask {
+export interface BaseProtoTask {
   /**
    * Whether the task can be skipped by the user or not.
    */
@@ -190,7 +190,7 @@ export interface BaseInitTask {
   /**
    * Determines how the process's `stdout` and `stdin` streams will be
    * configured when executing {@link npmScripts}. Does not apply to `run` or
-   * {@link InitReleaseTaskRunner}.
+   * {@link ProtoReleaseTaskRunner}.
    *
    * This should always be left as `'pipe'` (the default) unless the task is the
    * only member of its task group (in which case `'inherit'` may be
@@ -205,28 +205,28 @@ export interface BaseInitTask {
   /**
    * A function called when the task is triggered.
    */
-  run?: InitReleaseTaskRunner;
+  run?: ProtoReleaseTaskRunner;
 }
 
 /**
  * A partially defined prerelease-`type` {@link ReleaseTask}.
  */
-export interface InitPrereleaseTask extends BaseInitTask {
+export interface ProtoPrereleaseTask extends BaseProtoTask {
   type?: 'pre';
 }
 
 /**
  * A partially defined postrelease-`type` {@link ReleaseTask}.
  */
-export interface InitPostreleaseTask extends BaseInitTask {
+export interface ProtoPostreleaseTask extends BaseProtoTask {
   type?: 'post';
 }
 
 /**
  * A partially defined release-`type` {@link ReleaseTask}.
  */
-export interface InitCoreReleaseTask
-  extends Omit<BaseInitTask, 'skippable' | 'npmScripts' | 'emoji'> {
+export interface ProtoCoreReleaseTask
+  extends Omit<BaseProtoTask, 'skippable' | 'npmScripts' | 'emoji'> {
   skippable?: false;
   npmScripts?: never[];
   emoji?: '';
@@ -687,9 +687,9 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
 function marshalTasks(executionContext: ExecutionContextWithProjectMetadata) {
   let count = 0;
 
-  const prereleaseTasks = initPrereleaseTasks.map(toReleaseTasks('pre'));
-  const coreReleaseTask = toReleaseTasks('release')(initReleaseTask);
-  const postreleaseTasks = initPostreleaseTasks.map(toReleaseTasks('post'));
+  const prereleaseTasks = protoPrereleaseTasks.map(toReleaseTasks('pre'));
+  const coreReleaseTask = toReleaseTasks('release')(protoReleaseTask);
+  const postreleaseTasks = protoPostreleaseTasks.map(toReleaseTasks('post'));
   const tasksInRunOrder = [...prereleaseTasks, [coreReleaseTask], ...postreleaseTasks];
 
   return {
@@ -712,18 +712,18 @@ function marshalTasks(executionContext: ExecutionContextWithProjectMetadata) {
     return self;
 
     function self(
-      taskOrTasks: InitPrereleaseTask | InitPostreleaseTask | InitCoreReleaseTask
+      taskOrTasks: ProtoPrereleaseTask | ProtoPostreleaseTask | ProtoCoreReleaseTask
     ): ReleaseTask;
     function self(
-      taskOrTasks: InitPrereleaseTask[] | InitPostreleaseTask[]
+      taskOrTasks: ProtoPrereleaseTask[] | ProtoPostreleaseTask[]
     ): ReleaseTask[];
     function self(
       taskOrTasks:
-        | InitPrereleaseTask
-        | InitPostreleaseTask
-        | InitCoreReleaseTask
-        | InitPrereleaseTask[]
-        | InitPostreleaseTask[]
+        | ProtoPrereleaseTask
+        | ProtoPostreleaseTask
+        | ProtoCoreReleaseTask
+        | ProtoPrereleaseTask[]
+        | ProtoPostreleaseTask[]
     ): ReleaseTask | ReleaseTask[] {
       if (Array.isArray(taskOrTasks)) {
         const tasks = taskOrTasks;
@@ -828,7 +828,7 @@ async function attemptToRun(
   return exitCode;
 }
 
-const initPrereleaseTasks: InitPrereleaseTask[][] = [
+const protoPrereleaseTasks: ProtoPrereleaseTask[][] = [
   [
     {
       skippable: false,
@@ -1002,7 +1002,7 @@ const initPrereleaseTasks: InitPrereleaseTask[][] = [
   ]
 ];
 
-const initReleaseTask: InitCoreReleaseTask = {
+const protoReleaseTask: ProtoCoreReleaseTask = {
   actionDescription: 'Running @-xun/release',
   helpDescription: 'Run @-xun/release (publish new release)',
   async run({ projectMetadata }, { dryRun, ci, quiet: isQuieted, silent: isSilenced }) {
@@ -1045,7 +1045,7 @@ const initReleaseTask: InitCoreReleaseTask = {
   }
 };
 
-const initPostreleaseTasks: InitPostreleaseTask[][] = [
+const protoPostreleaseTasks: ProtoPostreleaseTask[][] = [
   [
     {
       skippable: true,
