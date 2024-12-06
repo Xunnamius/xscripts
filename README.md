@@ -29,7 +29,7 @@ The NPM-based tooling that underpin all of my projects
 
 # xscripts (@-xun/scripts)
 
-Xscripts is a highly-opinionated personal tool for building, linting, and
+`xscripts` is a highly-opinionated personal tool for building, linting, and
 deploying my NPM-based projects. Similar in intent to kcd-scripts,
 react-scripts, etc.
 

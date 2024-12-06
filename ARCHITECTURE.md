@@ -2,7 +2,7 @@
 
 Before continuing with this document, see the document on the [generic project
 architecture][1] expected by projects (like this repository) that leverage
-Xscripts.
+xscripts.
 
 What follows are any notable additions and/or deviations from the aforementioned
 document.

@@ -1,18 +1,37 @@
+<p align="center" width="100%">
+  <img width="300" src="./{{repoName}}.png">
+</p>
+
+<p align="center" width="100%">
+<!-- xscripts-renovate-stop -->
+{{packageDescription}}
+<!-- xscripts-renovate-start -->
+</p>
+
+<hr />
+
 <!-- badges-start -->
 
 {{badges}}
 
 <!-- badges-end -->
 
-# {{prettyName}}
+<br />
 
-<!-- TODO -->
+# {{titleName}}
+
+<!-- xscripts-renovate-stop -->
 
 {{packageDescription}}
+
+<!-- xscripts-renovate-start -->
+
+<br />
 
 ---
 
 <!-- remark-ignore-start -->
+<!-- xscripts-renovate-stop -->
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -25,21 +44,37 @@
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- xscripts-renovate-start -->
 <!-- remark-ignore-end -->
+
+<br />
 
 ## Install
 
-<!-- TODO -->
+<!-- xscripts-renovate-stop -->
+
+To install {{repoName}}:
 
 ```shell
 npm install {{packageName}}
 ```
 
+If you want to use a specific version of {{repoName}}, provide its semver:
+
+```shell
+npm install {{packageName}}@1.2.3
+```
+
+<!-- xscripts-renovate-start -->
+
 ## Usage
 
+<!-- xscripts-renovate-stop -->
 <!-- TODO -->
 
 TODO
+
+<!-- xscripts-renovate-start -->
 
 ## Appendix
 
@@ -47,13 +82,9 @@ Further documentation can be found under {{repoReferenceDocs:`docs/`}}.
 
 ### Published Package Details
 
-<!-- TODO -->
-
 {{packageBuildDetailsShort}}
 
 <details><summary>Expand details</summary>
-
-<!-- TODO -->
 
 {{packageBuildDetailsLong}}
 
@@ -77,17 +108,20 @@ See {{repoReferenceContributing:CONTRIBUTING.md}} and
 ### Contributors
 
 <!-- remark-ignore-start -->
+<!-- xscripts-renovate-stop -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+<!-- xscripts-renovate-start -->
 <!-- remark-ignore-end -->
 
 Thanks goes to these wonderful people
 ({{repoReferenceAllContributorsEmojis:emoji key}}):
 
 <!-- remark-ignore-start -->
+<!-- xscripts-renovate-stop -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -97,6 +131,7 @@ Thanks goes to these wonderful people
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- xscripts-renovate-start -->
 <!-- remark-ignore-end -->
 
 This project follows the {{repoReferenceAllContributors:all-contributors}}

@@ -158,7 +158,7 @@ The second way is by running the following npm scripts in the specified order:
 npm run format
 
 # 4. Lint all recognized source file types under the current working directory.
-npm run lint:package:source
+npm run lint:package
 # The above only lints the current package if in a monorepo. To lint the entire
 # monorepo, use the following instead:
 #npm run lint:packages:all
