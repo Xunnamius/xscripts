@@ -400,7 +400,7 @@ ${SHORT_TAB}- ${(executionContext.state.dotEnvFilePaths as string[]).join(
 
 Provide --ci (--continuous-integration) to enable useful functionality for CI execution environments. Specifically: run npm ci (task #${findTaskByDescription(/npm ci/).id}), run xrelease in CI mode (task #${findTaskByDescription(/@-xun\/release/).id}), and facilitate package provenance if the runtime environment supports it (task #${findTaskByDescription(/@-xun\/release/).id}). If running the release procedure by hand instead of via CI/CD, use --no-ci to disable CI-specific functionality. --no-ci (\`--ci=false\`) is the default when the NODE_ENV environment variable is undefined or "development," otherwise --ci (\`--ci=true\`) is the default.
 
-Task #${findTaskByDescription(/@-xun\/changelog/).id} sets the XSCRIPTS_RELEASE_UPDATE_CHANGELOG environment variable in the current execution environment. This will be picked up by xrelease, causing it to rebuild the changelog using \`xscripts build changelog\`.
+Task #${findTaskByDescription(/@-xun\/changelog/).id} sets the XSCRIPTS_RELEASE_REBUILD_CHANGELOG environment variable in the current execution environment. This will be picked up by xrelease, causing it to rebuild the changelog using \`xscripts build changelog\`.
 
 Task #${findTaskByDescription(/sync-deps/).id} runs the equivalent of \`xscripts project renovate --scope this-package --task synchronize-interdependencies\` as a pre-release task.
 
@@ -512,8 +512,6 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
       debug('processing tasks');
 
       try {
-        process.env.XSCRIPTS_RELEASE_REBUILD_CHANGELOG = 'true';
-
         for (const [index, taskGroup] of tasksInRunOrder.entries()) {
           debug(
             'processing %O tasks in task group %O: %O',
@@ -655,7 +653,6 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
           }
         }
       } finally {
-        delete process.env.XSCRIPTS_RELEASE_REBUILD_CHANGELOG;
         genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       }
 
