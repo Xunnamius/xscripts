@@ -10,11 +10,10 @@
       "args": [
         "xscripts",
         "lint",
-        "--scope",
-        "unlimited",
-        "--linters",
-        "eslint",
-        "tsc"
+        "--scope=unlimited",
+        "--linter=eslint",
+        "--linter=tsc",
+        "--allow-warning-comments=false"
       ],
       "presentation": {
         "echo": true,
