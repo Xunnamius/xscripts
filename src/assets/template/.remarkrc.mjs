@@ -3,6 +3,7 @@ import assert from 'node:assert';
 
 import config from '../../../.remarkrc.mjs';
 
+// TODO: use rejoinder instead
 const debug = (await import('debug')).default('xscripts:config:remark:asset-templates');
 
 /**

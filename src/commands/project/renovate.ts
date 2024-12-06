@@ -70,11 +70,14 @@ export default function command({
       // !
       // TODO (is idempotent)
       // TODO (allows only renovating a subset of files)
+      // TODO (replace missing context items with "<!-- TODO -->" in md replace)
+      // TODO (during comparison, additional reference definitions at the bottom are allowed)
       //
       //
       //
       //
       // TODO (--deprecate --force (requires --force))
+      // TODO (xscripts-renovate-stop and xscripts-renovate-start)
       // TODO (like init, can generate missing configs and doesn't overwrite existing configs)
       // TODO (--interactive (default) to trigger an interactive fix of anything from project lint that is fixable (also offer to overwrite/replace, merge, etc; similar to apt) or --no-interactive to do the same but fail if any problem is not automatically resolvable; can also call --no-interactive --force to do the same but force through any changes and overwrite existing configs without regard for their contents (SUPER DANGEROUS))
       // TODO (does nothing if called without at least one "Task Options" (--tasks) argument; i.e. must specify each thing that you want done

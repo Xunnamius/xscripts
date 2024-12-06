@@ -50,7 +50,7 @@ export enum PseudodecoratorTag {
 /**
  * A so-called "pseudodecorator" is a decorator-like syntax that can appear
  * anywhere in almost any type of file and is used to pass information to
- * Xscripts. They consist of an opening brace "{", a {@link PseudodecoratorTag},
+ * xscripts. They consist of an opening brace "{", a {@link PseudodecoratorTag},
  * an optional delimiter, a _delimited_ list of _valid characters_, an optional
  * delimiter, and a closing brace "}".
  *

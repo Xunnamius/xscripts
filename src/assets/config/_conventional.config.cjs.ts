@@ -922,10 +922,9 @@ export function moduleExport({
  * Return pathspecs for excluding certain paths from consideration depending on
  * the project structure and the current working directory.
  *
- * This function takes into account {@link WorkspaceAttribute.Shared} packages.
- *
- * Useful for narrowing the scope of `@-xun/changelog` and semantic-release
- * -based tooling like xchangelog and xrelease.
+ * This function takes into account {@link WorkspaceAttribute.Shared} packages
+ * and is useful for narrowing the scope of tooling like xchangelog and
+ * xrelease.
  */
 export function getExclusionaryPathspecs({
   projectMetadata: { cwdPackage, rootPackage, subRootPackages }
