@@ -59,6 +59,8 @@ export default function command({
 
       debug('scope: %O', scope);
 
+      // ! Must NEVER proceed if the repo is dirty
+
       // !
       // TODO: all -operations are tasks, which are sub-arguments of --tasks
       // TODO: (alias --task)
@@ -67,6 +69,7 @@ export default function command({
       // TODO: user to type the package's name for confirmation
       // !
       // TODO (is idempotent)
+      // TODO (allows only renovating a subset of files)
       //
       //
       //
