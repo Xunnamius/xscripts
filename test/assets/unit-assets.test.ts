@@ -22,10 +22,15 @@ const dummyContext: Omit<TransformerContext, 'asset'> = {
   packageName: 'package-name',
   packageVersion: '1.2.3-fake',
   packageDescription: 'package-description',
-  packageBuildDetailsShort: 'package-build-details-short',
-  packageBuildDetailsLong: 'package-build-details-long',
+  packageBuildDetailsShort: [
+    'package-build-details-short-1',
+    'package-build-details-short-2',
+    'package-build-details-short-3',
+    'package-build-details-short-4'
+  ],
+  packageBuildDetailsLong: ['package-build-details-long-1'],
   projectMetadata: fixtureToProjectMetadata('goodHybridrepo'),
-  prettyName: 'pretty-name',
+  titleName: 'title-name',
   repoName: 'repo-name',
   repoType: ProjectAttribute.Polyrepo,
   repoUrl: 'repo-url',
@@ -648,7 +653,7 @@ specification. Contributions of any kind welcome!
     ).toMatchInlineSnapshot(`
       "badges
 
-      # pretty-name
+      # {{prettyName}}
 
       package-description
 
@@ -656,7 +661,21 @@ specification. Contributions of any kind welcome!
 
       Further documentation can be found under [\`docs/\`](repo-reference-docs).
 
-      package-build-details-short
+      <!-- TODO: Choose one of the following and delete the others: -->
+
+      package-build-details-short-1
+
+      ---✄---
+
+      package-build-details-short-2
+
+      ---✄---
+
+      package-build-details-short-3
+
+      ---✄---
+
+      package-build-details-short-4
 
       See [LICENSE](repo-reference-license).
 

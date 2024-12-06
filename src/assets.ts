@@ -50,6 +50,8 @@ export type TransformerContext = {
   /**
    * The markdown badge references that are standard for every xscripts-powered
    * project.
+   *
+   * GFM and GitHub-supported HTML is allowed.
    */
   badges: string;
   /**
@@ -66,23 +68,38 @@ export type TransformerContext = {
   packageDescription: string;
   /**
    * A short description of distributables.
+   *
+   * **This context variable is defined as a string array and therefore will
+   * offer the user several choices that they must narrow down manually.** To
+   * avoid noisy diffs during renovation, the user's choice should correspond
+   * with their choice in {@link TransformerContext.packageBuildDetailsLong}.
    */
-  packageBuildDetailsShort: string;
+  packageBuildDetailsShort: string[];
   /**
    * A technical description of distributables.
+   *
+   * **This context variable is defined as a string array and therefore will
+   * offer the user several choices that they must narrow down manually.** To
+   * avoid noisy diffs during renovation, the user's choice should correspond
+   * with their choice in {@link TransformerContext.packageBuildDetailsShort}.
    */
-  packageBuildDetailsLong: string;
+  packageBuildDetailsLong: string[];
   /**
    * @see {@link ProjectMetadata}.
    */
   projectMetadata: ProjectMetadata;
   /**
-   * The "branding version" of `packageName` (e.g. `xscripts` vs
-   * `@-xun/scripts`).
+   * The value of the singular H1 heading at the top of a package's `README.md`
+   * file.
+   *
+   * Do not rely on this string being a valid package name as it may contain any
+   * manner of symbol or punctuation.
    */
-  prettyName: string;
+  titleName: string;
   /**
    * The name of the repository on GitHub or other service.
+   *
+   * This string is always a URL-safe and valid GitHub repository name.
    */
   repoName: string;
   /**
@@ -149,6 +166,11 @@ export type TransformerContext = {
   /**
    * The well-known package-specific reference definitions used throughout this
    * context object.
+   *
+   * **During renovation, the string value of this context key depends on the
+   * version of
+   * {@link TransformerContext.packageBuildDetailsLong}/{@link TransformerContext.packageBuildDetailsShort}
+   * found in the existing document.**
    */
   repoReferenceDefinitionsPackage: string;
   /**
@@ -252,10 +274,14 @@ export async function retrieveConfigAsset({
  * `{{variableName}}`) with matching keys in `TemplateContext` replaced with
  * their contextual values.
  *
- * Template variables accept an optional parameter which, if given, will be
- * replaced by a link of the form `[parameter](contextual-value)`; e.g.
- * `{{variableName:link text}}` will be replaced with `[link
+ * Some template variables accept an optional `linkText` parameter which, if
+ * given, will be replaced by a link of the form `[linkText](contextual-value)`;
+ * e.g. `{{variableName:link text}}` will be replaced with `[link
  * text](variableName's-contextual-value)`.
+ *
+ * Other template variables (defined as arrays) return multiple choices that the
+ * user must manually narrow, similar to a merge conflict in git. See
+ * {@link TransformerContext} for which template variables are affected.
  */
 export async function compileTemplate(
   templatePath: RelativePath,
@@ -280,10 +306,14 @@ export async function compileTemplate(
  * returns that same object with each path value replaced by the result of
  * calling {@link compileTemplate} with said path as an argument.
  *
- * Template variables accept an optional parameter which, if given, will be
- * replaced by a link of the form `[parameter](contextual-value)`; e.g.
- * `{{variableName:link text}}` will be replaced with `[link
+ * Some template variables accept an optional `linkText` parameter which, if
+ * given, will be replaced by a link of the form `[linkText](contextual-value)`;
+ * e.g. `{{variableName:link text}}` will be replaced with `[link
  * text](variableName's-contextual-value)`.
+ *
+ * Other template variables (defined as arrays) return multiple choices that the
+ * user must manually narrow, similar to a merge conflict in git. See
+ * {@link TransformerContext} for which template variables are affected.
  */
 export async function compileTemplates(
   templates: Record<string, RelativePath>,
@@ -306,10 +336,14 @@ export async function compileTemplates(
  * variables (e.g. `{{variableName}}`) with matching keys in `TemplateContext`
  * replaced with their contextual values.
  *
- * Template variables accept an optional parameter which, if given, will be
- * replaced by a link of the form `[parameter](contextual-value)`; e.g.
- * `{{variableName:link text}}` will be replaced with `[link
+ * Some template variables accept an optional `linkText` parameter which, if
+ * given, will be replaced by a link of the form `[linkText](contextual-value)`;
+ * e.g. `{{variableName:link text}}` will be replaced with `[link
  * text](variableName's-contextual-value)`.
+ *
+ * Other template variables (defined as arrays) return multiple choices that the
+ * user must manually narrow, similar to a merge conflict in git. See
+ * {@link TransformerContext} for which template variables are affected.
  */
 export function compileTemplateInMemory(
   rawTemplate: string,
@@ -322,17 +356,26 @@ export function compileTemplateInMemory(
   debug('rawTemplate: %O', rawTemplate);
 
   // eslint-disable-next-line unicorn/no-array-reduce
-  const compiledTemplate = Object.entries(context).reduce((result, [key, value_]) => {
-    // ? If caller wants to replace {{projectMetadata}} with [object Object],
-    // ? that's their business.
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    const value = String(value_);
-    return result.replaceAll(
-      new RegExp(`{{${key}(?:|:|:(.+?(?=}})))}}`, 'g'),
-      (_matchText, linkText: string | undefined) => {
-        return linkText ? `[${linkText}](${value})` : value;
-      }
-    );
+  const compiledTemplate = Object.entries(context).reduce((result, [key, value]) => {
+    if (typeof value === 'string') {
+      return result.replaceAll(
+        new RegExp(`{{${key}(?:|:|:(.+?(?=}})))}}`, 'g'),
+        (_matchText, linkText: string | undefined) => {
+          return linkText ? `[${linkText}](${value})` : value;
+        }
+      );
+    } else if (Array.isArray(value)) {
+      return result.replaceAll(
+        `{{${key}}}`,
+        `
+<!-- TODO: Choose one of the following and delete the others: -->
+
+${value.join('\n\n---✄---\n\n')}
+`.trim()
+      );
+    }
+
+    return result;
   }, rawTemplate);
 
   debug('compiledTemplate: %O', compiledTemplate);
