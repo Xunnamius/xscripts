@@ -272,21 +272,13 @@ export function verifyConditions(
   pluginDebug('parserOpts: %O', pluginConfig.parserOpts);
   pluginDebug('writerOpts: %O', pluginConfig.writerOpts);
 
-  // TODO: replace with ErrorMessage.X
   assert(
     pluginConfig.releaseSectionPath?.endsWith('.md'),
-    'the @-xun/scripts semantic-release plugin requires the "releaseSectionPath" option be a non-empty string ending with ".md"'
+    ErrorMessage.BadReleaseSectionPath()
   );
 
-  assert(
-    pluginConfig.parserOpts,
-    'the @-xun/scripts semantic-release plugin requires the "parserOpts" option to be defined'
-  );
-
-  assert(
-    pluginConfig.writerOpts,
-    'the @-xun/scripts semantic-release plugin requires the "writerOpts" option to be defined'
-  );
+  assert(pluginConfig.parserOpts, ErrorMessage.BadParserOpts());
+  assert(pluginConfig.writerOpts, ErrorMessage.BadWriterOpts());
 }
 
 // TODO: implement so-called cross-dependency version coherence here (--synchronize-interdependencies)

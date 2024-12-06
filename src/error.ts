@@ -200,10 +200,10 @@ export const ErrorMessage = {
     return `${subject} expects NODE_ENV to be one of: ${validValues.join(', ')} (saw: "${badValue}")`;
   },
   ReleaseEnvironmentValidationFailed() {
-    return 'one or more runtime environment validation checks failed';
+    return 'one or more release runtime environment validation checks failed';
   },
   ReleaseRepositoryStateValidationFailed() {
-    return 'one or more runtime environment validation checks failed';
+    return 'one or more repository state validation checks failed';
   },
   ReleaseRepositoryNoCurrentBranch() {
     return 'repository "HEAD" ref is not currently on an existing branch (are you in detached HEAD state?)';
@@ -213,6 +213,15 @@ export const ErrorMessage = {
   },
   ReleaseRunnerExecutionFailed() {
     return 'one or more release tasks failed to complete';
+  },
+  BadReleaseSectionPath() {
+    return 'the @-xun/scripts semantic-release plugin requires the "releaseSectionPath" option be a non-empty string ending with ".md"';
+  },
+  BadParserOpts() {
+    return 'the @-xun/scripts semantic-release plugin requires the "parserOpts" option to be defined';
+  },
+  BadWriterOpts() {
+    return 'the @-xun/scripts semantic-release plugin requires the "writerOpts" option to be defined';
   },
   CodecovDownloaderOnlySupportsLinux() {
     return 'the Codecov downloader only supports the Linux operating system; ensure a suitable "codecov" binary exists in the runtime path before reattempting this command';
