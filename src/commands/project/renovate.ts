@@ -62,7 +62,7 @@ export default function command({
       // ! Must NEVER proceed if the repo is dirty
 
       // !
-      // TODO: all -operations are tasks, which are sub-arguments of --tasks
+      // TODO: all operations are tasks, which are sub-arguments of --tasks
       // TODO: (alias --task)
       // !
       // TODO: all potentially destructive activities require --force or for the
