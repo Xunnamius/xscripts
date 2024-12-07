@@ -457,7 +457,14 @@ export type BfeBuilderObjectValueExtensionObject = Record<string, unknown>;
  */
 export type BfeBuilderObjectValueWithoutExtensions = Omit<
   BfGenericBuilderObjectValue,
-  'conflicts' | 'implies' | 'demandOption' | 'demand' | 'require' | 'required' | 'default'
+  | 'conflicts'
+  | 'implies'
+  | 'demandOption'
+  | 'demand'
+  | 'require'
+  | 'required'
+  | 'default'
+  | 'coerce'
 >;
 
 /**
@@ -1389,21 +1396,21 @@ function transmuteBFEBuilderToBFBuilder<
       separateExtensionsFromBuilderObjectValue({ builderObjectValue });
 
     const { demandThisOption } = bfeBuilderObjectValue;
+    const genericVanillaYargsBuilderObjectValue =
+      vanillaYargsBuilderObjectValue as BfGenericBuilderObjectValue;
 
     if (demandThisOption !== undefined) {
-      (vanillaYargsBuilderObjectValue as BfGenericBuilderObjectValue).demandOption =
-        demandThisOption;
+      genericVanillaYargsBuilderObjectValue.demandOption = demandThisOption;
     }
 
     // ? We add it back here so that vanilla yargs will include it in help text
     if (bfeBuilderObjectValue.default !== undefined) {
-      (vanillaYargsBuilderObjectValue as BfGenericBuilderObjectValue).default =
-        bfeBuilderObjectValue.default;
+      genericVanillaYargsBuilderObjectValue.default = bfeBuilderObjectValue.default;
     }
 
-    if (vanillaYargsBuilderObjectValue.coerce !== undefined) {
-      const coercer = vanillaYargsBuilderObjectValue.coerce;
-      vanillaYargsBuilderObjectValue.coerce = (parameter) => {
+    if (genericVanillaYargsBuilderObjectValue.coerce !== undefined) {
+      const coercer = genericVanillaYargsBuilderObjectValue.coerce;
+      genericVanillaYargsBuilderObjectValue.coerce = (parameter) => {
         return coercer(
           vanillaYargsBuilderObjectValue.array ? [parameter].flat() : parameter
         );
