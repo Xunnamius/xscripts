@@ -266,9 +266,6 @@ When attempting to renovate a Markdown file without replacer regions when its co
       // TODO: Replace missing context items with "<!-- TODO -->" if they are
       // TODO: not resolvable (and note it in debug messaging)
 
-      // TODO: All possible tasks are executed if no flags given (conditioned on
-      // TODO: --scope)
-
       // TODO: Finish: reconfigure-repo, regenerate-assets/aliases, sync-deps
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
