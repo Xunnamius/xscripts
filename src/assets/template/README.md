@@ -1,37 +1,35 @@
+<!-- xscripts-renovate-region-start -->
+
 <p align="center" width="100%">
   <img width="300" src="./{{repoName}}.png">
 </p>
 
 <p align="center" width="100%">
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 {{packageDescription}}
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 </p>
 
 <hr />
 
-<!-- badges-start -->
-
 {{badges}}
-
-<!-- badges-end -->
 
 <br />
 
 # {{titleName}}
 
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 
 {{packageDescription}}
 
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 
 <br />
 
 ---
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -44,14 +42,14 @@
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 <br />
 
 ## Install
 
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 
 To install {{repoName}}:
 
@@ -65,16 +63,13 @@ If you want to use a specific version of {{repoName}}, provide its semver:
 npm install {{packageName}}@1.2.3
 ```
 
-<!-- xscripts-renovate-start -->
-
 ## Usage
 
-<!-- xscripts-renovate-stop -->
 <!-- TODO -->
 
 TODO
 
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 
 ## Appendix
 
@@ -84,9 +79,17 @@ Further documentation can be found under {{repoReferenceDocs:`docs/`}}.
 
 {{packageBuildDetailsShort}}
 
+<!-- xscripts-renovate-region-end -->
+<!-- TODO: custom details here -->
+<!-- xscripts-renovate-region-start -->
+
 <details><summary>Expand details</summary>
 
 {{packageBuildDetailsLong}}
+
+<!-- xscripts-renovate-region-end -->
+<!-- TODO: custom details here -->
+<!-- xscripts-renovate-region-start -->
 
 </details>
 
@@ -108,20 +111,20 @@ See {{repoReferenceContributing:CONTRIBUTING.md}} and
 ### Contributors
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 Thanks goes to these wonderful people
 ({{repoReferenceAllContributorsEmojis:emoji key}}):
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -131,11 +134,14 @@ Thanks goes to these wonderful people
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 This project follows the {{repoReferenceAllContributors:all-contributors}}
 specification. Contributions of any kind welcome!
+
+<!-- xscripts-renovate-region-end -->
+<!-- xscripts-renovate-region-definitions -->
 
 {{repoReferenceDefinitionsBadge}}
 

@@ -1,40 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`::compileTemplate accepts a template file path and returns a compilation result string: README.md 1`] = `
-"<p align="center" width="100%">
+"<!-- xscripts-renovate-region-start -->
+<p align="center" width="100%">
   <img width="300" src="./repo-name.png">
 </p>
 
 <p align="center" width="100%">
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 package-description
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 </p>
 
 <hr />
 
-<!-- badges-start -->
-
 badges
-
-<!-- badges-end -->
 
 <br />
 
 # title-name
 
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 
 package-description
 
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 
 <br />
 
 ---
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -47,14 +44,14 @@ package-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 <br />
 
 ## Install
 
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 
 To install repo-name:
 
@@ -68,16 +65,13 @@ If you want to use a specific version of repo-name, provide its semver:
 npm install package-name@1.2.3
 \`\`\`
 
-<!-- xscripts-renovate-start -->
-
 ## Usage
 
-<!-- xscripts-renovate-stop -->
 <!-- TODO -->
 
 TODO
 
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 
 ## Appendix
 
@@ -101,11 +95,23 @@ package-build-details-short-3
 
 package-build-details-short-4
 
+<!-- xscripts-renovate-region-end -->
+
+<!-- TODO: custom details here -->
+
+<!-- xscripts-renovate-region-start -->
+
 <details><summary>Expand details</summary>
 
 <!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
 package-build-details-long-1
+
+<!-- xscripts-renovate-region-end -->
+
+<!-- TODO: custom details here -->
+
+<!-- xscripts-renovate-region-start -->
 
 </details>
 
@@ -127,20 +133,20 @@ See [CONTRIBUTING.md](repo-reference-contributing) and
 ### Contributors
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 Thanks goes to these wonderful people
 ([emoji key](repo-reference-all-contributors-emojis)):
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -150,11 +156,15 @@ Thanks goes to these wonderful people
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 This project follows the [all-contributors](repo-reference-all-contributors)
 specification. Contributions of any kind welcome!
+
+<!-- xscripts-renovate-region-end -->
+
+<!-- xscripts-renovate-region-definitions -->
 
 repo-reference-definitions-badge
 
@@ -325,40 +335,37 @@ At this point, you're ready to create your PR and ✨ contribute ✨!
 [pr-compare]: repo-url/compare
 [xpipeline]: https://github.com/Xunnamius/xpipeline#readme
 ",
-  "README.md": "<p align="center" width="100%">
+  "README.md": "<!-- xscripts-renovate-region-start -->
+<p align="center" width="100%">
   <img width="300" src="./repo-name.png">
 </p>
 
 <p align="center" width="100%">
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 package-description
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 </p>
 
 <hr />
 
-<!-- badges-start -->
-
 badges
-
-<!-- badges-end -->
 
 <br />
 
 # title-name
 
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 
 package-description
 
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 
 <br />
 
 ---
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -371,14 +378,14 @@ package-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 <br />
 
 ## Install
 
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 
 To install repo-name:
 
@@ -392,16 +399,13 @@ If you want to use a specific version of repo-name, provide its semver:
 npm install package-name@1.2.3
 \`\`\`
 
-<!-- xscripts-renovate-start -->
-
 ## Usage
 
-<!-- xscripts-renovate-stop -->
 <!-- TODO -->
 
 TODO
 
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 
 ## Appendix
 
@@ -425,11 +429,23 @@ package-build-details-short-3
 
 package-build-details-short-4
 
+<!-- xscripts-renovate-region-end -->
+
+<!-- TODO: custom details here -->
+
+<!-- xscripts-renovate-region-start -->
+
 <details><summary>Expand details</summary>
 
 <!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
 package-build-details-long-1
+
+<!-- xscripts-renovate-region-end -->
+
+<!-- TODO: custom details here -->
+
+<!-- xscripts-renovate-region-start -->
 
 </details>
 
@@ -451,20 +467,20 @@ See [CONTRIBUTING.md](repo-reference-contributing) and
 ### Contributors
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 Thanks goes to these wonderful people
 ([emoji key](repo-reference-all-contributors-emojis)):
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -474,11 +490,15 @@ Thanks goes to these wonderful people
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 This project follows the [all-contributors](repo-reference-all-contributors)
 specification. Contributions of any kind welcome!
+
+<!-- xscripts-renovate-region-end -->
+
+<!-- xscripts-renovate-region-definitions -->
 
 repo-reference-definitions-badge
 
@@ -547,6 +567,8 @@ exports[`::retrieveConfigAsset <config assets> all-contributors: .all-contributo
 exports[`::retrieveConfigAsset <config assets> architecture (markdown): ARCHITECTURE.md 1`] = `
 "ARCHITECTURE.md
 ⏶⏷⏶⏷⏶
+<!-- xscripts-renovate-region-start -->
+
 # 📐 Project Architecture
 
 Before continuing with this document, see the document on the [generic project
@@ -560,12 +582,12 @@ document.
 
 ---
 
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 
 There are as of yet no notable deviations or additions. See the linked document
 (above) for information on the architecture of this project.
 
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-definitions -->
 
 [1]: https://github.com/Xunnamius/xscripts/wiki/Generic-Project-Architecture
 [2]: https://github.com/Xunnamius/xscripts
@@ -608,9 +630,8 @@ module.exports = deepMergeConfig(
 function getBabelAliases() {
   // ! The aliases described in "paths" are auto-generated by xscripts.
   // ! Instead of modifying it directly, consider regenerating aliases
-  // ! across the entire project: \`xscripts project renovate
-  // ! --regenerate-aliases\`; you can include custom aliases using the
-  // ! \`--with-aliases-loaded-from\` parameter.
+  // ! across the entire project with: \`npx xscripts project renovate
+  // ! --regenerate-aliases\`
   // * These aliases appear in:
   // *   - tsconfig.json      (JSON)
   // *   - babel.config.cjs   (CJS)
@@ -1060,9 +1081,8 @@ export default config;
 function getEslintAliases() {
   // ! The aliases described in "paths" are auto-generated by xscripts.
   // ! Instead of modifying it directly, consider regenerating aliases
-  // ! across the entire project: \`xscripts project renovate
-  // ! --regenerate-aliases\`; you can include custom aliases using the
-  // ! \`--with-aliases-loaded-from\` parameter.
+  // ! across the entire project with: \`npx xscripts project renovate
+  // ! --regenerate-aliases\`
   // * These aliases appear in:
   // *   - tsconfig.json      (JSON)
   // *   - babel.config.cjs   (CJS)
@@ -1858,9 +1878,8 @@ export default config;
 function getJestAliases() {
   // ! The aliases described in "paths" are auto-generated by xscripts.
   // ! Instead of modifying it directly, consider regenerating aliases
-  // ! across the entire project: \`xscripts project renovate
-  // ! --regenerate-aliases\`; you can include custom aliases using the
-  // ! \`--with-aliases-loaded-from\` parameter.
+  // ! across the entire project with: \`npx xscripts project renovate
+  // ! --regenerate-aliases\`
   // * These aliases appear in:
   // *   - tsconfig.json      (JSON)
   // *   - babel.config.cjs   (CJS)
@@ -2557,40 +2576,37 @@ fixtures
 exports[`::retrieveConfigAsset <config assets> readme (markdown): README.md 1`] = `
 "README.md
 ⏶⏷⏶⏷⏶
+<!-- xscripts-renovate-region-start -->
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
 </p>
 
 <p align="center" width="100%">
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 package-description
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 </p>
 
 <hr />
 
-<!-- badges-start -->
-
 badges
-
-<!-- badges-end -->
 
 <br />
 
 # title-name
 
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 
 package-description
 
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 
 <br />
 
 ---
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -2603,14 +2619,14 @@ package-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 <br />
 
 ## Install
 
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 
 To install repo-name:
 
@@ -2624,16 +2640,13 @@ If you want to use a specific version of repo-name, provide its semver:
 npm install package-name@1.2.3
 \`\`\`
 
-<!-- xscripts-renovate-start -->
-
 ## Usage
 
-<!-- xscripts-renovate-stop -->
 <!-- TODO -->
 
 TODO
 
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 
 ## Appendix
 
@@ -2657,11 +2670,23 @@ package-build-details-short-3
 
 package-build-details-short-4
 
+<!-- xscripts-renovate-region-end -->
+
+<!-- TODO: custom details here -->
+
+<!-- xscripts-renovate-region-start -->
+
 <details><summary>Expand details</summary>
 
 <!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
 
 package-build-details-long-1
+
+<!-- xscripts-renovate-region-end -->
+
+<!-- TODO: custom details here -->
+
+<!-- xscripts-renovate-region-start -->
 
 </details>
 
@@ -2683,20 +2708,20 @@ See [CONTRIBUTING.md](repo-reference-contributing) and
 ### Contributors
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 Thanks goes to these wonderful people
 ([emoji key](repo-reference-all-contributors-emojis)):
 
 <!-- remark-ignore-start -->
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -2706,11 +2731,15 @@ Thanks goes to these wonderful people
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-start -->
 <!-- remark-ignore-end -->
 
 This project follows the [all-contributors](repo-reference-all-contributors)
 specification. Contributions of any kind welcome!
+
+<!-- xscripts-renovate-region-end -->
+
+<!-- xscripts-renovate-region-definitions -->
 
 repo-reference-definitions-badge
 
@@ -2992,9 +3021,8 @@ exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsconfig
     "noUnusedParameters": true,
         // ! The aliases described in "paths" are auto-generated by xscripts.
     // ! Instead of modifying it directly, consider regenerating aliases
-    // ! across the entire project: \`xscripts project renovate
-    // ! --regenerate-aliases\`; you can include custom aliases using the
-    // ! \`--with-aliases-loaded-from\` parameter.
+    // ! across the entire project with: \`npx xscripts project renovate
+    // ! --regenerate-aliases\`
     // * These aliases appear in:
     // *   - tsconfig.json      (JSON)
     // *   - babel.config.cjs   (CJS)

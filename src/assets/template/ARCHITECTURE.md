@@ -1,3 +1,5 @@
+<!-- xscripts-renovate-region-start -->
+
 # 📐 Project Architecture
 
 Before continuing with this document, see the document on the [generic project
@@ -11,12 +13,12 @@ document.
 
 ---
 
-<!-- xscripts-renovate-stop -->
+<!-- xscripts-renovate-region-end -->
 
 There are as of yet no notable deviations or additions. See the linked document
 (above) for information on the architecture of this project.
 
-<!-- xscripts-renovate-start -->
+<!-- xscripts-renovate-region-definitions -->
 
 [1]: https://github.com/Xunnamius/xscripts/wiki/Generic-Project-Architecture
 [2]: https://github.com/Xunnamius/xscripts
