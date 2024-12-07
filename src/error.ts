@@ -263,7 +263,7 @@ export const ErrorMessage = {
       : `task ${id} is not runnable`;
   },
   UnsupportedScope(taskName: string, givenScope: string, supportedScopes: string[]) {
-    return `renovation task "${taskName}" only supports the --${supportedScopes.join(' and --')} scope${supportedScopes.length === 1 ? '' : 's'}, but --scope=${givenScope} was seen instead`;
+    return `renovation task "${taskName}" only supports the \`${supportedScopes.join('` and `')}\` scope${supportedScopes.length === 1 ? '' : 's'}, but \`${givenScope}\` was seen instead`;
   },
   DangerousRenovationRequiresForce(taskName: string) {
     return `renovation task "${taskName}" is DANGEROUS and therefore must be invoked with --force`;
