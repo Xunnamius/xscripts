@@ -34,7 +34,7 @@ An `Error` class where the first letter of the message is capitalized.
 
 #### Defined in
 
-[packages/cli-utils/src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/packages/cli-utils/src/error.ts#L11)
+[packages/cli-utils/src/error.ts:11](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/packages/cli-utils/src/error.ts#L11)
 
 ## Properties
 

@@ -2,11 +2,11 @@
 
 ***
 
-[@-xun/scripts](../../../../README.md) / [src/commands/release](../README.md) / InitReleaseTaskRunner
+[@-xun/scripts](../../../../README.md) / [src/commands/release](../README.md) / ProtoReleaseTaskRunner
 
-# Type Alias: InitReleaseTaskRunner()
+# Type Alias: ProtoReleaseTaskRunner()
 
-> **InitReleaseTaskRunner**: (`executionContext`, `argv`, `taskContext`) => `ReturnType`\<[`ReleaseTaskRunner`](ReleaseTaskRunner.md)\>
+> **ProtoReleaseTaskRunner**: (`executionContext`, `argv`, `taskContext`) => `ReturnType`\<[`ReleaseTaskRunner`](ReleaseTaskRunner.md)\>
 
 A partial release task with loose typings for quickly authoring new tasks.
 
@@ -30,4 +30,4 @@ A partial release task with loose typings for quickly authoring new tasks.
 
 ## Defined in
 
-[src/commands/release.ts:134](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L134)
+[src/commands/release.ts:148](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L148)

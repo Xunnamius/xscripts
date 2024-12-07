@@ -27,4 +27,4 @@ Returns `true` if `path` points to a file with an extension accepted by Babel
 
 ## Defined in
 
-[src/assets/config/\_babel.config.cjs.ts:122](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_babel.config.cjs.ts#L122)
+[src/assets/config/\_babel.config.cjs.ts:122](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets/config/_babel.config.cjs.ts#L122)

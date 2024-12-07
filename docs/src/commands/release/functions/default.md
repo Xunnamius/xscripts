@@ -46,4 +46,4 @@
 
 ## Defined in
 
-[src/commands/release.ts:244](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L244)
+[src/commands/release.ts:260](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L260)

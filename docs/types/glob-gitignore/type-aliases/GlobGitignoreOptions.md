@@ -20,4 +20,4 @@ with compatible format) split by `"\n"`.
 
 ## Defined in
 
-[types/glob-gitignore.d.ts:4](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/types/glob-gitignore.d.ts#L4)
+[types/glob-gitignore.d.ts:4](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/types/glob-gitignore.d.ts#L4)

@@ -184,7 +184,7 @@ node\_modules/prettier/index.d.ts:367
 
 ### htmlWhitespaceSensitivity?
 
-> `optional` **htmlWhitespaceSensitivity**: `"strict"` \| `"ignore"` \| `"css"`
+> `optional` **htmlWhitespaceSensitivity**: `"ignore"` \| `"strict"` \| `"css"`
 
 How to handle whitespaces in HTML.
 

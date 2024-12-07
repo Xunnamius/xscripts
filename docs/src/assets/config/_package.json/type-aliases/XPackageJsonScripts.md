@@ -222,7 +222,7 @@ the goal of bringing the project up to date on latest best practices.
 #### Example
 
 ```ts
-`NODE_NO_WARNINGS=1 xscripts project renovate`
+`NODE_NO_WARNINGS=1 xscripts project renovate --`
 ```
 
 ### start?
@@ -333,4 +333,4 @@ tests across the entire project.
 
 ## Defined in
 
-[src/assets/config/\_package.json.ts:19](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_package.json.ts#L19)
+[src/assets/config/\_package.json.ts:19](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets/config/_package.json.ts#L19)

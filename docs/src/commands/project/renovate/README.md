@@ -11,10 +11,14 @@
 ### Type Aliases
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
+- [RenovationTask](type-aliases/RenovationTask.md)
+- [RenovationTaskArgv](type-aliases/RenovationTaskArgv.md)
+- [RenovationTaskContext](type-aliases/RenovationTaskContext.md)
 
 ### Variables
 
 - [projectRenovateScopes](variables/projectRenovateScopes.md)
+- [renovationTasks](variables/renovationTasks.md)
 
 ### Functions
 

@@ -10,4 +10,4 @@
 
 ## Defined in
 
-[src/commands/index.ts:20](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/index.ts#L20)
+[src/commands/index.ts:20](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/index.ts#L20)

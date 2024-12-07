@@ -176,7 +176,7 @@
 
 #### scripts.renovate
 
-> `readonly` **renovate**: `"NODE_NO_WARNINGS=1 xscripts project renovate"` = `'NODE_NO_WARNINGS=1 xscripts project renovate'`
+> `readonly` **renovate**: `"NODE_NO_WARNINGS=1 xscripts project renovate --"` = `'NODE_NO_WARNINGS=1 xscripts project renovate --'`
 
 #### scripts.start
 
@@ -236,4 +236,4 @@
 
 ## Defined in
 
-[src/assets/config/\_package.json.ts:294](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_package.json.ts#L294)
+[src/assets/config/\_package.json.ts:294](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets/config/_package.json.ts#L294)

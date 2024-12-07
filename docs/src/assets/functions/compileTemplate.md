@@ -13,6 +13,15 @@ asset at that path with all handlebars-style template variables (e.g.
 `{{variableName}}`) with matching keys in `TemplateContext` replaced with
 their contextual values.
 
+Some template variables accept an optional `linkText` parameter which, if
+given, will be replaced by a link of the form `[linkText](contextual-value)`;
+e.g. `{{variableName:link text}}` will be replaced with `[link
+text](variableName's-contextual-value)`.
+
+Other template variables (defined as arrays) return multiple choices that the
+user must manually narrow, similar to a merge conflict in git. See
+[TransformerContext](../type-aliases/TransformerContext.md) for which template variables are affected.
+
 ## Parameters
 
 ### templatePath
@@ -29,4 +38,4 @@ their contextual values.
 
 ## Defined in
 
-[src/assets.ts:182](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets.ts#L182)
+[src/assets.ts:286](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets.ts#L286)

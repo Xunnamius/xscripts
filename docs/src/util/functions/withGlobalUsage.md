@@ -63,4 +63,4 @@ true
 
 ## Defined in
 
-[packages/bfe/src/index.ts:1223](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/packages/bfe/src/index.ts#L1223)
+[packages/bfe/src/index.ts:1230](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/packages/bfe/src/index.ts#L1230)

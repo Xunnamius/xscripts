@@ -25,4 +25,4 @@ checking commands that only operate in the "unlimited" scope.
 
 #### Defined in
 
-[src/configure.ts:94](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/configure.ts#L94)
+[src/configure.ts:94](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/configure.ts#L94)

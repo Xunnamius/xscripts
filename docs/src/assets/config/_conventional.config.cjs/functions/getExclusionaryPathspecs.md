@@ -11,10 +11,9 @@
 Return pathspecs for excluding certain paths from consideration depending on
 the project structure and the current working directory.
 
-This function takes into account WorkspaceAttribute.Shared packages.
-
-Useful for narrowing the scope of `@-xun/changelog` and semantic-release
--based tooling like xchangelog and xrelease.
+This function takes into account WorkspaceAttribute.Shared packages
+and is useful for narrowing the scope of tooling like xchangelog and
+xrelease.
 
 ## Parameters
 
@@ -30,4 +29,4 @@ Useful for narrowing the scope of `@-xun/changelog` and semantic-release
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:940](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/assets/config/_conventional.config.cjs.ts#L940)
+[src/assets/config/\_conventional.config.cjs.ts:929](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets/config/_conventional.config.cjs.ts#L929)

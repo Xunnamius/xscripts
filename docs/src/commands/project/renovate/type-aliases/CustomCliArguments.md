@@ -6,8 +6,22 @@
 
 # Type Alias: CustomCliArguments
 
-> **CustomCliArguments**: [`GlobalCliArguments`](../../../../configure/type-aliases/GlobalCliArguments.md) & `object`
+> **CustomCliArguments**: [`GlobalCliArguments`](../../../../configure/type-aliases/GlobalCliArguments.md) & `object` & `CamelCasedProperties`\<`Record`\<keyof *typeof* [`renovationTasks`](../variables/renovationTasks.md), `boolean`\> & `Partial`\<`Record`\<`KeysOfUnion`\<*typeof* [`renovationTasks`](../variables/renovationTasks.md)\[keyof *typeof* [`renovationTasks`](../variables/renovationTasks.md)\]\[`"subOptions"`\]\>, `unknown`\>\>\>
+
+## Type declaration
+
+### force
+
+> **force**: `boolean`
+
+### parallel
+
+> **parallel**: `boolean`
+
+### runToCompletion
+
+> **runToCompletion**: `boolean`
 
 ## Defined in
 
-[src/commands/project/renovate.ts:26](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/project/renovate.ts#L26)
+[src/commands/project/renovate.ts:140](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/project/renovate.ts#L140)

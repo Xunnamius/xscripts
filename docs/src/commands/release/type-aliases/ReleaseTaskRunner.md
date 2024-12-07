@@ -8,7 +8,7 @@
 
 > **ReleaseTaskRunner**: (`argv`, `taskContextPartial`) => `Promise`\<`void`\>
 
-A reified [InitReleaseTaskRunner](InitReleaseTaskRunner.md). Generated automatically by tooling.
+A reified [ProtoReleaseTaskRunner](ProtoReleaseTaskRunner.md). Generated automatically by tooling.
 
 ## Parameters
 
@@ -26,4 +26,4 @@ A reified [InitReleaseTaskRunner](InitReleaseTaskRunner.md). Generated automatic
 
 ## Defined in
 
-[src/commands/release.ts:121](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L121)
+[src/commands/release.ts:135](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L135)

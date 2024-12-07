@@ -2,15 +2,15 @@
 
 ***
 
-[@-xun/scripts](../../../../README.md) / [src/commands/release](../README.md) / InitPrereleaseTask
+[@-xun/scripts](../../../../README.md) / [src/commands/release](../README.md) / ProtoPrereleaseTask
 
-# Interface: InitPrereleaseTask
+# Interface: ProtoPrereleaseTask
 
 A partially defined prerelease-`type` [ReleaseTask](../type-aliases/ReleaseTask.md).
 
 ## Extends
 
-- [`BaseInitTask`](BaseInitTask.md)
+- [`BaseProtoTask`](BaseProtoTask.md)
 
 ## Properties
 
@@ -20,13 +20,17 @@ A partially defined prerelease-`type` [ReleaseTask](../type-aliases/ReleaseTask.
 
 The description reported to the user when the task is run.
 
+#### Default
+
+`Running task #${id}`
+
 #### Inherited from
 
-[`BaseInitTask`](BaseInitTask.md).[`actionDescription`](BaseInitTask.md#actiondescription)
+[`BaseProtoTask`](BaseProtoTask.md).[`actionDescription`](BaseProtoTask.md#actiondescription)
 
 #### Defined in
 
-[src/commands/release.ts:180](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L180)
+[src/commands/release.ts:196](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L196)
 
 ***
 
@@ -39,11 +43,11 @@ task.
 
 #### Inherited from
 
-[`BaseInitTask`](BaseInitTask.md).[`emoji`](BaseInitTask.md#emoji)
+[`BaseProtoTask`](BaseProtoTask.md).[`emoji`](BaseProtoTask.md#emoji)
 
 #### Defined in
 
-[src/commands/release.ts:189](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L189)
+[src/commands/release.ts:205](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L205)
 
 ***
 
@@ -55,11 +59,11 @@ The description reported to the user when `--help` is called.
 
 #### Inherited from
 
-[`BaseInitTask`](BaseInitTask.md).[`helpDescription`](BaseInitTask.md#helpdescription)
+[`BaseProtoTask`](BaseProtoTask.md).[`helpDescription`](BaseProtoTask.md#helpdescription)
 
 #### Defined in
 
-[src/commands/release.ts:184](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L184)
+[src/commands/release.ts:200](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L200)
 
 ***
 
@@ -68,8 +72,8 @@ The description reported to the user when `--help` is called.
 > `optional` **io**: `StdoutStderrOptionCommon`\<`false`\>
 
 Determines how the process's `stdout` and `stdin` streams will be
-configured when executing [npmScripts](BaseInitTask.md#npmscripts). Does not apply to `run` or
-[InitReleaseTaskRunner](../type-aliases/InitReleaseTaskRunner.md).
+configured when executing [npmScripts](BaseProtoTask.md#npmscripts). Does not apply to `run` or
+[ProtoReleaseTaskRunner](../type-aliases/ProtoReleaseTaskRunner.md).
 
 This should always be left as `'pipe'` (the default) unless the task is the
 only member of its task group (in which case `'inherit'` may be
@@ -86,11 +90,11 @@ supplies `--hush`/`--quiet`/`--silent`.
 
 #### Inherited from
 
-[`BaseInitTask`](BaseInitTask.md).[`io`](BaseInitTask.md#io)
+[`BaseProtoTask`](BaseProtoTask.md).[`io`](BaseProtoTask.md#io)
 
 #### Defined in
 
-[src/commands/release.ts:204](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L204)
+[src/commands/release.ts:220](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L220)
 
 ***
 
@@ -103,27 +107,27 @@ package's `package.json`.
 
 #### Inherited from
 
-[`BaseInitTask`](BaseInitTask.md).[`npmScripts`](BaseInitTask.md#npmscripts)
+[`BaseProtoTask`](BaseProtoTask.md).[`npmScripts`](BaseProtoTask.md#npmscripts)
 
 #### Defined in
 
-[src/commands/release.ts:176](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L176)
+[src/commands/release.ts:190](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L190)
 
 ***
 
 ### run?
 
-> `optional` **run**: [`InitReleaseTaskRunner`](../type-aliases/InitReleaseTaskRunner.md)
+> `optional` **run**: [`ProtoReleaseTaskRunner`](../type-aliases/ProtoReleaseTaskRunner.md)
 
 A function called when the task is triggered.
 
 #### Inherited from
 
-[`BaseInitTask`](BaseInitTask.md).[`run`](BaseInitTask.md#run)
+[`BaseProtoTask`](BaseProtoTask.md).[`run`](BaseProtoTask.md#run)
 
 #### Defined in
 
-[src/commands/release.ts:208](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L208)
+[src/commands/release.ts:224](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L224)
 
 ***
 
@@ -135,11 +139,11 @@ Whether the task can be skipped by the user or not.
 
 #### Inherited from
 
-[`BaseInitTask`](BaseInitTask.md).[`skippable`](BaseInitTask.md#skippable)
+[`BaseProtoTask`](BaseProtoTask.md).[`skippable`](BaseProtoTask.md#skippable)
 
 #### Defined in
 
-[src/commands/release.ts:171](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L171)
+[src/commands/release.ts:185](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L185)
 
 ***
 
@@ -149,4 +153,4 @@ Whether the task can be skipped by the user or not.
 
 #### Defined in
 
-[src/commands/release.ts:215](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/commands/release.ts#L215)
+[src/commands/release.ts:231](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L231)

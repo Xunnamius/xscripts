@@ -329,6 +329,12 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
+### BadParserOpts()
+
+#### Returns
+
+`string`
+
 ### BadPostNpmInstallScript()
 
 #### Parameters
@@ -347,7 +353,19 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
+### BadReleaseSectionPath()
+
+#### Returns
+
+`string`
+
 ### BadSkipArgs()
+
+#### Returns
+
+`string`
+
+### BadWriterOpts()
 
 #### Returns
 
@@ -510,6 +528,18 @@ punctuation and capitalization rules as the other error messages.
 ##### validValues
 
 readonly `string`[]
+
+#### Returns
+
+`string`
+
+### DangerousRenovationRequiresForce()
+
+#### Parameters
+
+##### taskName
+
+`string`
 
 #### Returns
 
@@ -779,6 +809,26 @@ readonly `string`[]
 
 `string`
 
+### UnsupportedScope()
+
+#### Parameters
+
+##### taskName
+
+`string`
+
+##### givenScope
+
+`string`
+
+##### supportedScopes
+
+`string`[]
+
+#### Returns
+
+`string`
+
 ### WrongProjectAttributes()
 
 #### Parameters
@@ -839,4 +889,4 @@ readonly `string`[]
 
 ## Defined in
 
-[src/error.ts:63](https://github.com/Xunnamius/xscripts/blob/395ccb9751d5eb5067af3fe099bacae7d9b7a116/src/error.ts#L63)
+[src/error.ts:63](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/error.ts#L63)

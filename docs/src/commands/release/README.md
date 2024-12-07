@@ -10,16 +10,16 @@
 
 ### Interfaces
 
-- [BaseInitTask](interfaces/BaseInitTask.md)
-- [InitCoreReleaseTask](interfaces/InitCoreReleaseTask.md)
-- [InitPostreleaseTask](interfaces/InitPostreleaseTask.md)
-- [InitPrereleaseTask](interfaces/InitPrereleaseTask.md)
+- [BaseProtoTask](interfaces/BaseProtoTask.md)
+- [ProtoCoreReleaseTask](interfaces/ProtoCoreReleaseTask.md)
+- [ProtoPostreleaseTask](interfaces/ProtoPostreleaseTask.md)
+- [ProtoPrereleaseTask](interfaces/ProtoPrereleaseTask.md)
 
 ### Type Aliases
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
 - [ExecutionContextWithProjectMetadata](type-aliases/ExecutionContextWithProjectMetadata.md)
-- [InitReleaseTaskRunner](type-aliases/InitReleaseTaskRunner.md)
+- [ProtoReleaseTaskRunner](type-aliases/ProtoReleaseTaskRunner.md)
 - [ReleaseTask](type-aliases/ReleaseTask.md)
 - [ReleaseTaskContext](type-aliases/ReleaseTaskContext.md)
 - [ReleaseTaskRunner](type-aliases/ReleaseTaskRunner.md)
