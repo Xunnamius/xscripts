@@ -24,8 +24,8 @@ import {
 } from 'multiverse+project-utils:analyze.ts';
 
 import {
+  directoryTestPackageBase,
   jestConfigProjectBase,
-  testDirPackageBase,
   toPath,
   toRelativePath,
   Tsconfig,
@@ -468,7 +468,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
           .values()
           .map((package_) => {
             return isRootPackage(package_)
-              ? toPath(projectRoot.slice(1), testDirPackageBase)
+              ? toPath(projectRoot.slice(1), directoryTestPackageBase)
               : toRelativePath(projectRoot, package_.root);
           });
 

@@ -19,10 +19,10 @@ import {
 } from 'multiverse+project-utils:analyze.ts';
 
 import {
-  conventionalChangelogConfigProjectBase,
-  releaseConfigProjectBase,
   toAbsolutePath,
-  toPath
+  toPath,
+  xchangelogConfigProjectBase,
+  xreleaseConfigProjectBase
 } from 'multiverse+project-utils:fs.ts';
 
 import { createDebugLogger } from 'multiverse+rejoinder';
@@ -160,7 +160,7 @@ export function moduleExport({
       // ? This block pulls in a custom semantic-release plugin that mutates
       // ? internal state as required.
       [
-        `@-xun/scripts/assets/config/${releaseConfigProjectBase}`,
+        `@-xun/scripts/assets/config/${xreleaseConfigProjectBase}`,
         {
           releaseSectionPath,
           parserOpts,
@@ -246,7 +246,7 @@ export function assertEnvironment({
   );
 
   const { parserOpts, writerOpts } = require(
-    toAbsolutePath(projectRoot, conventionalChangelogConfigProjectBase)
+    toAbsolutePath(projectRoot, xchangelogConfigProjectBase)
   );
 
   assert(parserOpts, ErrorMessage.BadParameter('parserOpts'));
@@ -280,8 +280,6 @@ export function verifyConditions(
   assert(pluginConfig.parserOpts, ErrorMessage.BadParserOpts());
   assert(pluginConfig.writerOpts, ErrorMessage.BadWriterOpts());
 }
-
-// TODO: implement so-called cross-dependency version coherence here (--synchronize-interdependencies)
 
 // TODO: ONLY when cutting a new major, update engines.node to maintained node versions unless --no-update-engines-on-major sets appropriate environment variable
 

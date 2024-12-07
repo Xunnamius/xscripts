@@ -21,7 +21,7 @@ import {
 import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse+project-utils';
 import { cache } from 'multiverse+project-utils:cache.ts';
 import { isAccessible } from 'multiverse+project-utils:fs/is-accessible.ts';
-import { distDirPackageBase, toPath } from 'multiverse+project-utils:fs.ts';
+import { directoryDistPackageBase, toPath } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
 import { version as packageVersion } from 'rootverse:package.json';
@@ -151,8 +151,8 @@ export const configureExecutionContext = async function (context) {
       cwdPackage: { root: packageRoot }
     } = projectMetadata;
 
-    const cwdPackageDistDirPath = toPath(packageRoot, distDirPackageBase);
-    const rootPackageDistDirPath = toPath(projectRoot, distDirPackageBase);
+    const cwdPackageDistDirPath = toPath(packageRoot, directoryDistPackageBase);
+    const rootPackageDistDirPath = toPath(projectRoot, directoryDistPackageBase);
 
     const nodeModulesDirTsconfigFilePath = toPath(
       projectRoot,

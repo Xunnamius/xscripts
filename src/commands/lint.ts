@@ -20,9 +20,9 @@ import {
 } from 'multiverse+project-utils';
 
 import {
+  directorySrcPackageBase,
+  directoryTestPackageBase,
   isAccessible,
-  srcDirPackageBase,
-  testDirPackageBase,
   toPath,
   toRelativePath,
   Tsconfig
@@ -325,8 +325,8 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
             npxEslintArguments.push(
               ...externalBuildTargets,
               ...cwdPackageOtherFiles.map((path) => toRelativePath(projectRoot, path)),
-              toPath(packageRoot, srcDirPackageBase),
-              toPath(packageRoot, testDirPackageBase)
+              toPath(packageRoot, directorySrcPackageBase),
+              toPath(packageRoot, directoryTestPackageBase)
             );
           } else {
             npxEslintArguments.push('.');

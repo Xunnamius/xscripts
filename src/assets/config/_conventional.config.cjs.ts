@@ -18,9 +18,9 @@ import {
 } from 'multiverse+project-utils';
 
 import {
-  documentationDirPackageBase,
-  srcDirPackageBase,
-  testDirPackageBase,
+  directoryDocumentationPackageBase,
+  directorySrcPackageBase,
+  directoryTestPackageBase,
   toRelativePath,
   Tsconfig
 } from 'multiverse+project-utils:fs.ts';
@@ -69,9 +69,9 @@ patchSpawnChild();
  * Entries from `package.json::files` will be included automatically.
  */
 const rootPackageExcludedPathspecs = [
-  ':(exclude,top)' + srcDirPackageBase,
-  ':(exclude,top)' + testDirPackageBase,
-  ':(exclude,top)' + documentationDirPackageBase,
+  ':(exclude,top)' + directorySrcPackageBase,
+  ':(exclude,top)' + directoryTestPackageBase,
+  ':(exclude,top)' + directoryDocumentationPackageBase,
   ':(exclude,top)' + Tsconfig.PackageDocumentation,
   ':(exclude,top)' + Tsconfig.PackageLint,
   ':(exclude,top)' + Tsconfig.PackageTypes,

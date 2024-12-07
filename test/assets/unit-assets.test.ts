@@ -1,8 +1,52 @@
-/* eslint-disable jest/prefer-lowercase-title */
 // * These tests ensure universe assets exports function as expected
 
 import { ProjectAttribute } from 'multiverse+project-utils:analyze.ts';
-import { type RelativePath } from 'multiverse+project-utils:fs.ts';
+
+import {
+  allContributorsConfigProjectBase,
+  babelConfigProjectBase,
+  browserslistrcConfigProjectBase,
+  changelogPatchConfigPackageBase,
+  codecovConfigProjectBase,
+  commitlintConfigProjectBase,
+  directoryGithubConfigProjectBase,
+  directoryHuskyProjectBase,
+  directorySrcPackageBase,
+  directoryTestPackageBase,
+  directoryTypesProjectBase,
+  directoryVscodeProjectBase,
+  dotEnvDefaultConfigPackageBase,
+  dotEnvDefaultConfigProjectBase,
+  editorConfigProjectBase,
+  eslintConfigProjectBase,
+  gacConfigPackageBase,
+  gitattributesConfigProjectBase,
+  gitignoreConfigProjectBase,
+  jestConfigProjectBase,
+  lintStagedConfigProjectBase,
+  markdownArchitectureProjectBase,
+  markdownContributingProjectBase,
+  markdownLicensePackageBase,
+  markdownMaintainingProjectBase,
+  markdownReadmePackageBase,
+  markdownSecurityProjectBase,
+  ncuConfigProjectBase,
+  nextjsConfigProjectBase,
+  packageJsonConfigPackageBase,
+  postcssConfigProjectBase,
+  prettierConfigProjectBase,
+  prettierIgnoreConfigProjectBase,
+  remarkConfigProjectBase,
+  spellcheckIgnoreConfigProjectBase,
+  tailwindConfigProjectBase,
+  Tsconfig,
+  tstycheConfigProjectBase,
+  turboConfigProjectBase,
+  webpackConfigProjectBase,
+  xchangelogConfigProjectBase,
+  xreleaseConfigProjectBase,
+  type RelativePath
+} from 'multiverse+project-utils:fs.ts';
 
 import {
   compileTemplate,
@@ -57,7 +101,7 @@ describe('::retrieveConfigAsset', () => {
 
     await expect(
       retrieveConfigAsset({
-        asset: '.all-contributorsrc',
+        asset: allContributorsConfigProjectBase,
         context: {
           packageName: 'pkg-name',
           shouldDeriveAliases: false
@@ -68,7 +112,7 @@ describe('::retrieveConfigAsset', () => {
       await (
         await import('universe:assets/config/_.all-contributorsrc.ts')
       ).transformer({
-        asset: '.all-contributorsrc',
+        asset: allContributorsConfigProjectBase,
         packageName: 'pkg-name'
       } as TransformerContext)
     );
@@ -88,11 +132,11 @@ describe('::retrieveConfigAsset', () => {
   });
 
   describe('<config assets>', () => {
-    it('.all-contributorsrc', async () => {
+    it('all-contributors', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.all-contributorsrc',
+        asset: allContributorsConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -100,11 +144,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.browserslistrc', async () => {
+    it('browserslist', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.browserslistrc',
+        asset: browserslistrcConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -112,11 +156,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.codecov.yml', async () => {
+    it('codecov', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.codecov.yml',
+        asset: codecovConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -124,11 +168,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.editorconfig', async () => {
+    it('editor-config', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.editorconfig',
+        asset: editorConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -136,11 +180,35 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.env.default', async () => {
+    it('dotenv (default)', async () => {
+      expect.hasAssertions();
+
+      {
+        const assets = await retrieveConfigAsset({
+          asset: dotEnvDefaultConfigProjectBase,
+          context: dummyContext,
+          options: { assetContainerFiletype: 'ts' }
+        });
+
+        expectAssetsToMatchSnapshots(assets);
+      }
+
+      {
+        const assets = await retrieveConfigAsset({
+          asset: dotEnvDefaultConfigPackageBase,
+          context: dummyContext,
+          options: { assetContainerFiletype: 'ts' }
+        });
+
+        expectAssetsToMatchSnapshots(assets);
+      }
+    });
+
+    it('git-attributes', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.env.default',
+        asset: gitattributesConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -148,11 +216,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.gitattributes', async () => {
+    it('github (directory)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.gitattributes',
+        asset: directoryGithubConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -160,11 +228,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.github', async () => {
+    it('git-ignore', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.github',
+        asset: gitignoreConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -172,11 +240,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.gitignore', async () => {
+    it('husky (directory)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.gitignore',
+        asset: directoryHuskyProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -184,11 +252,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.husky', async () => {
+    it('npm-check-updates', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.husky',
+        asset: ncuConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -196,11 +264,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.ncurc.cjs', async () => {
+    it('prettier', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.ncurc.cjs',
+        asset: prettierConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -208,11 +276,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.prettierignore', async () => {
+    it('prettier-ignore', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.prettierignore',
+        asset: prettierIgnoreConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -220,11 +288,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.remarkrc.mjs', async () => {
+    it('remark', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.remarkrc.mjs',
+        asset: remarkConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -232,11 +300,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.spellcheckignore', async () => {
+    it('commit-spell', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.spellcheckignore',
+        asset: spellcheckIgnoreConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -244,11 +312,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('.vscode', async () => {
+    it('vscode (directory)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: '.vscode',
+        asset: directoryVscodeProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -256,11 +324,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('ARCHITECTURE.md', async () => {
+    it('architecture (markdown)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'ARCHITECTURE.md',
+        asset: markdownArchitectureProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -268,11 +336,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('babel.config.cjs', async () => {
+    it('babel', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'babel.config.cjs',
+        asset: babelConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -284,7 +352,7 @@ describe('::retrieveConfigAsset', () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'changelog.patch.mjs',
+        asset: changelogPatchConfigPackageBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -296,7 +364,7 @@ describe('::retrieveConfigAsset', () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'commitlint.config.mjs',
+        asset: commitlintConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -304,11 +372,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('CONTRIBUTING.md', async () => {
+    it('contributing (markdown)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'CONTRIBUTING.md',
+        asset: markdownContributingProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -316,11 +384,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('conventional.config.cjs', async () => {
+    it('xchangelog', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'conventional.config.cjs',
+        asset: xchangelogConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -328,11 +396,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('eslint.config.mjs', async () => {
+    it('eslint', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'eslint.config.mjs',
+        asset: eslintConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -340,11 +408,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('gac.config.mjs', async () => {
+    it('git-add-then-commit', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'gac.config.mjs',
+        asset: gacConfigPackageBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -352,11 +420,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('jest.config.mjs', async () => {
+    it('jest', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'jest.config.mjs',
+        asset: jestConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -364,11 +432,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('LICENSE', async () => {
+    it('license (markdown)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'LICENSE',
+        asset: markdownLicensePackageBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -376,11 +444,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('lint-staged.config.mjs', async () => {
+    it('lint-staged', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'lint-staged.config.mjs',
+        asset: lintStagedConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -388,11 +456,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('MAINTAINING.md', async () => {
+    it('maintaining (markdown)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'MAINTAINING.md',
+        asset: markdownMaintainingProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -400,11 +468,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('next.config.mjs', async () => {
+    it('next.js', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'next.config.mjs',
+        asset: nextjsConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -416,7 +484,7 @@ describe('::retrieveConfigAsset', () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'package.json',
+        asset: packageJsonConfigPackageBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -424,11 +492,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('postcss.config.mjs', async () => {
+    it('postcss', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'postcss.config.mjs',
+        asset: postcssConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -436,11 +504,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('prettier.config.mjs', async () => {
+    it('readme (markdown)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'prettier.config.mjs',
+        asset: markdownReadmePackageBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -448,11 +516,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('README.md', async () => {
+    it('xrelease', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'README.md',
+        asset: xreleaseConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -460,11 +528,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('release.config.cjs', async () => {
+    it('security (markdown)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'release.config.cjs',
+        asset: markdownSecurityProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -472,11 +540,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('SECURITY.md', async () => {
+    it('src (directory)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'SECURITY.md',
+        asset: directorySrcPackageBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -484,11 +552,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('src', async () => {
+    it('tailwind', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'src',
+        asset: tailwindConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -496,11 +564,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('tailwind.config.mjs', async () => {
+    it('test (directory)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'tailwind.config.mjs',
+        asset: directoryTestPackageBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -508,23 +576,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('test', async () => {
+    it('tsconfig (all variants)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'test',
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
-      });
-
-      expectAssetsToMatchSnapshots(assets);
-    });
-
-    it('tsconfig.json', async () => {
-      expect.hasAssertions();
-
-      const assets = await retrieveConfigAsset({
-        asset: 'tsconfig.json',
+        asset: Tsconfig.ProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -536,7 +592,7 @@ describe('::retrieveConfigAsset', () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'tstyche.config.json',
+        asset: tstycheConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -548,7 +604,7 @@ describe('::retrieveConfigAsset', () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'turbo.json',
+        asset: turboConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -556,11 +612,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('types', async () => {
+    it('types (directory)', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'types',
+        asset: directoryTypesProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });
@@ -568,11 +624,11 @@ describe('::retrieveConfigAsset', () => {
       expectAssetsToMatchSnapshots(assets);
     });
 
-    it('webpack.config.mjs', async () => {
+    it('webpack', async () => {
       expect.hasAssertions();
 
       const assets = await retrieveConfigAsset({
-        asset: 'webpack.config.mjs',
+        asset: webpackConfigProjectBase,
         context: dummyContext,
         options: { assetContainerFiletype: 'ts' }
       });

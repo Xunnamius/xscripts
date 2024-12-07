@@ -23,13 +23,13 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { isRootPackage, type ProjectMetadata } from 'multiverse+project-utils:analyze.ts';
 
 import {
-  coverageDirPackageBase,
+  directoryCoveragePackageBase,
   dotEnvConfigPackageBase,
   dotEnvConfigProjectBase,
   fsConstants,
   isAccessible,
-  releaseConfigProjectBase,
-  toPath
+  toPath,
+  xreleaseConfigProjectBase
 } from 'multiverse+project-utils:fs.ts';
 
 import {
@@ -1026,7 +1026,7 @@ const protoReleaseTask: ProtoCoreReleaseTask = {
         ci ? '--ci' : '--no-ci',
         ...(dryRun ? ['--dry-run'] : []),
         '--extends',
-        `${projectRoot}/${releaseConfigProjectBase}`
+        `${projectRoot}/${xreleaseConfigProjectBase}`
       ],
       {
         env: {
@@ -1202,7 +1202,7 @@ const protoPostreleaseTasks: ProtoPostreleaseTask[][] = [
             '--branch',
             currentBranch,
             '--coverage-files-search-root-folder',
-            toPath(packageRoot, coverageDirPackageBase),
+            toPath(packageRoot, directoryCoveragePackageBase),
             ...(dryRun ? ['--dry-run'] : []),
             ...(force ? ['--handle-no-reports-found'] : [])
           ],

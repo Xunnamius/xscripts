@@ -58,8 +58,8 @@ import {
 import { gatherPackageFiles } from 'multiverse+project-utils:analyze/gather-package-files.ts';
 
 import {
-  distDirPackageBase,
-  intermediatesDirPackageBase,
+  directoryDistPackageBase,
+  directoryIntermediatesPackageBase,
   isAbsolutePath,
   isAccessible,
   toAbsolutePath,
@@ -478,8 +478,8 @@ Finally, note that, when attempting to build a Next.js package, this command wil
           debug('outputExtension (final): %O', outputExtension);
 
           const outputDirName = generateIntermediatesFor
-            ? intermediatesDirPackageBase
-            : distDirPackageBase;
+            ? directoryIntermediatesPackageBase
+            : directoryDistPackageBase;
           const absoluteOutputDirPath = toAbsolutePath(outputDirName);
           const absoluteNodeModulesDirPath = toAbsolutePath('node_modules');
           const absoluteRootPackageJsonDirPath = toAbsolutePath('package.json');
