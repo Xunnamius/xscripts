@@ -115,10 +115,8 @@ export type RawAlias = {
    *
    * - `none`: Any string containing `alias` may match. This has some
    *   tooling-specific quirks and should be avoided.
-   * - `exact`: Only strings ending with `alias` exactly may match. This is only
-   *   useful for custom one-off aliases and should be avoided.
-   * - `open`: Only strings ending with `alias + sep + subpath` may match. This
-   *   is only useful for custom one-off aliases and should be avoided.
+   * - `exact`: Only strings ending with `alias` exactly may match.
+   * - `open`: Only strings ending with `alias + sep + subpath` may match.
    */
   suffix: 'none' | 'exact' | 'open';
   /**

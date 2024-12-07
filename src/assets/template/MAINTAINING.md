@@ -213,7 +213,7 @@ With somber focus, the following steps should be taken:
 > If you're using [xscripts][12], all of this can be done automatically:
 >
 > ```bash
-> npx xscripts project renovate --task deprecate
+> npx xscripts project renovate --deprecate
 > ```
 
 > These steps were inspired by [Richard Litt's checklist][13].
