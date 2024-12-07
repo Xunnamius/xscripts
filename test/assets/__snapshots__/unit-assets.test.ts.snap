@@ -2,6 +2,7 @@
 
 exports[`::compileTemplate accepts a template file path and returns a compilation result string: README.md 1`] = `
 "<!-- xscripts-renovate-region-start -->
+
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
 </p>
@@ -96,9 +97,7 @@ package-build-details-short-3
 package-build-details-short-4
 
 <!-- xscripts-renovate-region-end -->
-
 <!-- TODO: custom details here -->
-
 <!-- xscripts-renovate-region-start -->
 
 <details><summary>Expand details</summary>
@@ -108,9 +107,7 @@ package-build-details-short-4
 package-build-details-long-1
 
 <!-- xscripts-renovate-region-end -->
-
 <!-- TODO: custom details here -->
-
 <!-- xscripts-renovate-region-start -->
 
 </details>
@@ -163,7 +160,6 @@ This project follows the [all-contributors](repo-reference-all-contributors)
 specification. Contributions of any kind welcome!
 
 <!-- xscripts-renovate-region-end -->
-
 <!-- xscripts-renovate-region-definitions -->
 
 repo-reference-definitions-badge
@@ -336,6 +332,7 @@ At this point, you're ready to create your PR and ✨ contribute ✨!
 [xpipeline]: https://github.com/Xunnamius/xpipeline#readme
 ",
   "README.md": "<!-- xscripts-renovate-region-start -->
+
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
 </p>
@@ -430,9 +427,7 @@ package-build-details-short-3
 package-build-details-short-4
 
 <!-- xscripts-renovate-region-end -->
-
 <!-- TODO: custom details here -->
-
 <!-- xscripts-renovate-region-start -->
 
 <details><summary>Expand details</summary>
@@ -442,9 +437,7 @@ package-build-details-short-4
 package-build-details-long-1
 
 <!-- xscripts-renovate-region-end -->
-
 <!-- TODO: custom details here -->
-
 <!-- xscripts-renovate-region-start -->
 
 </details>
@@ -497,7 +490,6 @@ This project follows the [all-contributors](repo-reference-all-contributors)
 specification. Contributions of any kind welcome!
 
 <!-- xscripts-renovate-region-end -->
-
 <!-- xscripts-renovate-region-definitions -->
 
 repo-reference-definitions-badge
@@ -2443,7 +2435,7 @@ exports[`::retrieveConfigAsset <config assets> package.json: package.json 1`] = 
     "list-tasks": "NODE_NO_WARNINGS=1 xscripts list-tasks",
     "prepare": "NODE_NO_WARNINGS=1 xscripts project prepare",
     "release": "NODE_NO_WARNINGS=1 xscripts release",
-    "renovate": "NODE_NO_WARNINGS=1 xscripts project renovate",
+    "renovate": "NODE_NO_WARNINGS=1 xscripts project renovate --",
     "start": "NODE_NO_WARNINGS=1 xscripts start --",
     "test": "npm run test:package:unit --",
     "test:package:all": "NODE_NO_WARNINGS=1 xscripts test --coverage",
@@ -2577,6 +2569,7 @@ exports[`::retrieveConfigAsset <config assets> readme (markdown): README.md 1`] 
 "README.md
 ⏶⏷⏶⏷⏶
 <!-- xscripts-renovate-region-start -->
+
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
 </p>
@@ -2671,9 +2664,7 @@ package-build-details-short-3
 package-build-details-short-4
 
 <!-- xscripts-renovate-region-end -->
-
 <!-- TODO: custom details here -->
-
 <!-- xscripts-renovate-region-start -->
 
 <details><summary>Expand details</summary>
@@ -2683,9 +2674,7 @@ package-build-details-short-4
 package-build-details-long-1
 
 <!-- xscripts-renovate-region-end -->
-
 <!-- TODO: custom details here -->
-
 <!-- xscripts-renovate-region-start -->
 
 </details>
@@ -2738,7 +2727,6 @@ This project follows the [all-contributors](repo-reference-all-contributors)
 specification. Contributions of any kind welcome!
 
 <!-- xscripts-renovate-region-end -->
-
 <!-- xscripts-renovate-region-definitions -->
 
 repo-reference-definitions-badge
