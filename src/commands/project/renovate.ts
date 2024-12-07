@@ -180,7 +180,7 @@ export default function command({
       description: 'Do not exit until all tasks have finished running',
       default: true
     },
-    ...renovationTasksToBlackFlagOptions()
+    ...renovationTasksToBlackFlagOptions(debug_.extend('builder'))
   });
 
   return {
@@ -276,10 +276,9 @@ When attempting to renovate a Markdown file without replacer regions when its co
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
 }
 
-function renovationTasksToBlackFlagOptions(): BfeBuilderObject<
-  CustomCliArguments,
-  GlobalExecutionContext
-> {
+function renovationTasksToBlackFlagOptions(
+  debug: ExtendedDebugger
+): BfeBuilderObject<CustomCliArguments, GlobalExecutionContext> {
   const renovationTaskNames = Object.keys(renovationTasks);
   return Object.fromEntries(
     Object.entries(renovationTasks).flatMap(
@@ -304,8 +303,8 @@ function renovationTasksToBlackFlagOptions(): BfeBuilderObject<
               default: false,
               demandThisOptionOr: renovationTaskNames,
               check: [
-                isUsingSupportedScope(taskName, supportedScopes),
-                isUsingForceIfRequired(taskName, requiresForce)
+                isUsingSupportedScope(taskName, supportedScopes, debug),
+                isUsingForceIfRequired(taskName, requiresForce, debug)
               ]
             } satisfies BfeBuilderObjectValue<CustomCliArguments, GlobalExecutionContext>
           ],
@@ -324,10 +323,17 @@ function renovationTasksToBlackFlagOptions(): BfeBuilderObject<
 
 function isUsingSupportedScope(
   taskName: string,
-  supportedScopes: ProjectRenovateScope[]
+  supportedScopes: ProjectRenovateScope[],
+  checkDebug: ExtendedDebugger
 ): BfeCheckFunction<CustomCliArguments, GlobalExecutionContext> {
-  return function (_, { scope }) {
+  return function (currentArgumentValue, { scope }) {
+    checkDebug('taskName: %O', taskName);
+    checkDebug('currentArgumentValue: %O', currentArgumentValue);
+    checkDebug('scope: %O', scope);
+    checkDebug('supportedScopes: %O', supportedScopes);
+
     return (
+      !currentArgumentValue ||
       supportedScopes.includes(scope) ||
       ErrorMessage.UnsupportedScope(taskName, scope, supportedScopes)
     );
@@ -336,11 +342,20 @@ function isUsingSupportedScope(
 
 function isUsingForceIfRequired(
   taskName: string,
-  requiresForce: boolean
+  requiresForce: boolean,
+  checkDebug: ExtendedDebugger
 ): BfeCheckFunction<CustomCliArguments, GlobalExecutionContext> {
-  return function (_, { force }) {
+  return function (currentArgumentValue, { force }) {
+    checkDebug('taskName: %O', taskName);
+    checkDebug('currentArgumentValue: %O', currentArgumentValue);
+    checkDebug('force: %O', force);
+    checkDebug('requiresForce: %O', requiresForce);
+
     return (
-      !requiresForce || force || ErrorMessage.DangerousRenovationRequiresForce(taskName)
+      !currentArgumentValue ||
+      !requiresForce ||
+      force ||
+      ErrorMessage.DangerousRenovationRequiresForce(taskName)
     );
   };
 }
