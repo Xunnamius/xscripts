@@ -10,7 +10,11 @@ import '@-xun/scripts/assets/config/conventional.config.cjs';
 import { config as loadDotEnv } from 'dotenv';
 import { type Merge, type OmitIndexSignature, type StringKeyOf } from 'type-fest';
 
-import { type AsStrictExecutionContext } from 'multiverse+bfe';
+import {
+  getInvocableExtendedHandler,
+  type AsStrictExecutionContext
+} from 'multiverse+bfe';
+
 import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
@@ -42,6 +46,11 @@ import {
 import { getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix } from 'universe:assets/config/_conventional.config.cjs.ts';
 import { type XPackageJson } from 'universe:assets/config/_package.json.ts';
 import { determineRepoWorkingTreeDirty } from 'universe:assets/config/_release.config.cjs.ts';
+
+import {
+  default as renovate,
+  type CustomCliArguments as RenovateCliArguments
+} from 'universe:commands/project/renovate.ts';
 
 import {
   DefaultGlobalScope,
@@ -957,10 +966,45 @@ const protoPrereleaseTasks: ProtoPrereleaseTask[][] = [
       skippable: true,
       emoji: '🧹',
       actionDescription: 'Pulling latest versions of intra-project package dependencies',
-      helpDescription: 'xscripts project renovate --scope=this-package --task=sync-deps',
-      async run(_, __, { log }) {
-        // TODO
-        log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
+      helpDescription: 'xscripts project renovate --scope=this-package --sync-deps',
+      async run(globalExecutionContext, argv, { debug }) {
+        debug(`renovating this package (sync-deps only) (calling out to sub-command)`);
+
+        const renovateHandler = await getInvocableExtendedHandler<
+          RenovateCliArguments,
+          GlobalExecutionContext
+        >(renovate, globalExecutionContext);
+
+        await renovateHandler({
+          ...argv,
+          $0: 'renovate',
+          _: [],
+          scope: DefaultGlobalScope.ThisPackage,
+
+          synchronizeInterdependencies: true,
+
+          githubPauseRulesets: false,
+          githubRenameRepo: false,
+          githubCloneRemoteWiki: false,
+          githubDeleteAllReleases: false,
+          githubReconfigureRepo: false,
+          githubKillMaster: false,
+          generateScopedTags: false,
+          regenerateAliases: false,
+          regenerateAssets: false,
+          deprecate: false,
+          undeprecate: false,
+          updateDependencies: false,
+
+          runToCompletion: true,
+          parallel: false,
+          force: false,
+          silent: true,
+          quiet: true,
+          hush: true
+        });
+
+        debug('sub-command completed successfully');
       }
     }
   ],
