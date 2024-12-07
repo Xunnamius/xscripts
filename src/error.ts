@@ -262,6 +262,12 @@ export const ErrorMessage = {
       ? `task ${id} expects one of the following scripts to exist in this package's package.json file: "${npmScripts.join('", "')}`
       : `task ${id} is not runnable`;
   },
+  UnsupportedScope(taskName: string, givenScope: string, supportedScopes: string[]) {
+    return `renovation task "${taskName}" only supports the --${supportedScopes.join(' and --')} scope${supportedScopes.length === 1 ? '' : 's'}, but --scope=${givenScope} was seen instead`;
+  },
+  DangerousRenovationRequiresForce(taskName: string) {
+    return `renovation task "${taskName}" is DANGEROUS and therefore must be invoked with --force`;
+  },
   /**
    * These are "error" messages that are not necessarily meant to be the message
    * of an {@link Error} instance, but are reported to the user in other ways

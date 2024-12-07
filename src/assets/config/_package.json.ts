@@ -130,7 +130,7 @@ export type XPackageJsonScripts = {
    * _metadata_, such as its file structure and configuration settings, with
    * the goal of bringing the project up to date on latest best practices.
    *
-   * @example `NODE_NO_WARNINGS=1 xscripts project renovate`
+   * @example `NODE_NO_WARNINGS=1 xscripts project renovate --`
    */
   renovate?: string;
   /**
@@ -273,7 +273,7 @@ export const baseXPackageJson = {
     'list-tasks': 'NODE_NO_WARNINGS=1 xscripts list-tasks',
     prepare: 'NODE_NO_WARNINGS=1 xscripts project prepare',
     release: 'NODE_NO_WARNINGS=1 xscripts release',
-    renovate: 'NODE_NO_WARNINGS=1 xscripts project renovate',
+    renovate: 'NODE_NO_WARNINGS=1 xscripts project renovate --',
     start: 'NODE_NO_WARNINGS=1 xscripts start --',
     test: 'npm run test:package:unit --',
     'test:package:all': 'NODE_NO_WARNINGS=1 xscripts test --coverage',
