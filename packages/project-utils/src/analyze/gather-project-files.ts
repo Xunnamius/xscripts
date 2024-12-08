@@ -3,9 +3,9 @@ import { glob as globAsync, sync as globSync } from 'glob-gitignore';
 import {
   assignResultTo,
   debug as debug_,
-  type Package,
-  type ProjectFiles,
-  type ProjectMetadata
+  type GenericPackage,
+  type GenericProjectMetadata,
+  type ProjectFiles
 } from 'rootverse+project-utils:src/analyze/common.ts';
 
 import {
@@ -83,17 +83,17 @@ export type GatherProjectFilesOptions = {
 
 function gatherProjectFiles_(
   shouldRunSynchronously: false,
-  projectMetadata: ProjectMetadata,
+  projectMetadata: GenericProjectMetadata,
   options: GatherProjectFilesOptions
 ): Promise<ProjectFiles>;
 function gatherProjectFiles_(
   shouldRunSynchronously: true,
-  projectMetadata: ProjectMetadata,
+  projectMetadata: GenericProjectMetadata,
   options: GatherProjectFilesOptions
 ): ProjectFiles;
 function gatherProjectFiles_(
   shouldRunSynchronously: boolean,
-  projectMetadata: ProjectMetadata,
+  projectMetadata: GenericProjectMetadata,
   { useCached, ...cacheIdComponentsObject }: GatherProjectFilesOptions
 ): Promisable<ProjectFiles> {
   const {
@@ -424,7 +424,7 @@ function gatherProjectFiles_(
     );
   }
 
-  function resolveMainBinFile(package_: Package) {
+  function resolveMainBinFile(package_: GenericPackage) {
     const { bin } = package_.json;
     const mainBin =
       typeof bin === 'string' ? bin : Object.values(bin ?? {}).find((path) => !!path);
@@ -481,7 +481,7 @@ export namespace gatherProjectFiles {
    * {@link cache.clear}.
    */
   export const sync = function (
-    projectMetadata: ProjectMetadata,
+    projectMetadata: GenericProjectMetadata,
     options: Omit<GatherProjectFilesOptions, 'skipUnknown'>
   ): Awaited<ReturnType<typeof gatherProjectFiles>> {
     return gatherProjectFiles_(true, projectMetadata, options);

@@ -7,9 +7,7 @@ import { resolve as resolverLibrary } from 'resolve.exports';
 
 import { toAbsolutePath, type AbsolutePath } from 'rootverse+project-utils:src/fs.ts';
 
-import type { PackageJson } from 'type-fest';
-// TODO: replace with import from @-xun/types
-import type { XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
+import type { XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 const DUMMY_PACKAGE_DIR = toAbsolutePath(__dirname, '..', 'fixtures', 'dummy-pkg');
 
@@ -37,12 +35,12 @@ export type DummyPackageMetadata<
   packageJson: XPackageJson;
 
   imports: RequireObjectImports extends true
-    ? Exclude<PackageJson.Imports, string | undefined | null | unknown[]>
-    : PackageJson.Imports | undefined;
+    ? Exclude<XPackageJson['imports'], string | undefined | null | unknown[]>
+    : XPackageJson['imports'] | undefined;
 
   exports: RequireObjectExports extends true
-    ? Exclude<PackageJson.Exports, string | undefined | null | unknown[]>
-    : PackageJson.Exports | undefined;
+    ? Exclude<XPackageJson['exports'], string | undefined | null | unknown[]>
+    : XPackageJson['exports'] | undefined;
 };
 
 /**

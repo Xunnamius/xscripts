@@ -3,7 +3,7 @@ import { glob as globAsync, sync as globSync } from 'glob-gitignore';
 import {
   assignResultTo,
   debug as debug_,
-  type Package,
+  type GenericPackage,
   type PackageFiles
 } from 'rootverse+project-utils:src/analyze/common.ts';
 
@@ -68,17 +68,17 @@ export type GatherPackageFilesOptions = {
 
 function gatherPackageFiles_(
   shouldRunSynchronously: false,
-  package_: Package,
+  package_: GenericPackage,
   options: GatherPackageFilesOptions
 ): Promise<PackageFiles>;
 function gatherPackageFiles_(
   shouldRunSynchronously: true,
-  package_: Package,
+  package_: GenericPackage,
   options: GatherPackageFilesOptions
 ): PackageFiles;
 function gatherPackageFiles_(
   shouldRunSynchronously: boolean,
-  package_: Package,
+  package_: GenericPackage,
   { useCached, ...cacheIdComponentsObject }: GatherPackageFilesOptions
 ): Promisable<PackageFiles> {
   const { skipGitIgnored: skipIgnored = true, ignore: additionalIgnores = [] } =

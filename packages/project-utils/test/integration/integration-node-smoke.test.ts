@@ -20,8 +20,7 @@ import {
   version as packageVersion
 } from 'rootverse+project-utils:package.json';
 
-// TODO: replace with import from @-xun/types
-import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
+import type { XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 reconfigureJestGlobalsToSkipTestsInThisFileIfRequested({ it: true });
 

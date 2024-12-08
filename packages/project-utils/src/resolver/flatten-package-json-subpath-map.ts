@@ -3,8 +3,7 @@ import {
   type SubpathMappings
 } from 'rootverse+project-utils:src/resolver/resolvers.ts';
 
-// TODO: replace with import from @-xun/types
-import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
+import type { PackageJson } from 'type-fest';
 
 /**
  * Flatten entry points within a `package.json` `imports`/`exports` map into a
@@ -13,7 +12,7 @@ import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts'
 export function flattenPackageJsonSubpathMap({
   map
 }: {
-  map: XPackageJson['exports'] | XPackageJson['imports'];
+  map: PackageJson['exports'] | PackageJson['imports'];
 }): SubpathMappings {
   return map === undefined
     ? []

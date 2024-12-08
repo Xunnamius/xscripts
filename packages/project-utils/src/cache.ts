@@ -4,7 +4,8 @@ import { createHash } from 'node:crypto';
 import {
   debug as debug_,
   isPackage,
-  isProjectMetadata
+  isProjectMetadata,
+  type GenericPackageJson
 } from 'rootverse+project-utils:src/analyze/common.ts';
 
 import {
@@ -16,12 +17,13 @@ import {
 } from 'rootverse+project-utils:src/fs.ts';
 
 import type {
-  analyzeProjectStructure,
+  AnalyzeProjectStructureOptions,
   gatherImportEntriesFromFiles,
   gatherPackageBuildTargets,
   gatherPackageFiles,
   gatherProjectFiles,
-  gatherPseudodecoratorEntriesFromFiles
+  gatherPseudodecoratorEntriesFromFiles,
+  ProjectMetadata
 } from 'rootverse+project-utils:src/analyze.ts';
 
 const internalCache = new Map<CacheScope, InternalScopedCache>();
@@ -168,11 +170,21 @@ const externalCache = {
 export { externalCache as cache };
 
 /**
+ * This type is required because you can't choose an overload in TS.
+ *
+ * @internal
+ */
+export type QuasiAnalyzeProjectStructure = (
+  options: AnalyzeProjectStructureOptions
+) => ProjectMetadata<GenericPackageJson>;
+
+/**
  * Place a value into the internal cache.
  */
 function setInCache(
   scope: CacheScope.AnalyzeProjectStructure,
-  ...args: FunctionToCacheParameters<typeof analyzeProjectStructure>
+  // ? This has to be done manually because you can't choose an overload in TS
+  ...args: FunctionToCacheParameters<QuasiAnalyzeProjectStructure>
 ): void;
 function setInCache(
   scope: CacheScope.GatherImportEntriesFromFiles,
@@ -235,8 +247,9 @@ function setInCache(scope: CacheScope, id: unknown[], value: unknown): void {
  */
 function getFromCache(
   scope: CacheScope.AnalyzeProjectStructure,
-  ...args: ArrayNoLast<FunctionToCacheParameters<typeof analyzeProjectStructure>>
-): FunctionToCacheParameters<typeof analyzeProjectStructure>[1] | undefined;
+  // ? This has to be done manually because you can't choose an overload in TS
+  ...args: ArrayNoLast<FunctionToCacheParameters<QuasiAnalyzeProjectStructure>>
+): FunctionToCacheParameters<QuasiAnalyzeProjectStructure, true>[1] | undefined;
 function getFromCache(
   scope: CacheScope.GatherImportEntriesFromFiles,
   ...args: ArrayNoLast<

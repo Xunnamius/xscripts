@@ -19,7 +19,7 @@ import {
   isRelativePath,
   readJson,
   readJsonc,
-  readPackageJsonAtRoot,
+  readXPackageJsonAtRoot,
   toAbsolutePath,
   toPath,
   toRelativePath,
@@ -515,7 +515,7 @@ describe('::readJsonc', () => {
   });
 });
 
-describe('::readPackageJsonAtRoot', () => {
+describe('::readXPackageJsonAtRoot', () => {
   describe('<synchronous>', () => {
     it('accepts a package directory and returns parsed package.json contents', async () => {
       expect.hasAssertions();
@@ -524,7 +524,7 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileSync.mockImplementation(() => JSON.stringify(expectedJson));
 
       expect(
-        readPackageJsonAtRoot.sync(fixtures.goodPolyrepo.root, { useCached: true })
+        readXPackageJsonAtRoot.sync(fixtures.goodPolyrepo.root, { useCached: true })
       ).toStrictEqual(expectedJson);
     });
 
@@ -534,7 +534,9 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
 
       expect(() =>
-        readPackageJsonAtRoot.sync('/does/not/exist' as AbsolutePath, { useCached: true })
+        readXPackageJsonAtRoot.sync('/does/not/exist' as AbsolutePath, {
+          useCached: true
+        })
       ).toThrow('/does/not/exist/package.json');
     });
 
@@ -544,7 +546,7 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileSync.mockImplementation(() => '{{');
 
       expect(() =>
-        readPackageJsonAtRoot.sync(fixtures.goodPolyrepo.root, { useCached: true })
+        readXPackageJsonAtRoot.sync(fixtures.goodPolyrepo.root, { useCached: true })
       ).toThrow(`${fixtures.goodPolyrepo.root}/package.json`);
     });
 
@@ -554,7 +556,7 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
 
       expect(
-        readPackageJsonAtRoot.sync('/does/not/exist' as AbsolutePath, {
+        readXPackageJsonAtRoot.sync('/does/not/exist' as AbsolutePath, {
           useCached: true,
           try: true
         })
@@ -567,7 +569,7 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileSync.mockImplementation(() => '{{');
 
       expect(
-        readPackageJsonAtRoot.sync(fixtures.goodPolyrepo.root, {
+        readXPackageJsonAtRoot.sync(fixtures.goodPolyrepo.root, {
           useCached: true,
           try: true
         })
@@ -580,19 +582,22 @@ describe('::readPackageJsonAtRoot', () => {
       const expectedJson = { name: 'good-package-json-name' };
       mockedReadFileSync.mockImplementation(() => JSON.stringify(expectedJson));
 
-      const json = readPackageJsonAtRoot.sync('/fake/path/package.json' as AbsolutePath, {
-        useCached: false
-      });
+      const json = readXPackageJsonAtRoot.sync(
+        '/fake/path/package.json' as AbsolutePath,
+        {
+          useCached: false
+        }
+      );
 
       expect(json).toStrictEqual(expectedJson);
 
       expect(
-        readPackageJsonAtRoot.sync('/fake/path/package.json' as AbsolutePath, {
+        readXPackageJsonAtRoot.sync('/fake/path/package.json' as AbsolutePath, {
           useCached: true
         })
       ).toBe(json);
 
-      const updatedJson = readPackageJsonAtRoot.sync(
+      const updatedJson = readXPackageJsonAtRoot.sync(
         '/fake/path/package.json' as AbsolutePath,
         { useCached: false }
       );
@@ -600,7 +605,7 @@ describe('::readPackageJsonAtRoot', () => {
       expect(updatedJson).not.toBe(json);
 
       expect(
-        readPackageJsonAtRoot.sync('/fake/path/package.json' as AbsolutePath, {
+        readXPackageJsonAtRoot.sync('/fake/path/package.json' as AbsolutePath, {
           useCached: true
         })
       ).toBe(updatedJson);
@@ -617,7 +622,7 @@ describe('::readPackageJsonAtRoot', () => {
       );
 
       await expect(
-        readPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true })
+        readXPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true })
       ).resolves.toStrictEqual(expectedJson);
     });
 
@@ -627,7 +632,7 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileAsync.mockImplementation(() => Promise.reject('fail'));
 
       await expect(
-        readPackageJsonAtRoot('/does/not/exist' as AbsolutePath, { useCached: true })
+        readXPackageJsonAtRoot('/does/not/exist' as AbsolutePath, { useCached: true })
       ).rejects.toThrow('/does/not/exist/package.json');
     });
 
@@ -637,7 +642,7 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileAsync.mockImplementation(() => Promise.resolve('{{'));
 
       await expect(
-        readPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true })
+        readXPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true })
       ).rejects.toThrow(`${fixtures.goodPolyrepo.root}/package.json`);
     });
 
@@ -647,7 +652,7 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileAsync.mockImplementation(() => Promise.reject('fail'));
 
       await expect(
-        readPackageJsonAtRoot('/does/not/exist' as AbsolutePath, {
+        readXPackageJsonAtRoot('/does/not/exist' as AbsolutePath, {
           useCached: true,
           try: true
         })
@@ -660,7 +665,7 @@ describe('::readPackageJsonAtRoot', () => {
       mockedReadFileAsync.mockImplementation(() => Promise.resolve('{{'));
 
       await expect(
-        readPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true, try: true })
+        readXPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true, try: true })
       ).resolves.toBeEmptyObject();
     });
 
@@ -673,7 +678,7 @@ describe('::readPackageJsonAtRoot', () => {
         Promise.resolve(JSON.stringify(expectedJson))
       );
 
-      const json = await readPackageJsonAtRoot(
+      const json = await readXPackageJsonAtRoot(
         '/fake/path/package.json' as AbsolutePath,
         { useCached: false }
       );
@@ -681,12 +686,12 @@ describe('::readPackageJsonAtRoot', () => {
       expect(json).toStrictEqual(expectedJson);
 
       await expect(
-        readPackageJsonAtRoot('/fake/path/package.json' as AbsolutePath, {
+        readXPackageJsonAtRoot('/fake/path/package.json' as AbsolutePath, {
           useCached: true
         })
       ).resolves.toBe(json);
 
-      const updatedJson = await readPackageJsonAtRoot(
+      const updatedJson = await readXPackageJsonAtRoot(
         '/fake/path/package.json' as AbsolutePath,
         { useCached: false }
       );
@@ -694,7 +699,7 @@ describe('::readPackageJsonAtRoot', () => {
       expect(updatedJson).not.toBe(json);
 
       await expect(
-        readPackageJsonAtRoot('/fake/path/package.json' as AbsolutePath, {
+        readXPackageJsonAtRoot('/fake/path/package.json' as AbsolutePath, {
           useCached: true
         })
       ).resolves.toBe(updatedJson);

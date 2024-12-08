@@ -27,8 +27,7 @@ import {
   resolveTargetWithResolveExports
 } from 'rootverse+project-utils:test/helpers/dummy-pkg.ts';
 
-// TODO: replace with import from @-xun/types
-import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
+import type { XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 reconfigureJestGlobalsToSkipTestsInThisFileIfRequested();
 

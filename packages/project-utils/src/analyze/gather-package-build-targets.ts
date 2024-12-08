@@ -14,6 +14,9 @@ import {
 import {
   debug as debug_,
   isWorkspacePackage,
+  type GenericPackage,
+  // ? Used in documentation
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   type Package,
   type PackageBuildTargets
 } from 'rootverse+project-utils:src/analyze/common.ts';
@@ -79,17 +82,17 @@ export type GatherPackageBuildTargetsOptions = {
 
 function gatherPackageBuildTargets_(
   shouldRunSynchronously: false,
-  package_: Package,
+  package_: GenericPackage,
   options: GatherPackageBuildTargetsOptions
 ): Promise<PackageBuildTargets>;
 function gatherPackageBuildTargets_(
   shouldRunSynchronously: true,
-  package_: Package,
+  package_: GenericPackage,
   options: GatherPackageBuildTargetsOptions
 ): PackageBuildTargets;
 function gatherPackageBuildTargets_(
   shouldRunSynchronously: boolean,
-  package_: Package,
+  package_: GenericPackage,
   { useCached, ...cacheIdComponentsObject }: GatherPackageBuildTargetsOptions
 ): Promisable<PackageBuildTargets> {
   const { excludeInternalsPatterns = [], includeExternalsPatterns = [] } =
@@ -282,7 +285,7 @@ function gatherPackageBuildTargets_(
     externalTargets: RelativePath[],
     path: AbsolutePath,
     specifiers: Set<string>,
-    specifierPackage: Package
+    specifierPackage: GenericPackage
   ) {
     // TODO: consider optionally allowing files other than typescript to have
     // TODO: their raw specifiers checked

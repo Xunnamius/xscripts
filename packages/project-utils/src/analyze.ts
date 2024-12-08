@@ -10,8 +10,10 @@ export * from 'rootverse+project-utils:src/analyze/path-to-package.ts';
 
 export {
   isPackage,
+  isProjectMetadata,
   isRootPackage,
   isWorkspacePackage,
+  isXPackageJson,
   ProjectAttribute,
   WorkspaceAttribute,
   type MonorepoMetadata,
@@ -24,5 +26,11 @@ export {
   type RootPackage,
   type WorkspacePackage,
   type WorkspacePackageId,
-  type WorkspacePackageName
+  type WorkspacePackageName,
+  type XPackageJson,
+  type XPackageJsonHybridrepoProjectRoot,
+  type XPackageJsonMonorepoPackageRoot,
+  type XPackageJsonMonorepoProjectRoot,
+  type XPackageJsonPolyrepoRoot,
+  type XPackageJsonScripts
 } from 'rootverse+project-utils:src/analyze/common.ts';

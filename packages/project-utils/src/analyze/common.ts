@@ -7,7 +7,7 @@ import {
   type RelativePath
 } from 'rootverse+project-utils:src/fs/common.ts';
 
-import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
+import type { OmitIndexSignature, PackageJson } from 'type-fest';
 
 // @ts-expect-error: used in documentation
 import type {
@@ -18,8 +18,6 @@ import type {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   webpackConfigProjectBase
 } from 'rootverse+project-utils:src/fs/well-known-constants.ts';
-
-// TODO: replace with import from @-xun/types
 
 export const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:analyze`
@@ -40,7 +38,7 @@ export type WorkspacePackageId = string;
  * An object representing the root or "top-level" package in a monorepo or
  * polyrepo project.
  */
-export type RootPackage = {
+export type RootPackage<Json extends PackageJson | XPackageJson = XPackageJson> = {
   /**
    * The absolute path to the root directory of the entire project.
    */
@@ -48,7 +46,7 @@ export type RootPackage = {
   /**
    * The contents of the root `package.json` file.
    */
-  json: XPackageJson;
+  json: Json;
   /**
    * A collection of {@link ProjectAttribute} flags describing the project.
    */
@@ -57,13 +55,13 @@ export type RootPackage = {
    * A link back to the {@link ProjectMetadata} instance containing this
    * package.
    */
-  projectMetadata: ProjectMetadata;
+  projectMetadata: ProjectMetadata<Json>;
 };
 
 /**
  * An object representing a non-root package in a monorepo project.
  */
-export type WorkspacePackage = {
+export type WorkspacePackage<Json extends PackageJson | XPackageJson = XPackageJson> = {
   /**
    * The package-id of the workspace package. The package-id is derived from the
    * name of the parent directory of this package's `package.json` file, i.e.
@@ -80,7 +78,7 @@ export type WorkspacePackage = {
   /**
    * The contents of the package's `package.json` file.
    */
-  json: XPackageJson;
+  json: Json;
   /**
    * A collection of {@link WorkspaceAttribute} flags describing the workspace.
    */
@@ -89,7 +87,7 @@ export type WorkspacePackage = {
    * A link back to the {@link ProjectMetadata} instance containing this
    * package.
    */
-  projectMetadata: ProjectMetadata;
+  projectMetadata: ProjectMetadata<Json>;
 };
 
 /**
@@ -98,7 +96,9 @@ export type WorkspacePackage = {
  * @see {@link RootPackage}
  * @see {@link WorkspacePackage}
  */
-export type Package = RootPackage | WorkspacePackage;
+export type Package<Json extends PackageJson | XPackageJson = XPackageJson> =
+  | RootPackage<Json>
+  | WorkspacePackage<Json>;
 
 /**
  * A "project attribute" describes a capability, scope, or some other
@@ -194,7 +194,7 @@ export enum WorkspaceAttribute {
 /**
  * A collection of useful information about a project.
  */
-export type ProjectMetadata = {
+export type ProjectMetadata<Json extends PackageJson | XPackageJson = XPackageJson> = {
   /**
    * The type of the project.
    */
@@ -202,14 +202,14 @@ export type ProjectMetadata = {
   /**
    * Project root package data.
    */
-  rootPackage: RootPackage;
+  rootPackage: RootPackage<Json>;
   /**
    * The "current package" data. The "current" package is determined by the
    * current working directory and will always strictly equal (`===`) either (1)
    * exactly one value in {@link RootPackage.packages}'s `all` property or (2)
    * `rootPackage`.
    */
-  cwdPackage: Package;
+  cwdPackage: Package<Json>;
   /**
    * A mapping of sub-root package names to {@link WorkspacePackage} objects in
    * a monorepo, or `undefined` in a polyrepo.
@@ -220,7 +220,7 @@ export type ProjectMetadata = {
          * A mapping of sub-root packages missing the `"name"` field in their
          * respective `package.json` files and {@link WorkspacePackage} objects.
          */
-        unnamed: Map<WorkspacePackageId, WorkspacePackage>;
+        unnamed: Map<WorkspacePackageId, WorkspacePackage<PackageJson>>;
         /**
          * An array of "broken" pseudo-sub-root pseudo-package directories that
          * are matching workspace paths but are missing a `package.json` file.
@@ -235,7 +235,7 @@ export type ProjectMetadata = {
          *      .concat(Array.from(packages.unnamed.values()))
          * ```
          */
-        all: WorkspacePackage[];
+        all: WorkspacePackage<Json>[];
       })
     | undefined;
 };
@@ -471,20 +471,281 @@ export type PackageFiles = {
  *
  * @see {@link ProjectMetadata}
  */
-export type PolyrepoMetadata = ProjectMetadata & {
-  type: ProjectAttribute.Polyrepo;
-  subRootPackages: undefined;
-};
+export type PolyrepoMetadata<Json extends PackageJson | XPackageJson = XPackageJson> =
+  ProjectMetadata<Json> & {
+    type: ProjectAttribute.Polyrepo;
+    subRootPackages: undefined;
+  };
 
 /**
  * A collection of useful information about a monorepo.
  *
  * @see {@link ProjectMetadata}
  */
-export type MonorepoMetadata = ProjectMetadata & {
-  type: ProjectAttribute.Monorepo;
-  subRootPackages: NonNullable<ProjectMetadata['subRootPackages']>;
+export type MonorepoMetadata<Json extends PackageJson | XPackageJson = XPackageJson> =
+  ProjectMetadata<Json> & {
+    type: ProjectAttribute.Monorepo;
+    subRootPackages: NonNullable<ProjectMetadata['subRootPackages']>;
+  };
+
+/**
+ * Additional scripts available when working on an xscripts-powered project.
+ */
+export type XPackageJsonScripts = {
+  /**
+   * Run by users, xscripts, and related tooling when building the current
+   * package's production-ready distributables.
+   *
+   * This script is usually a reference to `npm run build:dist`.
+   *
+   * @example `npm run build:dist --`
+   */
+  build?: string;
+  /**
+   * Run by users, xscripts, and related tooling when building the current
+   * package's `CHANGELOG.md` file.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts build changelog`
+   */
+  'build:changelog'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when building the current
+   * package's production-ready distributables.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts build distributables`
+   */
+  'build:dist'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when building the current
+   * package's documentation (typically found under `docs/`).
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts build docs`
+   */
+  'build:docs'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when removing files from the
+   * project or package that are ignored by git (with exceptions).
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts clean`
+   */
+  clean?: string;
+  /**
+   * Run by users, xscripts, and related tooling when formatting the project
+   * or package.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts format --hush`
+   */
+  format?: string;
+  /**
+   * Run by users, xscripts, and related tooling when printing information
+   * about the current project or package.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts project info`
+   */
+  info?: string;
+  /**
+   * Run by users, xscripts, and related tooling when linting the current
+   * package's files.
+   *
+   * This script is usually a reference to `npm run lint:package`.
+   *
+   * @example `npm run lint:package --`
+   */
+  lint?: string;
+  /**
+   * Run by users, xscripts, and related tooling when linting all of the
+   * lintable files under the current package's root along with any other
+   * source files that comprise this package's build targets (see
+   * {@link gatherPackageBuildTargets}).
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts lint --scope this-package`
+   */
+  'lint:package'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when linting all lintable
+   * files in the entire project.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts lint --scope unlimited`
+   */
+  'lint:packages'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when linting a project's
+   * metadata, such as its file structure and configuration settings.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts project lint`
+   */
+  'lint:project'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when printing information
+   * about available scripts in `package.json`.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts list-tasks`
+   */
+  'list-tasks'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when preparing a fresh
+   * development environment.
+   *
+   * See [the
+   * docs](https://docs.npmjs.com/cli/v9/using-npm/scripts#prepare-and-prepublish)
+   * for more information.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts project prepare`
+   */
+  prepare?: string;
+  /**
+   * Run by users, xscripts, and related tooling when potentially releasing
+   * the next version of a package.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts release`
+   */
+  release?: string;
+  /**
+   * Run by users, xscripts, and related tooling when manipulating a project's
+   * _metadata_, such as its file structure and configuration settings, with
+   * the goal of bringing the project up to date on latest best practices.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts project renovate --`
+   */
+  renovate?: string;
+  /**
+   * Run by users, xscripts, and related tooling when attempting to execute a
+   * project's distributables locally.
+   *
+   * See [the docs](https://docs.npmjs.com/cli/v9/using-npm/scripts#npm-start)
+   * for more information.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts start --`
+   */
+  start?: string;
+  /**
+   * Run by users, xscripts, and related tooling when spinning up a project's
+   * local development environment.
+   */
+  dev?: string;
+  /**
+   * Run by users, xscripts, and related tooling  when executing unit tests
+   * against the current package.
+   *
+   * This script is usually a reference to `npm run test:package:unit`. See
+   * [the docs](https://docs.npmjs.com/cli/v9/using-npm/scripts#npm-test) for
+   * more information.
+   *
+   * @example `npm run test:package:unit --`
+   */
+  test?: string;
+  /**
+   * Run by users, xscripts, and related tooling when executing all possible
+   * tests against the current package. In a monorepo context, this script
+   * will also run the tests of any package that this package depends on
+   * (including transitive dependencies).
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts test --scope this-package --coverage`
+   */
+  'test:package:all'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when executing end-to-end
+   * tests against the current package. In a monorepo context, this script
+   * will also run the tests of any package that this package depends on
+   * (including transitive dependencies).
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts test --scope this-package --tests end-to-end`
+   */
+  'test:package:e2e'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when executing integration
+   * tests against the current package. In a monorepo context, this script
+   * will also run the tests of any package that this package depends on
+   * (including transitive dependencies).
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts test --scope this-package --tests integration`
+   */
+  'test:package:integration'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when executing unit tests
+   * against the current package. In a monorepo context, this script
+   * will also run the tests of any package that this package depends on
+   * (including transitive dependencies).
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts test --scope this-package --tests unit`
+   */
+  'test:package:unit'?: string;
+  /**
+   * Run by users, xscripts, and related tooling when executing all possible
+   * tests across the entire project.
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts test --scope unlimited --coverage`
+   */
+  'test:packages:all'?: string;
 };
+
+/**
+ * A version of {@link PackageJson} used by xscripts-powered projects with
+ * certain additional properties and other properties that are guaranteed to
+ * exist.
+ */
+export type XPackageJson<Scripts extends Record<string, string> = XPackageJsonScripts> =
+  Omit<OmitIndexSignature<PackageJson>, 'bin' | 'name'> & {
+    scripts?: Scripts;
+    bin?: string | Record<string, string>;
+    name: NonNullable<PackageJson['name']>;
+  };
+
+/**
+ * A version of {@link XPackageJson} specifically for polyrepo roots.
+ */
+export type XPackageJsonPolyrepoRoot = Omit<XPackageJson, 'workspaces'>;
+
+/**
+ * A version of {@link XPackageJson} specifically for non-hybrid monorepo roots.
+ */
+export type XPackageJsonMonorepoProjectRoot = Omit<XPackageJson, 'dependencies'> &
+  NonNullable<Pick<XPackageJson, 'workspaces'>>;
+
+/**
+ * A version of {@link XPackageJson} specifically for hybridrepo roots.
+ */
+export type XPackageJsonHybridrepoProjectRoot = XPackageJson &
+  NonNullable<Pick<XPackageJson, 'workspaces'>>;
+
+/**
+ * A version of {@link XPackageJson} specifically for package subroots in a
+ * monorepo.
+ */
+export type XPackageJsonMonorepoPackageRoot = Omit<
+  XPackageJson,
+  'workspaces' | 'devDependencies'
+>;
+
+/**
+ * Represents any `package.json` file in the wild, including xscript-ready
+ * `package.json` files.
+ */
+export type GenericPackageJson = PackageJson | XPackageJson;
+
+/**
+ * A non-generic version of {@link ProjectMetadata} with
+ * {@link GenericPackageJson} as its type parameter.
+ */
+export type GenericProjectMetadata = ProjectMetadata<GenericPackageJson>;
+
+/**
+ * A non-generic version of {@link Package} with {@link GenericPackageJson} as
+ * its type parameter.
+ */
+export type GenericPackage = Package<GenericPackageJson>;
+
+/**
+ * A non-generic version of {@link WorkspacePackage} with
+ * {@link GenericPackageJson} as its type parameter.
+ */
+export type GenericWorkspacePackage = WorkspacePackage<GenericPackageJson>;
+
+/**
+ * A non-generic version of {@link RootPackage} with {@link GenericPackageJson}
+ * as its type parameter.
+ */
+export type GenericRootPackage = RootPackage<GenericPackageJson>;
 
 /**
  * Used to assign the result of an asynchronous operation to some key in some
@@ -564,5 +825,18 @@ export function isProjectMetadata(o: unknown): o is ProjectMetadata {
     'cwdPackage' in o &&
     isPackage(o.cwdPackage) &&
     'subRootPackages' in o
+  );
+}
+
+/**
+ * Returns `true` if `o` is probably an instance of `XPackageJson`.
+ */
+export function isXPackageJson(o: unknown): o is XPackageJson {
+  return !!(
+    o &&
+    typeof o === 'object' &&
+    'name' in o &&
+    typeof o.name === 'string' &&
+    o.name.length
   );
 }

@@ -4,7 +4,7 @@ export * from 'rootverse+project-utils:src/fs/derive-virtual-prettierignore-line
 export * from 'rootverse+project-utils:src/fs/is-accessible.ts';
 export * from 'rootverse+project-utils:src/fs/read-json.ts';
 export * from 'rootverse+project-utils:src/fs/read-jsonc.ts';
-export * from 'rootverse+project-utils:src/fs/read-package-json-at-root.ts';
+export * from 'rootverse+project-utils:src/fs/read-xpackage-json-at-root.ts';
 
 export {
   getCurrentWorkingDirectory,

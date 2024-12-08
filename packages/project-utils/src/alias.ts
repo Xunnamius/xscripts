@@ -3,6 +3,8 @@ import { extname } from 'node:path';
 import escapeStringRegExp from 'escape-string-regexp~4';
 import { type Arrayable } from 'type-fest';
 
+import { type GenericProjectMetadata } from 'rootverse+project-utils:src/analyze/common.ts';
+
 import {
   uriSchemeDelimiter,
   uriSchemeSubDelimiter
@@ -16,10 +18,7 @@ import {
   type RelativePath
 } from 'rootverse+project-utils:src/fs.ts';
 
-import {
-  type ProjectMetadata,
-  type WorkspacePackageId
-} from 'rootverse+project-utils:src/index.ts';
+import { type WorkspacePackageId } from 'rootverse+project-utils:src/index.ts';
 
 export { uriSchemeDelimiter, uriSchemeSubDelimiter };
 
@@ -279,7 +278,9 @@ export function makeRawAliasMapping(
  *
  * @see https://github.com/Xunnamius/xscripts/wiki/Standard-Aliases
  */
-export function generateRawAliasMap(projectMetadata: ProjectMetadata): RawAliasMapping[] {
+export function generateRawAliasMap(
+  projectMetadata: GenericProjectMetadata
+): RawAliasMapping[] {
   // TODO: need to take into account that projects with assets being imported
   // TODO: via JS need their own aliases (assetverse) (perhaps this is a concern
   // TODO: best handled at the xscripts project init/renovate level?)

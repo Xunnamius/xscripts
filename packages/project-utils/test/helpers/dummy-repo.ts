@@ -1,6 +1,7 @@
 import { basename } from 'node:path';
 
-import { type Package } from 'rootverse+project-utils:src/analyze/common.ts';
+import { type PackageJson } from 'type-fest';
+
 import * as fs from 'rootverse+project-utils:src/fs.ts';
 
 import {
@@ -10,14 +11,19 @@ import {
   type WorkspacePackage
 } from 'rootverse+project-utils:src/index.ts';
 
-// TODO: replace with import from @-xun/types
-import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
+import type {
+  GenericPackage,
+  GenericProjectMetadata,
+  GenericRootPackage,
+  GenericWorkspacePackage,
+  XPackageJson
+} from 'rootverse+project-utils:src/analyze/common.ts';
 
 /**
- * Patch the package.json data returned by {@link fs.readPackageJsonAtRoot} or
+ * Patch the package.json data returned by {@link fs.readXPackageJsonAtRoot} or
  * the sync version. Successive calls to this function overwrite previous calls.
  */
-export function patchReadPackageJsonAtRoot(
+export function patchReadXPackageJsonAtRoot(
   /**
    * The `package.json` patches to apply per root path. When `root` is equal to
    * `"*"`, it will be used to patch all `package.json` imports but can be
@@ -38,20 +44,20 @@ export function patchReadPackageJsonAtRoot(
     replace?: boolean;
   }
 ) {
-  const actualReadPackageJsonAtRoot = jest.requireActual<
+  const actualReadXPackageJsonAtRoot = jest.requireActual<
     typeof import('rootverse+project-utils:src/fs.ts')
-  >('rootverse+project-utils:src/fs.ts').readPackageJsonAtRoot;
+  >('rootverse+project-utils:src/fs.ts').readXPackageJsonAtRoot;
 
   jest
-    .spyOn(fs, 'readPackageJsonAtRoot')
+    .spyOn(fs, 'readXPackageJsonAtRoot')
     .mockImplementation(async (root, { useCached }) => {
-      const packageJson = await actualReadPackageJsonAtRoot(root, { useCached });
+      const packageJson = await actualReadXPackageJsonAtRoot(root, { useCached });
       return finalize(root, packageJson);
     });
 
   // @ts-expect-error: we're mocking do we'll do what we like
-  fs.readPackageJsonAtRoot.sync = (root, { useCached }) => {
-    const packageJson = actualReadPackageJsonAtRoot.sync(root, { useCached });
+  fs.readXPackageJsonAtRoot.sync = (root, { useCached }) => {
+    const packageJson = actualReadXPackageJsonAtRoot.sync(root, { useCached });
     return finalize(root, packageJson);
   };
 
@@ -150,7 +156,7 @@ export const fixtures = {} as Record<FixtureName, Fixture>;
 
 fixtures.repoThatDoesNotExist = {
   root: '/does/not/exist' as fs.AbsolutePath,
-  json: {},
+  json: { name: 'does-not-exist' },
   attributes: {},
   namedPackageMapData: [],
   unnamedPackageMapData: [],
@@ -584,12 +590,12 @@ export function fixtureToProjectMetadata(
     attributes: fixtures[fixtureName].attributes
     // ? the "projectMetadata" property is properly initialized below
     // projectMetadata: mockProjectMetadata
-  } satisfies Omit<RootPackage, 'projectMetadata'> as RootPackage;
+  } satisfies Omit<RootPackage, 'projectMetadata'> as GenericRootPackage;
 
   // ? the "projectMetadata" property is properly initialized below
-  const cwdPackage = (cwdPackage_ ?? rootPackage) as Package;
+  const cwdPackage = (cwdPackage_ ?? rootPackage) as GenericPackage;
 
-  const mockProjectMetadata: ProjectMetadata = {
+  const mockProjectMetadata: GenericProjectMetadata = {
     type: fixtures[fixtureName].attributes[ProjectAttribute.Polyrepo]
       ? ProjectAttribute.Polyrepo
       : ProjectAttribute.Monorepo,
@@ -599,7 +605,7 @@ export function fixtureToProjectMetadata(
     fixtures[fixtureName].unnamedPackageMapData.length
       ? // ? This map is properly initialized below
         new Map()
-      : undefined) as ProjectMetadata['subRootPackages']
+      : undefined) as GenericProjectMetadata['subRootPackages']
   };
 
   rootPackage.projectMetadata = cwdPackage.projectMetadata = mockProjectMetadata;
@@ -615,11 +621,17 @@ export function fixtureToProjectMetadata(
 
     mockProjectMetadata.subRootPackages.unnamed = new Map(
       fixtures[fixtureName].unnamedPackageMapData.map(([key, package_]) => {
-        return [key, { ...package_, projectMetadata: mockProjectMetadata }];
+        return [
+          key,
+          {
+            ...package_,
+            projectMetadata: mockProjectMetadata
+          } as WorkspacePackage<PackageJson>
+        ];
       })
     );
 
-    mockProjectMetadata.subRootPackages.all = Array.from(
+    mockProjectMetadata.subRootPackages.all = Array.from<GenericWorkspacePackage>(
       mockProjectMetadata.subRootPackages.values()
     ).concat(Array.from(mockProjectMetadata.subRootPackages.unnamed.values()));
   }

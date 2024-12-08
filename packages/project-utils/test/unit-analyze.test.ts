@@ -1,12 +1,18 @@
 import { runNoRejectOnBadExit } from '@-xun/run';
 import { toss } from 'toss-expression';
 
+import { type GenericProjectMetadata } from 'multiverse+project-utils:analyze/common.ts';
 import { asMockedFunction } from 'multiverse+test-utils';
 
 import { pathToPackage } from 'rootverse+project-utils:src/analyze/path-to-package.ts';
 import { cache } from 'rootverse+project-utils:src/cache.ts';
 import { ErrorMessage } from 'rootverse+project-utils:src/error.ts';
-import { type AbsolutePath, type RelativePath } from 'rootverse+project-utils:src/fs.ts';
+
+import {
+  toPath,
+  type AbsolutePath,
+  type RelativePath
+} from 'rootverse+project-utils:src/fs.ts';
 
 import {
   analyzeProjectStructure,
@@ -28,7 +34,7 @@ import {
 import {
   fixtures,
   fixtureToProjectMetadata,
-  patchReadPackageJsonAtRoot,
+  patchReadXPackageJsonAtRoot,
   type FixtureName
 } from 'rootverse+project-utils:test/helpers/dummy-repo.ts';
 
@@ -3370,7 +3376,8 @@ describe('::analyzeProjectStructure', () => {
       expect(
         analyzeProjectStructure.sync({
           cwd: fixtures.goodMonorepoWeirdYarn.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).toBeDefined();
     });
@@ -3380,7 +3387,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodPolyrepo.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3401,7 +3409,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodMonorepo.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3424,7 +3433,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodHybridrepo.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3448,7 +3458,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const result = analyzeProjectStructure.sync({
           cwd: fixtures.badMonorepoNextjsProject.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3461,7 +3472,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const result = analyzeProjectStructure.sync({
           cwd: fixtures.badPolyrepoNextjsProject.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3474,7 +3486,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const result = analyzeProjectStructure.sync({
           cwd: fixtures.goodMonorepoNextjsProject.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3487,7 +3500,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const result = analyzeProjectStructure.sync({
           cwd: fixtures.goodPolyrepoNextjsProject.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -3503,7 +3517,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodMonorepoWeirdSameNames.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3515,7 +3530,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3530,7 +3546,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3542,7 +3559,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3557,7 +3575,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: `${fixtures.goodMonorepoSimplePaths.namedPackageMapData[0][1].root}/src` as AbsolutePath,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3576,7 +3595,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodMonorepoWindows.namedPackageMapData[0][1].root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -3591,7 +3611,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: `${fixtures.goodMonorepoWeirdAbsolute.namedPackageMapData[0][1].root}/..` as AbsolutePath,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3603,7 +3624,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodMonorepoWeirdBoneless.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3615,7 +3637,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodMonorepoWeirdOverlap.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3627,7 +3650,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodMonorepoNegatedPaths.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3639,7 +3663,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.badMonorepoNonPackageDir.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3648,29 +3673,35 @@ describe('::analyzeProjectStructure', () => {
 
     it('uses process.cwd when given no cwd parameter', () => {
       expect.hasAssertions();
-      expect(() => analyzeProjectStructure.sync({ useCached: true })).toThrow(
-        ErrorMessage.NotAGitRepositoryError()
-      );
+      expect(() =>
+        analyzeProjectStructure.sync({ useCached: true, allowUnnamedPackages: true })
+      ).toThrow(ErrorMessage.NotAGitRepositoryError());
     });
 
     it('correctly determines repository type', () => {
       expect.hasAssertions();
 
       expect(
-        analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root, useCached: true })
-          .type
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepo.root,
+          useCached: true,
+          allowUnnamedPackages: true
+        }).type
       ).toBe(ProjectAttribute.Monorepo);
 
       expect(
-        analyzeProjectStructure.sync({ cwd: fixtures.goodPolyrepo.root, useCached: true })
-          .type
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodPolyrepo.root,
+          useCached: true,
+          allowUnnamedPackages: true
+        }).type
       ).toBe(ProjectAttribute.Polyrepo);
     });
 
     it('returns correct rootPackage regardless of cwd', () => {
       expect.hasAssertions();
 
-      const expectedJsonSpec = patchReadPackageJsonAtRoot(
+      const expectedJsonSpec = patchReadXPackageJsonAtRoot(
         {
           [fixtures.goodMonorepo.root]: {
             name: 'good-monorepo-package-json-name',
@@ -3686,7 +3717,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const { rootPackage } = analyzeProjectStructure.sync({
           cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3700,7 +3732,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const { rootPackage } = analyzeProjectStructure.sync({
           cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3714,7 +3747,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const { rootPackage } = analyzeProjectStructure.sync({
           cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3728,7 +3762,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const { rootPackage } = analyzeProjectStructure.sync({
           cwd: fixtures.goodPolyrepo.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3742,7 +3777,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const { rootPackage } = analyzeProjectStructure.sync({
           cwd: `${fixtures.goodPolyrepo.root}/src` as AbsolutePath,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -3758,8 +3794,11 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       checkForExpectedPackages(
-        analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root, useCached: true })
-          .subRootPackages,
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepo.root,
+          useCached: true,
+          allowUnnamedPackages: true
+        }).subRootPackages,
         'goodMonorepo'
       );
     });
@@ -3768,8 +3807,11 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       expect(
-        analyzeProjectStructure.sync({ cwd: fixtures.goodPolyrepo.root, useCached: true })
-          .subRootPackages
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodPolyrepo.root,
+          useCached: true,
+          allowUnnamedPackages: true
+        }).subRootPackages
       ).toBeUndefined();
     });
 
@@ -3778,19 +3820,22 @@ describe('::analyzeProjectStructure', () => {
 
       const dummyMetadata = analyzeProjectStructure.sync({
         cwd: fixtures.goodPolyrepo.root,
-        useCached: false
+        useCached: false,
+        allowUnnamedPackages: true
       });
 
       expect(dummyMetadata.rootPackage).toBe(
         analyzeProjectStructure.sync({
           cwd: fixtures.goodPolyrepo.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         }).rootPackage
       );
 
       const updatedDummyMetadata = analyzeProjectStructure.sync({
         cwd: fixtures.goodPolyrepo.root,
-        useCached: false
+        useCached: false,
+        allowUnnamedPackages: true
       });
 
       expect(updatedDummyMetadata.rootPackage).not.toBe(dummyMetadata.rootPackage);
@@ -3798,7 +3843,8 @@ describe('::analyzeProjectStructure', () => {
       expect(
         analyzeProjectStructure.sync({
           cwd: fixtures.goodPolyrepo.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         }).rootPackage
       ).toBe(updatedDummyMetadata.rootPackage);
     });
@@ -3807,14 +3853,18 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       expect(
-        analyzeProjectStructure.sync({ cwd: fixtures.goodMonorepo.root, useCached: true })
-          .cwdPackage
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepo.root,
+          useCached: true,
+          allowUnnamedPackages: true
+        }).cwdPackage
       ).toStrictEqual(fixtureToProjectMetadata('goodMonorepo').rootPackage);
 
       expect(
         analyzeProjectStructure.sync({
           cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         }).cwdPackage
       ).toStrictEqual(fixtures.goodMonorepo.namedPackageMapData[0][1]);
     });
@@ -3824,7 +3874,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.subRootPackages?.get(result.cwdPackage.json.name!)).toBe(
@@ -3839,7 +3890,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = analyzeProjectStructure.sync({
         cwd: fixtures.goodMonorepo.unnamedPackageMapData[0][1].root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(
@@ -3855,7 +3907,8 @@ describe('::analyzeProjectStructure', () => {
       expect(() =>
         analyzeProjectStructure.sync({
           cwd: '/fake/root' as AbsolutePath,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).toThrow(ErrorMessage.NotAGitRepositoryError());
     });
@@ -3866,7 +3919,8 @@ describe('::analyzeProjectStructure', () => {
       expect(() =>
         analyzeProjectStructure.sync({
           cwd: '/does/not/exist' as AbsolutePath,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).toThrow(ErrorMessage.NotAGitRepositoryError());
     });
@@ -3877,7 +3931,8 @@ describe('::analyzeProjectStructure', () => {
       expect(() =>
         analyzeProjectStructure.sync({
           cwd: fixtures.badPolyrepoConflictingAttributes.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).toThrow(ErrorMessage.CannotBeCliAndNextJs());
     });
@@ -3888,9 +3943,14 @@ describe('::analyzeProjectStructure', () => {
       expect(() =>
         analyzeProjectStructure.sync({
           cwd: fixtures.badPolyrepoBadType.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
-      ).toThrow(ErrorMessage.BadProjectTypeInPackageJson());
+      ).toThrow(
+        ErrorMessage.BadProjectTypeInPackageJson(
+          toPath(fixtures.badPolyrepoBadType.root, 'package.json')
+        )
+      );
     });
 
     it('throws when two packages have the same "name" field in package.json', () => {
@@ -3899,7 +3959,8 @@ describe('::analyzeProjectStructure', () => {
       expect(() =>
         analyzeProjectStructure.sync({
           cwd: fixtures.badMonorepoDuplicateName.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).toThrow(ErrorMessage.DuplicatePackageName('pkg', '', '').trim());
     });
@@ -3910,7 +3971,8 @@ describe('::analyzeProjectStructure', () => {
       expect(() =>
         analyzeProjectStructure.sync({
           cwd: fixtures.badMonorepoDuplicateIdUnnamed.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).toThrow(
         ErrorMessage.DuplicatePackageId(
@@ -3927,7 +3989,8 @@ describe('::analyzeProjectStructure', () => {
       expect(() =>
         analyzeProjectStructure.sync({
           cwd: fixtures.badMonorepoDuplicateIdNamed.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).toThrow(
         ErrorMessage.DuplicatePackageId(
@@ -3936,6 +3999,42 @@ describe('::analyzeProjectStructure', () => {
           `${fixtures.badMonorepoDuplicateIdNamed.root}/packages-1/pkg-1`
         )
       );
+    });
+
+    it('throws when allowUnnamedPackages is false (the default) and unnamed packages are present', () => {
+      expect.hasAssertions();
+
+      expect(() =>
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepo.root,
+          useCached: true,
+          allowUnnamedPackages: false
+        })
+      ).toThrow(
+        ErrorMessage.MissingNameInPackageJson(
+          toPath(fixtures.goodMonorepo.unnamedPackageMapData[0][1].root, 'package.json')
+        )
+      );
+
+      expect(() =>
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepo.root,
+          useCached: true
+          // * allowUnnamedPackages: false should be the default
+        })
+      ).toThrow(
+        ErrorMessage.MissingNameInPackageJson(
+          toPath(fixtures.goodMonorepo.unnamedPackageMapData[0][1].root, 'package.json')
+        )
+      );
+
+      expect(() =>
+        analyzeProjectStructure.sync({
+          cwd: fixtures.goodMonorepo.root,
+          useCached: false,
+          allowUnnamedPackages: true
+        })
+      ).not.toThrow();
     });
   });
 
@@ -3946,7 +4045,8 @@ describe('::analyzeProjectStructure', () => {
       await expect(
         analyzeProjectStructure({
           cwd: fixtures.goodMonorepoWeirdYarn.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).resolves.toBeDefined();
     });
@@ -3956,7 +4056,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodPolyrepo.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -3977,7 +4078,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodMonorepo.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -4000,7 +4102,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodHybridrepo.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -4024,7 +4127,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const result = await analyzeProjectStructure({
           cwd: fixtures.badMonorepoNextjsProject.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -4037,7 +4141,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const result = await analyzeProjectStructure({
           cwd: fixtures.badPolyrepoNextjsProject.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -4050,7 +4155,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const result = await analyzeProjectStructure({
           cwd: fixtures.goodMonorepoNextjsProject.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -4063,7 +4169,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const result = await analyzeProjectStructure({
           cwd: fixtures.goodPolyrepoNextjsProject.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(result.rootPackage.attributes).toStrictEqual(
@@ -4079,7 +4186,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodMonorepoWeirdSameNames.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -4091,7 +4199,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -4106,7 +4215,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -4118,7 +4228,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -4133,7 +4244,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: `${fixtures.goodMonorepoSimplePaths.namedPackageMapData[0][1].root}/src` as AbsolutePath,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -4152,7 +4264,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodMonorepoWindows.namedPackageMapData[0][1].root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toStrictEqual(
@@ -4167,7 +4280,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: `${fixtures.goodMonorepoWeirdAbsolute.namedPackageMapData[0][1].root}/..` as AbsolutePath,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -4179,7 +4293,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodMonorepoWeirdBoneless.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -4191,7 +4306,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodMonorepoWeirdOverlap.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -4203,7 +4319,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodMonorepoNegatedPaths.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -4215,7 +4332,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.badMonorepoNonPackageDir.root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.cwdPackage).toBe(result.rootPackage);
@@ -4224,9 +4342,9 @@ describe('::analyzeProjectStructure', () => {
 
     it('uses process.cwd when given no cwd parameter', async () => {
       expect.hasAssertions();
-      await expect(analyzeProjectStructure({ useCached: true })).rejects.toThrow(
-        ErrorMessage.NotAGitRepositoryError()
-      );
+      await expect(
+        analyzeProjectStructure({ useCached: true, allowUnnamedPackages: true })
+      ).rejects.toThrow(ErrorMessage.NotAGitRepositoryError());
     });
 
     it('correctly determines repository type', async () => {
@@ -4236,7 +4354,8 @@ describe('::analyzeProjectStructure', () => {
         (
           await analyzeProjectStructure({
             cwd: fixtures.goodMonorepo.root,
-            useCached: true
+            useCached: true,
+            allowUnnamedPackages: true
           })
         ).type
       ).toBe(ProjectAttribute.Monorepo);
@@ -4245,7 +4364,8 @@ describe('::analyzeProjectStructure', () => {
         (
           await analyzeProjectStructure({
             cwd: fixtures.goodPolyrepo.root,
-            useCached: true
+            useCached: true,
+            allowUnnamedPackages: true
           })
         ).type
       ).toBe(ProjectAttribute.Polyrepo);
@@ -4254,7 +4374,7 @@ describe('::analyzeProjectStructure', () => {
     it('returns correct rootPackage regardless of cwd', async () => {
       expect.hasAssertions();
 
-      const expectedJsonSpec = patchReadPackageJsonAtRoot(
+      const expectedJsonSpec = patchReadXPackageJsonAtRoot(
         {
           [fixtures.goodMonorepo.root]: {
             name: 'good-monorepo-package-json-name',
@@ -4270,7 +4390,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const { rootPackage } = await analyzeProjectStructure({
           cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -4284,7 +4405,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const { rootPackage } = await analyzeProjectStructure({
           cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/..` as AbsolutePath,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -4298,7 +4420,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const { rootPackage } = await analyzeProjectStructure({
           cwd: `${fixtures.goodMonorepo.namedPackageMapData[0][1].root}/src` as AbsolutePath,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -4312,7 +4435,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const { rootPackage } = await analyzeProjectStructure({
           cwd: fixtures.goodPolyrepo.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -4326,7 +4450,8 @@ describe('::analyzeProjectStructure', () => {
       {
         const { rootPackage } = await analyzeProjectStructure({
           cwd: `${fixtures.goodPolyrepo.root}/src` as AbsolutePath,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         });
 
         expect(rootPackage).toStrictEqual({
@@ -4345,7 +4470,8 @@ describe('::analyzeProjectStructure', () => {
         (
           await analyzeProjectStructure({
             cwd: fixtures.goodMonorepo.root,
-            useCached: true
+            useCached: true,
+            allowUnnamedPackages: true
           })
         ).subRootPackages,
         'goodMonorepo'
@@ -4359,7 +4485,8 @@ describe('::analyzeProjectStructure', () => {
         (
           await analyzeProjectStructure({
             cwd: fixtures.goodPolyrepo.root,
-            useCached: true
+            useCached: true,
+            allowUnnamedPackages: true
           })
         ).subRootPackages
       ).toBeUndefined();
@@ -4370,21 +4497,24 @@ describe('::analyzeProjectStructure', () => {
 
       const dummyMetadata = await analyzeProjectStructure({
         cwd: fixtures.goodPolyrepo.root,
-        useCached: false
+        useCached: false,
+        allowUnnamedPackages: true
       });
 
       expect(dummyMetadata.rootPackage).toBe(
         (
           await analyzeProjectStructure({
             cwd: fixtures.goodPolyrepo.root,
-            useCached: true
+            useCached: true,
+            allowUnnamedPackages: true
           })
         ).rootPackage
       );
 
       const updatedDummyMetadata = await analyzeProjectStructure({
         cwd: fixtures.goodPolyrepo.root,
-        useCached: false
+        useCached: false,
+        allowUnnamedPackages: true
       });
 
       expect(updatedDummyMetadata.rootPackage).not.toBe(dummyMetadata.rootPackage);
@@ -4393,7 +4523,8 @@ describe('::analyzeProjectStructure', () => {
         (
           await analyzeProjectStructure({
             cwd: fixtures.goodPolyrepo.root,
-            useCached: true
+            useCached: true,
+            allowUnnamedPackages: true
           })
         ).rootPackage
       ).toBe(updatedDummyMetadata.rootPackage);
@@ -4406,7 +4537,8 @@ describe('::analyzeProjectStructure', () => {
         (
           await analyzeProjectStructure({
             cwd: fixtures.goodMonorepo.root,
-            useCached: true
+            useCached: true,
+            allowUnnamedPackages: true
           })
         ).cwdPackage
       ).toStrictEqual(fixtureToProjectMetadata('goodMonorepo').rootPackage);
@@ -4415,7 +4547,8 @@ describe('::analyzeProjectStructure', () => {
         (
           await analyzeProjectStructure({
             cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
-            useCached: true
+            useCached: true,
+            allowUnnamedPackages: true
           })
         ).cwdPackage
       ).toStrictEqual(fixtures.goodMonorepo.namedPackageMapData[0][1]);
@@ -4426,7 +4559,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodMonorepo.namedPackageMapData[0][1].root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(result.subRootPackages?.get(result.cwdPackage.json.name!)).toBe(
@@ -4441,7 +4575,8 @@ describe('::analyzeProjectStructure', () => {
 
       const result = await analyzeProjectStructure({
         cwd: fixtures.goodMonorepo.unnamedPackageMapData[0][1].root,
-        useCached: true
+        useCached: true,
+        allowUnnamedPackages: true
       });
 
       expect(
@@ -4455,7 +4590,11 @@ describe('::analyzeProjectStructure', () => {
       expect.hasAssertions();
 
       await expect(
-        analyzeProjectStructure({ cwd: '/fake/root' as AbsolutePath, useCached: true })
+        analyzeProjectStructure({
+          cwd: '/fake/root' as AbsolutePath,
+          useCached: true,
+          allowUnnamedPackages: true
+        })
       ).rejects.toThrow(ErrorMessage.NotAGitRepositoryError());
     });
 
@@ -4465,7 +4604,8 @@ describe('::analyzeProjectStructure', () => {
       await expect(
         analyzeProjectStructure({
           cwd: '/does/not/exist' as AbsolutePath,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).rejects.toThrow(ErrorMessage.NotAGitRepositoryError());
     });
@@ -4476,7 +4616,8 @@ describe('::analyzeProjectStructure', () => {
       await expect(
         analyzeProjectStructure({
           cwd: fixtures.badPolyrepoConflictingAttributes.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).rejects.toThrow(ErrorMessage.CannotBeCliAndNextJs());
     });
@@ -4487,9 +4628,14 @@ describe('::analyzeProjectStructure', () => {
       await expect(
         analyzeProjectStructure({
           cwd: fixtures.badPolyrepoBadType.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
-      ).rejects.toThrow(ErrorMessage.BadProjectTypeInPackageJson());
+      ).rejects.toThrow(
+        ErrorMessage.BadProjectTypeInPackageJson(
+          toPath(fixtures.badPolyrepoBadType.root, 'package.json')
+        )
+      );
     });
 
     it('throws when two packages have the same "name" field in package.json', async () => {
@@ -4498,7 +4644,8 @@ describe('::analyzeProjectStructure', () => {
       await expect(
         analyzeProjectStructure({
           cwd: fixtures.badMonorepoDuplicateName.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).rejects.toThrow(ErrorMessage.DuplicatePackageName('pkg', '', '').trim());
     });
@@ -4509,7 +4656,8 @@ describe('::analyzeProjectStructure', () => {
       await expect(
         analyzeProjectStructure({
           cwd: fixtures.badMonorepoDuplicateIdUnnamed.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).rejects.toThrow(
         ErrorMessage.DuplicatePackageId(
@@ -4526,7 +4674,8 @@ describe('::analyzeProjectStructure', () => {
       await expect(
         analyzeProjectStructure({
           cwd: fixtures.badMonorepoDuplicateIdNamed.root,
-          useCached: true
+          useCached: true,
+          allowUnnamedPackages: true
         })
       ).rejects.toThrow(
         ErrorMessage.DuplicatePackageId(
@@ -4536,11 +4685,47 @@ describe('::analyzeProjectStructure', () => {
         )
       );
     });
+
+    it('throws when allowUnnamedPackages is false (the default) and unnamed packages are present', async () => {
+      expect.hasAssertions();
+
+      await expect(() =>
+        analyzeProjectStructure({
+          cwd: fixtures.goodMonorepo.root,
+          useCached: true,
+          allowUnnamedPackages: false
+        })
+      ).rejects.toThrow(
+        ErrorMessage.MissingNameInPackageJson(
+          toPath(fixtures.goodMonorepo.unnamedPackageMapData[0][1].root, 'package.json')
+        )
+      );
+
+      await expect(() =>
+        analyzeProjectStructure({
+          cwd: fixtures.goodMonorepo.root,
+          useCached: true
+          // * allowUnnamedPackages: false should be the default
+        })
+      ).rejects.toThrow(
+        ErrorMessage.MissingNameInPackageJson(
+          toPath(fixtures.goodMonorepo.unnamedPackageMapData[0][1].root, 'package.json')
+        )
+      );
+
+      await expect(
+        analyzeProjectStructure({
+          cwd: fixtures.goodMonorepo.root,
+          useCached: false,
+          allowUnnamedPackages: true
+        })
+      ).resolves.not.toThrow();
+    });
   });
 });
 
 function checkForExpectedPackages(
-  maybeResult: ProjectMetadata['subRootPackages'],
+  maybeResult: GenericProjectMetadata['subRootPackages'],
   fixtureName: FixtureName
 ) {
   const result = maybeResult!;

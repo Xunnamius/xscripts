@@ -10,13 +10,16 @@ import {
 } from 'glob-gitignore';
 
 import { toss } from 'toss-expression';
-import { type Promisable } from 'type-fest';
 
 import {
   debug as debug_,
   ProjectAttribute,
   WorkspaceAttribute,
-  type Package,
+  type GenericPackage,
+  type GenericPackageJson,
+  type GenericProjectMetadata,
+  type GenericRootPackage,
+  type GenericWorkspacePackage,
   type PolyrepoMetadata,
   type ProjectMetadata,
   type RootPackage,
@@ -40,7 +43,8 @@ import {
   getCurrentWorkingDirectory,
   isAccessible,
   nextjsConfigProjectBase,
-  readPackageJsonAtRoot,
+  packageJsonConfigPackageBase,
+  readXPackageJsonAtRoot,
   sharedConfigPackageBase,
   toAbsolutePath,
   toPath,
@@ -50,13 +54,9 @@ import {
   type RelativePath
 } from 'rootverse+project-utils:src/fs.ts';
 
-import {
-  type ParametersNoFirst,
-  type SyncVersionOf
-} from 'rootverse+project-utils:src/util.ts';
+import { type ParametersNoFirst } from 'rootverse+project-utils:src/util.ts';
 
-// TODO: replace with import from @-xun/types
-import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
+import type { Merge, PackageJson, Promisable } from 'type-fest';
 
 const debug = debug_.extend('getProjectMetadata');
 
@@ -71,6 +71,15 @@ export type AnalyzeProjectStructureOptions = {
    */
   cwd?: AbsolutePath;
   /**
+   * Allow unnamed packages in this project, which will result in looser and
+   * less useful types being returned. Setting this to `true` is only useful
+   * when analyzing projects that do not adhere to standard xscripts (or
+   * NPM/Node) best practices.
+   *
+   * @default false
+   */
+  allowUnnamedPackages?: boolean;
+  /**
    * Use the internal cached result from a previous run, if available.
    *
    * **WARNING: the results returned by this function, while functionally
@@ -84,24 +93,22 @@ export type AnalyzeProjectStructureOptions = {
 };
 
 function analyzeProjectStructure_(
-  shouldRunSynchronously: false,
-  options: AnalyzeProjectStructureOptions
-): Promise<ProjectMetadata>;
-function analyzeProjectStructure_(
-  shouldRunSynchronously: true,
-  options: AnalyzeProjectStructureOptions
-): ProjectMetadata;
-function analyzeProjectStructure_(
   shouldRunSynchronously: boolean,
   {
     useCached,
     cwd = getCurrentWorkingDirectory(),
+    allowUnnamedPackages = false,
     ...incompleteCacheIdComponentsObject
   }: AnalyzeProjectStructureOptions
-): Promisable<ProjectMetadata> {
-  const cacheIdComponentsObject = { ...incompleteCacheIdComponentsObject, cwd };
+): Promisable<GenericProjectMetadata> {
+  const cacheIdComponentsObject = {
+    ...incompleteCacheIdComponentsObject,
+    cwd,
+    allowUnnamedPackages
+  };
 
   debug('cwd: %O', cwd);
+  debug('allowUnnamedPackages: %O', allowUnnamedPackages);
   debug('shouldRunSynchronously: %O,', shouldRunSynchronously);
 
   return (shouldRunSynchronously ? runSynchronously : runAsynchronously)();
@@ -119,15 +126,21 @@ function analyzeProjectStructure_(
         if (cachedMetadata_) {
           const cachedMetadata = {
             ...cachedMetadata_,
-            cwdPackage: await determineCwdPackage(false, cwd, cachedMetadata_, useCached)
-          } satisfies ProjectMetadata;
+            cwdPackage: await determineCwdPackage(
+              false,
+              cwd,
+              cachedMetadata_,
+              useCached,
+              allowUnnamedPackages
+            )
+          } satisfies GenericProjectMetadata;
 
           debug('reusing cached resources: %O', cachedMetadata);
           return cachedMetadata;
         }
       }
 
-      const projectJson = await readPackageJsonAtRoot(projectRoot, { useCached });
+      const projectJson = await readXPackageJsonAtRoot(projectRoot, { useCached });
 
       const projectAttributes = await getProjectAttributes(
         false,
@@ -137,7 +150,7 @@ function analyzeProjectStructure_(
         useCached
       );
 
-      const rootPackage: RootPackage = {
+      const rootPackage: GenericRootPackage = {
         root: projectRoot,
         json: projectJson,
         attributes: projectAttributes,
@@ -147,17 +160,23 @@ function analyzeProjectStructure_(
 
       debug('rootPackage: %O', rootPackage);
 
-      const finalMetadata: ProjectMetadata = {
+      const finalMetadata: GenericProjectMetadata = {
         type: ProjectAttribute.Polyrepo,
         cwdPackage: rootPackage,
         rootPackage,
         subRootPackages: undefined
-      } satisfies PolyrepoMetadata;
+      } satisfies PolyrepoMetadata<GenericPackageJson>;
 
       rootPackage.projectMetadata = finalMetadata;
 
       if (projectAttributes[ProjectAttribute.Monorepo]) {
-        await setSubrootPackagesAndCwdPackage(false, cwd, finalMetadata, useCached);
+        await setSubrootPackagesAndCwdPackage(
+          false,
+          cwd,
+          finalMetadata,
+          useCached,
+          allowUnnamedPackages
+        );
 
         finalMetadata.type = ProjectAttribute.Monorepo;
       }
@@ -179,15 +198,21 @@ function analyzeProjectStructure_(
       if (cachedMetadata_) {
         const cachedMetadata = {
           ...cachedMetadata_,
-          cwdPackage: determineCwdPackage(true, cwd, cachedMetadata_, useCached)
-        } satisfies ProjectMetadata;
+          cwdPackage: determineCwdPackage(
+            true,
+            cwd,
+            cachedMetadata_,
+            useCached,
+            allowUnnamedPackages
+          )
+        } satisfies GenericProjectMetadata;
 
         debug('reusing cached resources: %O', cachedMetadata);
         return cachedMetadata;
       }
     }
 
-    const projectJson = readPackageJsonAtRoot.sync(projectRoot, { useCached });
+    const projectJson = readXPackageJsonAtRoot.sync(projectRoot, { useCached });
 
     const projectAttributes = getProjectAttributes(
       true,
@@ -197,7 +222,7 @@ function analyzeProjectStructure_(
       useCached
     );
 
-    const rootPackage: RootPackage = {
+    const rootPackage: GenericRootPackage = {
       root: projectRoot,
       json: projectJson,
       attributes: projectAttributes,
@@ -207,17 +232,23 @@ function analyzeProjectStructure_(
 
     debug('rootPackage: %O', rootPackage);
 
-    const finalMetadata: ProjectMetadata = {
+    const finalMetadata: GenericProjectMetadata = {
       type: ProjectAttribute.Polyrepo,
       cwdPackage: rootPackage,
       rootPackage,
       subRootPackages: undefined
-    } satisfies PolyrepoMetadata;
+    } satisfies PolyrepoMetadata<GenericPackageJson>;
 
     rootPackage.projectMetadata = finalMetadata;
 
     if (projectAttributes[ProjectAttribute.Monorepo]) {
-      setSubrootPackagesAndCwdPackage(true, cwd, finalMetadata, useCached);
+      setSubrootPackagesAndCwdPackage(
+        true,
+        cwd,
+        finalMetadata,
+        useCached,
+        allowUnnamedPackages
+      );
 
       finalMetadata.type = ProjectAttribute.Monorepo;
     }
@@ -226,8 +257,43 @@ function analyzeProjectStructure_(
     return finalMetadata;
   }
 
-  function finalize(projectMetadata: ProjectMetadata) {
+  function finalize(projectMetadata: GenericProjectMetadata) {
     debug('project metadata: %O', projectMetadata);
+
+    if (!allowUnnamedPackages) {
+      debug('performing unnamed package check');
+
+      assert(
+        projectMetadata.cwdPackage.json.name,
+        new ProjectError(
+          ErrorMessage.MissingNameInPackageJson(
+            'current package: ' +
+              toPath(projectMetadata.cwdPackage.root, packageJsonConfigPackageBase)
+          )
+        )
+      );
+
+      assert(
+        projectMetadata.rootPackage.json.name,
+        new ProjectError(
+          ErrorMessage.MissingNameInPackageJson(
+            'root package: ' +
+              toPath(projectMetadata.rootPackage.root, packageJsonConfigPackageBase)
+          )
+        )
+      );
+
+      projectMetadata.subRootPackages?.all.forEach(({ json, root }) => {
+        assert(
+          json.name,
+          new ProjectError(
+            ErrorMessage.MissingNameInPackageJson(
+              toPath(root, packageJsonConfigPackageBase)
+            )
+          )
+        );
+      });
+    }
 
     cache.set(
       CacheScope.AnalyzeProjectStructure,
@@ -241,11 +307,30 @@ function analyzeProjectStructure_(
  * Asynchronously returns information about the structure of the project at the
  * current working directory.
  *
+ * This function will throw upon encountering an unnamed repository.
+ *
  * **NOTE: the result of this function is memoized! This does NOT _necessarily_
  * mean results will strictly equal each other. See `useCached` in this specific
  * function's options for details.** To fetch fresh results, set the `useCached`
  * option to `false` or clear the internal cache with {@link cache.clear}.
  */
+export function analyzeProjectStructure(
+  options: Merge<AnalyzeProjectStructureOptions, { allowUnnamedPackages?: false }>
+): Promise<ProjectMetadata>;
+/**
+ * Asynchronously returns information about the structure of the project at the
+ * current working directory.
+ *
+ * This function will NOT throw upon encountering an unnamed repository.
+ *
+ * **NOTE: the result of this function is memoized! This does NOT _necessarily_
+ * mean results will strictly equal each other. See `useCached` in this specific
+ * function's options for details.** To fetch fresh results, set the `useCached`
+ * option to `false` or clear the internal cache with {@link cache.clear}.
+ */
+export function analyzeProjectStructure(
+  options: Merge<AnalyzeProjectStructureOptions, { allowUnnamedPackages: true }>
+): Promise<ProjectMetadata<PackageJson>>;
 export function analyzeProjectStructure(
   ...args: ParametersNoFirst<typeof analyzeProjectStructure_>
 ) {
@@ -258,15 +343,28 @@ export namespace analyzeProjectStructure {
    * Synchronously returns information about the structure of the project at the
    * current working directory.
    *
+   * Depending on which overload of this function is used, an error may be
+   * thrown upon encountering an unnamed repository.
+   *
    * **NOTE: the result of this function is memoized! This does NOT
    * _necessarily_ mean results will strictly equal each other. See `useCached`
    * in this specific function's options for details.** To fetch fresh results,
    * set the `useCached` option to `false` or clear the internal cache with
    * {@link cache.clear}.
    */
-  export const sync = function (...args) {
-    return analyzeProjectStructure_(true, ...args);
-  } as SyncVersionOf<typeof analyzeProjectStructure>;
+  export const sync = syncAnalyzeProjectStructure;
+}
+
+function syncAnalyzeProjectStructure(
+  options: Merge<AnalyzeProjectStructureOptions, { allowUnnamedPackages: true }>
+): ProjectMetadata<PackageJson>;
+function syncAnalyzeProjectStructure(
+  options: Merge<AnalyzeProjectStructureOptions, { allowUnnamedPackages?: false }>
+): ProjectMetadata;
+function syncAnalyzeProjectStructure(
+  ...args: ParametersNoFirst<typeof analyzeProjectStructure_>
+) {
+  return analyzeProjectStructure_(true, ...args);
 }
 
 function determineProjectRootFromCwd(cwd: AbsolutePath): AbsolutePath {
@@ -280,20 +378,23 @@ function determineProjectRootFromCwd(cwd: AbsolutePath): AbsolutePath {
 function setSubrootPackagesAndCwdPackage(
   runSynchronously: false,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata,
-  useCached: boolean
+  projectMetadata: GenericProjectMetadata,
+  useCached: boolean,
+  allowUnnamedPackages: boolean
 ): Promise<void>;
 function setSubrootPackagesAndCwdPackage(
   runSynchronously: true,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata,
-  useCached: boolean
+  projectMetadata: GenericProjectMetadata,
+  useCached: boolean,
+  allowUnnamedPackages: boolean
 ): void;
 function setSubrootPackagesAndCwdPackage(
   runSynchronously: boolean,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata,
-  useCached: boolean
+  projectMetadata: GenericProjectMetadata,
+  useCached: boolean,
+  allowUnnamedPackages: boolean
 ): Promisable<void> {
   const dbg = debug.extend('subroot');
   const projectRoot = projectMetadata.rootPackage.root;
@@ -327,7 +428,7 @@ function setSubrootPackagesAndCwdPackage(
       const [pattern, negate] = normalizePattern(pattern_);
 
       for (const packageRoot of globSync(pattern, globOptions) as AbsolutePath[]) {
-        assert(typeof packageRoot === 'string');
+        assert(typeof packageRoot === 'string', ErrorMessage.GuruMeditation());
 
         // TODO: maybe be redundant given package.json workspaces negated glob
         if (packageRoot.endsWith('.ignore')) {
@@ -337,7 +438,7 @@ function setSubrootPackagesAndCwdPackage(
 
         const packageJson = (() => {
           try {
-            return readPackageJsonAtRoot.sync(packageRoot, { useCached });
+            return readXPackageJsonAtRoot.sync(packageRoot, { useCached });
           } catch (error) {
             dbg.warn('encountered broken package at %O: %O', packageRoot, error);
             subRootPackages.broken.push(packageRoot);
@@ -363,7 +464,9 @@ function setSubrootPackagesAndCwdPackage(
       }
     }
 
-    finalize(determineCwdPackage(true, cwd, projectMetadata, useCached));
+    finalize(
+      determineCwdPackage(true, cwd, projectMetadata, useCached, allowUnnamedPackages)
+    );
   } else {
     return Promise.resolve().then(async () => {
       const workspacesAddFunctionsToCall: {
@@ -384,7 +487,7 @@ function setSubrootPackagesAndCwdPackage(
             const packageRoots = packageRoots_ as AbsolutePath[];
             return Promise.all(
               packageRoots.map(async (packageRoot) => {
-                assert(typeof packageRoot === 'string');
+                assert(typeof packageRoot === 'string', ErrorMessage.GuruMeditation());
 
                 // TODO: maybe redundant w/ package.json workspaces negated glob
                 if (packageRoot.endsWith('.ignore')) {
@@ -394,7 +497,7 @@ function setSubrootPackagesAndCwdPackage(
 
                 const packageJson = await (async () => {
                   try {
-                    return await readPackageJsonAtRoot(packageRoot, { useCached });
+                    return await readXPackageJsonAtRoot(packageRoot, { useCached });
                   } catch (error) {
                     dbg.warn('encountered broken package at %O: %O', packageRoot, error);
                     subRootPackages.broken.push(packageRoot);
@@ -442,17 +545,25 @@ function setSubrootPackagesAndCwdPackage(
         await fn();
       }
 
-      finalize(await determineCwdPackage(false, cwd, projectMetadata, useCached));
+      finalize(
+        await determineCwdPackage(
+          false,
+          cwd,
+          projectMetadata,
+          useCached,
+          allowUnnamedPackages
+        )
+      );
     });
   }
 
-  function finalize(cwdPackage: Package) {
+  function finalize(cwdPackage: GenericPackage) {
     // ? Sugar property for getting *all* of a project's packages
     Object.defineProperty(subRootPackages, 'all', {
       configurable: false,
       enumerable: false,
       get: () => {
-        return Array.from(subRootPackages.values()).concat(
+        return Array.from<GenericWorkspacePackage>(subRootPackages.values()).concat(
           Array.from(subRootPackages.unnamed.values())
         );
       }
@@ -483,7 +594,7 @@ function setSubrootPackagesAndCwdPackage(
     attributes: WorkspacePackage['attributes'];
     packageRoot: AbsolutePath;
     packageId: string;
-    packageJson: XPackageJson;
+    packageJson: GenericPackageJson;
     negate: boolean;
   }): Promisable<void> {
     const workspacePackage = {
@@ -492,7 +603,7 @@ function setSubrootPackagesAndCwdPackage(
       projectMetadata,
       json: packageJson,
       attributes
-    } satisfies WorkspacePackage;
+    } satisfies GenericWorkspacePackage;
 
     if (negate) {
       debug('package "%O" analysis result: negated and removed', packageId);
@@ -516,7 +627,10 @@ function setSubrootPackagesAndCwdPackage(
             );
           }
         } else {
-          subRootPackages.set(workspacePackage.json.name, workspacePackage);
+          subRootPackages.set(
+            workspacePackage.json.name,
+            workspacePackage as WorkspacePackage
+          );
         }
       } else {
         if (subRootPackages.unnamed.has(workspacePackage.id)) {
@@ -530,7 +644,10 @@ function setSubrootPackagesAndCwdPackage(
             );
           }
         } else {
-          subRootPackages.unnamed.set(workspacePackage.id, workspacePackage);
+          subRootPackages.unnamed.set(
+            workspacePackage.id,
+            workspacePackage as WorkspacePackage<PackageJson>
+          );
         }
       }
     }
@@ -540,21 +657,24 @@ function setSubrootPackagesAndCwdPackage(
 function determineCwdPackage(
   runSynchronously: false,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata,
-  useCached: boolean
-): Promise<Package>;
+  projectMetadata: GenericProjectMetadata,
+  useCached: boolean,
+  allowUnnamedPackages: boolean
+): Promise<GenericPackage>;
 function determineCwdPackage(
   runSynchronously: true,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata,
-  useCached: boolean
-): Package;
+  projectMetadata: GenericProjectMetadata,
+  useCached: boolean,
+  allowUnnamedPackages: boolean
+): GenericPackage;
 function determineCwdPackage(
   runSynchronously: boolean,
   cwd: AbsolutePath,
-  projectMetadata: ProjectMetadata,
-  useCached: boolean
-): Promisable<Package> {
+  projectMetadata: GenericProjectMetadata,
+  useCached: boolean,
+  allowUnnamedPackages: boolean
+): Promisable<GenericPackage> {
   const { subRootPackages, rootPackage } = projectMetadata;
   const { root: projectRoot } = rootPackage;
 
@@ -568,17 +688,17 @@ function determineCwdPackage(
   if (cwdPackageRoot === projectRoot) {
     return runSynchronously ? rootPackage : Promise.resolve(rootPackage);
   } else {
-    let cwdPackage: Package = rootPackage;
+    let cwdPackage: GenericPackage = rootPackage;
 
     if (runSynchronously) {
-      const cwdPackageName = readPackageJsonAtRoot.sync(cwdPackageRoot, {
+      const cwdPackageName = readXPackageJsonAtRoot.sync(cwdPackageRoot, {
         useCached
       }).name;
 
       finalize(cwdPackageName, packageRootToId(cwdPackageRoot));
       return cwdPackage;
     } else {
-      return readPackageJsonAtRoot(cwdPackageRoot, { useCached }).then(
+      return readXPackageJsonAtRoot(cwdPackageRoot, { useCached }).then(
         async ({ name: cwdPackageName }) => {
           finalize(cwdPackageName, packageRootToId(cwdPackageRoot));
           return cwdPackage;
@@ -589,7 +709,7 @@ function determineCwdPackage(
     function finalize(cwdPackageName: string | undefined, packageId: string) {
       cwdPackage =
         (cwdPackageName ? subRootPackages?.get(cwdPackageName) : undefined) ||
-        subRootPackages?.unnamed.get(packageId) ||
+        (allowUnnamedPackages && subRootPackages?.unnamed.get(packageId)) ||
         toss(new ProjectError(ErrorMessage.GuruMeditation()));
     }
   }
@@ -598,21 +718,21 @@ function determineCwdPackage(
 function getProjectAttributes(
   runSynchronously: false,
   root: AbsolutePath,
-  projectJson: XPackageJson,
+  projectJson: GenericPackageJson,
   repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo,
   useCached: boolean
 ): Promise<RootPackage['attributes']>;
 function getProjectAttributes(
   runSynchronously: true,
   root: AbsolutePath,
-  projectJson: XPackageJson,
+  projectJson: GenericPackageJson,
   repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo,
   useCached: boolean
 ): RootPackage['attributes'];
 function getProjectAttributes(
   runSynchronously: boolean,
   root: AbsolutePath,
-  projectJson: XPackageJson,
+  projectJson: GenericPackageJson,
   repoType: ProjectAttribute.Monorepo | ProjectAttribute.Polyrepo,
   useCached: boolean
 ): Promisable<RootPackage['attributes']> {
@@ -709,7 +829,11 @@ function getProjectAttributes(
 
   function finalize() {
     if (!['module', 'commonjs'].includes(type)) {
-      throw new ProjectError(ErrorMessage.BadProjectTypeInPackageJson());
+      throw new ProjectError(
+        ErrorMessage.BadProjectTypeInPackageJson(
+          toPath(root, packageJsonConfigPackageBase)
+        )
+      );
     }
 
     if (type === 'module') {
@@ -737,26 +861,28 @@ function getProjectAttributes(
 function getWorkspaceAttributes(
   runSynchronously: false,
   root: AbsolutePath,
-  workspaceJson: XPackageJson,
+  workspaceJson: GenericPackageJson,
   useCached: boolean
 ): Promise<WorkspacePackage['attributes']>;
 function getWorkspaceAttributes(
   runSynchronously: true,
   root: AbsolutePath,
-  workspaceJson: XPackageJson,
+  workspaceJson: GenericPackageJson,
   useCached: boolean
 ): WorkspacePackage['attributes'];
 function getWorkspaceAttributes(
   runSynchronously: boolean,
   root: AbsolutePath,
-  workspaceJson: XPackageJson,
+  workspaceJson: GenericPackageJson,
   useCached: boolean
 ): Promisable<WorkspacePackage['attributes']> {
   const attributes: WorkspacePackage['attributes'] = {};
   const { type = 'commonjs', bin, private: private_ } = workspaceJson;
 
   if (!['module', 'commonjs'].includes(type)) {
-    throw new ProjectError(ErrorMessage.BadProjectTypeInPackageJson());
+    throw new ProjectError(
+      ErrorMessage.BadProjectTypeInPackageJson(toPath(root, packageJsonConfigPackageBase))
+    );
   }
 
   if (type === 'module') {

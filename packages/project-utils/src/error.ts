@@ -19,8 +19,8 @@ export const $type_ProjectError = Symbol.for('object-type-hint:ProjectError');
 export const $type_NotAGitRepositoryError = Symbol.for(
   'object-type-hint:NotAGitRepositoryError'
 );
-export const $type_PackageJsonNotParsableError = Symbol.for(
-  'object-type-hint:PackageJsonNotParsableError'
+export const $type_XPackageJsonNotParsableError = Symbol.for(
+  'object-type-hint:XPackageJsonNotParsableError'
 );
 export const $type_DuplicatePackageNameError = Symbol.for(
   'object-type-hint:DuplicatePackageNameError'
@@ -71,14 +71,14 @@ export function isNotAGitRepositoryError(
 }
 
 /**
- * Type guard for {@link PackageJsonNotParsableError}.
+ * Type guard for {@link XPackageJsonNotParsableError}.
  */
-export function isPackageJsonNotParsableError(
+export function isXPackageJsonNotParsableError(
   parameter: unknown
-): parameter is PackageJsonNotParsableError {
+): parameter is XPackageJsonNotParsableError {
   return (
     isProjectError(parameter) &&
-    parameter[$type].includes($type_PackageJsonNotParsableError)
+    parameter[$type].includes($type_XPackageJsonNotParsableError)
   );
 }
 
@@ -172,11 +172,12 @@ export class NotAGitRepositoryError extends ProjectError {
 makeNamedError(NotAGitRepositoryError, 'NotAGitRepositoryError');
 
 /**
- * Represents encountering an unparsable package.json file.
+ * Represents encountering an unparsable package.json file in an
+ * xscripts-powered project.
  */
-export class PackageJsonNotParsableError extends ProjectError {
+export class XPackageJsonNotParsableError extends ProjectError {
   // TODO: this prop should be added by makeNamedError or whatever other fn
-  [$type] = [$type_PackageJsonNotParsableError, $type_ProjectError];
+  [$type] = [$type_XPackageJsonNotParsableError, $type_ProjectError];
   /**
    * Represents encountering an unparsable package.json file.
    */
@@ -194,7 +195,7 @@ export class PackageJsonNotParsableError extends ProjectError {
     super(message ?? ErrorMessage.PackageJsonNotParsable(packageJsonPath, reason));
   }
 }
-makeNamedError(PackageJsonNotParsableError, 'PackageJsonNotParsableError');
+makeNamedError(XPackageJsonNotParsableError, 'XPackageJsonNotParsableError');
 
 /**
  * Represents encountering a workspace package.json file with the same `"name"`
@@ -308,8 +309,11 @@ export const ErrorMessage = {
       `  ${secondPath}`
     );
   },
-  BadProjectTypeInPackageJson() {
-    return `a package.json file must contain a "type" field with a value of either "module" or "commonjs", otherwise the "type" field must be omitted`;
+  BadProjectTypeInPackageJson(path: string) {
+    return `encountered invalid package.json file with a defined "type" field not equal to either "module" or "commonjs": ${path}`;
+  },
+  MissingNameInPackageJson(path: string) {
+    return `encountered invalid package.json file without a "name" field: ${path}`;
   },
   CannotBeCliAndNextJs() {
     return 'project must either provide a CLI or be a Next.js project';
