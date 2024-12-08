@@ -22,7 +22,7 @@ const semver = require('semver');
 
 const {
   getCurrentWorkingDirectory,
-  readPackageJsonAtRoot
+  readXPackageJsonAtRoot
 } = require('./node_modules/@-xun/scripts/dist/packages/project-utils/src/fs.js');
 
 const {
@@ -259,7 +259,7 @@ function doCoreJsVersionChecksAndReturnHardcodedVersion() {
   assert(coreJsLibraryVersion);
 
   const { name, dependencies: { 'core-js': cwdPackageCoreJsDependency_ } = {} } =
-    readPackageJsonAtRoot.sync(packageRoot, { useCached: true, try: true });
+    readXPackageJsonAtRoot.sync(packageRoot, { useCached: true, try: true });
 
   const cwdPackageCoreJsDependency =
     semver.validRange(cwdPackageCoreJsDependency_) || undefined;
@@ -468,7 +468,7 @@ function makeDistReplacerEntry(
               exports: xports,
               name,
               types
-            } = readPackageJsonAtRoot.sync(packageDir, {
+            } = readXPackageJsonAtRoot.sync(packageDir, {
               useCached: true
             });
 
