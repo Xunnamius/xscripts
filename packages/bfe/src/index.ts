@@ -1250,13 +1250,15 @@ export function withUsageExtensions(
   altDescription = '$1.',
   options?: {
     /**
-     * Whether the entire string will be trimmed or not.
+     * Whether `altDescription` will be `trim()`'d or not.
      *
      * @default true
      */
     trim?: boolean;
     /**
-     * Whether a period will be appended to `altDescription` or not.
+     * Whether a period will be appended to the resultant string or not. A
+     * period is only appended if one is not already appended.
+     *
      * @default true
      */
     appendPeriod?: boolean;
@@ -1268,13 +1270,11 @@ export function withUsageExtensions(
     prependNewlines?: boolean;
   }
 ) {
-  if (options?.appendPeriod !== false && !altDescription.endsWith('.')) {
-    altDescription += '.';
-  }
-
   return `Usage: $000${
     options?.prependNewlines !== false ? '\n\n' : ''
-  }${altDescription}`[options?.trim !== false ? 'trim' : 'toString']();
+  }${altDescription[options?.trim !== false ? 'trim' : 'toString']()}${
+    options?.appendPeriod !== false && !altDescription.endsWith('.') ? '.' : ''
+  }`;
 }
 
 /**

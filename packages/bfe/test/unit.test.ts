@@ -5326,6 +5326,58 @@ describe('::withUsageExtensions', () => {
     );
   });
 
+  it('respects "trim" option', async () => {
+    expect.hasAssertions();
+
+    const expected = `
+new description
+`;
+
+    expect(withUsageExtensions(expected, { trim: true })).toBe(
+      `Usage: $000\n\n${expected.trim()}.`
+    );
+
+    expect(withUsageExtensions(expected, { trim: false })).toBe(
+      `Usage: $000\n\n${expected}.`
+    );
+  });
+
+  it('respects "appendPeriod" option', async () => {
+    expect.hasAssertions();
+
+    const expected = `
+new description
+`;
+
+    expect(withUsageExtensions(expected, { appendPeriod: true })).toBe(
+      `Usage: $000\n\n${expected.trim()}.`
+    );
+
+    expect(withUsageExtensions(expected, { appendPeriod: false })).toBe(
+      `Usage: $000\n\n${expected.trim()}`
+    );
+  });
+
+  it('respects "prependNewlines" option', async () => {
+    expect.hasAssertions();
+
+    const expected = `
+new description
+`;
+
+    expect(withUsageExtensions(expected, { prependNewlines: true })).toBe(
+      `Usage: $000\n\n${expected.trim()}.`
+    );
+
+    expect(withUsageExtensions(expected, { prependNewlines: false })).toBe(
+      `Usage: $000${expected.trim()}.`
+    );
+
+    expect(withUsageExtensions(expected, { prependNewlines: false, trim: false })).toBe(
+      `Usage: $000${expected}.`
+    );
+  });
+
   test('[readme #1] example functions as expected', async () => {
     expect.hasAssertions();
 
