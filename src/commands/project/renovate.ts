@@ -9,6 +9,7 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
+import { type XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 import {
   babelConfigProjectBase,
@@ -29,6 +30,8 @@ import {
   type ExtendedDebugger,
   type ExtendedLogger
 } from 'multiverse+rejoinder';
+
+import { version as packageVersion } from 'rootverse:package.json';
 
 import {
   $executionContext,
@@ -248,7 +251,7 @@ When attempting to renovate a Markdown file without replacer regions when its co
 
       genericLogger(
         [LogTag.IF_NOT_QUIETED],
-        `Renovating ${scope === ProjectRenovateScope.ThisPackage ? projectMetadata.cwdPackage.json.name! : 'the entire project'}...`
+        `Renovating ${scope === ProjectRenovateScope.ThisPackage ? projectMetadata.cwdPackage.json.name : 'the entire project'}...`
       );
 
       debug('argv: %O', argv);
@@ -486,6 +489,60 @@ function checkRuntimeIsReadyForGithub(argv: RenovationTaskArgv, log: ExtendedLog
   });
 }
 
+function checkRuntimeIsReadyForNpm(argv: RenovationTaskArgv, log: ExtendedLogger) {
+  const {
+    force,
+    [$executionContext]: { state }
+  } = argv;
+
+  loadDotEnvAndCheckVariables(['NPM_TOKEN'], {
+    log,
+    state,
+    force,
+    failInstructions: 'Skip this check with --force',
+    onFail() {
+      softAssert(ErrorMessage.RenovateEnvironmentValidationFailed());
+    }
+  });
+}
+
+async function makeOctokit({
+  debug,
+  log
+}: {
+  debug: ExtendedDebugger;
+  log: ExtendedLogger;
+}) {
+  const { Octokit } = await import('@octokit/rest');
+
+  return new Octokit({
+    userAgent: `Xunnamius/xscripts@${packageVersion}`,
+    auth: process.env.GITHUB_TOKEN,
+    log: {
+      debug,
+      info: log,
+      warn: log.warn,
+      error: log.error
+    }
+  });
+}
+
+const githubUrlRegExp = /github.com\/([^/]+)\/([^/]+)(?:\.git)?/;
+
+function parsePackageJsonRepository({ repository, name }: XPackageJson) {
+  if (repository) {
+    const target = typeof repository === 'string' ? repository : repository.url;
+    const match = target.match(githubUrlRegExp);
+
+    if (match) {
+      const [, owner, repo] = match;
+      return { owner, repo };
+    }
+  }
+
+  softAssert(ErrorMessage.BadRepositoryInCwdPackageJson(name));
+}
+
 /**
  * @see {@link RenovationTask}
  */
@@ -535,7 +592,25 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
       const argv = argv_ as RenovationTaskArgv;
       checkRuntimeIsReadyForGithub(argv, log);
 
+      const { projectMetadata } = argv[$executionContext];
+      hardAssert(projectMetadata, ErrorMessage.GuruMeditation());
+
+      const github = await makeOctokit({ debug, log });
+      const {
+        cwdPackage: { json }
+      } = projectMetadata;
+      const { keywords = [] } = json;
+
+      await github.repos.replaceAllTopics({
+        names: keywords.map((word) => word.toLocaleLowerCase()),
+        ...parsePackageJsonRepository(json)
+      });
+
       log.error('todo');
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   'github-rename-repo': {
@@ -570,6 +645,8 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
 
       // TODO:
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   'github-pause-rulesets': {
@@ -587,6 +664,8 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
 
       // TODO: countdown, press any key to unpause immediately
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   'github-delete-all-releases': {
@@ -604,6 +683,8 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
 
       // TODO
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   'github-clone-remote-wiki': {
@@ -623,6 +704,8 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
       // TODO: do not proceed if the .wiki dir already exists
       // TODO: create wiki via GitHub api if it does not already exist
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   'github-kill-master': {
@@ -641,6 +724,8 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
 
       // TODO: default branch => main
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   'generate-scoped-tags': {
@@ -658,6 +743,8 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
       // TODO: only since [INIT] (if found)
       void argv;
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   deprecate: {
@@ -676,9 +763,13 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
 
+      checkRuntimeIsReadyForGithub(argv, log);
+      checkRuntimeIsReadyForNpm(argv, log);
+
       // TODO:
-      void argv;
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   undeprecate: {
@@ -694,9 +785,13 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
 
+      checkRuntimeIsReadyForGithub(argv, log);
+      checkRuntimeIsReadyForNpm(argv, log);
+
       // TODO:
-      void argv;
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   'regenerate-assets': {
@@ -738,6 +833,8 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
       // TODO: replacer region count must match in document or entire document
       // TODO: will be overwritten
       log.error('todo');
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   'regenerate-aliases': {
@@ -767,6 +864,8 @@ This renovation is equivalent to calling \`xscripts project renovate --regenerat
       // TODO: sanity check assetsWithAliasDefinitions
       // TODO: print overview of aliases
       log.error('todo');
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   'update-dependencies': {
@@ -785,6 +884,8 @@ This renovation is equivalent to calling \`xscripts project renovate --regenerat
       // TODO:
       void argv;
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   },
   'synchronize-interdependencies': {
@@ -802,6 +903,8 @@ This renovation is equivalent to calling \`xscripts project renovate --regenerat
       const argv = argv_ as RenovationTaskArgv;
 
       log.error('todo');
+      // ? Typescript wants this here because of our "as const" for some reason
+      return undefined;
     }
   }
 } as const satisfies Record<string, Omit<RenovationTask, 'taskName'>>;
