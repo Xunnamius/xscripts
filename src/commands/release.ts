@@ -7,7 +7,6 @@ import { run, runNoRejectOnBadExit, type RunOptions } from '@-xun/run';
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 // ? Patches global Proxy and spawn functions; see documentation for details
 import '@-xun/scripts/assets/config/conventional.config.cjs';
-import { config as loadDotEnv } from 'dotenv';
 import { type Merge, type OmitIndexSignature, type StringKeyOf } from 'type-fest';
 
 import {
@@ -45,7 +44,6 @@ import {
 
 import { getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix } from 'universe:assets/config/_conventional.config.cjs.ts';
 import { type XPackageJson } from 'universe:assets/config/_package.json.ts';
-import { determineRepoWorkingTreeDirty } from 'universe:assets/config/_release.config.cjs.ts';
 
 import {
   default as renovate,
@@ -61,7 +59,14 @@ import {
 
 import { ErrorMessage } from 'universe:error.ts';
 import { attemptToRunCommand } from 'universe:task-runner.ts';
-import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe:util.ts';
+
+import {
+  determineRepoWorkingTreeDirty,
+  loadDotEnvAndCheckVariables,
+  runGlobalPreChecks,
+  withGlobalBuilder,
+  withGlobalUsage
+} from 'universe:util.ts';
 
 const releaseEmoji = '🚀';
 const maxFlagSize = 44;
@@ -527,6 +532,8 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
       genericLogger.newline([LogTag.IF_NOT_HUSHED]);
       debug('processing tasks');
 
+      // TODO: generalize this task algo along with what's in renovate and init
+
       try {
         for (const [index, taskGroup] of tasksInRunOrder.entries()) {
           debug(
@@ -558,7 +565,7 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
               const dbg = debug.extend(prettyId);
               const taskLogger = genericLogger.extend(prettyId);
 
-              dbg('processing task: %O', task);
+              dbg('preparing to run task: %O', task);
 
               if (skipTasks.includes(id)) {
                 taskLogger.message(
@@ -615,7 +622,7 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
                 }
 
                 if (taskRunner) {
-                  dbg('entering run() function');
+                  dbg('entering runner function');
                   taskLogger(
                     [LogTag.IF_NOT_HUSHED],
                     `${emoji}${actionDescription || `Running task #${id}`}`
@@ -623,12 +630,12 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
 
                   await taskRunner(argv, { log: taskLogger, debug: dbg });
                 } else {
-                  dbg('skipped run() function (does not exist)');
+                  dbg('skipped runner function (does not exist)');
 
                   if (!ranNpmScript) {
                     taskLogger.error(
                       [LogTag.IF_NOT_HUSHED],
-                      '👹 Task is not run()-able and called no existing NPM scripts'
+                      '👹 Task is not runnable and called no existing NPM scripts'
                     );
 
                     if (skipTaskMissingScripts) {
@@ -818,42 +825,16 @@ const protoPrereleaseTasks: ProtoPrereleaseTask[][] = [
       emoji: '🚨',
       actionDescription: 'Validating environment variables',
       helpDescription: 'Validate environment variables',
-      async run({ state }, { force }, { self: { id }, log: _log }) {
-        const problems: string[] = [];
-        const failLogger = _log.extend('env-valid');
-        const dotEnvFilePaths = state.dotEnvFilePaths as string[];
-
-        hardAssert(Array.isArray(dotEnvFilePaths), ErrorMessage.GuruMeditation());
-        dotEnvFilePaths.forEach((path) => loadDotEnv({ path }));
-
-        const { GITHUB_TOKEN } = process.env;
-        process.env.GH_TOKEN = GITHUB_TOKEN;
-
-        expectedEnvVariables.forEach((variable) => {
-          const isVariableDefined = (process.env[variable]?.length || 0) > 0;
-          if (!isVariableDefined) {
-            problems.push(
-              `environment variable "${variable}" is empty or undefined in process.env`
-            );
+      async run({ state }, { force }, { self: { id }, log }) {
+        loadDotEnvAndCheckVariables(expectedEnvVariables, {
+          log,
+          state,
+          force,
+          failInstructions: `Skip this check with \`--skip-task ${id}\` or --force`,
+          onFail() {
+            softAssert(ErrorMessage.ReleaseEnvironmentValidationFailed());
           }
         });
-
-        problems.forEach((problem, index) => {
-          failLogger[force ? 'warn' : 'error'](
-            [LogTag.IF_NOT_SILENCED],
-            'Problem %O: ' + problem,
-            index + 1
-          );
-        });
-
-        if (!force && problems.length) {
-          failLogger.message(
-            `Validation failed: %O problem${problems.length === 1 ? '' : 's'} detected. Skip this check with \`--skip-task ${id}\` or --force`,
-            problems.length
-          );
-
-          softAssert(ErrorMessage.ReleaseEnvironmentValidationFailed());
-        }
       }
     },
     {

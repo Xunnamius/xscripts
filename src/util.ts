@@ -1,14 +1,18 @@
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 
+import { run } from '@-xun/run';
 import { CliError, FrameworkExitCode } from '@black-flag/core';
+import { config as loadDotEnv } from 'dotenv';
 
-import { softAssert } from 'multiverse+cli-utils:error.ts';
+import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   withStandardBuilder,
   withStandardUsage
 } from 'multiverse+cli-utils:extensions.ts';
+
+import { LogTag } from 'multiverse+cli-utils:logging.ts';
 
 import {
   getInitialWorkingDirectory,
@@ -18,7 +22,7 @@ import {
   type AbsolutePath
 } from 'multiverse+project-utils:fs.ts';
 
-import { createDebugLogger } from 'multiverse+rejoinder';
+import { createDebugLogger, type ExtendedLogger } from 'multiverse+rejoinder';
 
 import {
   globalCliArguments,
@@ -129,6 +133,98 @@ export async function runGlobalPreChecks({
   );
 
   return { projectMetadata: projectMetadata_ };
+}
+
+/**
+ * If `gitStatusOutput` is not empty or `gitStatusExitCode` is non-zero, then
+ * the current working tree is dirty. This can be checked quickly via the
+ * `isDirty` property.
+ */
+export async function determineRepoWorkingTreeDirty() {
+  const debug = createDebugLogger({
+    namespace: `${globalDebuggerNamespace}:working-tree-state`
+  });
+
+  const { all: gitStatusOutput, exitCode: gitStatusExitCode } = await run(
+    'git',
+    ['status', '--porcelain'],
+    { all: true }
+  );
+
+  const isDirty = !!gitStatusOutput || gitStatusExitCode !== 0;
+
+  if (isDirty) {
+    debug.warn(
+      'repository was left in an unclean state! Git status output (exit code %O):',
+      gitStatusExitCode
+    );
+  }
+
+  debug.message('%O', gitStatusOutput);
+
+  return {
+    gitStatusOutput,
+    gitStatusExitCode,
+    isDirty
+  };
+}
+
+// TODO: after a few more iterations of this and what's in our Next.js projects,
+// TODO: transmute this function into @-xun/env
+
+export function loadDotEnvAndCheckVariables(
+  expectedEnvironmentVariables: string[],
+  {
+    log,
+    state,
+    force,
+    failInstructions,
+    onFail
+  }: {
+    log: ExtendedLogger;
+    state: GlobalExecutionContext['state'];
+    force: boolean;
+    failInstructions: string;
+    onFail: () => void;
+  }
+) {
+  const problems: string[] = [];
+  const failLogger = log.extend('env-valid');
+  const dotEnvFilePaths = state.dotEnvFilePaths as string[];
+
+  hardAssert(Array.isArray(dotEnvFilePaths), ErrorMessage.GuruMeditation());
+  dotEnvFilePaths.forEach((path) => loadDotEnv({ path }));
+
+  if (expectedEnvironmentVariables.includes('GITHUB_TOKEN')) {
+    const { GITHUB_TOKEN } = process.env;
+    process.env.GH_TOKEN = GITHUB_TOKEN;
+  }
+
+  expectedEnvironmentVariables.forEach((variable) => {
+    const isVariableDefined = (process.env[variable]?.length || 0) > 0;
+    if (!isVariableDefined) {
+      problems.push(
+        `environment variable "${variable}" is empty or undefined in process.env`
+      );
+    }
+  });
+
+  problems.forEach((problem, index) => {
+    failLogger[force ? 'warn' : 'error'](
+      [LogTag.IF_NOT_SILENCED],
+      'Problem %O: ' + problem,
+      index + 1
+    );
+  });
+
+  if (!force && problems.length) {
+    failLogger.message(
+      `Validation failed: %O problem${problems.length === 1 ? '' : 's'} detected.${failInstructions ? ` ${failInstructions}` : ''}`,
+      problems.length
+    );
+
+    onFail();
+  }
 }
 
 // TODO: probably prudent to make these part of cli-utils
