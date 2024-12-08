@@ -1,4 +1,6 @@
-import { hardAssert } from 'multiverse+cli-utils:error.ts';
+import { CliError, type ChildConfiguration } from '@black-flag/core';
+
+import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   logStartTime,
@@ -10,6 +12,8 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
 import {
   babelConfigProjectBase,
+  dotEnvConfigPackageBase,
+  dotEnvConfigProjectBase,
   eslintConfigProjectBase,
   jestConfigProjectBase,
   markdownArchitectureProjectBase,
@@ -27,15 +31,22 @@ import {
 } from 'multiverse+rejoinder';
 
 import {
+  $executionContext,
   DefaultGlobalScope as ProjectRenovateScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
 } from 'universe:configure.ts';
 
 import { ErrorMessage } from 'universe:error.ts';
-import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe:util.ts';
 
-import type { ChildConfiguration } from '@black-flag/core';
+import {
+  determineRepoWorkingTreeDirty,
+  loadDotEnvAndCheckVariables,
+  runGlobalPreChecks,
+  withGlobalBuilder,
+  withGlobalUsage
+} from 'universe:util.ts';
+
 import type { CamelCasedProperties, KeysOfUnion } from 'type-fest';
 
 import type {
@@ -89,7 +100,10 @@ export type RenovationTaskArgv = BfeStrictArguments<
   GlobalExecutionContext
 >;
 
-export type RenovationTask = {
+export type RenovationTask = BfeBuilderObjectValue<
+  Record<string, unknown>,
+  GlobalExecutionContext
+> & {
   /**
    * The name of the task.
    */
@@ -108,7 +122,7 @@ export type RenovationTask = {
    *
    * @default `Running task ${taskName}`
    */
-  actionDescription?: string;
+  actionDescription: string;
   /**
    * The description reported to the user when `--help` is called (via usage).
    */
@@ -153,12 +167,21 @@ export type CustomCliArguments = GlobalCliArguments & {
       >
   >;
 
-export default function command({
-  log,
-  debug_,
-  state,
-  projectMetadata: projectMetadata_
-}: AsStrictExecutionContext<GlobalExecutionContext>) {
+export default function command(
+  executionContext: AsStrictExecutionContext<GlobalExecutionContext>
+) {
+  const { log, debug_, state, projectMetadata: projectMetadata_ } = executionContext;
+  const { rootPackage: rootPackage_, cwdPackage: cwdPackage_ } = projectMetadata_ || {};
+
+  const cwdPackageEnvFile =
+    cwdPackage_?.root && rootPackage_?.root !== cwdPackage_.root
+      ? `${cwdPackage_.root}/${dotEnvConfigPackageBase}`
+      : undefined;
+
+  const rootPackageEnvFile = rootPackage_?.root
+    ? `${rootPackage_.root}/${dotEnvConfigProjectBase}`
+    : undefined;
+
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     scope: {
       choices: projectRenovateScopes,
@@ -183,6 +206,10 @@ export default function command({
     ...renovationTasksToBlackFlagOptions(debug_.extend('builder'))
   });
 
+  executionContext.state.dotEnvFilePaths = [rootPackageEnvFile, cwdPackageEnvFile].filter(
+    Boolean
+  );
+
   return {
     builder,
     description: 'Bring a project into compliance with latest best practices',
@@ -193,6 +220,12 @@ ${printRenovationTasks()}
 
 This command must be invoked with at least one task flag. Tasks are run concurrently unless --no-parallel is given, and are all run to completion even if one of the tasks fails unless \`--run-to-completion=false\` is given.
 
+Environment variables are loaded into process.env from the following file(s), if they exist:
+
+${SHORT_TAB}- ${(executionContext.state.dotEnvFilePaths as string[]).join(
+        `\n${SHORT_TAB}- `
+      )}
+
 Renovations are performed on the entire project by default, and typically involve overwriting/deleting obsolete versions of certain configuration files, but several renovation tasks can be limited to the current package via \`--scope=${ProjectRenovateScope.ThisPackage}\`.
 
 If this command is invoked in a repository with an unclean working directory, it will fail unless --force is given. Similarly, tasks with potentially destructive or permanent consequences must be manually authorized via --force. That said, all renovation tasks are idempotent: running the same renovations back-to-back on an otherwise-unchanged project/package is essentially a no-op.
@@ -200,73 +233,106 @@ If this command is invoked in a repository with an unclean working directory, it
 When renovating a Markdown file using an asset template that is divided into replacer regions via the magic comments "<!-- xscripts-renovate-region-start -->", "<!-- xscripts-renovate-region-end -->", and potentially "<!-- xscripts-renovate-region-definitions -->"; and if the existing renovation target has corresponding replacer regions defined; this command will perform so-called "regional replacements," where only the content within the renovation regions (i.e. between the "start" and "end" comments) will be modified. Regional replacements can be used to allow ultimate flexibility and customization of Markdown assets while still maintaining a consistent look and feel across xscripts-powered projects. This benefit is most evident in each package's ${markdownReadmePackageBase} file, and each project's ${markdownArchitectureProjectBase} file, among others.
 
 When attempting to renovate a Markdown file without replacer regions when its corresponding asset template does have replacer regions, the entire file will be overwritten like normal.`),
-    handler: withGlobalHandler(async function ({
-      $0: scriptFullName,
-      scope,
-      parallel,
-      deprecate,
-      force,
-      runToCompletion,
-      generateScopedTags,
-      githubCloneRemoteWiki,
-      githubDeleteAllReleases,
-      githubKillMaster,
-      githubPauseRulesets,
-      githubReconfigureRepo,
-      githubRenameRepo,
-      regenerateAliases,
-      regenerateAssets,
-      synchronizeInterdependencies,
-      undeprecate,
-      updateDependencies,
-      // eslint-disable-next-line unicorn/no-keyword-prefix
-      newName,
-      onlyAssets,
-      skipAssets,
-      withAliasesLoadedFrom
-    }) {
+    handler: withGlobalHandler(async function (argv) {
+      const { $0: scriptFullName, scope, parallel, force } = argv;
+
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
       debug('entered handler');
 
-      await runGlobalPreChecks({ debug_, projectMetadata_ });
+      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
+
       genericLogger(
         [LogTag.IF_NOT_QUIETED],
-        `Renovating ${scope === ProjectRenovateScope.ThisPackage ? 'this package' : 'the entire project'}...`
+        `Renovating ${scope === ProjectRenovateScope.ThisPackage ? projectMetadata.cwdPackage.json.name! : 'the entire project'}...`
       );
 
-      debug('scope: %O', scope);
-      debug('force: %O', force);
-      debug('parallel: %O', parallel);
-      debug('runToCompletion: %O', runToCompletion);
-      debug('generateScopedTags: %O', generateScopedTags);
-      debug('githubCloneRemoteWiki: %O', githubCloneRemoteWiki);
-      debug('githubDeleteAllReleases: %O', githubDeleteAllReleases);
-      debug('githubKillMaster: %O', githubKillMaster);
-      debug('githubPauseRulesets: %O', githubPauseRulesets);
-      debug('githubReconfigureRepo: %O', githubReconfigureRepo);
-      debug('githubRenameRepo: %O', githubRenameRepo);
-      debug('newName: %O', newName);
-      debug('regenerateAliases: %O', regenerateAliases);
-      debug('withAliasesLoadedFrom: %O', withAliasesLoadedFrom);
-      debug('regenerateAssets: %O', regenerateAssets);
-      debug('onlyAssets: %O', onlyAssets);
-      debug('skipAssets: %O', skipAssets);
-      debug('deprecate: %O', deprecate);
-      debug('undeprecate: %O', undeprecate);
-      debug('updateDependencies: %O', updateDependencies);
-      debug('synchronizeInterdependencies: %O', synchronizeInterdependencies);
+      debug('argv: %O', argv);
 
-      // TODO: Must NEVER proceed if the repo is dirty unless --force is given
+      const { isDirty } = await determineRepoWorkingTreeDirty();
 
-      // TODO: Replace missing context items with "<!-- TODO -->" if they are
-      // TODO: not resolvable (and note it in debug messaging)
+      softAssert(
+        !isDirty || force,
+        ErrorMessage.ActionAttemptedWithADirtyRepo('renovation')
+      );
 
-      // TODO: Finish: reconfigure-repo, regenerate-assets/aliases, sync-deps
+      genericLogger.newline([LogTag.IF_NOT_HUSHED]);
+      debug('processing tasks');
+
+      // TODO: generalize this task algo along with what's in renovate and init
+
+      try {
+        const renovationTasksEntries = Object.entries(renovationTasks) as [
+          keyof CamelCasedProperties<typeof renovationTasks>,
+          Omit<RenovationTask, 'taskName'>
+        ][];
+
+        debug(
+          'processing %O renovation tasks: %O',
+          renovationTasksEntries.length,
+          renovationTasks
+        );
+
+        const taskPromiseFunctions = renovationTasksEntries
+          .map(([taskName, task]) => {
+            if (!argv[taskName]) {
+              return undefined;
+            }
+
+            return async function () {
+              const { actionDescription, emoji, run: taskRunner } = task;
+
+              const dbg = debug.extend(taskName);
+              const taskLogger = genericLogger.extend(taskName);
+
+              dbg('preparing to run task %O: %O', taskName, task);
+              taskLogger([LogTag.IF_NOT_HUSHED], `${emoji}${actionDescription}`);
+
+              dbg('entering runner function');
+
+              await taskRunner(argv, {
+                log: taskLogger,
+                debug: dbg,
+                self: task as unknown as RenovationTask
+              });
+
+              taskLogger([LogTag.IF_NOT_HUSHED], '✅');
+            };
+          })
+          .filter((fn) => !!fn);
+
+        debug(
+          'running %O/%O renovation tasks %O',
+          taskPromiseFunctions.length,
+          renovationTasksEntries.length,
+          parallel ? 'concurrently' : 'serially'
+        );
+
+        if (parallel) {
+          const results = await Promise.allSettled(taskPromiseFunctions.map((p) => p()));
+
+          for (const result of results) {
+            if (result.status === 'fulfilled') {
+              debug('a task runner promise has been fulfilled');
+            } else {
+              throw new CliError(ErrorMessage.ReleaseRunnerExecutionFailed(), {
+                cause: result.reason
+              });
+            }
+          }
+        } else {
+          for (const taskPromiseFunction of taskPromiseFunctions) {
+            // eslint-disable-next-line no-await-in-loop
+            await taskPromiseFunction();
+          }
+        }
+      } finally {
+        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
+      }
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
@@ -278,7 +344,12 @@ function renovationTasksToBlackFlagOptions(
 ): BfeBuilderObject<CustomCliArguments, GlobalExecutionContext> {
   const renovationTaskNames = Object.keys(renovationTasks);
   return Object.fromEntries(
-    Object.entries(renovationTasks).flatMap(
+    Object.entries(
+      renovationTasks as Record<
+        keyof typeof renovationTasks,
+        Omit<RenovationTask, 'taskName'>
+      >
+    ).flatMap(
       ([
         taskName,
         {
@@ -287,30 +358,37 @@ function renovationTasksToBlackFlagOptions(
           shortHelpDescription,
           emoji,
           supportedScopes,
-          requiresForce
+          requiresForce,
+          longHelpDescription: _,
+          run: __,
+          actionDescription: ___,
+          ...blackFlagOptions
         }
       ]) => {
         return [
           [
             taskName,
             {
-              alias: taskAliases,
               boolean: true,
               description: `${emoji} ${shortHelpDescription}`,
               default: false,
+              ...blackFlagOptions,
+              alias: taskAliases,
               demandThisOptionOr: renovationTaskNames,
               check: [
                 isUsingSupportedScope(taskName, supportedScopes, debug),
-                isUsingForceIfRequired(taskName, requiresForce, debug)
+                isUsingForceIfRequired(taskName, requiresForce, debug),
+                ...[blackFlagOptions.check || []].flat()
               ]
-            } satisfies BfeBuilderObjectValue<CustomCliArguments, GlobalExecutionContext>
+            }
           ],
           ...Object.entries(subOptions).map(([optionName, subOption]) => [
             optionName,
             {
               ...subOption,
-              requires: { [taskName]: true }
-            } satisfies BfeBuilderObjectValue<CustomCliArguments, GlobalExecutionContext>
+              requires: { [taskName]: true },
+              group: 'Task-dependent Options:'
+            }
           ])
         ];
       }
@@ -332,7 +410,7 @@ function isUsingSupportedScope(
     return (
       !currentArgumentValue ||
       supportedScopes.includes(scope) ||
-      ErrorMessage.UnsupportedScope(taskName, scope, supportedScopes)
+      ErrorMessage.UnsupportedRenovationScope(taskName, scope, supportedScopes)
     );
   };
 }
@@ -391,6 +469,23 @@ ${longHelpDescription.trim()}\n\n=====\n\n`;
   return tasksString.trim();
 }
 
+function checkRuntimeIsReadyForGithub(argv: RenovationTaskArgv, log: ExtendedLogger) {
+  const {
+    force,
+    [$executionContext]: { state }
+  } = argv;
+
+  loadDotEnvAndCheckVariables(['GITHUB_TOKEN'], {
+    log,
+    state,
+    force,
+    failInstructions: 'Skip this check with --force',
+    onFail() {
+      softAssert(ErrorMessage.RenovateEnvironmentValidationFailed());
+    }
+  });
+}
+
 /**
  * @see {@link RenovationTask}
  */
@@ -420,7 +515,7 @@ ${SHORT_TAB} - Include "Releases" and remove "Packages" and "Deployments" sideba
 - Enable "allow rebase merging"
 - Enable "always suggest updating pull request branches"
 - Enable "allow auto-merge"
-- (Re)create and enable the "standard-protect" and "canary-protect" rulesets; issue warnings about the existence of any other rulesets
+- (Re-)create and (re-)enable the "standard-protect" and "canary-protect" rulesets; issue warnings about the existence of any other rulesets
 ${SHORT_TAB} - "standard-protect" restricts deletions of, requires signed commits for, and blocks force pushes to the repository's main branch and any maintenance branches
 ${SHORT_TAB} - "canary-protect" restricts deletions of and requires signed commits for the repository's canary branch(es), but does NOT block force pushes to these branches
 - Clear out any classic branch protection settings
@@ -438,9 +533,8 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     subOptions: {},
     async run(argv_, { debug, log }) {
       const argv = argv_ as RenovationTaskArgv;
-      // TODO: find .env/.env.default using findup for monorepos;
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      void argv, debug;
+      checkRuntimeIsReadyForGithub(argv, log);
+
       log.error('todo');
     }
   },
@@ -448,10 +542,10 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     emoji: '🧬',
     taskAliases: [],
     actionDescription:
-      'Updating origin repository name and synchronizing local git configuration',
+      'Updating origin repository name and synchronizing local configuration',
     shortHelpDescription:
       'Rename the origin repository and update git remotes accordingly',
-    longHelpDescription: `This renovation will rename the remote origin repository, rename (move) the repository directory on the local filesystem, and update the remotes in .git/config accordingly.`,
+    longHelpDescription: `This renovation will rename the remote origin repository, rename (move) the repository directory on the local filesystem, and update the remotes in .git/config accordingly.\n\nIf the origin repository cannot be renamed, the rename attempt will be aborted and no local changes will occur.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {
@@ -472,9 +566,9 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     },
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
-      // TODO
-      void argv;
+      checkRuntimeIsReadyForGithub(argv, log);
 
+      // TODO:
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
     }
   },
@@ -483,20 +577,20 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     taskAliases: [],
     actionDescription: `Pausing ruleset protections for ${RULESET_PROTECTION_PAUSE_MINUTES} minutes`,
     shortHelpDescription: `Temporarily pause origin repository ruleset protections`,
-    longHelpDescription: `This renovation will temporarily disable all rulesets in the repository for ${RULESET_PROTECTION_PAUSE_MINUTES} minutes, after which this command will re-enable them.\n\nUpon executing this renovation, you will be presented with a countdown after which protections will be re-enabled. You may press any key to immediately re-enable protections and exit the program.\n\nIf this renovation does not exit cleanly, re-running it (or --github-reconfigure-repo) will restore and re-enable any disabled rulesets.`,
+    longHelpDescription: `This renovation will temporarily disable all rulesets in the repository for ${RULESET_PROTECTION_PAUSE_MINUTES} minutes, after which this command will re-enable them.\n\nUpon executing this renovation, you will be presented with a countdown until protections will be re-enabled. You may press any key to immediately re-enable protections and exit the program.\n\nIf this renovation does not exit cleanly, re-running it (or --github-reconfigure-repo) will restore and re-enable any disabled rulesets.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {},
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
-      // TODO: countdown, press any key to unpause immediately
-      void argv;
+      checkRuntimeIsReadyForGithub(argv, log);
 
+      // TODO: countdown, press any key to unpause immediately
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
     }
   },
   'github-delete-all-releases': {
-    emoji: '☣️',
+    emoji: '☢️',
     taskAliases: [],
     actionDescription: 'Permanently deleting all origin repository releases',
     shortHelpDescription: 'Delete all releases associated with the origin repository',
@@ -506,9 +600,9 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     subOptions: {},
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
-      // TODO:
-      void argv;
+      checkRuntimeIsReadyForGithub(argv, log);
 
+      // TODO
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
     }
   },
@@ -524,18 +618,17 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     subOptions: {},
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
+      checkRuntimeIsReadyForGithub(argv, log);
+
       // TODO: do not proceed if the .wiki dir already exists
       // TODO: create wiki via GitHub api if it does not already exist
-      void argv;
-
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
     }
   },
   'github-kill-master': {
     emoji: '🚷',
     taskAliases: [],
-    actionDescription:
-      'Renaming default branch to "main" and cleaning up any remnants of "master"',
+    actionDescription: 'Renaming default branch to "main" and finishing off "master"',
     shortHelpDescription:
       'Rename and remove all references to any legacy "master" branch(es)',
     longHelpDescription: `This renovation will kill any and all references to any "master" ref throughout the repository. This includes renaming the "master" branch to "main," deleting the "master" branch on the remote origin repository, and setting the default branch to "main" both locally and remotely if it is not the case already.`,
@@ -544,9 +637,9 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     subOptions: {},
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
-      // TODO: default branch => main
-      void argv;
+      checkRuntimeIsReadyForGithub(argv, log);
 
+      // TODO: default branch => main
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
     }
   },
@@ -561,14 +654,14 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     subOptions: {},
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
+
       // TODO: only since [INIT] (if found)
       void argv;
-
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
     }
   },
   deprecate: {
-    emoji: '☢️',
+    emoji: '🪦',
     taskAliases: [],
     actionDescription: 'Deprecating package',
     shortHelpDescription:
@@ -579,28 +672,30 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     requiresForce: true,
     supportedScopes: [ProjectRenovateScope.ThisPackage],
     subOptions: {},
+    conflicts: 'undeprecate',
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
+
       // TODO:
       void argv;
-
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
     }
   },
   undeprecate: {
-    emoji: '🪦',
+    emoji: '🧟',
     taskAliases: [],
     actionDescription: 'Un-deprecating package',
     shortHelpDescription: 'Un-deprecate the current package and repository',
-    longHelpDescription: `This renovation will undo the standard deprecation procedure on the current package and its containing repository, effectively "un-deprecating" them both. See the xscripts wiki for details on the standard deprecation procedure and what the ramifications of an "un-deprecation" are.`,
+    longHelpDescription: `This renovation will make a best effort at undoing the standard deprecation procedure on the current package and its containing repository, effectively "un-deprecating" them both. See the xscripts wiki for details on the standard deprecation procedure and what the ramifications of an "un-deprecation" are.`,
     requiresForce: true,
     supportedScopes: [ProjectRenovateScope.ThisPackage],
     subOptions: {},
+    conflicts: 'deprecate',
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
+
       // TODO:
       void argv;
-
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
     }
   },
@@ -634,9 +729,14 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     },
     async run(argv_, { debug, log }) {
       const argv = argv_ as RenovationTaskArgv;
+
+      // TODO: Replace missing context items with "<!-- TODO -->" if they are
+      // TODO: not resolvable (and note it in debug messaging)
+
       // TODO: existing overwrites, missing created, =!=> obsolete deleted <=!=
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      void argv, debug;
+
+      // TODO: replacer region count must match in document or entire document
+      // TODO: will be overwritten
       log.error('todo');
     }
   },
@@ -649,7 +749,9 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     longHelpDescription: `
 This renovation is a subset of --regenerate-assets in that it will only regenerate the assets that define the project's import aliases. Currently, these assets are (relative to the project root):
 
-- ${assetsWithAliasDefinitions.join('\n - ')}`.trim(),
+- ${assetsWithAliasDefinitions.join('\n - ')}
+
+This renovation is equivalent to calling \`xscripts project renovate --regenerate-assets --only-assets ...\` where "..." represents the assets listed above. This renovation should be run each time a package is added to or removed from a monorepo to ensure proper alias support.`.trim(),
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {
@@ -661,10 +763,9 @@ This renovation is a subset of --regenerate-assets in that it will only regenera
     },
     async run(argv_, { debug, log }) {
       const argv = argv_ as RenovationTaskArgv;
+
       // TODO: sanity check assetsWithAliasDefinitions
       // TODO: print overview of aliases
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      void argv, debug;
       log.error('todo');
     }
   },
@@ -680,9 +781,9 @@ This renovation is a subset of --regenerate-assets in that it will only regenera
     subOptions: {},
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
+
       // TODO:
       void argv;
-
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
     }
   },
@@ -693,15 +794,13 @@ This renovation is a subset of --regenerate-assets in that it will only regenera
     shortHelpDescription:
       'Update package.json dependencies to match their monorepo versions',
     longHelpDescription:
-      'This renovation will analyze dependencies in one or more package.json files (depending on --scope), select only those dependencies that match a package name in the origin repository, and update their package.json dependency ranges to match their respective package versions as they are in the monorepo.\n\nIf this repository is a polyrepo, this renovation is essentially a no-op.',
+      "This renovation will analyze dependencies in one or more package.json files (depending on --scope), select dependencies in those files that match a package name in this project, and update those dependencies' ranges to match their respective package versions as they are in the project. This is useful in monorepos with published packages that rely on other published packages in the same repo. This renovation ensures a package released from this project will always install the latest version of the other packages released from this project.\n\nIf this repository is a polyrepo, this renovation is essentially a no-op.",
     requiresForce: false,
     supportedScopes: projectRenovateScopes,
     subOptions: {},
     async run(argv_, { debug, log }) {
       const argv = argv_ as RenovationTaskArgv;
-      // TODO:
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      void argv, debug;
+
       log.error('todo');
     }
   }
