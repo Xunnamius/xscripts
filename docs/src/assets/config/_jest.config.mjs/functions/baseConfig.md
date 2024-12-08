@@ -32,10 +32,6 @@ false
 
 > `readonly` **clearMocks**: `true` = `true`
 
-### collectCoverageFrom
-
-> `readonly` **collectCoverageFrom**: [`"src/**/*.ts?(x)"`]
-
 ### maxConcurrency
 
 > `readonly` **maxConcurrency**: `number`
@@ -78,4 +74,4 @@ false
 
 ## Defined in
 
-[src/assets/config/\_jest.config.mjs.ts:48](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/assets/config/_jest.config.mjs.ts#L48)
+[src/assets/config/\_jest.config.mjs.ts:48](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/assets/config/_jest.config.mjs.ts#L48)

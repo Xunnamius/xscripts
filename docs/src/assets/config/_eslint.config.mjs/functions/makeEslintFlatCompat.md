@@ -25,4 +25,4 @@ Only useful when interfacing with legacy plugins built for `eslint@<9`.
 
 ## Defined in
 
-[src/assets/config/\_eslint.config.mjs.ts:835](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/assets/config/_eslint.config.mjs.ts#L835)
+[src/assets/config/\_eslint.config.mjs.ts:836](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/assets/config/_eslint.config.mjs.ts#L836)

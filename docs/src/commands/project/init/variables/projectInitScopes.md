@@ -14,4 +14,4 @@
 
 ## Defined in
 
-[src/commands/project/init.ts:24](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/project/init.ts#L24)
+[src/commands/project/init.ts:24](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/commands/project/init.ts#L24)

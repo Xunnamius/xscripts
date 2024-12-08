@@ -8,15 +8,6 @@
 
 ## Index
 
-### Type Aliases
-
-- [XPackageJson](type-aliases/XPackageJson.md)
-- [XPackageJsonHybridrepoProjectRoot](type-aliases/XPackageJsonHybridrepoProjectRoot.md)
-- [XPackageJsonMonorepoPackageRoot](type-aliases/XPackageJsonMonorepoPackageRoot.md)
-- [XPackageJsonMonorepoProjectRoot](type-aliases/XPackageJsonMonorepoProjectRoot.md)
-- [XPackageJsonPolyrepoRoot](type-aliases/XPackageJsonPolyrepoRoot.md)
-- [XPackageJsonScripts](type-aliases/XPackageJsonScripts.md)
-
 ### Variables
 
 - [baseHybridrepoProjectRootXPackageJson](variables/baseHybridrepoProjectRootXPackageJson.md)

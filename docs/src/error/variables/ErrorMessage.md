@@ -313,17 +313,23 @@ punctuation and capitalization rules as the other error messages.
 
 ### BadEnginesNodeInPackageJson()
 
+#### Parameters
+
+##### path
+
+`string`
+
+#### Returns
+
+`string`
+
+### BadExportsInDistributablePackageJson()
+
 #### Returns
 
 `string`
 
 ### BadGeneratedChangelogSection()
-
-#### Returns
-
-`string`
-
-### BadPackageExportsInPackageJson()
 
 #### Returns
 
@@ -359,13 +365,25 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### BadProjectNameInPackageJson()
+### BadProjectNameInDistributablePackageJson()
 
 #### Returns
 
 `string`
 
 ### BadReleaseSectionPath()
+
+#### Returns
+
+`string`
+
+### BadRepositoryInCwdPackageJson()
+
+#### Parameters
+
+##### packageName
+
+`string`
 
 #### Returns
 
@@ -913,4 +931,4 @@ readonly `string`[]
 
 ## Defined in
 
-[src/error.ts:63](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/error.ts#L63)
+[src/error.ts:63](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/error.ts#L63)

@@ -37,10 +37,6 @@ as `1` while entirely skipping tests from files with names containing
 
 > **clearMocks**: `true` = `true`
 
-### collectCoverageFrom
-
-> **collectCoverageFrom**: [`"src/**/*.ts?(x)"`]
-
 ### maxConcurrency
 
 > **maxConcurrency**: `number`
@@ -95,4 +91,4 @@ as `1` while entirely skipping tests from files with names containing
 
 ## Defined in
 
-[src/assets/config/\_jest.config.mjs.ts:101](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/assets/config/_jest.config.mjs.ts#L101)
+[src/assets/config/\_jest.config.mjs.ts:102](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/assets/config/_jest.config.mjs.ts#L102)

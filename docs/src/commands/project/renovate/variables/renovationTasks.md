@@ -68,7 +68,7 @@
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### generate-scoped-tags
 
@@ -120,7 +120,7 @@
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### github-clone-remote-wiki
 
@@ -172,7 +172,7 @@
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### github-delete-all-releases
 
@@ -224,7 +224,7 @@
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### github-kill-master
 
@@ -276,7 +276,7 @@
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### github-pause-rulesets
 
@@ -328,7 +328,7 @@
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### github-reconfigure-repo
 
@@ -412,7 +412,7 @@ $\{string\} - Secrets are never deleted by this command, only added/overwritten
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### github-rename-repo
 
@@ -888,7 +888,7 @@ BfeBuilderObjectValueExtensions.implies
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### regenerate-aliases
 
@@ -952,7 +952,7 @@ BfeBuilderObjectValueExtensions.implies
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### regenerate-assets
 
@@ -1060,7 +1060,7 @@ BfeBuilderObjectValueExtensions.implies
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### synchronize-interdependencies
 
@@ -1112,7 +1112,7 @@ BfeBuilderObjectValueExtensions.implies
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### undeprecate
 
@@ -1172,7 +1172,7 @@ BfeBuilderObjectValueExtensions.implies
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ### update-dependencies
 
@@ -1224,7 +1224,7 @@ BfeBuilderObjectValueExtensions.implies
 
 ##### Returns
 
-`Promise`\<`void`\>
+`Promise`\<`undefined`\>
 
 ## See
 
@@ -1232,4 +1232,4 @@ BfeBuilderObjectValueExtensions.implies
 
 ## Defined in
 
-[src/commands/project/renovate.ts:492](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/project/renovate.ts#L492)
+[src/commands/project/renovate.ts:549](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/commands/project/renovate.ts#L549)

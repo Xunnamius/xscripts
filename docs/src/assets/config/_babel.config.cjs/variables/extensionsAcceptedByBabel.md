@@ -13,4 +13,4 @@ All possible extensions accepted by Babel using standard xscripts configs
 
 ## Defined in
 
-[src/assets/config/\_babel.config.cjs.ts:111](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/assets/config/_babel.config.cjs.ts#L111)
+[src/assets/config/\_babel.config.cjs.ts:111](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/assets/config/_babel.config.cjs.ts#L111)
