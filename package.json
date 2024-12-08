@@ -247,7 +247,7 @@
     "validate-npm-package-name": "^6.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.31.0"
+    "@-xun/scripts": "^1.31.1"
   },
   "engines": {
     "node": "18.20.0 || ^20.15.0 || >=22.5.0"
