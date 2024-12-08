@@ -868,9 +868,7 @@ const protoPrereleaseTasks: ProtoPrereleaseTask[][] = [
         const { isDirty } = await determineRepoWorkingTreeDirty();
 
         if (isDirty) {
-          problems.push(
-            'release command called with working tree in an unclean state; continuing may destroy uncommitted changes'
-          );
+          problems.push(ErrorMessage.ActionAttemptedWithADirtyRepo('release'));
         }
 
         problems.forEach((problem, index) => {

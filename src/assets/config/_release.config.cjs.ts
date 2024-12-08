@@ -49,6 +49,7 @@ import {
 
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
+import { determineRepoWorkingTreeDirty } from 'universe:util.ts';
 
 import type {
   XchangelogConfig,
@@ -417,50 +418,16 @@ export async function success(_pluginConfig: PluginConfig, context: SuccessConte
   const { isDirty } = await determineRepoWorkingTreeDirty();
 
   if (isDirty) {
-    // TODO: add to ErrorMessage.X tactfully
-    const dirtyMessage =
-      'The release pipeline has terminated but the repository remains in an unclean state. This can be evidence of an incomplete or broken build process';
-
     if (context.envCi.isCi) {
       // TODO: if we implement some sort of rejoinder-based ci output scheme,
       // TODO: replace this with that
       process.stdout.write(
-        `::warning title=Repository left in unclean state::${dirtyMessage}.\n`
+        `::warning title=Repository left in unclean state::${ErrorMessage.ReleaseFinishedWithADirtyRepo()}.\n`
       );
     } else {
-      // TODO: replace with rejoinder and add to ErrorMessage.X
+      // TODO: replace with rejoinder
       // eslint-disable-next-line no-console
-      console.warn(`⚠️🚧 ${dirtyMessage}`);
+      console.warn(`⚠️🚧 ${ErrorMessage.ReleaseFinishedWithADirtyRepo()}`);
     }
   }
-}
-
-/**
- * If `gitStatusOutput` is not empty or `gitStatusExitCode` is non-zero, then
- * the current working tree is dirty. This can be checked quickly via the
- * `isDirty` property.
- */
-export async function determineRepoWorkingTreeDirty() {
-  const { all: gitStatusOutput, exitCode: gitStatusExitCode } = await run(
-    'git',
-    ['status', '--porcelain'],
-    { all: true }
-  );
-
-  const isDirty = !!gitStatusOutput || gitStatusExitCode !== 0;
-
-  if (isDirty) {
-    debug.warn(
-      'repository was left in an unclean state! Git status output (exit code %O):',
-      gitStatusExitCode
-    );
-  }
-
-  debug.message('%O', gitStatusOutput);
-
-  return {
-    gitStatusOutput,
-    gitStatusExitCode,
-    isDirty
-  };
 }

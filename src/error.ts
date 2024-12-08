@@ -199,6 +199,9 @@ export const ErrorMessage = {
   ) {
     return `${subject} expects NODE_ENV to be one of: ${validValues.join(', ')} (saw: "${badValue}")`;
   },
+  RenovateEnvironmentValidationFailed() {
+    return 'one or more renovation runtime environment validation checks failed';
+  },
   ReleaseEnvironmentValidationFailed() {
     return 'one or more release runtime environment validation checks failed';
   },
@@ -213,6 +216,9 @@ export const ErrorMessage = {
   },
   ReleaseRunnerExecutionFailed() {
     return 'one or more release tasks failed to complete';
+  },
+  ReleaseFinishedWithADirtyRepo() {
+    return 'the release pipeline has terminated but the repository remains in an unclean state. This can be evidence of an incomplete or broken build process';
   },
   BadReleaseSectionPath() {
     return 'the @-xun/scripts semantic-release plugin requires the "releaseSectionPath" option be a non-empty string ending with ".md"';
@@ -262,11 +268,18 @@ export const ErrorMessage = {
       ? `task ${id} expects one of the following scripts to exist in this package's package.json file: "${npmScripts.join('", "')}`
       : `task ${id} is not runnable`;
   },
-  UnsupportedScope(taskName: string, givenScope: string, supportedScopes: string[]) {
+  UnsupportedRenovationScope(
+    taskName: string,
+    givenScope: string,
+    supportedScopes: string[]
+  ) {
     return `renovation task "${taskName}" only supports the \`${supportedScopes.join('` and `')}\` scope${supportedScopes.length === 1 ? '' : 's'}, but \`${givenScope}\` was seen instead`;
   },
   DangerousRenovationRequiresForce(taskName: string) {
     return `renovation task "${taskName}" is DANGEROUS and therefore must be invoked with --force`;
+  },
+  ActionAttemptedWithADirtyRepo(actionNoun: string) {
+    return `a ${actionNoun} was attempted but the working tree is in an unclean state; continuing may damage or destroy uncommitted changes`;
   },
   /**
    * These are "error" messages that are not necessarily meant to be the message
