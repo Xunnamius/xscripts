@@ -10,9 +10,6 @@ import {
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 
-// TODO: replace with import from @-xun/types
-import { type XPackageJson } from 'rootverse:src/assets/config/_package.json.ts';
-
 import {
   DefaultGlobalScope,
   type GlobalCliArguments,
@@ -101,7 +98,7 @@ export default function command({
         const { scripts } = packageJson;
 
         const isCwdPackage = cwdPackage.json === packageJson;
-        const packageName = getPackageName(packageJson);
+        const packageName = packageJson.name;
         const packageFullName =
           packageName +
           (subrootPackagesJson.length && index === 0 ? ' (root package)' : '') +
@@ -138,16 +135,12 @@ export default function command({
       }
 
       if (savedForLast) {
-        const packageName = getPackageName(cwdPackage.json);
+        const packageName = cwdPackage.json.name;
         getPackageLogger(packageName)([LogTag.IF_NOT_QUIETED], savedForLast);
         genericLogger.newline([LogTag.IF_NOT_QUIETED]);
       }
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
-
-      function getPackageName({ name }: XPackageJson) {
-        return name ?? '(unnamed package)';
-      }
 
       function getPackageLogger(packageName: string) {
         return genericLogger.extend(`[${packageName}]`);

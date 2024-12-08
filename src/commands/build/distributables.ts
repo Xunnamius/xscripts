@@ -506,10 +506,8 @@ Finally, note that, when attempting to build a Next.js package, this command wil
             skipOutputValidityCheckFor.add(builtin);
           }
 
-          if (packageName) {
-            // * Skip self-referential imports since they'll always work
-            skipOutputValidityCheckFor.add(packageName);
-          }
+          // * Skip self-referential imports since they'll always work
+          skipOutputValidityCheckFor.add(packageName);
 
           debug(
             'skipOutputValidityCheckFor (intermediate): %O',
@@ -1514,7 +1512,7 @@ distrib root: ${absoluteOutputDirPath}
 
               softAssert(
                 cwdPackageExports,
-                ErrorMessage.BadPackageExportsInPackageJson()
+                ErrorMessage.BadExportsInDistributablePackageJson()
               );
 
               const flattenedExports = flattenPackageJsonSubpathMap({

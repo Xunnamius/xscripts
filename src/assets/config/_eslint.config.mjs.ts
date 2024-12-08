@@ -798,15 +798,16 @@ export async function assertEnvironment(): Promise<
   Omit<Parameters<typeof moduleExport>[0], 'derivedAliases'>
 > {
   const currentWorkingDirectory = getCurrentWorkingDirectory();
+  const packageJsonPath = toPath(currentWorkingDirectory, 'package.json');
 
-  const packageJson = (await import(toPath(currentWorkingDirectory, 'package.json'), {
+  const packageJson = (await import(packageJsonPath, {
     with: { type: 'json' }
   })) as PackageJson;
 
   const { node: packageJsonEnginesNode } = packageJson.engines || {};
 
   if (typeof packageJsonEnginesNode !== 'string') {
-    throw new ProjectError(ErrorMessage.BadEnginesNodeInPackageJson());
+    throw new ProjectError(ErrorMessage.BadEnginesNodeInPackageJson(packageJsonPath));
   }
 
   const projectBasePath = toAbsolutePath(currentWorkingDirectory, Tsconfig.ProjectBase);

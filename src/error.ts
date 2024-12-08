@@ -147,14 +147,17 @@ export const ErrorMessage = {
   ) {
     return `expected a project ${preposition} the following attributes: ${expected.join(', ')}; saw ${Object.keys(actual).join(', ')} instead`;
   },
-  BadProjectNameInPackageJson() {
+  BadProjectNameInDistributablePackageJson() {
     return `the distributable package.json file does not contain a valid "name" field`;
   },
-  BadPackageExportsInPackageJson() {
+  BadExportsInDistributablePackageJson() {
     return `the distributable package.json file does not contain a valid "exports" field`;
   },
-  BadEnginesNodeInPackageJson() {
-    return 'this package has a missing or invalid "engines.node" field in its package.json';
+  BadRepositoryInCwdPackageJson(packageName: string) {
+    return `the "${packageName}" package's package.json file does not contain a valid "repository" field`;
+  },
+  BadEnginesNodeInPackageJson(path: string) {
+    return `a package.json file has a missing or invalid "engines.node" field: ${path}`;
   },
   MustChooseDeployEnvironment() {
     return 'must choose either --preview or --production deployment environment';

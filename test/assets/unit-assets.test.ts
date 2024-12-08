@@ -73,7 +73,9 @@ const dummyContext: Omit<TransformerContext, 'asset'> = {
     'package-build-details-short-4'
   ],
   packageBuildDetailsLong: ['package-build-details-long-1'],
-  projectMetadata: fixtureToProjectMetadata('goodHybridrepo'),
+  projectMetadata: fixtureToProjectMetadata(
+    'goodHybridrepo'
+  ) as TransformerContext['projectMetadata'],
   titleName: 'title-name',
   repoName: 'repo-name',
   repoType: ProjectAttribute.Polyrepo,

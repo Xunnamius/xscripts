@@ -18,7 +18,8 @@ import {
   type StandardExecutionContext
 } from 'multiverse+cli-utils:extensions.ts';
 
-import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse+project-utils';
+import { analyzeProjectStructure } from 'multiverse+project-utils:analyze/analyze-project-structure.ts';
+import { type ProjectMetadata } from 'multiverse+project-utils:analyze/common.ts';
 import { cache } from 'multiverse+project-utils:cache.ts';
 import { isAccessible } from 'multiverse+project-utils:fs/is-accessible.ts';
 import { directoryDistPackageBase, toPath } from 'multiverse+project-utils:fs.ts';

@@ -106,8 +106,6 @@ export function moduleExport({
   const { cwdPackage } = projectMetadata;
   const cwdPackageName = cwdPackage.json.name;
 
-  assert(cwdPackageName, ErrorMessage.GuruMeditation());
-
   const finalConfig = {
     // ? Tell xrelease what package-specific tags look like
     tagFormat: `${cwdPackageName}@\${version}`,

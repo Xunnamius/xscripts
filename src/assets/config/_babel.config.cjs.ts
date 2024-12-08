@@ -20,7 +20,7 @@ import { ProjectError } from 'multiverse+project-utils:error.ts';
 
 import {
   getCurrentWorkingDirectory,
-  readPackageJsonAtRoot,
+  readXPackageJsonAtRoot,
   toAbsolutePath,
   toPath,
   toRelativePath,
@@ -429,7 +429,7 @@ function doCoreJsVersionChecksAndReturnHardcodedVersion({
   const {
     name: packageName,
     dependencies: { 'core-js': cwdPackageCoreJsDependency_ } = {}
-  } = readPackageJsonAtRoot.sync(packageRoot, { useCached: true, try: true });
+  } = readXPackageJsonAtRoot.sync(packageRoot, { useCached: true, try: true });
 
   const cwdPackageCoreJsDependency =
     semver.validRange(cwdPackageCoreJsDependency_) || undefined;
@@ -632,7 +632,7 @@ function makeDistReplacerEntry(
               exports: packageExports,
               name: packageName,
               types: packageTypes
-            } = readPackageJsonAtRoot.sync(packageDir, {
+            } = readXPackageJsonAtRoot.sync(packageDir, {
               useCached: true
             });
 

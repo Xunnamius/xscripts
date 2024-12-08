@@ -398,8 +398,6 @@ export function moduleExport({
   const { cwdPackage } = projectMetadata;
   const cwdPackageName = cwdPackage.json.name;
 
-  assert(cwdPackageName);
-
   const intermediateConfig: XchangelogConfig = {
     // * Core configuration keys * \\
     context: { packageName: cwdPackageName },

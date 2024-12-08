@@ -23,7 +23,12 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
-import { isRootPackage, type ProjectMetadata } from 'multiverse+project-utils:analyze.ts';
+
+import {
+  isRootPackage,
+  type ProjectMetadata,
+  type XPackageJson
+} from 'multiverse+project-utils:analyze.ts';
 
 import {
   directoryCoveragePackageBase,
@@ -43,7 +48,6 @@ import {
 } from 'multiverse+rejoinder';
 
 import { getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix } from 'universe:assets/config/_conventional.config.cjs.ts';
-import { type XPackageJson } from 'universe:assets/config/_package.json.ts';
 
 import {
   default as renovate,
