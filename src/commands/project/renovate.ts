@@ -672,7 +672,7 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     requiresForce: true,
     supportedScopes: [ProjectRenovateScope.ThisPackage],
     subOptions: {},
-    conflicts: 'undeprecate',
+    conflicts: { undeprecate: true },
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
 
@@ -690,7 +690,7 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     requiresForce: true,
     supportedScopes: [ProjectRenovateScope.ThisPackage],
     subOptions: {},
-    conflicts: 'deprecate',
+    conflicts: { deprecate: true },
     async run(argv_, { log }) {
       const argv = argv_ as RenovationTaskArgv;
 
