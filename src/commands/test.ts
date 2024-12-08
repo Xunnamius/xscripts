@@ -402,12 +402,37 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       const buildExtraneousPackages = new Set<Package>();
 
       if (!baseline) {
-        if (scope !== TesterScope.Unlimited) {
+        if (collectCoverage) {
+          npxJestArguments.push('--collectCoverageFrom=src/**/*.ts?(x)');
+        }
+
+        if (scope === TesterScope.Unlimited) {
+          if (collectCoverage) {
+            // TODO: do something about these hardcoded workspace paths...
+            npxJestArguments.push('--collectCoverageFrom=packages/*/src/**/*.ts?(x)');
+          }
+        } else {
           const {
             targets: { external: externalBuildTargets }
           } = await gatherPackageBuildTargets(cwdPackage, {
             useCached: true
           });
+
+          if (collectCoverage) {
+            npxJestArguments.push(
+              ...externalBuildTargets
+                .values()
+                .filter((path) => {
+                  return (
+                    (path.endsWith('.ts') || path.endsWith('.tsx')) &&
+                    !path.endsWith('.d.ts')
+                  );
+                })
+                .map((path) => {
+                  return `--collectCoverageFrom=${path}`;
+                })
+            );
+          }
 
           const allPackagesExceptCwd = Array.from(
             (subRootPackages?.values() || []).filter(
@@ -430,7 +455,8 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
               const relativeRoot = toRelativePath(projectRoot, package_.root);
 
               return relativeRoot === ''
-                ? !buildTargetPath.startsWith('packages/')
+                ? // TODO: do something about these hardcoded workspace paths...
+                  !buildTargetPath.startsWith('packages/')
                 : buildTargetPath.startsWith(relativeRoot);
             });
 
@@ -461,8 +487,8 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
         }
 
         // ? These are all the paths (mostly package roots) that should NOT have
-        // ? their tests run; note that they are in Jest-style and should have
-        // ? leading or trailing / (which will be inserted later when no
+        // ? their tests run; note that they are in Jest-style and shouldn't
+        // ? have leading or trailing / (which will be inserted later when
         // ? necessary)
         const testIgnorePathSegments = buildExtraneousPackages
           .values()

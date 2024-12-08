@@ -86,7 +86,6 @@ const config = {
     '^rootverse\\+test-utils:(.+)$': '<rootDir>/packages/test-utils/$1'
   },
   setupFilesAfterEnv: ['./test/setup.ts'],
-  collectCoverageFrom: ['src/**/*.ts?(x)'],
   // ? Tell Jest to transpile node_modules (for ESM interop)
   //transformIgnorePatterns: [],
   // ? Make sure jest-haste-map doesn't try to parse and cache fixtures (which

@@ -82,7 +82,8 @@ export function baseConfig({
       String.raw`/type-.*\.test\.(c|m)?tsx?`
     ],
     setupFilesAfterEnv: ['./test/setup.ts'],
-    collectCoverageFrom: ['src/**/*.ts?(x)'],
+    // ? This is computed dynamically by xscripts
+    //collectCoverageFrom: [],
     // ? Tell Jest to transpile node_modules (for ESM interop)
     //transformIgnorePatterns: [],
     // ? Make sure jest-haste-map doesn't try to parse and cache fixtures (which
