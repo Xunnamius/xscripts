@@ -5,7 +5,7 @@ import fs from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename } from 'node:path';
 
-import { run, type RunReturnType } from '@-xun/run';
+import { run, type RunOptions, type RunReturnType } from '@-xun/run';
 import glob from 'glob';
 import { simpleGit, type SimpleGit } from 'simple-git';
 import uniqueFilename from 'unique-filename';
@@ -19,7 +19,6 @@ import {
   version as rootPackageJsonVersion
 } from 'rootverse:package.json';
 
-import type { Options as ExecaOptions } from 'execa-root' with { 'resolution-mode': 'import' };
 import type { LiteralUnion, Promisable } from 'type-fest';
 
 const globalDebug = createDebugLogger({ namespace: `${rootPackageJsonName}:jest-setup` });
@@ -640,15 +639,6 @@ export async function withMockedOutput(
   }
 }
 
-// TODO: XXX: make this into a separate (run) package (along w/ below)
-export interface RunOptions extends ExecaOptions {
-  /**
-   * Setting this to `true` rejects the promise instead of resolving it with the error.
-   * @default false
-   */
-  reject?: boolean;
-}
-
 // TODO: XXX: make this into a separate (run) package (along w/ above)
 export function runnerFactory(file: string, args?: string[], options?: RunOptions) {
   const factoryArgs = args;
@@ -1012,11 +1002,8 @@ async function getTreeOutput(context: FixtureContext) {
     return '(this platform does not support the `tree` command)';
   } else {
     const { stdout } = await (
-      await import('execa-root')
-    ).execa('tree', ['-a', '-L', '2'], {
-      cwd: context.root,
-      reject: false
-    });
+      await import('@-xun/run')
+    ).runNoRejectOnBadExit('tree', ['-a', '-L', '2'], { cwd: context.root });
     return stdout || '(`tree` command did not return a result. Is it installed?)';
   }
 }
