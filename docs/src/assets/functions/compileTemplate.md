@@ -38,4 +38,4 @@ user must manually narrow, similar to a merge conflict in git. See
 
 ## Defined in
 
-[src/assets.ts:286](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets.ts#L286)
+[src/assets.ts:286](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/assets.ts#L286)

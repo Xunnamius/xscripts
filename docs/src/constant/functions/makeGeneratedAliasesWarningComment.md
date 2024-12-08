@@ -22,4 +22,4 @@ The comment injected before each batch of auto-generated aliases.
 
 ## Defined in
 
-[src/constant.ts:19](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/constant.ts#L19)
+[src/constant.ts:19](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/constant.ts#L19)

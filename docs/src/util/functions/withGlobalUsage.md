@@ -25,7 +25,8 @@ Defaults to: `Usage: $000\n\n${altDescription}` where `altDescription` is
 
 `boolean`
 
-Whether a period will be appended to `altDescription` or not.
+Whether a period will be appended to the resultant string or not. A
+period is only appended if one is not already appended.
 
 **Default**
 
@@ -49,7 +50,7 @@ true
 
 `boolean`
 
-Whether the entire string will be trimmed or not.
+Whether `altDescription` will be `trim()`'d or not.
 
 **Default**
 
@@ -63,4 +64,4 @@ true
 
 ## Defined in
 
-[packages/bfe/src/index.ts:1230](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/packages/bfe/src/index.ts#L1230)
+[packages/bfe/src/index.ts:1249](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/packages/bfe/src/index.ts#L1249)

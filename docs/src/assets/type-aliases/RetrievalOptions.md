@@ -30,4 +30,4 @@ the transpiled `.js` versions of the source `.ts` files.
 
 ## Defined in
 
-[src/assets.ts:202](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets.ts#L202)
+[src/assets.ts:202](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/assets.ts#L202)

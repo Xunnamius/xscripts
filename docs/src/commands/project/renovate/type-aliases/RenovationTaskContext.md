@@ -26,4 +26,4 @@ The context passed to each individual task.
 
 ## Defined in
 
-[src/commands/project/renovate.ts:81](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/project/renovate.ts#L81)
+[src/commands/project/renovate.ts:92](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/project/renovate.ts#L92)

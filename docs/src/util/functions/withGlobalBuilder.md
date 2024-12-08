@@ -35,4 +35,4 @@ merged over the corresponding default configuration value in
 
 ## Defined in
 
-[src/util.ts:44](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/util.ts#L44)
+[src/util.ts:48](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/util.ts#L48)

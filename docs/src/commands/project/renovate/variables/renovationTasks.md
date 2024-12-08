@@ -18,9 +18,17 @@
 
 > `readonly` **actionDescription**: `"Deprecating package"` = `'Deprecating package'`
 
+#### deprecate.conflicts
+
+> `readonly` **conflicts**: `object`
+
+#### deprecate.conflicts.undeprecate
+
+> `readonly` **undeprecate**: `true` = `true`
+
 #### deprecate.emoji
 
-> `readonly` **emoji**: `"☢️"` = `'☢️'`
+> `readonly` **emoji**: `"🪦"` = `'🪦'`
 
 #### deprecate.longHelpDescription
 
@@ -176,7 +184,7 @@
 
 #### github-delete-all-releases.emoji
 
-> `readonly` **emoji**: `"☣️"` = `'☣️'`
+> `readonly` **emoji**: `"☢️"` = `'☢️'`
 
 #### github-delete-all-releases.longHelpDescription
 
@@ -224,7 +232,7 @@
 
 #### github-kill-master.actionDescription
 
-> `readonly` **actionDescription**: "Renaming default branch to \"main\" and cleaning up any remnants of \"master\"" = `'Renaming default branch to "main" and cleaning up any remnants of "master"'`
+> `readonly` **actionDescription**: "Renaming default branch to \"main\" and finishing off \"master\"" = `'Renaming default branch to "main" and finishing off "master"'`
 
 #### github-kill-master.emoji
 
@@ -284,7 +292,7 @@
 
 #### github-pause-rulesets.longHelpDescription
 
-> `readonly` **longHelpDescription**: "This renovation will temporarily disable all rulesets in the repository for 5 minutes, after which this command will re-enable them.\n\nUpon executing this renovation, you will be presented with a countdown after which protections will be re-enabled. You may press any key to immediately re-enable protections and exit the program.\n\nIf this renovation does not exit cleanly, re-running it (or --github-reconfigure-repo) will restore and re-enable any disabled rulesets."
+> `readonly` **longHelpDescription**: "This renovation will temporarily disable all rulesets in the repository for 5 minutes, after which this command will re-enable them.\n\nUpon executing this renovation, you will be presented with a countdown until protections will be re-enabled. You may press any key to immediately re-enable protections and exit the program.\n\nIf this renovation does not exit cleanly, re-running it (or --github-reconfigure-repo) will restore and re-enable any disabled rulesets."
 
 #### github-pause-rulesets.requiresForce
 
@@ -356,7 +364,7 @@ $\{string\} - Include "Releases" and remove "Packages" and "Deployments" sidebar
 - Enable "allow rebase merging"
 - Enable "always suggest updating pull request branches"
 - Enable "allow auto-merge"
-- (Re)create and enable the "standard-protect" and "canary-protect" rulesets; issue warnings about the existence of any other rulesets
+- (Re-)create and (re-)enable the "standard-protect" and "canary-protect" rulesets; issue warnings about the existence of any other rulesets
 $\{string\} - "standard-protect" restricts deletions of, requires signed commits for, and blocks force pushes to the repository's main branch and any maintenance branches
 $\{string\} - "canary-protect" restricts deletions of and requires signed commits for the repository's canary branch(es), but does NOT block force pushes to these branches
 - Clear out any classic branch protection settings
@@ -412,7 +420,7 @@ $\{string\} - Secrets are never deleted by this command, only added/overwritten
 
 #### github-rename-repo.actionDescription
 
-> `readonly` **actionDescription**: `"Updating origin repository name and synchronizing local git configuration"` = `'Updating origin repository name and synchronizing local git configuration'`
+> `readonly` **actionDescription**: `"Updating origin repository name and synchronizing local configuration"` = `'Updating origin repository name and synchronizing local configuration'`
 
 #### github-rename-repo.emoji
 
@@ -420,7 +428,7 @@ $\{string\} - Secrets are never deleted by this command, only added/overwritten
 
 #### github-rename-repo.longHelpDescription
 
-> `readonly` **longHelpDescription**: `"This renovation will rename the remote origin repository, rename (move) the repository directory on the local filesystem, and update the remotes in .git/config accordingly."`
+> `readonly` **longHelpDescription**: "This renovation will rename the remote origin repository, rename (move) the repository directory on the local filesystem, and update the remotes in .git/config accordingly.\n\nIf the origin repository cannot be renamed, the rename attempt will be aborted and no local changes will occur."
 
 #### github-rename-repo.requiresForce
 
@@ -1068,7 +1076,7 @@ BfeBuilderObjectValueExtensions.implies
 
 #### synchronize-interdependencies.longHelpDescription
 
-> `readonly` **longHelpDescription**: "This renovation will analyze dependencies in one or more package.json files (depending on --scope), select only those dependencies that match a package name in the origin repository, and update their package.json dependency ranges to match their respective package versions as they are in the monorepo.\n\nIf this repository is a polyrepo, this renovation is essentially a no-op." = `'This renovation will analyze dependencies in one or more package.json files (depending on --scope), select only those dependencies that match a package name in the origin repository, and update their package.json dependency ranges to match their respective package versions as they are in the monorepo.\n\nIf this repository is a polyrepo, this renovation is essentially a no-op.'`
+> `readonly` **longHelpDescription**: "This renovation will analyze dependencies in one or more package.json files (depending on --scope), select dependencies in those files that match a package name in this project, and update those dependencies' ranges to match their respective package versions as they are in the project. This is useful in monorepos with published packages that rely on other published packages in the same repo. This renovation ensures a package released from this project will always install the latest version of the other packages released from this project.\n\nIf this repository is a polyrepo, this renovation is essentially a no-op." = `"This renovation will analyze dependencies in one or more package.json files (depending on --scope), select dependencies in those files that match a package name in this project, and update those dependencies' ranges to match their respective package versions as they are in the project. This is useful in monorepos with published packages that rely on other published packages in the same repo. This renovation ensures a package released from this project will always install the latest version of the other packages released from this project.\n\nIf this repository is a polyrepo, this renovation is essentially a no-op."`
 
 #### synchronize-interdependencies.requiresForce
 
@@ -1114,13 +1122,21 @@ BfeBuilderObjectValueExtensions.implies
 
 > `readonly` **actionDescription**: `"Un-deprecating package"` = `'Un-deprecating package'`
 
+#### undeprecate.conflicts
+
+> `readonly` **conflicts**: `object`
+
+#### undeprecate.conflicts.deprecate
+
+> `readonly` **deprecate**: `true` = `true`
+
 #### undeprecate.emoji
 
-> `readonly` **emoji**: `"🪦"` = `'🪦'`
+> `readonly` **emoji**: `"🧟"` = `'🧟'`
 
 #### undeprecate.longHelpDescription
 
-> `readonly` **longHelpDescription**: "This renovation will undo the standard deprecation procedure on the current package and its containing repository, effectively \"un-deprecating\" them both. See the xscripts wiki for details on the standard deprecation procedure and what the ramifications of an \"un-deprecation\" are."
+> `readonly` **longHelpDescription**: "This renovation will make a best effort at undoing the standard deprecation procedure on the current package and its containing repository, effectively \"un-deprecating\" them both. See the xscripts wiki for details on the standard deprecation procedure and what the ramifications of an \"un-deprecation\" are."
 
 #### undeprecate.requiresForce
 
@@ -1216,4 +1232,4 @@ BfeBuilderObjectValueExtensions.implies
 
 ## Defined in
 
-[src/commands/project/renovate.ts:400](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/project/renovate.ts#L400)
+[src/commands/project/renovate.ts:492](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/project/renovate.ts#L492)

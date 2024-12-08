@@ -171,6 +171,18 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
+### ActionAttemptedWithADirtyRepo()
+
+#### Parameters
+
+##### actionNoun
+
+`string`
+
+#### Returns
+
+`string`
+
 ### ArgumentMustBeNonNegative()
 
 #### Parameters
@@ -701,6 +713,12 @@ readonly `string`[]
 
 `string`
 
+### ReleaseFinishedWithADirtyRepo()
+
+#### Returns
+
+`string`
+
 ### ReleaseRepositoryNoCurrentBranch()
 
 #### Returns
@@ -720,6 +738,12 @@ readonly `string`[]
 `string`
 
 ### ReleaseScriptExecutionFailed()
+
+#### Returns
+
+`string`
+
+### RenovateEnvironmentValidationFailed()
 
 #### Returns
 
@@ -809,7 +833,7 @@ readonly `string`[]
 
 `string`
 
-### UnsupportedScope()
+### UnsupportedRenovationScope()
 
 #### Parameters
 
@@ -889,4 +913,4 @@ readonly `string`[]
 
 ## Defined in
 
-[src/error.ts:63](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/error.ts#L63)
+[src/error.ts:63](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/error.ts#L63)

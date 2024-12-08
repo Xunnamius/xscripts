@@ -12,4 +12,4 @@ The character(s) used to reference issues by number on GitHub.
 
 ## Defined in
 
-[src/assets/config/\_conventional.config.cjs.ts:235](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets/config/_conventional.config.cjs.ts#L235)
+[src/assets/config/\_conventional.config.cjs.ts:235](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/assets/config/_conventional.config.cjs.ts#L235)

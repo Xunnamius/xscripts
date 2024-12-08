@@ -6,11 +6,11 @@
 
 # Function: default()
 
-> **default**(`__namedParameters`): `object`
+> **default**(`executionContext`): `object`
 
 ## Parameters
 
-### \_\_namedParameters
+### executionContext
 
 `AsStrictExecutionContext`\<[`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\>
 
@@ -46,4 +46,4 @@
 
 ## Defined in
 
-[src/commands/project/renovate.ts:156](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/project/renovate.ts#L156)
+[src/commands/project/renovate.ts:170](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/project/renovate.ts#L170)

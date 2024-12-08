@@ -6,13 +6,13 @@
 
 # Type Alias: RenovationTask
 
-> **RenovationTask**: `object`
+> **RenovationTask**: `BfeBuilderObjectValue`\<`Record`\<`string`, `unknown`\>, [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\> & `object`
 
 ## Type declaration
 
-### actionDescription?
+### actionDescription
 
-> `optional` **actionDescription**: `string`
+> **actionDescription**: `string`
 
 The description reported to the user when the task is run.
 
@@ -93,4 +93,4 @@ The name of the task.
 
 ## Defined in
 
-[src/commands/project/renovate.ts:92](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/project/renovate.ts#L92)
+[src/commands/project/renovate.ts:103](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/project/renovate.ts#L103)

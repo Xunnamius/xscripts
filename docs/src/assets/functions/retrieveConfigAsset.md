@@ -39,4 +39,4 @@ Expects a full context object (i.e. [TransformerContext](../type-aliases/Transfo
 
 ## Defined in
 
-[src/assets.ts:233](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets.ts#L233)
+[src/assets.ts:233](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/assets.ts#L233)

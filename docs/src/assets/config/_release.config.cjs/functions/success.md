@@ -28,4 +28,4 @@ state.
 
 ## Defined in
 
-[src/assets/config/\_release.config.cjs.ts:409](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets/config/_release.config.cjs.ts#L409)
+[src/assets/config/\_release.config.cjs.ts:410](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/assets/config/_release.config.cjs.ts#L410)

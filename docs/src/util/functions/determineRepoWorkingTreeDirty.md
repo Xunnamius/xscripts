@@ -1,8 +1,8 @@
-[**@-xun/scripts**](../../../../../README.md)
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
-[@-xun/scripts](../../../../../README.md) / [src/assets/config/\_release.config.cjs](../README.md) / determineRepoWorkingTreeDirty
+[@-xun/scripts](../../../README.md) / [src/util](../README.md) / determineRepoWorkingTreeDirty
 
 # Function: determineRepoWorkingTreeDirty()
 
@@ -30,4 +30,4 @@ the current working tree is dirty. This can be checked quickly via the
 
 ## Defined in
 
-[src/assets/config/\_release.config.cjs.ts:443](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/assets/config/_release.config.cjs.ts#L443)
+[src/util.ts:143](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/util.ts#L143)

@@ -30,7 +30,7 @@ The description reported to the user when the task is run.
 
 #### Defined in
 
-[src/commands/release.ts:196](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L196)
+[src/commands/release.ts:201](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/release.ts#L201)
 
 ***
 
@@ -47,7 +47,7 @@ task.
 
 #### Defined in
 
-[src/commands/release.ts:205](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L205)
+[src/commands/release.ts:210](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/release.ts#L210)
 
 ***
 
@@ -63,7 +63,7 @@ The description reported to the user when `--help` is called.
 
 #### Defined in
 
-[src/commands/release.ts:200](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L200)
+[src/commands/release.ts:205](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/release.ts#L205)
 
 ***
 
@@ -94,7 +94,7 @@ supplies `--hush`/`--quiet`/`--silent`.
 
 #### Defined in
 
-[src/commands/release.ts:220](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L220)
+[src/commands/release.ts:225](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/release.ts#L225)
 
 ***
 
@@ -111,7 +111,7 @@ package's `package.json`.
 
 #### Defined in
 
-[src/commands/release.ts:190](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L190)
+[src/commands/release.ts:195](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/release.ts#L195)
 
 ***
 
@@ -127,7 +127,7 @@ A function called when the task is triggered.
 
 #### Defined in
 
-[src/commands/release.ts:224](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L224)
+[src/commands/release.ts:229](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/release.ts#L229)
 
 ***
 
@@ -143,7 +143,7 @@ Whether the task can be skipped by the user or not.
 
 #### Defined in
 
-[src/commands/release.ts:185](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L185)
+[src/commands/release.ts:190](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/release.ts#L190)
 
 ***
 
@@ -153,4 +153,4 @@ Whether the task can be skipped by the user or not.
 
 #### Defined in
 
-[src/commands/release.ts:231](https://github.com/Xunnamius/xscripts/blob/12020afea79f1ec674174f8cb4103ac0b46875c5/src/commands/release.ts#L231)
+[src/commands/release.ts:236](https://github.com/Xunnamius/xscripts/blob/cfe28e3d801ec1b719b0dedbda4e9f63d7924b77/src/commands/release.ts#L236)
