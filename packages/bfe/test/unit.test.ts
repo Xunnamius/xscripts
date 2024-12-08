@@ -5256,6 +5256,38 @@ describe('::withBuilderExtensions', () => {
       ]);
     });
 
+    it('can override group configurations on a per-option level with correct duplication', async () => {
+      expect.hasAssertions();
+
+      const mockGroupMethod = jest.fn();
+
+      const runner = makeMockBuilderRunner({
+        group: mockGroupMethod,
+        customBuilder: {
+          a: { demandThisOption: true, requires: 'b', group: 'Custom Options:' },
+          b: { group: 'Custom Options:' },
+          c: {}
+        },
+        builderExtensionsConfig: { commonOptions: ['help', 'version', 'a'] }
+      });
+
+      const { handlerResult } = await runner({});
+
+      expect(handlerResult).toSatisfy(isCommandNotImplementedError);
+      expect(mockGroupMethod.mock.calls).toStrictEqual([
+        // * First pass
+        [['a'], 'Required Options:'],
+        [['a', 'b'], 'Custom Options:'],
+        [['c'], 'Optional Options:'],
+        [['help', 'version', 'a'], 'Common Options:'],
+        // * Second pass
+        [['a'], 'Required Options:'],
+        [['a', 'b'], 'Custom Options:'],
+        [['c'], 'Optional Options:'],
+        [['help', 'version', 'a'], 'Common Options:']
+      ]);
+    });
+
     it('can be disabled', async () => {
       expect.hasAssertions();
 

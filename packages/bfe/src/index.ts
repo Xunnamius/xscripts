@@ -125,6 +125,12 @@ type OptionsMetadata = {
    * colliding with one another.
    */
   optionNames: Set<string>;
+  /**
+   * This is used to track which options have specified their own group
+   * configurations. This is used during automatic grouping to figure out
+   * which options belong to which groups.
+   */
+  customGroups: Record<string, string[]>;
 };
 
 /**
@@ -858,8 +864,13 @@ export function withBuilderExtensions<
           `commencing automatic options grouping (${isFirstPass ? 'first' : 'second'} pass)`
         );
 
-        const { demanded, demandedAtLeastOne, demandedMutuallyExclusive, optional } =
-          optionLocalMetadata;
+        const {
+          demanded,
+          demandedAtLeastOne,
+          demandedMutuallyExclusive,
+          optional,
+          customGroups
+        } = optionLocalMetadata;
 
         if (demanded.length) {
           blackFlag.group(demanded, 'Required Options:');
@@ -890,6 +901,11 @@ export function withBuilderExtensions<
           debug(`added "Required (mutually exclusive)" grouping #%O: %O`, count, options);
         });
 
+        for (const [groupName, options] of Object.entries(customGroups)) {
+          blackFlag.group(options, groupName);
+          debug(`added custom "${groupName}" grouping: %O`, options);
+        }
+
         if (optional.length) {
           blackFlag.group(optional, 'Optional Options:');
           debug('added "Optional" grouping: %O', optional);
@@ -915,9 +931,12 @@ export function withBuilderExtensions<
       previousBfParserConfiguration = parserConfiguration;
 
       debug('stored previousBfBuilderObject and previousBfParserConfiguration');
-
       debug('transmuting BFE builder to BF builder');
-      const finalBuilderObject = transmuteBFEBuilderToBFBuilder({ builderObject });
+
+      const finalBuilderObject = transmuteBFEBuilderToBFBuilder({
+        builderObject,
+        deleteGroupProps: !disableAutomaticGrouping
+      });
 
       debug('final transmuted builderObject: %O', finalBuilderObject);
       debug('exited withBuilderExtensions::builder wrapper function');
@@ -1382,9 +1401,11 @@ function transmuteBFEBuilderToBFBuilder<
   CustomCliArguments extends Record<string, unknown>,
   CustomExecutionContext extends ExecutionContext
 >({
-  builderObject
+  builderObject,
+  deleteGroupProps
 }: {
   builderObject: BfeBuilderObject<CustomCliArguments, CustomExecutionContext>;
+  deleteGroupProps: boolean;
 }): BfBuilderObject<CustomCliArguments, CustomExecutionContext> {
   const vanillaYargsBuilderObject: BfBuilderObject<
     CustomCliArguments,
@@ -1415,6 +1436,10 @@ function transmuteBFEBuilderToBFBuilder<
           vanillaYargsBuilderObjectValue.array ? [parameter].flat() : parameter
         );
       };
+    }
+
+    if (deleteGroupProps) {
+      delete vanillaYargsBuilderObjectValue.group;
     }
 
     vanillaYargsBuilderObject[option] = vanillaYargsBuilderObjectValue;
@@ -1451,7 +1476,8 @@ function analyzeBuilderObject<
     defaults: {},
     checks: {},
     optionNames: new Set<string>(),
-    optionNamesAsSeenInArgv: {}
+    optionNamesAsSeenInArgv: {},
+    customGroups: {}
   };
 
   // ? This first loop resolves all groupings except "optional options"
@@ -1609,17 +1635,25 @@ function analyzeBuilderObject<
   }
 
   // ? This second loop lets us see which options are actually optional after
-  // ? all the groupings have been resolved
-  for (const [option] of Object.entries(builderObject)) {
+  // ? all the groupings have been resolved. We also apply any overrides here.
+  for (const [option, { group: groupOverride }] of Object.entries(builderObject)) {
     const isExplicitlyDemanded = !!(
       metadata.demanded.includes(option) ||
       metadata.demandedAtLeastOne.some((record) => option in record) ||
       metadata.demandedMutuallyExclusive.some((record) => option in record)
     );
 
-    // ? An option cannot be in both common options and optional options
-    if (!isExplicitlyDemanded && !commonOptions.includes(option)) {
-      metadata.optional.push(option);
+    const hasExplicitGroupOverride = !!groupOverride;
+    const commonOptionsIncludesOption = commonOptions.includes(option);
+
+    if (hasExplicitGroupOverride) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      (metadata.customGroups[groupOverride] ||= []).push(option);
+    } else {
+      // ? An option cannot be in both common options and optional options
+      if (!isExplicitlyDemanded && !commonOptionsIncludesOption) {
+        metadata.optional.push(option);
+      }
     }
   }
 

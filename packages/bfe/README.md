@@ -1323,8 +1323,31 @@ Common Options:
                                 [string] [default: "/home/freelance/.config/xunnctl-nodejs/state.json"]
 ```
 
-This feature can be disabled by passing `{ disableAutomaticGrouping: true }` to
-`withBuilderExtensions` as its second parameter:
+By including an explicit [`group`][32] property in an option's configuration,
+the option will be included in said group _in addition to_ the result of
+automatic grouping, e.g.:
+
+```typescript
+const [builder, withHandlerExtensions] = withBuilderExtensions({
+  'my-option': {
+    boolean: true,
+    description: 'mine',
+    default: true,
+    // This option will be placed into the "Custom Grouped Options" group AND
+    // ALSO the "Common Options" group IF it's included in `commonOptions`
+    group: 'Custom Grouped Options'
+  }
+});
+```
+
+> [!NOTE]
+>
+> Options configured with an explicit [`group`][32] property will never be
+> automatically included in the "Optional Options" group.
+
+This feature can be disabled entirely by passing
+`{ disableAutomaticGrouping: true }` to `withBuilderExtensions` as its second
+parameter:
 
 ```typescript
 const [builder, withHandlerExtensions] = withBuilderExtensions(
@@ -2083,7 +2106,8 @@ export function builder(blackFlag) {
 -   demandOption: true,
 -   default: '/etc/passwd',
 -   describe: 'x marks the spot',
--   type: 'string'
+-   type: 'string',
+-   group: 'custom'
 - });
 -
 - // DO NOT use yargs's imperative API to define options! This *BREAKS* BFE!
@@ -2092,7 +2116,8 @@ export function builder(blackFlag) {
 -   .demandOption('f')
 -   .default('f', '/etc/passwd')
 -   .describe('f', 'x marks the spot')
--   .string('f');
+-   .string('f')
+-   .group('custom');
 -
 - // DO NOT use yargs's imperative API to define options! This *BREAKS* BFE!
 - blackFlag.options({
@@ -2101,7 +2126,8 @@ export function builder(blackFlag) {
 -     demandOption: true,
 -     default: '/etc/passwd',
 -     describe: 'x marks the spot',
--     type: 'string'
+-     type: 'string',
+-     group: 'custom'
 -   }
 - });
 -
@@ -2112,7 +2138,8 @@ export function builder(blackFlag) {
 +     demandThisOption: true,
 +     default: '/etc/passwd',
 +     describe: 'x marks the spot',
-+     string: true
++     string: true,
++     group: 'custom'
 +   }
 + };
 }
