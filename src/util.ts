@@ -31,7 +31,8 @@ import {
   isAccessible,
   toAbsolutePath,
   toPath,
-  type AbsolutePath
+  type AbsolutePath,
+  type RelativePath
 } from 'multiverse+project-utils:fs.ts';
 
 import { createDebugLogger, type ExtendedLogger } from 'multiverse+rejoinder';
@@ -189,9 +190,12 @@ export async function determineRepoWorkingTreeDirty() {
  * Returns all dotenv file paths relevant to the current package in reverse
  * order of precedence; the most important dotenv file will be last in the
  * returned array.
+ *
+ * Use `scope` (default: `"both"`) to narrow which dotenv paths are returned.
  */
 export function getRelevantDotEnvFilePaths(
-  projectMetadata: GenericProjectMetadata | undefined
+  projectMetadata: GenericProjectMetadata | undefined,
+  scope: 'both' | 'package-only' | 'project-only' = 'both'
 ) {
   const { cwdPackage, rootPackage } = projectMetadata || {};
 
@@ -215,11 +219,11 @@ export function getRelevantDotEnvFilePaths(
 
   // ! Most important env file should be last, least important should be first
   const paths = [
-    rootPackageEnvDefaultFile,
-    cwdPackageEnvDefaultFile,
-    rootPackageEnvFile,
-    cwdPackageEnvFile
-  ].filter((p): p is string => !!p);
+    scope !== 'package-only' ? rootPackageEnvDefaultFile : undefined,
+    scope !== 'project-only' ? cwdPackageEnvDefaultFile : undefined,
+    scope !== 'package-only' ? rootPackageEnvFile : undefined,
+    scope !== 'project-only' ? cwdPackageEnvFile : undefined
+  ].filter((p): p is string => !!p) as RelativePath[];
 
   return paths;
 }

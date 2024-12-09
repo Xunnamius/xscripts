@@ -213,9 +213,11 @@ ${printRenovationTasks()}
 
 This command must be invoked with at least one task flag. Tasks are run concurrently unless --no-parallel is given, and are all run to completion even if one of the tasks fails unless \`--run-to-completion=false\` is given.
 
-Environment variables are loaded into process.env from the following file(s), if they exist, with the variables in latter files overwriting those in the former:
+Environment variables are loaded into process.env from the following file(s), if they exist and depending on scope, with the variables in latter files overwriting those in the former:
 
 ${SHORT_TAB}- ${getRelevantDotEnvFilePaths(projectMetadata_).join(`\n${SHORT_TAB}- `)}
+
+When \`--scope=${ProjectRenovateScope.Unlimited}\`, package-specific .env and .env.default files are ignored.
 
 Renovations are performed on the entire project by default, and typically involve overwriting/deleting obsolete versions of certain configuration files, but several renovation tasks can be limited to the current package via \`--scope=${ProjectRenovateScope.ThisPackage}\`.
 
@@ -462,13 +464,17 @@ ${longHelpDescription.trim()}\n\n=====\n\n`;
 
 function checkRuntimeIsReadyForGithub(argv: RenovationTaskArgv, log: ExtendedLogger) {
   const {
+    scope,
     force,
     [$executionContext]: { projectMetadata }
   } = argv;
 
   loadDotEnv(['GITHUB_TOKEN'], {
     log,
-    dotEnvFilePaths: getRelevantDotEnvFilePaths(projectMetadata),
+    dotEnvFilePaths: getRelevantDotEnvFilePaths(
+      projectMetadata,
+      scope === ProjectRenovateScope.Unlimited ? 'project-only' : 'both'
+    ),
     force,
     failInstructions: 'Skip this check with --force',
     onFail() {
@@ -479,13 +485,17 @@ function checkRuntimeIsReadyForGithub(argv: RenovationTaskArgv, log: ExtendedLog
 
 function checkRuntimeIsReadyForNpm(argv: RenovationTaskArgv, log: ExtendedLogger) {
   const {
+    scope,
     force,
     [$executionContext]: { projectMetadata }
   } = argv;
 
   loadDotEnv(['NPM_TOKEN'], {
     log,
-    dotEnvFilePaths: getRelevantDotEnvFilePaths(projectMetadata),
+    dotEnvFilePaths: getRelevantDotEnvFilePaths(
+      projectMetadata,
+      scope === ProjectRenovateScope.Unlimited ? 'project-only' : 'both'
+    ),
     force,
     failInstructions: 'Skip this check with --force',
     onFail() {
@@ -556,21 +566,17 @@ ${SHORT_TAB} - Enable rebase merging for pull requests
 ${SHORT_TAB} - Disable branch deletion on successful pull request merge
 ${SHORT_TAB} - Enable suggesting forced-synchronization of pull request branches
 ${SHORT_TAB} - Enable forking
-${SHORT_TAB} - Set topics to package.json::keywords
+${SHORT_TAB} - Set topics to lowercased package.json::keywords
 - Set the repository to "starred" by the current user
 - Set the repository to "watched" (via "all activity") by the current user
 - Create/enable the "standard-protect" and "canary-protect" rulesets
-${SHORT_TAB} - "standard-protect" restricts deletions of, requires signed commits for, and blocks force pushes to the repository's main branch and any maintenance branches; "canary-protect" restricts deletions of and requires signed commits for the repository's canary branch(es), but does NOT block force pushes to these branches
+${SHORT_TAB} - If the rulesets already exist and --force was given, they're deleted, recreated, then enabled
+${SHORT_TAB} - If the rulesets already exist and --force wasn't given, they're enabled
 ${SHORT_TAB} - A warning is issued if any other ruleset is encountered
 ${SHORT_TAB} - A warning is issued if a legacy "classic branch protection" setting is encountered
-${SHORT_TAB} - When these rulesets already exist and this command is called without --force, the rulesets will be enabled; when called with --force, the rulesets will be deleted, recreated, and then enabled
 - Upsert the repository's GitHub Actions "environment secrets"
 ${SHORT_TAB} - If this command is called with --force, all existing secrets will deleted before the upsert
-${SHORT_TAB} - Secrets will be pulled from the first of the following files to exist:
-${SHORT_TAB}${SHORT_TAB} - Package .env file:
-${SHORT_TAB}${SHORT_TAB} - Package .env.default file:
-${SHORT_TAB}${SHORT_TAB} - Project .env file:
-${SHORT_TAB}${SHORT_TAB} - Project .env.default file:
+${SHORT_TAB} - Secrets will be sourced from the package and project .env files
 
 Due to the current limitations of GitHub's REST API, the following renovations are not able to be automated and should be configured manually:
 
