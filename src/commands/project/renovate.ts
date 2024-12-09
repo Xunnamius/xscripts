@@ -1,4 +1,5 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
+import libsodium from 'libsodium-wrappers';
 import getInObject from 'lodash.get';
 
 import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
@@ -27,7 +28,8 @@ import {
   SHORT_TAB,
   SINGLE_SPACE,
   type ExtendedDebugger,
-  type ExtendedLogger
+  type ExtendedLogger,
+  type UnextendableInternalLogger
 } from 'multiverse+rejoinder';
 
 import { version as packageVersion } from 'rootverse:package.json';
@@ -51,7 +53,7 @@ import {
 } from 'universe:util.ts';
 
 import type { RestEndpointMethodTypes } from '@octokit/rest' with { 'resolution-mode': 'import' };
-import type { CamelCasedProperties, KeysOfUnion } from 'type-fest';
+import type { CamelCasedProperties, KeysOfUnion, Merge } from 'type-fest';
 
 import type {
   AsStrictExecutionContext,
@@ -60,6 +62,14 @@ import type {
   BfeCheckFunction,
   BfeStrictArguments
 } from 'multiverse+bfe';
+
+type NewRuleset = Merge<
+  RestEndpointMethodTypes['repos']['createRepoRuleset']['parameters'],
+  { owner?: undefined; repo?: undefined }
+>;
+
+type ExistingRuleset =
+  RestEndpointMethodTypes['repos']['getRepoRuleset']['response']['data'];
 
 /**
  * The number of minutes the "pause ruleset" renovation will "pause" for
@@ -84,6 +94,54 @@ const assetsWithAliasDefinitions = [
 
 const defaultDescriptionEmoji = '⚡';
 const homepagePrefix = 'https://npm.im/';
+
+const standardProtectRuleset: NewRuleset = {
+  name: 'standard-protect',
+  target: 'branch',
+  enforcement: 'active',
+  conditions: {
+    ref_name: {
+      // * https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository#using-fnmatch-syntax
+      include: [
+        // ? Protect the default branch
+        '~DEFAULT_BRANCH',
+        // ? Protect any maintenance branches
+        'refs/heads/**.x'
+      ],
+      // ! The types are lying; this is required!
+      exclude: []
+    }
+  },
+  rules: [
+    { type: 'deletion' },
+    { type: 'non_fast_forward' },
+    { type: 'required_signatures' }
+  ],
+  bypass_actors: []
+};
+
+const canaryProtectRuleset: NewRuleset = {
+  name: 'canary-protect',
+  target: 'branch',
+  enforcement: 'active',
+  conditions: {
+    ref_name: {
+      // * https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository#using-fnmatch-syntax
+      include: [
+        // ? Protect the canary branch
+        'refs/heads/canary'
+      ],
+      // ! The types are lying; this is required!
+      exclude: []
+    }
+  },
+  rules: [
+    { type: 'deletion' },
+    { type: 'non_fast_forward' },
+    { type: 'required_signatures' }
+  ],
+  bypass_actors: []
+};
 
 /**
  * @see {@link ProjectRenovateScope}
@@ -225,9 +283,11 @@ If this command is invoked in a repository with an unclean working directory, it
 
 When renovating a Markdown file using an asset template that is divided into replacer regions via the magic comments "<!-- xscripts-renovate-region-start -->", "<!-- xscripts-renovate-region-end -->", and potentially "<!-- xscripts-renovate-region-definitions -->"; and if the existing renovation target has corresponding replacer regions defined; this command will perform so-called "regional replacements," where only the content within the renovation regions (i.e. between the "start" and "end" comments) will be modified. Regional replacements can be used to allow ultimate flexibility and customization of Markdown assets while still maintaining a consistent look and feel across xscripts-powered projects. This benefit is most evident in each package's ${markdownReadmePackageBase} file, and each project's ${markdownArchitectureProjectBase} file, among others.
 
-When attempting to renovate a Markdown file without replacer regions when its corresponding asset template does have replacer regions, the entire file will be overwritten like normal.`),
+When attempting to renovate a Markdown file without replacer regions when its corresponding asset template does have replacer regions, the entire file will be overwritten like normal.
+
+Currently, this command only functions with origin repositories hosted on GitHub.`),
     handler: withGlobalHandler(async function (argv) {
-      const { $0: scriptFullName, scope, parallel, force } = argv;
+      const { $0: scriptFullName, scope, parallel, force, runToCompletion } = argv;
 
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
@@ -244,6 +304,8 @@ When attempting to renovate a Markdown file without replacer regions when its co
         `Renovating ${scope === ProjectRenovateScope.ThisPackage ? projectMetadata.cwdPackage.json.name : 'the entire project'}...`
       );
 
+      genericLogger.newline([LogTag.IF_NOT_HUSHED]);
+
       debug('argv: %O', argv);
 
       const { isDirty } = await determineRepoWorkingTreeDirty();
@@ -253,7 +315,6 @@ When attempting to renovate a Markdown file without replacer regions when its co
         ErrorMessage.ActionAttemptedWithADirtyRepo('renovation')
       );
 
-      genericLogger.newline([LogTag.IF_NOT_HUSHED]);
       debug('processing tasks');
 
       // TODO: generalize this task algo along with what's in renovate and init
@@ -282,8 +343,8 @@ When attempting to renovate a Markdown file without replacer regions when its co
               const dbg = debug.extend(taskName);
               const taskLogger = genericLogger.extend(taskName);
 
-              dbg('preparing to run task %O: %O', taskName, task);
-              taskLogger([LogTag.IF_NOT_HUSHED], `${emoji}${actionDescription}`);
+              dbg('preparing to run task %O', taskName);
+              taskLogger([LogTag.IF_NOT_HUSHED], `${emoji} ${actionDescription}`);
 
               dbg('entering runner function');
 
@@ -305,22 +366,58 @@ When attempting to renovate a Markdown file without replacer regions when its co
           parallel ? 'concurrently' : 'serially'
         );
 
-        if (parallel) {
-          const results = await Promise.allSettled(taskPromiseFunctions.map((p) => p()));
+        debug('waiting for renovation tasks to finish running...');
 
-          for (const result of results) {
-            if (result.status === 'fulfilled') {
-              debug('a task runner promise has been fulfilled');
-            } else {
+        if (parallel) {
+          const promises = taskPromiseFunctions.map((p) => p());
+
+          if (runToCompletion) {
+            debug.message(
+              'renovation tasks will run to completion even if an error occurs'
+            );
+
+            const results = await Promise.allSettled(promises);
+
+            for (const result of results) {
+              if (result.status === 'fulfilled') {
+                debug("a renovation task runner's promise has fulfilled");
+              } else {
+                throw new CliError(ErrorMessage.RenovationRunnerExecutionFailed(), {
+                  cause: result.reason
+                });
+              }
+            }
+          } else {
+            try {
+              await Promise.all(promises);
+            } catch (error) {
               throw new CliError(ErrorMessage.RenovationRunnerExecutionFailed(), {
-                cause: result.reason
+                cause: error
               });
             }
           }
         } else {
+          let firstError = undefined as unknown;
+
           for (const taskPromiseFunction of taskPromiseFunctions) {
-            // eslint-disable-next-line no-await-in-loop
-            await taskPromiseFunction();
+            try {
+              // eslint-disable-next-line no-await-in-loop
+              await taskPromiseFunction();
+            } catch (error) {
+              if (runToCompletion) {
+                firstError ||= error;
+              } else {
+                throw new CliError(ErrorMessage.RenovationRunnerExecutionFailed(), {
+                  cause: error
+                });
+              }
+            }
+          }
+
+          if (firstError) {
+            throw new CliError(ErrorMessage.RenovationRunnerExecutionFailed(), {
+              cause: firstError
+            });
           }
         }
       } finally {
@@ -504,6 +601,18 @@ function checkRuntimeIsReadyForNpm(argv: RenovationTaskArgv, log: ExtendedLogger
   });
 }
 
+let allowOctokitOutput = true;
+
+function wrapLogger(
+  logger: ExtendedDebugger | ExtendedLogger | UnextendableInternalLogger
+) {
+  return function (...args: Parameters<typeof logger>) {
+    if (allowOctokitOutput) {
+      logger.apply(undefined, args);
+    }
+  };
+}
+
 async function makeOctokit({
   debug,
   log
@@ -512,20 +621,41 @@ async function makeOctokit({
   log: ExtendedLogger;
 }) {
   const { Octokit } = await import('@octokit/rest');
+  const { retry } = await import('@octokit/plugin-retry');
+  const { throttling } = await import('@octokit/plugin-throttling');
+
+  Octokit.plugin(retry, throttling);
 
   return new Octokit({
     userAgent: `Xunnamius/xscripts@${packageVersion}`,
     auth: process.env.GITHUB_TOKEN,
     log: {
       debug,
-      info: log,
-      warn: log.warn,
-      error: log.error
+      info: wrapLogger(log),
+      warn: wrapLogger(log.message),
+      error: wrapLogger(log.warn)
+    },
+    throttle: {
+      onRateLimit: (retryAfter, options, _octokit, retryCount) => {
+        debug.warn(
+          `Transient rate limit detected for request ${options.method} ${options.url}`
+        );
+
+        if (retryCount < 3) {
+          log.message(`Retrying after ${retryAfter} seconds...`);
+          return true;
+        }
+      },
+      onSecondaryRateLimit: (_retryAfter, options) => {
+        debug.error(
+          `Fatal rate limit detected for request ${options.method} ${options.url}`
+        );
+      }
     }
   });
 }
 
-const githubUrlRegExp = /github.com\/([^/]+)\/([^/]+)(?:\.git)?/;
+const githubUrlRegExp = /github.com\/([^/]+)\/([^/]+?)(?:\.git)?$/;
 
 function parsePackageJsonRepositoryIntoOwnerAndRepo({ repository, name }: XPackageJson) {
   if (repository) {
@@ -550,10 +680,10 @@ export const renovationTasks = {
     taskAliases: [],
     actionDescription: 'Reconfiguring origin repository settings',
     shortHelpDescription: '(Re-)configure the origin GitHub repository settings',
-    longHelpDescription: `This renovation will apply a standard configuration preset to the remote origin repository. Specifically, this renovation will:
+    longHelpDescription: `This renovation will apply a standard configuration preset to the origin repository. Specifically, this renovation will:
 
 - Update the repository's metadata
-${SHORT_TAB} - Set description to package.json::description
+${SHORT_TAB} - Set description to package.json::description only if not already set
 ${SHORT_TAB}${SHORT_TAB} - With default emoji prefix: ${defaultDescriptionEmoji}
 ${SHORT_TAB} - Set homepage to "${homepagePrefix}" + packageName
 ${SHORT_TAB} - Enable ambient repository-wide secret scanning
@@ -573,10 +703,11 @@ ${SHORT_TAB} - Set topics to lowercased package.json::keywords
 ${SHORT_TAB} - If the rulesets already exist and --force was given, they're deleted, recreated, then enabled
 ${SHORT_TAB} - If the rulesets already exist and --force wasn't given, they're enabled
 ${SHORT_TAB} - A warning is issued if any other ruleset is encountered
-${SHORT_TAB} - A warning is issued if a legacy "classic branch protection" setting is encountered
+${SHORT_TAB} - A warning is issued if a legacy "classic branch protection" setting is encountered for well-known branches
 - Upsert the repository's GitHub Actions "environment secrets"
 ${SHORT_TAB} - If this command is called with --force, all existing secrets will deleted before the upsert
 ${SHORT_TAB} - Secrets will be sourced from the package and project .env files
+${SHORT_TAB}${SHORT_TAB} - Empty/unset variables in .env files will be ignored
 
 Due to the current limitations of GitHub's REST API, the following renovations are not able to be automated and should be configured manually:
 
@@ -588,7 +719,7 @@ Due to the current limitations of GitHub's REST API, the following renovations a
 - Enable "dependency graph"
 - Enable "dependabot" (i.e. "dependabot alerts" and "dependabot security updates")
 
-By default, this command will preserve the remote repository's pre-existing configuration. Run this command with --force to overwrite any pre-existing configuration.`,
+By default, this command will preserve the origin repository's pre-existing configuration. Run this command with --force to overwrite any pre-existing configuration EXCEPT the origin repository's description, which can never be overwritten by this renovation.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {},
@@ -605,13 +736,15 @@ By default, this command will preserve the remote repository's pre-existing conf
       hardAssert(projectMetadata, ErrorMessage.GuruMeditation());
 
       const {
-        cwdPackage: { json }
+        cwdPackage: { json },
+        subRootPackages
       } = projectMetadata;
 
       const {
         description = '(package.json::description is missing)',
         keywords = [],
-        name: packageName
+        name: packageName,
+        homepage
       } = json;
 
       const github = await makeOctokit({ debug, log });
@@ -625,12 +758,18 @@ By default, this command will preserve the remote repository's pre-existing conf
         ...ownerAndRepo
       };
 
-      if (force || !incomingRepoData.description) {
+      if (!incomingRepoData.description) {
         outgoingRepoData.description = `${defaultDescriptionEmoji} ${description}`;
       }
 
-      if (force || !incomingRepoData.homepage) {
-        outgoingRepoData.homepage = `npm.im/${packageName}`;
+      if (!incomingRepoData.homepage) {
+        if (subRootPackages) {
+          if (homepage) {
+            outgoingRepoData.homepage = `${homepage}/tree/main/packages`;
+          }
+        } else {
+          outgoingRepoData.homepage = `https://npm.im/${packageName}`;
+        }
       }
 
       if (force || !incomingRepoData.security_and_analysis?.secret_scanning?.status) {
@@ -651,20 +790,22 @@ By default, this command will preserve the remote repository's pre-existing conf
       }
 
       if (force) {
-        incomingRepoData.has_issues = true;
-        incomingRepoData.has_projects = true;
-        incomingRepoData.allow_squash_merge = true;
-        incomingRepoData.allow_merge_commit = false;
-        incomingRepoData.allow_rebase_merge = true;
-        incomingRepoData.allow_auto_merge = true;
-        incomingRepoData.delete_branch_on_merge = false;
-        incomingRepoData.allow_update_branch = true;
-        incomingRepoData.allow_forking = true;
+        outgoingRepoData.has_issues = true;
+        outgoingRepoData.has_projects = true;
+        outgoingRepoData.allow_squash_merge = true;
+        outgoingRepoData.allow_merge_commit = false;
+        outgoingRepoData.allow_rebase_merge = true;
+        outgoingRepoData.allow_auto_merge = true;
+        outgoingRepoData.delete_branch_on_merge = false;
+        outgoingRepoData.allow_update_branch = true;
+        outgoingRepoData.allow_forking = true;
       }
 
       const subtaskPromiseFunctions: (() => Promise<void>)[] = [
         async function () {
-          if (Object.keys(outgoingRepoData).length) {
+          debug('outgoingRepoData: %O', outgoingRepoData);
+
+          if (Object.keys(outgoingRepoData).length > 2) {
             await github.repos.update({
               ...outgoingRepoData
             });
@@ -691,10 +832,12 @@ By default, this command will preserve the remote repository's pre-existing conf
           logMetadataReplacement('allow_forking', 'hardcoded value');
         },
         async function () {
+          const updatedValues = keywords.map((word) => word.toLocaleLowerCase());
           const shouldReplace =
             !!keywords.length && (force || !incomingRepoData.topics?.length);
 
-          const updatedValues = keywords.map((word) => word.toLocaleLowerCase());
+          debug('updatedValues: %O', updatedValues);
+          debug('shouldReplace: %O', shouldReplace);
 
           if (shouldReplace) {
             await github.repos.replaceAllTopics({
@@ -703,25 +846,240 @@ By default, this command will preserve the remote repository's pre-existing conf
             });
           }
 
-          logReplacement(
-            shouldReplace,
-            'topics',
-            'package.json::keywords',
-            JSON.stringify(incomingRepoData.topics),
-            JSON.stringify(updatedValues)
+          logReplacement({
+            wasReplaced: shouldReplace,
+            replacedDescription: 'Replaced topics with package.json::keywords',
+            skippedDescription: 'replacing topics',
+            previousValue: JSON.stringify(incomingRepoData.topics),
+            updatedValue: JSON.stringify(updatedValues)
+          });
+        },
+        async function () {
+          await github.activity.starRepoForAuthenticatedUser({ ...ownerAndRepo });
+
+          logReplacement({
+            replacedDescription:
+              'This repository was starred by the authenticated user 🌟'
+          });
+        },
+        async function () {
+          await github.activity.setRepoSubscription({
+            ...ownerAndRepo,
+            subscribed: true
+          });
+
+          logReplacement({
+            replacedDescription:
+              "Updated authenticated user's subscriptions: all repository activity is now watched 👀"
+          });
+        },
+        async function () {
+          const [
+            currentRulesets,
+            masterProtectionRules,
+            mainProtectionRules,
+            canaryProtectionRules
+          ] = await Promise.all([
+            github.paginate(github.repos.getRepoRulesets, {
+              ...ownerAndRepo
+            }),
+            github.repos
+              .getBranchProtection({
+                ...ownerAndRepo,
+                branch: 'master'
+              })
+              .catch(rethrowErrorIfNotStatus404),
+            github.repos
+              .getBranchProtection({
+                ...ownerAndRepo,
+                branch: 'main'
+              })
+              .catch(rethrowErrorIfNotStatus404),
+            github.repos
+              .getBranchProtection({
+                ...ownerAndRepo,
+                branch: 'canary'
+              })
+              .catch(rethrowErrorIfNotStatus404)
+          ]);
+
+          debug('currentRulesets: %O', currentRulesets);
+          debug('masterProtectionRules: %O', masterProtectionRules);
+          debug('mainProtectionRules: %O', mainProtectionRules);
+          debug('canaryProtectionRules: %O', canaryProtectionRules);
+
+          let existingStandardRuleset = undefined as ExistingRuleset | undefined;
+          let existingCanaryRuleset = undefined as ExistingRuleset | undefined;
+
+          for (const ruleset of currentRulesets) {
+            if (ruleset.name === standardProtectRuleset.name) {
+              existingStandardRuleset = ruleset;
+            } else if (ruleset.name === canaryProtectRuleset.name) {
+              existingCanaryRuleset = ruleset;
+            } else {
+              log.warn(
+                [LogTag.IF_NOT_QUIETED],
+                ErrorMessage.RenovationRepositoryExtraneousRuleset(ruleset.name)
+              );
+            }
+          }
+
+          debug('existingStandardRuleset: %O', existingStandardRuleset);
+          debug('existingCanaryRuleset: %O', existingCanaryRuleset);
+
+          if (masterProtectionRules) {
+            log.warn(ErrorMessage.RenovationEncounteredObsoleteProtectionRules('master'));
+          }
+
+          if (mainProtectionRules) {
+            log.warn(ErrorMessage.RenovationEncounteredObsoleteProtectionRules('main'));
+          }
+
+          if (canaryProtectionRules) {
+            log.warn(ErrorMessage.RenovationEncounteredObsoleteProtectionRules('canary'));
+          }
+
+          await Promise.all([
+            createOrUpdateRuleset(existingStandardRuleset, standardProtectRuleset),
+            createOrUpdateRuleset(existingCanaryRuleset, canaryProtectRuleset)
+          ]);
+
+          logReplacement({
+            replacedDescription: 'Configured branch protection rulesets',
+            previousValue: `${
+              existingStandardRuleset ? existingStandardRuleset.enforcement : 'missing'
+            } standard-protect, ${
+              existingCanaryRuleset ? existingCanaryRuleset.enforcement : 'missing'
+            } canary-protect`,
+            updatedValue: 'active standard-protect, active canary-protect'
+          });
+        },
+        async function () {
+          const [
+            {
+              data: { secrets: existingSecrets }
+            },
+            {
+              data: { key_id: publicKeyId, key: publicKeyBase64 }
+            }
+          ] = await Promise.all([
+            github.actions.listRepoSecrets({ ...ownerAndRepo }),
+            github.actions.getRepoPublicKey({ ...ownerAndRepo })
+          ]);
+
+          debug('existingSecrets: %O', existingSecrets);
+          debug('publicKeyId: %O', publicKeyId);
+          debug('publicKeyBase64: %O', publicKeyBase64);
+
+          if (force) {
+            await Promise.all(
+              existingSecrets.map(({ name: secret_name }) =>
+                github.actions.deleteRepoSecret({ ...ownerAndRepo, secret_name })
+              )
+            );
+
+            log.message(
+              '--force was detected!\nall origin repository actions secrets have been permanently deleted'
+            );
+          }
+
+          debug('waiting for libsodium to get ready');
+
+          // ? Wait for libsodium to be ready (probably gathering random)
+          await libsodium.ready;
+
+          debug.message('libsodium is ready!');
+
+          const publicKeyUint8Array = libsodium.from_base64(
+            publicKeyBase64,
+            libsodium.base64_variants.ORIGINAL
           );
+
+          const updatedSecrets: Merge<
+            RestEndpointMethodTypes['actions']['createOrUpdateRepoSecret']['parameters'],
+            { owner?: undefined; repo?: undefined; key_id?: undefined }
+          >[] = Object.entries(
+            loadDotEnv({
+              dotEnvFilePaths: getRelevantDotEnvFilePaths(
+                projectMetadata,
+                'project-only'
+              ),
+              updateProcessEnv: false
+            })
+          )
+            .filter(
+              ([variable, value]) =>
+                value && !['GITHUB_TOKEN', 'GH_TOKEN'].includes(variable)
+            )
+            .map(([variable, value]) => ({
+              secret_name: variable,
+              encrypted_value: libsodium.to_base64(
+                libsodium.crypto_box_seal(
+                  libsodium.from_string(value),
+                  publicKeyUint8Array
+                ),
+                libsodium.base64_variants.ORIGINAL
+              )
+            }));
+
+          debug('updatedSecrets: %O', updatedSecrets);
+
+          await Promise.all(
+            updatedSecrets.map((secret) =>
+              github.actions.createOrUpdateRepoSecret({
+                ...ownerAndRepo,
+                ...secret,
+                key_id: publicKeyId
+              })
+            )
+          );
+
+          logReplacement({
+            replacedDescription: `${force ? 'Deleted existing repository secrets and inserted new' : 'Upserted repository'} secrets sourced from .env files`,
+            previousValue: `${existingSecrets.length} secrets ${
+              force ? '(all were deleted)' : '(none were deleted)'
+            }`,
+            updatedValue: `${updatedSecrets.length} secrets ${
+              force ? 'inserted' : 'upserted'
+            }`
+          });
         }
       ];
 
       // TODO: include this algo/case in the eventual task runner implementation
 
-      if (parallel) {
-        await Promise.all(subtaskPromiseFunctions.map((fn) => fn()));
-      } else {
-        for (const subtaskPromiseFunction of subtaskPromiseFunctions) {
-          // eslint-disable-next-line no-await-in-loop
-          await subtaskPromiseFunction();
+      try {
+        if (parallel) {
+          const results = await Promise.allSettled(
+            subtaskPromiseFunctions.map((fn) => fn())
+          );
+
+          const { reason: firstError } =
+            results.find((result) => result.status !== 'fulfilled') || {};
+
+          if (firstError) {
+            throw firstError;
+          }
+        } else {
+          let firstError = undefined;
+
+          for (const subtaskPromiseFunction of subtaskPromiseFunctions) {
+            try {
+              // eslint-disable-next-line no-await-in-loop
+              await subtaskPromiseFunction();
+            } catch (error) {
+              firstError ||= error;
+            }
+          }
+
+          if (firstError) {
+            throw firstError as Error;
+          }
         }
+      } catch (error) {
+        // ? Disable further output from Octokit
+        allowOctokitOutput = false;
+        throw error;
       }
 
       // ? Typescript wants this here because of our "as const" for some reason
@@ -736,28 +1094,100 @@ By default, this command will preserve the remote repository's pre-existing conf
         const previousValue = getInObject(incomingRepoData, propertyPath);
         const updatedValue = getInObject(outgoingRepoData, propertyPath);
 
-        logReplacement(
-          updatedValue !== undefined,
-          propertyPath,
-          description,
-          String(previousValue),
-          String(updatedValue)
-        );
+        logReplacement({
+          wasReplaced: updatedValue !== undefined,
+          replacedDescription: `Replaced ${propertyPath} with ${description}`,
+          skippedDescription: `replacing ${propertyPath}`,
+          previousValue: previousValue,
+          updatedValue: updatedValue
+        });
       }
 
       function logReplacement(
-        wasReplaced: boolean,
-        subject: string,
-        description: string,
-        previousValue: string | undefined,
-        updatedValue: string | undefined
+        input:
+          | {
+              wasReplaced?: undefined;
+              replacedDescription: string;
+              skippedDescription?: undefined;
+              previousValue?: unknown;
+              updatedValue?: unknown;
+            }
+          | {
+              wasReplaced: boolean;
+              replacedDescription: string;
+              skippedDescription: string;
+              previousValue?: unknown;
+              updatedValue?: unknown;
+            }
       ) {
+        const {
+          wasReplaced = true,
+          replacedDescription,
+          skippedDescription = ''
+        } = input;
+
         if (wasReplaced) {
-          log([LogTag.IF_NOT_QUIETED], `✅ Replaced ${subject} with ${description}`);
-          log([LogTag.IF_NOT_HUSHED], `Previous value: ${String(previousValue)}`);
-          log([LogTag.IF_NOT_HUSHED], `New value: ${String(updatedValue)}`);
+          log([LogTag.IF_NOT_QUIETED], `✅ ${replacedDescription}`);
+
+          if ('previousValue' in input) {
+            log(
+              [LogTag.IF_NOT_HUSHED],
+              `Original value:  ${String(input.previousValue)}`
+            );
+          }
+
+          if ('updatedValue' in input) {
+            log([LogTag.IF_NOT_HUSHED], `Committed value: ${String(input.updatedValue)}`);
+          }
         } else {
-          log([LogTag.IF_NOT_QUIETED], `✖️ Skipped replacing ${subject}`);
+          log([LogTag.IF_NOT_QUIETED], `✖️ Skipped ${skippedDescription}`);
+        }
+      }
+
+      async function createOrUpdateRuleset(
+        targetRuleset: ExistingRuleset | undefined,
+        replacementRuleset: NewRuleset
+      ) {
+        const rulesetName = replacementRuleset.name;
+
+        if (targetRuleset && !force) {
+          if (targetRuleset.enforcement !== 'active') {
+            await github.repos.updateRepoRuleset({
+              ...ownerAndRepo,
+              ruleset_id: targetRuleset.id,
+              enforcement: 'active'
+            });
+
+            log([LogTag.IF_NOT_HUSHED], `Existing ${rulesetName} ruleset was activated`);
+          } else {
+            log(
+              [LogTag.IF_NOT_HUSHED],
+              `Existing ${rulesetName} ruleset already activated`
+            );
+          }
+        } else {
+          const shouldOverwrite = targetRuleset && force;
+
+          if (shouldOverwrite) {
+            await github.repos.deleteRepoRuleset({
+              ...ownerAndRepo,
+              ruleset_id: targetRuleset.id
+            });
+          }
+
+          await github.repos.createRepoRuleset({
+            ...ownerAndRepo,
+            ...replacementRuleset
+          });
+
+          if (shouldOverwrite) {
+            log.message(
+              [LogTag.IF_NOT_HUSHED],
+              `Existing ${rulesetName} ruleset was overwritten!`
+            );
+          } else {
+            log([LogTag.IF_NOT_HUSHED], `new ${rulesetName} ruleset created`);
+          }
         }
       }
     }
@@ -769,7 +1199,7 @@ By default, this command will preserve the remote repository's pre-existing conf
       'Updating origin repository name and synchronizing local configuration',
     shortHelpDescription:
       'Rename the origin repository and update git remotes accordingly',
-    longHelpDescription: `This renovation will rename the remote origin repository, rename (move) the repository directory on the local filesystem, and update the remotes in .git/config accordingly.\n\nIf the origin repository cannot be renamed, the rename attempt will be aborted and no local changes will occur.`,
+    longHelpDescription: `This renovation will rename the origin repository, rename (move) the repository directory on the local filesystem, and update the remotes in .git/config accordingly.\n\nIf the origin repository cannot be renamed, the rename attempt will be aborted and no local changes will occur.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {
@@ -802,8 +1232,8 @@ By default, this command will preserve the remote repository's pre-existing conf
     emoji: '🛸',
     taskAliases: [],
     actionDescription: `Pausing ruleset protections for ${RULESET_PROTECTION_PAUSE_MINUTES} minutes`,
-    shortHelpDescription: `Temporarily pause origin repository ruleset protections`,
-    longHelpDescription: `This renovation will temporarily disable all rulesets in the repository for ${RULESET_PROTECTION_PAUSE_MINUTES} minutes, after which this command will re-enable them.\n\nUpon executing this renovation, you will be presented with a countdown until protections will be re-enabled. You may press any key to immediately re-enable protections and exit the program.\n\nIf this renovation does not exit cleanly, re-running it (or --github-reconfigure-repo) will restore and re-enable any disabled rulesets.`,
+    shortHelpDescription: `Temporarily deactivate origin repository ruleset protections`,
+    longHelpDescription: `This renovation will temporarily deactivate all rulesets in the repository for ${RULESET_PROTECTION_PAUSE_MINUTES} minutes, after which this command will reactivate them.\n\nUpon executing this renovation, you will be presented with a countdown until protections will be reactivated. You may press any key to immediately reactivate protections and exit the program.\n\nIf this renovation does not exit cleanly, re-running it (or --github-reconfigure-repo) will reactivate any erroneously disabled rulesets.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {},
@@ -842,7 +1272,7 @@ By default, this command will preserve the remote repository's pre-existing conf
     actionDescription: 'Cloning origin repository wiki into project root',
     shortHelpDescription:
       "Clone the origin repository's wiki into a (gitignored) directory",
-    longHelpDescription: `This renovation will enable the wiki for the remote repository (if it is not enabled already) and then clone that wiki into the (gitignored) .wiki/ directory at the project root.`,
+    longHelpDescription: `This renovation will enable the wiki for the origin repository (if it is not enabled already) and then clone that wiki into the (gitignored) .wiki/ directory at the project root.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {},
@@ -863,7 +1293,7 @@ By default, this command will preserve the remote repository's pre-existing conf
     actionDescription: 'Renaming default branch to "main" and finishing off "master"',
     shortHelpDescription:
       'Rename and remove all references to any legacy "master" branch(es)',
-    longHelpDescription: `This renovation will kill any and all references to any "master" ref throughout the repository. This includes renaming the "master" branch to "main," deleting the "master" branch on the remote origin repository, and setting the default branch to "main" both locally and remotely if it is not the case already.`,
+    longHelpDescription: `This renovation will kill any and all references to any "master" ref throughout the repository. This includes renaming the "master" branch to "main," deleting the "master" branch on the origin repository, and setting the default branch to "main" both locally and remotely if it is not the case already.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {},
@@ -1057,3 +1487,11 @@ This renovation is equivalent to calling \`xscripts project renovate --regenerat
     }
   }
 } as const satisfies Record<string, Omit<RenovationTask, 'taskName'>>;
+
+function rethrowErrorIfNotStatus404(errorResponse: unknown) {
+  if ((errorResponse as undefined | (Error & { status: number }))?.status !== 404) {
+    throw errorResponse;
+  }
+
+  return undefined;
+}

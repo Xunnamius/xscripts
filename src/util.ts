@@ -13,7 +13,7 @@ import {
 
 import { type Merge } from 'type-fest';
 
-import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
+import { softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   withStandardBuilder,
@@ -31,8 +31,7 @@ import {
   isAccessible,
   toAbsolutePath,
   toPath,
-  type AbsolutePath,
-  type RelativePath
+  type AbsolutePath
 } from 'multiverse+project-utils:fs.ts';
 
 import { createDebugLogger, type ExtendedLogger } from 'multiverse+rejoinder';
@@ -48,7 +47,7 @@ import { ErrorMessage } from 'universe:error.ts';
 
 import type { GenericProjectMetadata } from 'multiverse+project-utils:analyze/common.ts';
 
-let cachedEnvironmentContainer = undefined as Partial<DotenvPopulateInput> | undefined;
+const cachedDotEnvResults = new Map<string, Partial<DotenvPopulateInput> | undefined>();
 
 /**
  * A version of {@link withStandardBuilder} that expects `CustomCliArguments` to
@@ -177,7 +176,7 @@ export async function determineRepoWorkingTreeDirty() {
     );
   }
 
-  debug.message('%O', gitStatusOutput);
+  debug.message('gitStatusOutput (empty is good): %O', gitStatusOutput);
 
   return {
     gitStatusOutput,
@@ -223,7 +222,11 @@ export function getRelevantDotEnvFilePaths(
     scope !== 'project-only' ? cwdPackageEnvDefaultFile : undefined,
     scope !== 'package-only' ? rootPackageEnvFile : undefined,
     scope !== 'project-only' ? cwdPackageEnvFile : undefined
-  ].filter((p): p is string => !!p) as RelativePath[];
+  ].filter((p): p is string => !!p) as AbsolutePath[];
+
+  createDebugLogger({
+    namespace: `${globalDebuggerNamespace}:discover-env`
+  })('dotenv paths (in ascending order of precedence): %O', paths);
 
   return paths;
 }
@@ -236,7 +239,7 @@ export type LoadDotEnvSettings = {
    * Variables from files earlier in this list will be overwritten by
    * variables from files later in the list.
    */
-  dotEnvFilePaths: string[];
+  dotEnvFilePaths: AbsolutePath[];
   /**
    * If `true`, do not throw on errors.
    */
@@ -265,7 +268,7 @@ export type LoadDotEnvSettings = {
  */
 export type LoadDotEnvSimplifiedSettings = Merge<
   LoadDotEnvSettings,
-  { onFail?: undefined; failInstructions?: undefined; force?: undefined }
+  { log?: undefined; onFail?: undefined; failInstructions?: undefined; force?: undefined }
 >;
 
 /**
@@ -347,25 +350,33 @@ export function loadDotEnv(
     updateProcessEnv = true
   } = (Array.isArray(args[0]) ? args[1] : args[0])!;
 
-  const failLogger = log.extend('env-valid');
+  const failLogger = log?.extend('env-valid');
   const debug = createDebugLogger({
     namespace: `${globalDebuggerNamespace}:load-env`
   });
 
+  debug('expectedEnvironmentVariables: %O', expectedEnvironmentVariables);
   debug('dotEnvFilePaths: %O', dotEnvFilePaths);
-  hardAssert(Array.isArray(dotEnvFilePaths), ErrorMessage.GuruMeditation());
+  debug('force: %O', force);
+  debug('failInstructions: %O', failInstructions);
+  debug('override: %O', override);
+  debug('updateProcessEnv: %O', updateProcessEnv);
 
   const problems: string[] = [];
+  const environmentContainer: Partial<Record<string, string>> = {};
 
-  if (!cachedEnvironmentContainer) {
-    cachedEnvironmentContainer = {};
+  dotEnvFilePaths.forEach((path) => {
+    const cachedResult = cachedDotEnvResults.get(path);
 
-    dotEnvFilePaths.forEach((path) => {
+    if (cachedResult) {
+      Object.assign(environmentContainer, cachedResult);
+      debug('loaded dotenv file %O successfully (from cache)', path);
+    } else {
       const result = _loadDotEnv({
         debug: !!process.env.DEBUG,
         path,
         override: true,
-        processEnv: cachedEnvironmentContainer as DotenvPopulateInput
+        processEnv: environmentContainer as DotenvPopulateInput
       });
 
       if (result.error) {
@@ -373,19 +384,18 @@ export function loadDotEnv(
       } else {
         debug('loaded dotenv file %O successfully', path);
       }
-    });
 
-    if (
-      cachedEnvironmentContainer.GITHUB_TOKEN &&
-      cachedEnvironmentContainer.GH_TOKEN === undefined
-    ) {
-      cachedEnvironmentContainer.GH_TOKEN = cachedEnvironmentContainer.GITHUB_TOKEN;
+      cachedDotEnvResults.set(path, result.parsed);
     }
+  });
+
+  if (environmentContainer.GITHUB_TOKEN && !('GH_TOKEN' in environmentContainer)) {
+    environmentContainer.GH_TOKEN = environmentContainer.GITHUB_TOKEN;
   }
 
   const transientEnvironmentContainer = Object.assign(
     updateProcessEnv ? process.env : {},
-    cachedEnvironmentContainer,
+    environmentContainer,
     override ? {} : process.env
   );
 
@@ -397,7 +407,7 @@ export function loadDotEnv(
   });
 
   problems.forEach((problem, index) => {
-    failLogger[force ? 'warn' : 'error'](
+    failLogger?.[force ? 'warn' : 'error'](
       [LogTag.IF_NOT_QUIETED],
       'Problem %O: ' + problem,
       index + 1
@@ -405,7 +415,7 @@ export function loadDotEnv(
   });
 
   if (!force && problems.length) {
-    failLogger.message(
+    failLogger?.message(
       [LogTag.IF_NOT_SILENCED],
       `Validation failed: %O problem${problems.length === 1 ? '' : 's'} detected.${failInstructions ? ` ${failInstructions}` : ''}`,
       problems.length
@@ -414,7 +424,7 @@ export function loadDotEnv(
     onFail();
   }
 
-  return cachedEnvironmentContainer;
+  return environmentContainer;
 }
 
 // TODO: probably prudent to make these part of cli-utils

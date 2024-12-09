@@ -223,6 +223,9 @@ export const ErrorMessage = {
   RenovationRunnerExecutionFailed() {
     return 'one or more renovation tasks failed to complete';
   },
+  RenovationSubtaskOperationFailed(index: number) {
+    return `subtask operation ${index + 1} failed`;
+  },
   ReleaseFinishedWithADirtyRepo() {
     return 'the release pipeline has terminated but the repository remains in an unclean state. This can be evidence of an incomplete or broken build process';
   },
@@ -285,7 +288,13 @@ export const ErrorMessage = {
     return `renovation task "${taskName}" is DANGEROUS and therefore must be invoked with --force`;
   },
   ActionAttemptedWithADirtyRepo(actionNoun: string) {
-    return `a ${actionNoun} was attempted but the working tree is in an unclean state; continuing may damage or destroy uncommitted changes`;
+    return `a ${actionNoun} was attempted but the working tree is in an unclean state; please commit or stash before trying again`;
+  },
+  RenovationRepositoryExtraneousRuleset(rulesetName: string) {
+    return `encountered extraneous ruleset while analyzing remote repository: ${rulesetName}`;
+  },
+  RenovationEncounteredObsoleteProtectionRules(branch: string) {
+    return `encountered obsolete legacy branch protection rules for branch: ${branch}`;
   },
   /**
    * These are "error" messages that are not necessarily meant to be the message

@@ -198,6 +198,8 @@ const genericRules = {
   // ? Ever since v4, we will rely on TypeScript to catch these
   'no-undef': 'off',
   'no-unused-vars': 'off',
+  // ? If I'm using apply, it's because I want to
+  'prefer-spread': 'off',
   // ? We need to warn about using bad things that are or may be bad
   'no-restricted-syntax': [
     'warn',
