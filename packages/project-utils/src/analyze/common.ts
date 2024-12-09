@@ -724,26 +724,26 @@ export type XPackageJsonMonorepoPackageRoot = Omit<
 export type GenericPackageJson = PackageJson | XPackageJson;
 
 /**
- * A non-generic version of {@link ProjectMetadata} with
- * {@link GenericPackageJson} as its type parameter.
+ * A version of {@link ProjectMetadata} with {@link GenericPackageJson} as its
+ * type parameter.
  */
 export type GenericProjectMetadata = ProjectMetadata<GenericPackageJson>;
 
 /**
- * A non-generic version of {@link Package} with {@link GenericPackageJson} as
- * its type parameter.
+ * A version of {@link Package} with {@link GenericPackageJson} as its type
+ * parameter.
  */
 export type GenericPackage = Package<GenericPackageJson>;
 
 /**
- * A non-generic version of {@link WorkspacePackage} with
- * {@link GenericPackageJson} as its type parameter.
+ * A version of {@link WorkspacePackage} with {@link GenericPackageJson} as its
+ * type parameter.
  */
 export type GenericWorkspacePackage = WorkspacePackage<GenericPackageJson>;
 
 /**
- * A non-generic version of {@link RootPackage} with {@link GenericPackageJson}
- * as its type parameter.
+ * A version of {@link RootPackage} with {@link GenericPackageJson} as its type
+ * parameter.
  */
 export type GenericRootPackage = RootPackage<GenericPackageJson>;
 
