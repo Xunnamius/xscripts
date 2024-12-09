@@ -695,7 +695,6 @@ ${SHORT_TAB} - Disable normal merging for pull requests
 ${SHORT_TAB} - Enable rebase merging for pull requests
 ${SHORT_TAB} - Disable branch deletion on successful pull request merge
 ${SHORT_TAB} - Enable suggesting forced-synchronization of pull request branches
-${SHORT_TAB} - Enable forking
 ${SHORT_TAB} - Set topics to lowercased package.json::keywords
 - Set the repository to "starred" by the current user
 - Set the repository to "watched" (via "all activity") by the current user
@@ -798,7 +797,6 @@ By default, this command will preserve the origin repository's pre-existing conf
         outgoingRepoData.allow_auto_merge = true;
         outgoingRepoData.delete_branch_on_merge = false;
         outgoingRepoData.allow_update_branch = true;
-        outgoingRepoData.allow_forking = true;
       }
 
       const subtaskPromiseFunctions: (() => Promise<void>)[] = [
