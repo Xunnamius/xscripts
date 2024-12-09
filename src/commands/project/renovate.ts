@@ -827,7 +827,6 @@ By default, this command will preserve the origin repository's pre-existing conf
           logMetadataReplacement('allow_auto_merge', 'hardcoded value');
           logMetadataReplacement('delete_branch_on_merge', 'hardcoded value');
           logMetadataReplacement('allow_update_branch', 'hardcoded value');
-          logMetadataReplacement('allow_forking', 'hardcoded value');
         },
         async function () {
           const updatedValues = keywords.map((word) => word.toLocaleLowerCase());
@@ -977,7 +976,7 @@ By default, this command will preserve the origin repository's pre-existing conf
             );
 
             log.message(
-              '--force was detected!\nall origin repository actions secrets have been permanently deleted'
+              'Because this command was invoked with --force, all origin repository actions secrets were permanently deleted before upsert operation'
             );
           }
 
