@@ -13,8 +13,6 @@ import { type XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 import {
   babelConfigProjectBase,
-  dotEnvConfigPackageBase,
-  dotEnvConfigProjectBase,
   eslintConfigProjectBase,
   jestConfigProjectBase,
   markdownArchitectureProjectBase,
@@ -44,7 +42,8 @@ import { ErrorMessage } from 'universe:error.ts';
 
 import {
   determineRepoWorkingTreeDirty,
-  loadDotEnvAndCheckVariables,
+  getRelevantDotEnvFilePaths,
+  loadDotEnv,
   runGlobalPreChecks,
   withGlobalBuilder,
   withGlobalUsage
@@ -174,16 +173,6 @@ export default function command(
   executionContext: AsStrictExecutionContext<GlobalExecutionContext>
 ) {
   const { log, debug_, state, projectMetadata: projectMetadata_ } = executionContext;
-  const { rootPackage: rootPackage_, cwdPackage: cwdPackage_ } = projectMetadata_ || {};
-
-  const cwdPackageEnvFile =
-    cwdPackage_?.root && rootPackage_?.root !== cwdPackage_.root
-      ? `${cwdPackage_.root}/${dotEnvConfigPackageBase}`
-      : undefined;
-
-  const rootPackageEnvFile = rootPackage_?.root
-    ? `${rootPackage_.root}/${dotEnvConfigProjectBase}`
-    : undefined;
 
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>({
     scope: {
@@ -209,10 +198,6 @@ export default function command(
     ...renovationTasksToBlackFlagOptions(debug_.extend('builder'))
   });
 
-  executionContext.state.dotEnvFilePaths = [rootPackageEnvFile, cwdPackageEnvFile].filter(
-    Boolean
-  );
-
   return {
     builder,
     description: 'Bring a project into compliance with latest best practices',
@@ -223,11 +208,9 @@ ${printRenovationTasks()}
 
 This command must be invoked with at least one task flag. Tasks are run concurrently unless --no-parallel is given, and are all run to completion even if one of the tasks fails unless \`--run-to-completion=false\` is given.
 
-Environment variables are loaded into process.env from the following file(s), if they exist:
+Environment variables are loaded into process.env from the following file(s), if they exist, with the variables in latter files overwriting those in the former:
 
-${SHORT_TAB}- ${(executionContext.state.dotEnvFilePaths as string[]).join(
-        `\n${SHORT_TAB}- `
-      )}
+${SHORT_TAB}- ${getRelevantDotEnvFilePaths(projectMetadata_).join(`\n${SHORT_TAB}- `)}
 
 Renovations are performed on the entire project by default, and typically involve overwriting/deleting obsolete versions of certain configuration files, but several renovation tasks can be limited to the current package via \`--scope=${ProjectRenovateScope.ThisPackage}\`.
 
@@ -475,12 +458,12 @@ ${longHelpDescription.trim()}\n\n=====\n\n`;
 function checkRuntimeIsReadyForGithub(argv: RenovationTaskArgv, log: ExtendedLogger) {
   const {
     force,
-    [$executionContext]: { state }
+    [$executionContext]: { projectMetadata }
   } = argv;
 
-  loadDotEnvAndCheckVariables(['GITHUB_TOKEN'], {
+  loadDotEnv(['GITHUB_TOKEN'], {
     log,
-    state,
+    dotEnvFilePaths: getRelevantDotEnvFilePaths(projectMetadata),
     force,
     failInstructions: 'Skip this check with --force',
     onFail() {
@@ -492,12 +475,12 @@ function checkRuntimeIsReadyForGithub(argv: RenovationTaskArgv, log: ExtendedLog
 function checkRuntimeIsReadyForNpm(argv: RenovationTaskArgv, log: ExtendedLogger) {
   const {
     force,
-    [$executionContext]: { state }
+    [$executionContext]: { projectMetadata }
   } = argv;
 
-  loadDotEnvAndCheckVariables(['NPM_TOKEN'], {
+  loadDotEnv(['NPM_TOKEN'], {
     log,
-    state,
+    dotEnvFilePaths: getRelevantDotEnvFilePaths(projectMetadata),
     force,
     failInstructions: 'Skip this check with --force',
     onFail() {

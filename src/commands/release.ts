@@ -66,7 +66,8 @@ import { attemptToRunCommand } from 'universe:task-runner.ts';
 
 import {
   determineRepoWorkingTreeDirty,
-  loadDotEnvAndCheckVariables,
+  getRelevantDotEnvFilePaths,
+  loadDotEnv,
   runGlobalPreChecks,
   withGlobalBuilder,
   withGlobalUsage
@@ -287,17 +288,6 @@ export default function command(
     ErrorMessage.GuruMeditation()
   );
 
-  const { rootPackage: rootPackage_, cwdPackage: cwdPackage_ } = projectMetadata_ || {};
-
-  const cwdPackageEnvFile =
-    cwdPackage_?.root && rootPackage_?.root !== cwdPackage_.root
-      ? `${cwdPackage_.root}/${dotEnvConfigPackageBase}`
-      : undefined;
-
-  const rootPackageEnvFile = rootPackage_?.root
-    ? `${rootPackage_.root}/${dotEnvConfigProjectBase}`
-    : undefined;
-
   debug_('turbo detected: %O', !!process.env.TURBO_HASH);
 
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
@@ -402,10 +392,6 @@ export default function command(
     }
   );
 
-  executionContext.state.dotEnvFilePaths = [rootPackageEnvFile, cwdPackageEnvFile].filter(
-    Boolean
-  );
-
   return {
     builder,
     description: 'Pack and release existing production-ready distributables',
@@ -417,11 +403,9 @@ ${printTasks(tasksInRunOrder)}
 
 Tasks at the same indentation level will be run concurrently unless --no-parallel is provided, in which case they will be run serially ordered by their unique numeric #ids. Use --no-parallel to prevent race conditions when, for instance, linting a package that imports from its own build output while also rebuilding that same package.
 
-Environment variables are loaded into process.env from the following file(s), if they exist:
+Environment variables are loaded into process.env from the following file(s), if they exist, with the variables in latter files overwriting those in the former:
 
-${SHORT_TAB}- ${(executionContext.state.dotEnvFilePaths as string[]).join(
-        `\n${SHORT_TAB}- `
-      )}
+${SHORT_TAB}- ${getRelevantDotEnvFilePaths(projectMetadata_).join(`\n${SHORT_TAB}- `)}
 
 Provide --ci (--continuous-integration) to enable useful functionality for CI execution environments. Specifically: run npm ci (task #${findTaskByDescription(/npm ci/).id}), run xrelease in CI mode (task #${findTaskByDescription(/@-xun\/release/).id}), and facilitate package provenance if the runtime environment supports it (task #${findTaskByDescription(/@-xun\/release/).id}). If running the release procedure by hand instead of via CI/CD, use --no-ci to disable CI-specific functionality. --no-ci (\`--ci=false\`) is the default when the NODE_ENV environment variable is undefined or "development," otherwise --ci (\`--ci=true\`) is the default.
 
@@ -829,10 +813,10 @@ const protoPrereleaseTasks: ProtoPrereleaseTask[][] = [
       emoji: '🚨',
       actionDescription: 'Validating environment variables',
       helpDescription: 'Validate environment variables',
-      async run({ state }, { force }, { self: { id }, log }) {
-        loadDotEnvAndCheckVariables(expectedEnvVariables, {
+      async run({ projectMetadata }, { force }, { self: { id }, log }) {
+        loadDotEnv(expectedEnvVariables, {
           log,
-          state,
+          dotEnvFilePaths: getRelevantDotEnvFilePaths(projectMetadata),
           force,
           failInstructions: `Skip this check with \`--skip-task ${id}\` or --force`,
           onFail() {

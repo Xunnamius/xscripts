@@ -3,7 +3,15 @@ import fs from 'node:fs/promises';
 
 import { run } from '@-xun/run';
 import { CliError, FrameworkExitCode } from '@black-flag/core';
-import { config as loadDotEnv } from 'dotenv';
+
+import {
+  config as _loadDotEnv,
+  type DotenvConfigOptions,
+  type DotenvParseOutput,
+  type DotenvPopulateInput
+} from 'dotenv';
+
+import { type Merge } from 'type-fest';
 
 import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
 
@@ -15,6 +23,10 @@ import {
 import { LogTag } from 'multiverse+cli-utils:logging.ts';
 
 import {
+  dotEnvConfigPackageBase,
+  dotEnvConfigProjectBase,
+  dotEnvDefaultConfigPackageBase,
+  dotEnvDefaultConfigProjectBase,
   getInitialWorkingDirectory,
   isAccessible,
   toAbsolutePath,
@@ -32,6 +44,10 @@ import {
 
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
+
+import type { GenericProjectMetadata } from 'multiverse+project-utils:analyze/common.ts';
+
+let cachedEnvironmentContainer = undefined as Partial<DotenvPopulateInput> | undefined;
 
 /**
  * A version of {@link withStandardBuilder} that expects `CustomCliArguments` to
@@ -169,49 +185,216 @@ export async function determineRepoWorkingTreeDirty() {
   };
 }
 
-// TODO: after a few more iterations of this and what's in our Next.js projects,
-// TODO: transmute this function into @-xun/env
-
-export function loadDotEnvAndCheckVariables(
-  expectedEnvironmentVariables: string[],
-  {
-    log,
-    state,
-    force,
-    failInstructions,
-    onFail
-  }: {
-    log: ExtendedLogger;
-    state: GlobalExecutionContext['state'];
-    force: boolean;
-    failInstructions: string;
-    onFail: () => void;
-  }
+/**
+ * Returns all dotenv file paths relevant to the current package in reverse
+ * order of precedence; the most important dotenv file will be last in the
+ * returned array.
+ */
+export function getRelevantDotEnvFilePaths(
+  projectMetadata: GenericProjectMetadata | undefined
 ) {
-  const problems: string[] = [];
+  const { cwdPackage, rootPackage } = projectMetadata || {};
+
+  const cwdPackageEnvFile =
+    cwdPackage?.root && rootPackage?.root !== cwdPackage.root
+      ? `${cwdPackage.root}/${dotEnvConfigPackageBase}`
+      : undefined;
+
+  const cwdPackageEnvDefaultFile =
+    cwdPackage?.root && rootPackage?.root !== cwdPackage.root
+      ? `${cwdPackage.root}/${dotEnvDefaultConfigPackageBase}`
+      : undefined;
+
+  const rootPackageEnvFile = rootPackage?.root
+    ? `${rootPackage.root}/${dotEnvConfigProjectBase}`
+    : undefined;
+
+  const rootPackageEnvDefaultFile = rootPackage?.root
+    ? `${rootPackage.root}/${dotEnvDefaultConfigProjectBase}`
+    : undefined;
+
+  // ! Most important env file should be last, least important should be first
+  const paths = [
+    rootPackageEnvDefaultFile,
+    cwdPackageEnvDefaultFile,
+    rootPackageEnvFile,
+    cwdPackageEnvFile
+  ].filter((p): p is string => !!p);
+
+  return paths;
+}
+
+// TODO: transmute this and related functions into @-xun/env
+
+export type LoadDotEnvSettings = {
+  log: ExtendedLogger;
+  /**
+   * Variables from files earlier in this list will be overwritten by
+   * variables from files later in the list.
+   */
+  dotEnvFilePaths: string[];
+  /**
+   * If `true`, do not throw on errors.
+   */
+  force: boolean;
+  /**
+   * Further instructions for the user upon environment validation failure.
+   */
+  failInstructions: string;
+  /**
+   * Action to take upon environment validation failure.
+   */
+  onFail: () => void;
+  /**
+   * If `true`, loaded environment variables will be added to `process.env`
+   * with respect to `override`, and this function will return `void`. If
+   * `false`, the environment variables will be returned instead and
+   * `override` is ignored.
+   *
+   * @default true
+   */
+  updateProcessEnv?: boolean;
+} & Pick<DotenvConfigOptions, 'override'>;
+
+/**
+ * @see {@link loadDotEnv}
+ */
+export type LoadDotEnvSimplifiedSettings = Merge<
+  LoadDotEnvSettings,
+  { onFail?: undefined; failInstructions?: undefined; force?: undefined }
+>;
+
+/**
+ * Loads environment variables from the given `dotEnvFilePaths` files, with
+ * variables from files earlier in the list being overwritten by variables from
+ * files later in the list.
+ *
+ * `process.env` will be updated, and then an object containing only the loaded
+ * environment variables is returned.
+ *
+ * **Note that this function internally caches the result of loading the dotenv
+ * files, meaning they'll only be read once.**
+ */
+export function loadDotEnv(
+  settings: LoadDotEnvSimplifiedSettings & { updateProcessEnv?: true }
+): DotenvParseOutput;
+/**
+ * Loads environment variables from the given `dotEnvFilePaths` files, with
+ * variables from files earlier in the list being overwritten by variables from
+ * files later in the list.
+ *
+ * An object containing only the loaded environment variables is returned.
+ * **`process.env` will NOT be updated!**
+ *
+ * **Note that this function internally caches the result of loading the dotenv
+ * files, meaning they'll only be read once.**
+ */
+export function loadDotEnv(
+  settings: LoadDotEnvSimplifiedSettings & { updateProcessEnv: false }
+): DotenvParseOutput;
+/**
+ * Loads environment variables from the given `dotEnvFilePaths` files, with
+ * variables from files earlier in the list being overwritten by variables from
+ * files later in the list.
+ *
+ * `process.env` will be updated, and the resulting environment object (after
+ * `overrides` and `updateProcessEnv` are considered) will be checked for the
+ * existence of the variables in `expectedEnvironmentVariables`. If the check is
+ * successful, an object containing only the loaded environment variables is
+ * returned. Otherwise, an error is thrown.
+ *
+ * **Note that this function internally caches the result of loading the dotenv
+ * files, meaning they'll only be read once.**
+ */
+export function loadDotEnv(
+  expectedEnvironmentVariables: string[],
+  settings: LoadDotEnvSettings & { updateProcessEnv?: true }
+): DotenvParseOutput;
+/**
+ * Loads environment variables from the given `dotEnvFilePaths` files, with
+ * variables from files earlier in the list being overwritten by variables from
+ * files later in the list.
+ *
+ * The resulting environment object (after `overrides` and `updateProcessEnv`
+ * are considered) will be checked for the existence of the variables in
+ * `expectedEnvironmentVariables`, but **`process.env` will NOT be updated!**.
+ * If the check is successful, an object containing only the loaded environment
+ * variables is returned. Otherwise, an error is thrown.
+ *
+ * **Note that this function internally caches the result of loading the dotenv
+ * files, meaning they'll only be read once.**
+ */
+export function loadDotEnv(
+  expectedEnvironmentVariables: string[],
+  settings: LoadDotEnvSettings & { updateProcessEnv: false }
+): DotenvParseOutput;
+export function loadDotEnv(
+  ...args: [LoadDotEnvSimplifiedSettings] | [string[], LoadDotEnvSettings]
+) {
+  const expectedEnvironmentVariables = Array.isArray(args[0]) ? args[0] : [];
+
+  const {
+    log,
+    dotEnvFilePaths,
+    force = false,
+    failInstructions = '',
+    onFail = () => undefined,
+    override = false,
+    updateProcessEnv = true
+  } = (Array.isArray(args[0]) ? args[1] : args[0])!;
+
   const failLogger = log.extend('env-valid');
-  const dotEnvFilePaths = state.dotEnvFilePaths as string[];
+  const debug = createDebugLogger({
+    namespace: `${globalDebuggerNamespace}:load-env`
+  });
 
+  debug('dotEnvFilePaths: %O', dotEnvFilePaths);
   hardAssert(Array.isArray(dotEnvFilePaths), ErrorMessage.GuruMeditation());
-  dotEnvFilePaths.forEach((path) => loadDotEnv({ path }));
 
-  if (expectedEnvironmentVariables.includes('GITHUB_TOKEN')) {
-    const { GITHUB_TOKEN } = process.env;
-    process.env.GH_TOKEN = GITHUB_TOKEN;
+  const problems: string[] = [];
+
+  if (!cachedEnvironmentContainer) {
+    cachedEnvironmentContainer = {};
+
+    dotEnvFilePaths.forEach((path) => {
+      const result = _loadDotEnv({
+        debug: !!process.env.DEBUG,
+        path,
+        override: true,
+        processEnv: cachedEnvironmentContainer as DotenvPopulateInput
+      });
+
+      if (result.error) {
+        debug.warn('attempt to load dotenv file %O failed: %O', path, result.error);
+      } else {
+        debug('loaded dotenv file %O successfully', path);
+      }
+    });
+
+    if (
+      cachedEnvironmentContainer.GITHUB_TOKEN &&
+      cachedEnvironmentContainer.GH_TOKEN === undefined
+    ) {
+      cachedEnvironmentContainer.GH_TOKEN = cachedEnvironmentContainer.GITHUB_TOKEN;
+    }
   }
+
+  const transientEnvironmentContainer = Object.assign(
+    updateProcessEnv ? process.env : {},
+    cachedEnvironmentContainer,
+    override ? {} : process.env
+  );
 
   expectedEnvironmentVariables.forEach((variable) => {
-    const isVariableDefined = (process.env[variable]?.length || 0) > 0;
+    const isVariableDefined = (transientEnvironmentContainer[variable]?.length || 0) > 0;
     if (!isVariableDefined) {
-      problems.push(
-        `environment variable "${variable}" is empty or undefined in process.env`
-      );
+      problems.push(`variable "${variable}" is empty or missing in environment`);
     }
   });
 
   problems.forEach((problem, index) => {
     failLogger[force ? 'warn' : 'error'](
-      [LogTag.IF_NOT_SILENCED],
+      [LogTag.IF_NOT_QUIETED],
       'Problem %O: ' + problem,
       index + 1
     );
@@ -219,12 +402,15 @@ export function loadDotEnvAndCheckVariables(
 
   if (!force && problems.length) {
     failLogger.message(
+      [LogTag.IF_NOT_SILENCED],
       `Validation failed: %O problem${problems.length === 1 ? '' : 's'} detected.${failInstructions ? ` ${failInstructions}` : ''}`,
       problems.length
     );
 
     onFail();
   }
+
+  return cachedEnvironmentContainer;
 }
 
 // TODO: probably prudent to make these part of cli-utils
