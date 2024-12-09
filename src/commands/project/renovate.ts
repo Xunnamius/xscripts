@@ -1,4 +1,5 @@
 import { CliError, type ChildConfiguration } from '@black-flag/core';
+import getInObject from 'lodash.get';
 
 import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
 
@@ -49,6 +50,7 @@ import {
   withGlobalUsage
 } from 'universe:util.ts';
 
+import type { RestEndpointMethodTypes } from '@octokit/rest' with { 'resolution-mode': 'import' };
 import type { CamelCasedProperties, KeysOfUnion } from 'type-fest';
 
 import type {
@@ -79,6 +81,9 @@ const assetsWithAliasDefinitions = [
   nextjsConfigProjectBase,
   webpackConfigProjectBase
 ];
+
+const defaultDescriptionEmoji = '⚡';
+const homepagePrefix = 'https://npm.im/';
 
 /**
  * @see {@link ProjectRenovateScope}
@@ -305,7 +310,7 @@ When attempting to renovate a Markdown file without replacer regions when its co
             if (result.status === 'fulfilled') {
               debug('a task runner promise has been fulfilled');
             } else {
-              throw new CliError(ErrorMessage.ReleaseRunnerExecutionFailed(), {
+              throw new CliError(ErrorMessage.RenovationRunnerExecutionFailed(), {
                 cause: result.reason
               });
             }
@@ -512,7 +517,7 @@ async function makeOctokit({
 
 const githubUrlRegExp = /github.com\/([^/]+)\/([^/]+)(?:\.git)?/;
 
-function parsePackageJsonRepository({ repository, name }: XPackageJson) {
+function parsePackageJsonRepositoryIntoOwnerAndRepo({ repository, name }: XPackageJson) {
   if (repository) {
     const target = typeof repository === 'string' ? repository : repository.url;
     const match = target.match(githubUrlRegExp);
@@ -537,37 +542,47 @@ export const renovationTasks = {
     shortHelpDescription: '(Re-)configure the origin GitHub repository settings',
     longHelpDescription: `This renovation will apply a standard configuration preset to the remote origin repository. Specifically, this renovation will:
 
-- Update the "repository details"
-${SHORT_TAB} - Set description (with default emoji) to package.json::description if not already set
-${SHORT_TAB} - Set website to npm.im URL if not already set
-${SHORT_TAB} - Set topics to package.json::keywords if not already set
-${SHORT_TAB} - Include "Releases" and remove "Packages" and "Deployments" sidebar sections
-- Set the user to star the repository
-- Set the user to watch "all activity" in the repository
-- Enable wikis with editing restricted to collaborators only
-- Enable issues
-- Enable sponsorships
-- Enable repository preservation
-- Enable discussions
-- Enable projects
-- Disable "allow merge commits"
-- Enable "allow squash merging"
-- Enable "allow rebase merging"
-- Enable "always suggest updating pull request branches"
-- Enable "allow auto-merge"
-- (Re-)create and (re-)enable the "standard-protect" and "canary-protect" rulesets; issue warnings about the existence of any other rulesets
-${SHORT_TAB} - "standard-protect" restricts deletions of, requires signed commits for, and blocks force pushes to the repository's main branch and any maintenance branches
-${SHORT_TAB} - "canary-protect" restricts deletions of and requires signed commits for the repository's canary branch(es), but does NOT block force pushes to these branches
-- Clear out any classic branch protection settings
+- Update the repository's metadata
+${SHORT_TAB} - Set description to package.json::description
+${SHORT_TAB}${SHORT_TAB} - With default emoji prefix: ${defaultDescriptionEmoji}
+${SHORT_TAB} - Set homepage to "${homepagePrefix}" + packageName
+${SHORT_TAB} - Enable ambient repository-wide secret scanning
+${SHORT_TAB} - Enable scanning pushes for secrets
+${SHORT_TAB} - Enable issues
+${SHORT_TAB} - Enable projects
+${SHORT_TAB} - Enable squash merging for pull requests
+${SHORT_TAB} - Disable normal merging for pull requests
+${SHORT_TAB} - Enable rebase merging for pull requests
+${SHORT_TAB} - Disable branch deletion on successful pull request merge
+${SHORT_TAB} - Enable suggesting forced-synchronization of pull request branches
+${SHORT_TAB} - Enable forking
+${SHORT_TAB} - Set topics to package.json::keywords
+- Set the repository to "starred" by the current user
+- Set the repository to "watched" (via "all activity") by the current user
+- Create/enable the "standard-protect" and "canary-protect" rulesets
+${SHORT_TAB} - "standard-protect" restricts deletions of, requires signed commits for, and blocks force pushes to the repository's main branch and any maintenance branches; "canary-protect" restricts deletions of and requires signed commits for the repository's canary branch(es), but does NOT block force pushes to these branches
+${SHORT_TAB} - A warning is issued if any other ruleset is encountered
+${SHORT_TAB} - A warning is issued if a legacy "classic branch protection" setting is encountered
+${SHORT_TAB} - When these rulesets already exist and this command is called without --force, the rulesets will be enabled; when called with --force, the rulesets will be deleted, recreated, and then enabled
+- Upsert the repository's GitHub Actions "environment secrets"
+${SHORT_TAB} - If this command is called with --force, all existing secrets will deleted before the upsert
+${SHORT_TAB} - Secrets will be pulled from the first of the following files to exist:
+${SHORT_TAB}${SHORT_TAB} - Package .env file:
+${SHORT_TAB}${SHORT_TAB} - Package .env.default file:
+${SHORT_TAB}${SHORT_TAB} - Project .env file:
+${SHORT_TAB}${SHORT_TAB} - Project .env.default file:
+
+Due to the current limitations of GitHub's REST API, the following renovations are not able to be automated and should be configured manually:
+
+* Include "Releases" and remove "Packages" and "Deployments" sidebar sections
+* Enable sponsorships
+* Enable repository preservation (arctic code vault)
+* Enable discussions
 - Enable "private vulnerability reporting"
 - Enable "dependency graph"
 - Enable "dependabot" (i.e. "dependabot alerts" and "dependabot security updates")
-- Enable "secret scanning" (i.e. "alerts" and "push protection")
-- Overwrite the repository's "environment secrets" for GitHub Actions using the closest .env file
-${SHORT_TAB} - The filesystem will be walked starting from the current directory upward until a suitable .env file is found or the filesystem root is reached
-${SHORT_TAB} - .env.default is used if .env is not available
-${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
-`,
+
+By default, this command will preserve the remote repository's pre-existing configuration. Run this command with --force to overwrite any pre-existing configuration.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {},
@@ -575,25 +590,170 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
       const argv = argv_ as RenovationTaskArgv;
       checkRuntimeIsReadyForGithub(argv, log);
 
-      const { projectMetadata } = argv[$executionContext];
+      const {
+        force,
+        parallel,
+        [$executionContext]: { projectMetadata }
+      } = argv;
+
       hardAssert(projectMetadata, ErrorMessage.GuruMeditation());
 
-      const github = await makeOctokit({ debug, log });
       const {
         cwdPackage: { json }
       } = projectMetadata;
-      const { keywords = [] } = json;
 
-      await github.repos.replaceAllTopics({
-        names: keywords.map((word) => word.toLocaleLowerCase()),
-        ...parsePackageJsonRepository(json)
-      });
+      const {
+        description = '(package.json::description is missing)',
+        keywords = [],
+        name: packageName
+      } = json;
 
-      log.error('todo');
+      const github = await makeOctokit({ debug, log });
+      const ownerAndRepo = parsePackageJsonRepositoryIntoOwnerAndRepo(json);
+
+      const { data: incomingRepoData } = await github.repos.get({ ...ownerAndRepo });
+
+      const outgoingRepoData: NonNullable<
+        RestEndpointMethodTypes['repos']['update']['parameters']
+      > = {
+        ...ownerAndRepo
+      };
+
+      if (force || !incomingRepoData.description) {
+        outgoingRepoData.description = `${defaultDescriptionEmoji} ${description}`;
+      }
+
+      if (force || !incomingRepoData.homepage) {
+        outgoingRepoData.homepage = `npm.im/${packageName}`;
+      }
+
+      if (force || !incomingRepoData.security_and_analysis?.secret_scanning?.status) {
+        outgoingRepoData.security_and_analysis ||= {};
+        outgoingRepoData.security_and_analysis.secret_scanning = {
+          status: 'enabled'
+        };
+      }
+
+      if (
+        force ||
+        !incomingRepoData.security_and_analysis?.secret_scanning_push_protection?.status
+      ) {
+        outgoingRepoData.security_and_analysis ||= {};
+        outgoingRepoData.security_and_analysis.secret_scanning_push_protection = {
+          status: 'enabled'
+        };
+      }
+
+      if (force) {
+        incomingRepoData.has_issues = true;
+        incomingRepoData.has_projects = true;
+        incomingRepoData.allow_squash_merge = true;
+        incomingRepoData.allow_merge_commit = false;
+        incomingRepoData.allow_rebase_merge = true;
+        incomingRepoData.allow_auto_merge = true;
+        incomingRepoData.delete_branch_on_merge = false;
+        incomingRepoData.allow_update_branch = true;
+        incomingRepoData.allow_forking = true;
+      }
+
+      const subtaskPromiseFunctions: (() => Promise<void>)[] = [
+        async function () {
+          if (Object.keys(outgoingRepoData).length) {
+            await github.repos.update({
+              ...outgoingRepoData
+            });
+          }
+
+          logMetadataReplacement('description', 'package.json::description');
+          logMetadataReplacement('homepage', 'value derived from package.json::name');
+          logMetadataReplacement(
+            'security_and_analysis.secret_scanning.status',
+            'hardcoded value'
+          );
+          logMetadataReplacement(
+            'security_and_analysis.secret_scanning_push_protection.status',
+            'hardcoded value'
+          );
+          logMetadataReplacement('has_issues', 'hardcoded value');
+          logMetadataReplacement('has_projects', 'hardcoded value');
+          logMetadataReplacement('allow_squash_merge', 'hardcoded value');
+          logMetadataReplacement('allow_merge_commit', 'hardcoded value');
+          logMetadataReplacement('allow_rebase_merge', 'hardcoded value');
+          logMetadataReplacement('allow_auto_merge', 'hardcoded value');
+          logMetadataReplacement('delete_branch_on_merge', 'hardcoded value');
+          logMetadataReplacement('allow_update_branch', 'hardcoded value');
+          logMetadataReplacement('allow_forking', 'hardcoded value');
+        },
+        async function () {
+          const shouldReplace =
+            !!keywords.length && (force || !incomingRepoData.topics?.length);
+
+          const updatedValues = keywords.map((word) => word.toLocaleLowerCase());
+
+          if (shouldReplace) {
+            await github.repos.replaceAllTopics({
+              ...ownerAndRepo,
+              names: updatedValues
+            });
+          }
+
+          logReplacement(
+            shouldReplace,
+            'topics',
+            'package.json::keywords',
+            JSON.stringify(incomingRepoData.topics),
+            JSON.stringify(updatedValues)
+          );
+        }
+      ];
+
+      // TODO: include this algo/case in the eventual task runner implementation
+
+      if (parallel) {
+        await Promise.all(subtaskPromiseFunctions.map((fn) => fn()));
+      } else {
+        for (const subtaskPromiseFunction of subtaskPromiseFunctions) {
+          // eslint-disable-next-line no-await-in-loop
+          await subtaskPromiseFunction();
+        }
+      }
+
       // ? Typescript wants this here because of our "as const" for some reason
       return undefined;
-      // ? Typescript wants this here because of our "as const" for some reason
-      return undefined;
+
+      function logMetadataReplacement(
+        propertyPath:
+          | keyof typeof incomingRepoData
+          | `${keyof typeof incomingRepoData}.${string}`,
+        description: string
+      ) {
+        const previousValue = getInObject(incomingRepoData, propertyPath);
+        const updatedValue = getInObject(outgoingRepoData, propertyPath);
+
+        logReplacement(
+          updatedValue !== undefined,
+          propertyPath,
+          description,
+          String(previousValue),
+          String(updatedValue)
+        );
+      }
+
+      function logReplacement(
+        wasReplaced: boolean,
+        subject: string,
+        description: string,
+        previousValue: string | undefined,
+        updatedValue: string | undefined
+      ) {
+        if (wasReplaced) {
+          log([LogTag.IF_NOT_QUIETED], `✅ Replaced ${subject} with ${description}`);
+          log([LogTag.IF_NOT_HUSHED], `Previous value: ${String(previousValue)}`);
+          log([LogTag.IF_NOT_HUSHED], `New value: ${String(updatedValue)}`);
+        } else {
+          log([LogTag.IF_NOT_QUIETED], `✖️ Skipped replacing ${subject}`);
+        }
+      }
     }
   },
   'github-rename-repo': {
@@ -675,8 +835,8 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
     taskAliases: [],
     actionDescription: 'Cloning origin repository wiki into project root',
     shortHelpDescription:
-      "Clone the origin repository's wikis into a (gitignored) directory",
-    longHelpDescription: `This renovation will clone the repository's wiki into the (gitignored) .wiki/ directory at the project root. If a wiki does not exist, this command will throw an error; in such a case, use --github-reconfigure-repo first to enable wikis before running this renovation.`,
+      "Clone the origin repository's wiki into a (gitignored) directory",
+    longHelpDescription: `This renovation will enable the wiki for the remote repository (if it is not enabled already) and then clone that wiki into the (gitignored) .wiki/ directory at the project root.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {},
@@ -684,7 +844,7 @@ ${SHORT_TAB} - Secrets are never deleted by this command, only added/overwritten
       const argv = argv_ as RenovationTaskArgv;
       checkRuntimeIsReadyForGithub(argv, log);
 
-      // TODO: do not proceed if the .wiki dir already exists
+      // TODO: do not proceed if the .wiki dir already exists unless --force
       // TODO: create wiki via GitHub api if it does not already exist
       log.message([LogTag.IF_NOT_SILENCED], `✖️ This task is currently a no-op (todo)`);
       // ? Typescript wants this here because of our "as const" for some reason

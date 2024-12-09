@@ -220,6 +220,9 @@ export const ErrorMessage = {
   ReleaseRunnerExecutionFailed() {
     return 'one or more release tasks failed to complete';
   },
+  RenovationRunnerExecutionFailed() {
+    return 'one or more renovation tasks failed to complete';
+  },
   ReleaseFinishedWithADirtyRepo() {
     return 'the release pipeline has terminated but the repository remains in an unclean state. This can be evidence of an incomplete or broken build process';
   },
