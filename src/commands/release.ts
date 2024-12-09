@@ -32,8 +32,6 @@ import {
 
 import {
   directoryCoveragePackageBase,
-  dotEnvConfigPackageBase,
-  dotEnvConfigProjectBase,
   fsConstants,
   isAccessible,
   toPath,
