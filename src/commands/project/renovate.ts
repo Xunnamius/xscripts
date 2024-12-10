@@ -917,7 +917,7 @@ export const renovationTasks = {
 - Update the repository's metadata
 ${SHORT_TAB} - Set description to package.json::description only if not already set
 ${SHORT_TAB}${SHORT_TAB} - With default emoji prefix: ${defaultDescriptionEmoji}
-${SHORT_TAB} - Set homepage to "${homepagePrefix}" + packageName
+${SHORT_TAB} - Set homepage to "${homepagePrefix}pkg-name" only if not already set
 ${SHORT_TAB} - Enable ambient repository-wide secret scanning
 ${SHORT_TAB} - Enable scanning pushes for secrets
 ${SHORT_TAB} - Enable issues
@@ -935,8 +935,9 @@ ${SHORT_TAB} - If the rulesets already exist and --force was given, they're dele
 ${SHORT_TAB} - If the rulesets already exist and --force wasn't given, they're enabled
 ${SHORT_TAB} - A warning is issued if any other ruleset is encountered
 ${SHORT_TAB} - A warning is issued if a legacy "classic branch protection" setting is encountered for well-known branches
-- Upsert the repository's GitHub Actions "environment secrets"
-${SHORT_TAB} - If this command is called with --force, all existing secrets will deleted before the upsert
+- Upload missing GitHub Actions environment secrets (encrypted)
+${SHORT_TAB} - Only secrets that do not already exist will be uploaded
+${SHORT_TAB} - If --force was given, all existing secrets will be deleted before the upload
 ${SHORT_TAB} - Secrets will be sourced from the package and project .env files
 ${SHORT_TAB}${SHORT_TAB} - Empty/unset variables in .env files will be ignored
 
@@ -950,7 +951,7 @@ Due to the current limitations of GitHub's REST API, the following renovations a
 - Enable "dependency graph"
 - Enable "dependabot" (i.e. "dependabot alerts" and "dependabot security updates")
 
-By default, this command will preserve the origin repository's pre-existing configuration. Run this command with --force to overwrite any pre-existing configuration EXCEPT the origin repository's description, which can never be overwritten by this renovation.`,
+By default, this command will preserve the origin repository's pre-existing configuration. Run this command with --force to overwrite any pre-existing configuration EXCEPT the origin repository's description and homepage, which can never be overwritten by this renovation.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {},
@@ -1212,7 +1213,7 @@ By default, this command will preserve the origin repository's pre-existing conf
             );
 
             log.message(
-              'Because this command was invoked with --force, all origin repository actions secrets were permanently deleted before upsert operation'
+              'Because this command was invoked with --force, all origin repository actions secrets were just cleared'
             );
           }
 
@@ -1240,10 +1241,29 @@ By default, this command will preserve the origin repository's pre-existing conf
               updateProcessEnv: false
             })
           )
-            .filter(
-              ([variable, value]) =>
-                value && !['GITHUB_TOKEN', 'GH_TOKEN'].includes(variable)
-            )
+            .filter(function ([variable, value]) {
+              const eligible = value && !['GITHUB_TOKEN', 'GH_TOKEN'].includes(variable);
+
+              if (eligible) {
+                if (force) {
+                  return true;
+                }
+
+                const isSecretAlreadyUploaded = existingSecrets.some(
+                  ({ name }) => name === variable
+                );
+
+                if (!isSecretAlreadyUploaded) {
+                  return true;
+                }
+
+                log([LogTag.IF_NOT_HUSHED], 'EXISTING secret: %O', variable);
+                return false;
+              }
+
+              log([LogTag.IF_NOT_HUSHED], 'IGNORING secret: %O', variable);
+              return false;
+            })
             .map(([variable, value]) => ({
               secret_name: variable,
               encrypted_value: libsodium.to_base64(
@@ -1258,23 +1278,23 @@ By default, this command will preserve the origin repository's pre-existing conf
           debug('updatedSecrets: %O', updatedSecrets);
 
           await Promise.all(
-            updatedSecrets.map((secret) =>
-              github.actions.createOrUpdateRepoSecret({
+            updatedSecrets.map(function (secret) {
+              log([LogTag.IF_NOT_HUSHED], 'UPLOADING secret: %O', secret.secret_name);
+
+              return github.actions.createOrUpdateRepoSecret({
                 ...ownerAndRepo,
                 ...secret,
                 key_id: publicKeyId
-              })
-            )
+              });
+            })
           );
 
           logReplacement({
-            replacedDescription: `${force ? 'Deleted existing repository secrets and inserted new' : 'Upserted repository'} secrets sourced from .env files`,
-            previousValue: `${existingSecrets.length} secrets ${
-              force ? '(all were deleted)' : '(none were deleted)'
+            replacedDescription: `${force ? 'Deleted existing secrets and uploaded all' : 'Uploaded any missing'} secrets sourced from .env files`,
+            previousValue: `${existingSecrets.length} existing secrets${
+              force ? ' (cleared)' : ''
             }`,
-            updatedValue: `${updatedSecrets.length} secrets ${
-              force ? 'inserted' : 'upserted'
-            }`
+            updatedValue: `${updatedSecrets.length} missing secrets uploaded`
           });
         }
       ];
