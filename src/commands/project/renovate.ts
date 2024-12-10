@@ -1654,7 +1654,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
       'assets-preset': {
         alias: 'preset',
         choices: renovationPresets,
-        description: 'A preset list of assets to target',
+        description: 'A preset list of assets to target for regeneration',
         subOptionOf: {
           'regenerate-assets': {
             when: (superOptionValue) => superOptionValue,
@@ -1704,7 +1704,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
       'with-aliases-loaded-from': {
         string: true,
         description:
-          'Import additional definitions (from a JS file) when regenerating aliases'
+          'Import additional definitions from JS file when regenerating aliases'
       }
     },
     async run(argv_, { debug, log }) {
@@ -1886,8 +1886,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
             ...argv,
             $0: 'format',
             _: [],
-            scope: DefaultGlobalScope.ThisPackage,
-            files: [ourPackageJsonPath],
+            scope,
             silent: true,
             quiet: true,
             hush: true,

@@ -171,7 +171,7 @@ export async function determineRepoWorkingTreeDirty() {
 
   if (isDirty) {
     debug.warn(
-      'repository was left in an unclean state! Git status output (exit code %O):',
+      'repository is in an unclean state! Git status output (exit code %O):',
       gitStatusExitCode
     );
   }
