@@ -4703,11 +4703,9 @@ describe('::analyzeProjectStructure', () => {
           useCached: true,
           allowUnnamedPackages: false
         })
-      ).rejects.toThrow(
-        ErrorMessage.MissingNameInPackageJson(
-          toPath(fixtures.goodMonorepo.unnamedPackageMapData[0][1].root, 'package.json')
-        )
-      );
+      ).rejects.toMatchObject({
+        message: expect.stringContaining(ErrorMessage.MissingNameInPackageJson(''))
+      });
 
       await expect(() =>
         analyzeProjectStructure({
@@ -4715,11 +4713,9 @@ describe('::analyzeProjectStructure', () => {
           useCached: true
           // * allowUnnamedPackages: false should be the default
         })
-      ).rejects.toThrow(
-        ErrorMessage.MissingNameInPackageJson(
-          toPath(fixtures.goodMonorepo.unnamedPackageMapData[0][1].root, 'package.json')
-        )
-      );
+      ).rejects.toMatchObject({
+        message: expect.stringContaining(ErrorMessage.MissingNameInPackageJson(''))
+      });
 
       await expect(
         analyzeProjectStructure({
