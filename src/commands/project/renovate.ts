@@ -1904,7 +1904,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
 
         log(
           [LogTag.IF_NOT_QUIETED],
-          '%O: %O dep synced',
+          `%O: %O dep${interdependencies.length === 1 ? '' : 's'} synced`,
           ourPackageName,
           interdependencies.length
         );
