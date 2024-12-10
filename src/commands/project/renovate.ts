@@ -24,6 +24,7 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { type Package, type XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 import {
+  AbsolutePath,
   allContributorsConfigProjectBase,
   babelConfigProjectBase,
   browserslistrcConfigProjectBase,
@@ -1785,7 +1786,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
         if (scope === DefaultGlobalScope.ThisPackage) {
           log(
             [LogTag.IF_NOT_HUSHED],
-            'Synchronizing interdependencies in the %O package',
+            'Synchronizing dependencies in %O',
             cwdPackage.json.name
           );
 
@@ -1793,7 +1794,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
         } else {
           log(
             [LogTag.IF_NOT_HUSHED],
-            'Synchronizing interdependencies across the entire project'
+            'Synchronizing dependencies across the entire project'
           );
 
           await Promise.all(
@@ -1812,6 +1813,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
         json: ourPackageJson
       }: Package) {
         const { name: ourPackageName, dependencies: ourDependencies } = ourPackageJson;
+        const ourPackageJsonPath = toPath(ourPackageRoot, packageJsonConfigPackageBase);
 
         const interdependencies = Object.entries(
           (ourDependencies || {}) as Record<string, string>
@@ -1843,7 +1845,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
 
               log(
                 [LogTag.IF_NOT_QUIETED],
-                `✅ Dependency %O version synchronized (%O ==> %O)`,
+                `⛓️ Dependency synchronized:\n${SHORT_TAB}%O\n${SHORT_TAB}%O ==> %O`,
                 theirPackageName,
                 ourDependenciesSemverOfTheirPackage,
                 theirPackageLatestSemver
@@ -1851,14 +1853,14 @@ There are also so-called "orphaned assets," which are asset configurations that 
             } else {
               log(
                 [LogTag.IF_NOT_QUIETED],
-                `✔️ Dependency %O version already synchronized (no actions taken)`,
+                `✔️ Dependency already synchronized:\n${SHORT_TAB}%O`,
                 theirPackageName
               );
             }
           } else {
             log.warn(
               [LogTag.IF_NOT_QUIETED],
-              'Dependency %O is missing "version" field in: %O',
+              `Dependency %O is missing "version" field in:\n${SHORT_TAB}%O`,
               theirPackageName,
               toPath(theirPackage_.root, packageJsonConfigPackageBase)
             );
@@ -1866,11 +1868,6 @@ There are also so-called "orphaned assets," which are asset configurations that 
         }
 
         if (didUpdatePackageJson) {
-          const ourPackageJsonPath = toPath(
-            ourPackageRoot,
-            packageJsonConfigPackageBase
-          );
-
           await writeFile(ourPackageJsonPath, JSON.stringify(ourPackageJson));
 
           debug(`formatting ${ourPackageJsonPath} (calling out to sub-command)`);
@@ -1884,14 +1881,15 @@ There are also so-called "orphaned assets," which are asset configurations that 
             ...argv,
             $0: 'format',
             _: [],
-            scope,
+            scope: DefaultGlobalScope.Unlimited,
+            files: [ourPackageJsonPath],
             silent: true,
             quiet: true,
             hush: true,
             renumberReferences: false,
             skipIgnored: false,
             skipUnknown: false,
-            onlyPackageJson: true,
+            onlyPackageJson: false,
             onlyMarkdown: false,
             onlyPrettier: false
           });
@@ -1900,14 +1898,14 @@ There are also so-called "orphaned assets," which are asset configurations that 
 
           log(
             [LogTag.IF_NOT_HUSHED],
-            'Wrote out synchronized dependencies to %O',
+            `Wrote out updated dependencies to:\n${SHORT_TAB}%O`,
             ourPackageJsonPath
           );
         }
 
-        log.message(
+        log(
           [LogTag.IF_NOT_QUIETED],
-          '%O: %O updated',
+          '%O: %O dep synced',
           ourPackageName,
           interdependencies.length
         );
