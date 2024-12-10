@@ -2,6 +2,15 @@ import { CliError, type ChildConfiguration } from '@black-flag/core';
 import libsodium from 'libsodium-wrappers';
 import getInObject from 'lodash.get';
 
+import {
+  getInvocableExtendedHandler,
+  type AsStrictExecutionContext,
+  type BfeBuilderObject,
+  type BfeBuilderObjectValue,
+  type BfeCheckFunction,
+  type BfeStrictArguments
+} from 'multiverse+bfe';
+
 import { hardAssert, softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
@@ -11,7 +20,7 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
-import { type XPackageJson } from 'multiverse+project-utils:analyze.ts';
+import { type Package, type XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 import {
   babelConfigProjectBase,
@@ -20,6 +29,8 @@ import {
   markdownArchitectureProjectBase,
   markdownReadmePackageBase,
   nextjsConfigProjectBase,
+  packageJsonConfigPackageBase,
+  toPath,
   Tsconfig,
   webpackConfigProjectBase
 } from 'multiverse+project-utils:fs.ts';
@@ -35,7 +46,13 @@ import {
 import { version as packageVersion } from 'rootverse:package.json';
 
 import {
+  default as format,
+  type CustomCliArguments as FormatCliArguments
+} from 'universe:commands/format.ts';
+
+import {
   $executionContext,
+  DefaultGlobalScope,
   DefaultGlobalScope as ProjectRenovateScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
@@ -49,19 +66,12 @@ import {
   loadDotEnv,
   runGlobalPreChecks,
   withGlobalBuilder,
-  withGlobalUsage
+  withGlobalUsage,
+  writeFile
 } from 'universe:util.ts';
 
 import type { RestEndpointMethodTypes } from '@octokit/rest' with { 'resolution-mode': 'import' };
 import type { CamelCasedProperties, KeysOfUnion, Merge } from 'type-fest';
-
-import type {
-  AsStrictExecutionContext,
-  BfeBuilderObject,
-  BfeBuilderObjectValue,
-  BfeCheckFunction,
-  BfeStrictArguments
-} from 'multiverse+bfe';
 
 type NewRuleset = Merge<
   RestEndpointMethodTypes['repos']['createRepoRuleset']['parameters'],
@@ -925,7 +935,9 @@ By default, this command will preserve the origin repository's pre-existing conf
           debug('existingCanaryRuleset: %O', existingCanaryRuleset);
 
           if (masterProtectionRules) {
-            log.warn(ErrorMessage.RenovationEncounteredObsoleteProtectionRules('master'));
+            log.warn(
+              ErrorMessage.RenovationEncounteredObsoleteProtectionRules('master')
+            );
           }
 
           if (mainProtectionRules) {
@@ -933,7 +945,9 @@ By default, this command will preserve the origin repository's pre-existing conf
           }
 
           if (canaryProtectionRules) {
-            log.warn(ErrorMessage.RenovationEncounteredObsoleteProtectionRules('canary'));
+            log.warn(
+              ErrorMessage.RenovationEncounteredObsoleteProtectionRules('canary')
+            );
           }
 
           await Promise.all([
@@ -1134,7 +1148,10 @@ By default, this command will preserve the origin repository's pre-existing conf
           }
 
           if ('updatedValue' in input) {
-            log([LogTag.IF_NOT_HUSHED], `Committed value: ${String(input.updatedValue)}`);
+            log(
+              [LogTag.IF_NOT_HUSHED],
+              `Committed value: ${String(input.updatedValue)}`
+            );
           }
         } else {
           log([LogTag.IF_NOT_QUIETED], `✖️ Skipped ${skippedDescription}`);
@@ -1308,7 +1325,8 @@ By default, this command will preserve the origin repository's pre-existing conf
     emoji: '⚓',
     taskAliases: [],
     actionDescription: 'Generating scoped aliases for each non-scoped version tag',
-    shortHelpDescription: 'Generate a scoped version tag for each non-scoped version tag',
+    shortHelpDescription:
+      'Generate a scoped version tag for each non-scoped version tag',
     longHelpDescription: `This renovation creates an alias of each old-style version tag in the repository going all the way back to the initial commit.\n\nNote that this renovation will respect the "[INIT]" xpipeline command when it appears in commit messages. See the xscripts wiki and xchangelog/xrelease documentation for details on xpipeline command semantics.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
@@ -1477,10 +1495,152 @@ This renovation is equivalent to calling \`xscripts project renovate --regenerat
     subOptions: {},
     async run(argv_, { debug, log }) {
       const argv = argv_ as RenovationTaskArgv;
+      const { scope, [$executionContext]: globalExecutionContext } = argv;
+      const { projectMetadata } = globalExecutionContext;
 
-      log.error('todo');
+      hardAssert(projectMetadata, ErrorMessage.GuruMeditation());
+
+      const { cwdPackage, rootPackage, subRootPackages } = projectMetadata;
+      const allPackages = [rootPackage, ...(subRootPackages?.values() || [])];
+      const allPackageNames = allPackages.map(({ json: { name } }) => name);
+
+      debug('allPackageNames: %O', allPackageNames);
+
+      if (subRootPackages) {
+        if (scope === DefaultGlobalScope.ThisPackage) {
+          log(
+            [LogTag.IF_NOT_HUSHED],
+            'Synchronizing interdependencies in the %O package',
+            cwdPackage.json.name
+          );
+
+          await synchronizePackageInterdependencies(cwdPackage);
+        } else {
+          log(
+            [LogTag.IF_NOT_HUSHED],
+            'Synchronizing interdependencies across the entire project'
+          );
+
+          await Promise.all(
+            allPackages.map((package_) => synchronizePackageInterdependencies(package_))
+          );
+        }
+      } else {
+        log(
+          [LogTag.IF_NOT_HUSHED],
+          'Synchronized 0 interdependencies (this renovation is a no-op in polyrepos)'
+        );
+      }
+
       // ? Typescript wants this here because of our "as const" for some reason
       return undefined;
+
+      async function synchronizePackageInterdependencies({
+        root: ourPackageRoot,
+        json: ourPackageJson
+      }: Package) {
+        const { name: ourPackageName, dependencies: ourDependencies } = ourPackageJson;
+
+        const interdependencies = Object.entries(
+          (ourDependencies || {}) as Record<string, string>
+        ).filter(([depName]) => allPackageNames.includes(depName));
+
+        let didUpdatePackageJson = false;
+
+        for (const [
+          theirPackageName,
+          ourDependenciesSemverOfTheirPackage
+        ] of interdependencies) {
+          const theirPackageNameIsRootPackage =
+            theirPackageName === rootPackage.json.name;
+
+          const theirPackage_ = theirPackageNameIsRootPackage
+            ? rootPackage
+            : subRootPackages?.get(theirPackageName);
+
+          hardAssert(theirPackage_, ErrorMessage.GuruMeditation());
+
+          const { version: theirPackageLatestVersion } = theirPackage_.json;
+
+          if (theirPackageLatestVersion) {
+            const theirPackageLatestSemver = `^${theirPackageLatestVersion}`;
+
+            if (ourDependenciesSemverOfTheirPackage !== theirPackageLatestSemver) {
+              ourDependencies![theirPackageName] = theirPackageLatestSemver;
+              didUpdatePackageJson = true;
+
+              log(
+                [LogTag.IF_NOT_QUIETED],
+                `✅ Dependency %O version synchronized (%O ==> %O)`,
+                theirPackageName,
+                ourDependenciesSemverOfTheirPackage,
+                theirPackageLatestSemver
+              );
+            } else {
+              log(
+                [LogTag.IF_NOT_QUIETED],
+                `✔️ Dependency %O version already synchronized (no actions taken)`,
+                theirPackageName
+              );
+            }
+          } else {
+            log.warn(
+              [LogTag.IF_NOT_QUIETED],
+              'Dependency %O is missing "version" field in: %O',
+              theirPackageName,
+              toPath(theirPackage_.root, packageJsonConfigPackageBase)
+            );
+          }
+        }
+
+        if (didUpdatePackageJson) {
+          const ourPackageJsonPath = toPath(
+            ourPackageRoot,
+            packageJsonConfigPackageBase
+          );
+
+          await writeFile(ourPackageJsonPath, JSON.stringify(ourPackageJson));
+
+          debug(`formatting ${ourPackageJsonPath} (calling out to sub-command)`);
+
+          const formatHandler = await getInvocableExtendedHandler<
+            FormatCliArguments,
+            GlobalExecutionContext
+          >(format, globalExecutionContext);
+
+          await formatHandler({
+            ...argv,
+            $0: 'format',
+            _: [],
+            scope: DefaultGlobalScope.ThisPackage,
+            files: [ourPackageJsonPath],
+            silent: true,
+            quiet: true,
+            hush: true,
+            renumberReferences: false,
+            skipIgnored: false,
+            skipUnknown: false,
+            onlyPackageJson: true,
+            onlyMarkdown: false,
+            onlyPrettier: false
+          });
+
+          debug('sub-command completed successfully');
+
+          log(
+            [LogTag.IF_NOT_HUSHED],
+            'Wrote out synchronized dependencies to %O',
+            ourPackageJsonPath
+          );
+        }
+
+        log.message(
+          [LogTag.IF_NOT_QUIETED],
+          'Synchronized %O interdependencies in the %O package',
+          interdependencies.length,
+          ourPackageName
+        );
+      }
     }
   }
 } as const satisfies Record<string, Omit<RenovationTask, 'taskName'>>;
