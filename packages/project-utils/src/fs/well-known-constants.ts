@@ -55,12 +55,12 @@ export const xreleaseConfigProjectBase = 'release.config.cjs';
 export const xchangelogConfigProjectBase = 'conventional.config.cjs';
 
 /**
- * The basename of the well-known Dotenv configuration file.
+ * The basename of the well-known Dotenv file.
  */
 export const dotEnvConfigProjectBase = '.env';
 
 /**
- * The basename of the well-known "default" Dotenv configuration file.
+ * The basename of the well-known "default" Dotenv file.
  */
 export const dotEnvDefaultConfigProjectBase = '.env.default';
 
@@ -129,6 +129,11 @@ export const spellcheckIgnoreConfigProjectBase = '.spellcheckignore';
  * The basename of the well-known Vscode configuration directory.
  */
 export const directoryVscodeProjectBase = '.vscode';
+
+/**
+ * The basename of the well-known .wiki directory.
+ */
+export const directoryWikiProjectBase = '.wiki';
 
 /**
  * The basename of the well-known ARCHITECTURE file.
