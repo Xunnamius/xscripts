@@ -61,7 +61,8 @@ export const baseXPackageJson = {
     'list-tasks': 'NODE_NO_WARNINGS=1 xscripts list-tasks',
     prepare: 'NODE_NO_WARNINGS=1 xscripts project prepare',
     release: 'NODE_NO_WARNINGS=1 xscripts release',
-    renovate: 'NODE_NO_WARNINGS=1 xscripts project renovate --',
+    renovate:
+      'NODE_NO_WARNINGS=1 xscripts project renovate --sync-deps --github-reconfigure-repo --regenerate-assets --assets-preset basic',
     start: 'NODE_NO_WARNINGS=1 xscripts start --',
     test: 'npm run test:package:unit --',
     'test:package:all': 'NODE_NO_WARNINGS=1 xscripts test --coverage',

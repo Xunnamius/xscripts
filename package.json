@@ -91,7 +91,7 @@
     "list-tasks": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js list-tasks",
     "prepare": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js project prepare",
     "release": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js release --no-parallel",
-    "renovate": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js project renovate --",
+    "renovate": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js project renovate --sync-deps --github-reconfigure-repo --regenerate-assets --assets-preset cli",
     "start": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js start --",
     "test": "npm run test:package:unit --",
     "test:package:all": "NODE_NO_WARNINGS=1 ./node_modules/@-xun/scripts/dist/src/cli.js test --coverage",
