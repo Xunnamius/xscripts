@@ -1801,7 +1801,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
           );
         }
       } else {
-        log([LogTag.IF_NOT_HUSHED], 'Synchronized 0 dependencies (no-op in polyrepos)');
+        log.message([LogTag.IF_NOT_HUSHED], 'This renovation is a no-op in polyrepos');
       }
 
       // ? Typescript wants this here because of our "as const" for some reason
@@ -1907,9 +1907,9 @@ There are also so-called "orphaned assets," which are asset configurations that 
 
         log.message(
           [LogTag.IF_NOT_QUIETED],
-          'Synchronized %O dependencies in the %O package',
-          interdependencies.length,
-          ourPackageName
+          '%O: %O updated',
+          ourPackageName,
+          interdependencies.length
         );
       }
     }
