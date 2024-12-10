@@ -854,15 +854,16 @@ async function makeOctokit({
   const { throttling } = await import('@octokit/plugin-throttling');
 
   Octokit.plugin(retry, throttling);
+  const ghLog = log.extend('gh');
 
   return new Octokit({
     userAgent: `Xunnamius/xscripts@${packageVersion}`,
     auth: process.env.GITHUB_TOKEN,
     log: {
-      debug,
-      info: wrapLogger(log),
-      warn: wrapLogger(log.message),
-      error: wrapLogger(log.warn)
+      debug: debug.extend('gh'),
+      info: wrapLogger(ghLog),
+      warn: wrapLogger(ghLog.message),
+      error: wrapLogger(ghLog.warn)
     },
     throttle: {
       onRateLimit: (retryAfter, options, _octokit, retryCount) => {
@@ -1800,10 +1801,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
           );
         }
       } else {
-        log(
-          [LogTag.IF_NOT_HUSHED],
-          'Synchronized 0 interdependencies (this renovation is a no-op in polyrepos)'
-        );
+        log([LogTag.IF_NOT_HUSHED], 'Synchronized 0 dependencies (no-op in polyrepos)');
       }
 
       // ? Typescript wants this here because of our "as const" for some reason
@@ -1909,7 +1907,7 @@ There are also so-called "orphaned assets," which are asset configurations that 
 
         log.message(
           [LogTag.IF_NOT_QUIETED],
-          'Synchronized %O interdependencies in the %O package',
+          'Synchronized %O dependencies in the %O package',
           interdependencies.length,
           ourPackageName
         );
