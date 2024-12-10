@@ -16,6 +16,7 @@ import { ErrorMessage } from 'universe:error.ts';
 import { readFile } from 'universe:util.ts';
 
 import type { EmptyObject, Promisable } from 'type-fest';
+import type { RenovationPreset } from 'universe:commands/project/renovate.ts';
 
 /**
  * @see {@link TransformerContext}
@@ -47,6 +48,11 @@ export type TransformerContext = {
    * `asset` when defining a {@link TransformerResult}.
    */
   asset: string;
+  /**
+   * The relevant {@link RenovationPreset}, if applicable, or `undefined` if
+   * not.
+   */
+  targetAssetsPreset: RenovationPreset | undefined;
   /**
    * The markdown badge references that are standard for every xscripts-powered
    * project.

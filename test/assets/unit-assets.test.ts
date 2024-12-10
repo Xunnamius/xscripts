@@ -62,6 +62,7 @@ import {
 import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
 
 const dummyContext: Omit<TransformerContext, 'asset'> = {
+  targetAssetsPreset: undefined,
   badges: 'badges',
   packageName: 'package-name',
   packageVersion: '1.2.3-fake',
