@@ -7,6 +7,7 @@ const { deepMergeConfig } = require('@-xun/scripts/assets');
 const { moduleExport } = require('@-xun/scripts/assets/config/release.config.cjs');
 
 const { parserOpts, writerOpts } = require('./conventional.config.cjs');
+
 // TODO: delete this
 const {
   analyzeProjectStructure

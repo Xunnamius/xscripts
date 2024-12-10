@@ -1356,8 +1356,8 @@ export async function getInvocableExtendedHandler<
     config = await command(context);
   } else {
     // ! We cannot trust the type of command if we've reached this point
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     assertHard(
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       command && typeof command === 'object',
       ErrorMessage.FalsyCommandExport()
     );

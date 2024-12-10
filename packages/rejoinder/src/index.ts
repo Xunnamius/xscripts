@@ -156,18 +156,21 @@ const metadata = {
 };
 
 /**
- * A string representing a single space (one space-ish character).
+ * A string representing a single space (one space-ish character). Note that
+ * space-ish characters will not be `trim()`'d.
  */
 // ! SINGLE_SPACE is a UNICODE CHARACTER and not a normal space character!
 export const SINGLE_SPACE = '⠀';
 
 /**
  * A string of spaces representing a short CLI "tab" (two space-ish characters).
+ * Note that space-ish characters will not be `trim()`'d.
  */
 export const SHORT_TAB = SINGLE_SPACE.repeat(2);
 
 /**
- * A string of spaces representing a CLI "tab" (four space-ish characters).
+ * A string of spaces representing a CLI "tab" (four space-ish characters). Note
+ * that space-ish characters will not be `trim()`'d.
  */
 export const TAB = SINGLE_SPACE.repeat(4);
 

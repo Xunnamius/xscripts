@@ -603,9 +603,9 @@ export type XPackageJsonScripts = {
   /**
    * Run by users, xscripts, and related tooling when manipulating a project's
    * _metadata_, such as its file structure and configuration settings, with
-   * the goal of bringing the project up to date on latest best practices.
+   * the goal of bringing the project up to date with latest best practices.
    *
-   * @example `NODE_NO_WARNINGS=1 xscripts project renovate --`
+   * @example `NODE_NO_WARNINGS=1 xscripts project renovate --sync-deps --github-reconfigure-repo --regenerate-assets --assets-preset basic`
    */
   renovate?: string;
   /**

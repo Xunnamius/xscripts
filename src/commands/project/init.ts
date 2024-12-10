@@ -75,6 +75,7 @@ export default function command({
       // TODO (enable private vulnerability reporting and secret scanning for GitHub repositories)
       // TODO (each project gets its own personal GPG key added to the appropriate account automatically upon creation)
       // TODO (need to handle assetverse aliasing concerns (example in quiz-euphoriareign))
+      // TODO (set special version of renovate command depending on preset used: basic, cli, lib, lib-esm, react, next)
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
     })
