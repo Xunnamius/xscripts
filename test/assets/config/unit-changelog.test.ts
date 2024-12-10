@@ -220,7 +220,9 @@ it('groups types sections by default order', async () => {
           changelog.indexOf(' CI/CD')
         );
 
-        expect(changelog.indexOf(' CI/CD\n')).toBeLessThan(changelog.indexOf('Reverted'));
+        expect(changelog.indexOf(' CI/CD\n')).toBeLessThan(
+          changelog.indexOf('Reverted')
+        );
       }
     },
     generatePatchesForEnvironment1()
@@ -434,7 +436,9 @@ it('discards commits that have been reverted', async () => {
         {
           const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config);
-          expect(changelog).not.toInclude('*"feat: this commit is gonna get reverted!"*');
+          expect(changelog).not.toInclude(
+            '*"feat: this commit is gonna get reverted!"*'
+          );
           expect(changelog).toInclude('* This commit is gonna get reverted!');
         }
 
@@ -468,7 +472,9 @@ it('discards commits that have been reverted even if they contain breaking chang
           const config = moduleExport(dummyModuleExportConfig);
           const changelog = await runConventionalChangelog(config);
 
-          expect(changelog).not.toInclude('*"feat: this commit is gonna get reverted!"*');
+          expect(changelog).not.toInclude(
+            '*"feat: this commit is gonna get reverted!"*'
+          );
           expect(changelog).toInclude('* A breaking change.');
           expect(changelog).toInclude('* This commit is gonna get reverted!');
         }

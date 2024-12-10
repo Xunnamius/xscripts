@@ -10,7 +10,10 @@ import {
 
 import { type Binding, type Scope } from '@babel/traverse';
 
-import { toAbsolutePath, type AbsolutePath } from 'multiverse+project-utils:fs/common.ts';
+import {
+  toAbsolutePath,
+  type AbsolutePath
+} from 'multiverse+project-utils:fs/common.ts';
 
 import { ErrorMessage } from 'rootverse+babel-plugin-metadata-accumulator:src/error.ts';
 

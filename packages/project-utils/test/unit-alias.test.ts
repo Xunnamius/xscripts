@@ -81,7 +81,12 @@ const mockPolyrepoMappings = [
       group: WellKnownImportAlias.Typeverse,
       packageId: undefined
     },
-    { path: 'types' as RelativePath, prefix: 'root', suffix: 'open', extensionless: true }
+    {
+      path: 'types' as RelativePath,
+      prefix: 'root',
+      suffix: 'open',
+      extensionless: true
+    }
   ]
 ] satisfies [Omit<RawAlias, 'regExp'>, RawPath][] as RawAliasMapping[];
 
@@ -259,7 +264,12 @@ const mockHybridrepoMappings = [
       group: WellKnownImportAlias.Typeverse,
       packageId: undefined
     },
-    { path: 'types' as RelativePath, prefix: 'root', suffix: 'open', extensionless: true }
+    {
+      path: 'types' as RelativePath,
+      prefix: 'root',
+      suffix: 'open',
+      extensionless: true
+    }
   ]
 ] satisfies [Omit<RawAlias, 'regExp'>, RawPath][] as RawAliasMapping[];
 
@@ -450,7 +460,11 @@ describe('::makeRawAliasMapping', () => {
 
     expect(() =>
       makeRawAliasMapping(
-        { alias: 'alias-1', group: WellKnownImportAlias.Rootverse, packageId: undefined },
+        {
+          alias: 'alias-1',
+          group: WellKnownImportAlias.Rootverse,
+          packageId: undefined
+        },
         { path: 'the/path:for/alias-1' as RelativePath }
       )
     ).toThrow(
@@ -463,7 +477,11 @@ describe('::makeRawAliasMapping', () => {
 
     expect(() =>
       makeRawAliasMapping(
-        { alias: 'alias-1', group: WellKnownImportAlias.Rootverse, packageId: undefined },
+        {
+          alias: 'alias-1',
+          group: WellKnownImportAlias.Rootverse,
+          packageId: undefined
+        },
         { path: '/the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
@@ -472,7 +490,11 @@ describe('::makeRawAliasMapping', () => {
 
     expect(() =>
       makeRawAliasMapping(
-        { alias: 'alias-1', group: WellKnownImportAlias.Rootverse, packageId: undefined },
+        {
+          alias: 'alias-1',
+          group: WellKnownImportAlias.Rootverse,
+          packageId: undefined
+        },
         { path: 'the/path/for/alias-1/' as RelativePath }
       )
     ).toThrow(
@@ -942,23 +964,23 @@ describe('::deriveAliasesForNextJs', () => {
   it('returns expected aliases', async () => {
     expect.hasAssertions();
 
-    expect(deriveAliasesForNextJs(mockHybridrepoMappings, mockProjectRoot)).toStrictEqual(
-      {
-        'universe:': `${mockProjectRoot}/src/`,
-        universe: `${mockProjectRoot}/src/index.ts`,
-        'multiverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/src/`,
-        'multiverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/src/`,
-        'multiverse+pkg-2': `${mockProjectRoot}/path/to/packages/pkg-2/src/index.ts`,
-        'multiverse+pkg-1': `${mockProjectRoot}/path/to/packages/pkg-1/src/index.ts`,
-        'rootverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/`,
-        'rootverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/`,
-        'rootverse:': `${mockProjectRoot}/`,
-        'testverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/test/`,
-        'testverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/test/`,
-        'testverse:': `${mockProjectRoot}/test/`,
-        'typeverse:': `${mockProjectRoot}/types/`
-      }
-    );
+    expect(
+      deriveAliasesForNextJs(mockHybridrepoMappings, mockProjectRoot)
+    ).toStrictEqual({
+      'universe:': `${mockProjectRoot}/src/`,
+      universe: `${mockProjectRoot}/src/index.ts`,
+      'multiverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/src/`,
+      'multiverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/src/`,
+      'multiverse+pkg-2': `${mockProjectRoot}/path/to/packages/pkg-2/src/index.ts`,
+      'multiverse+pkg-1': `${mockProjectRoot}/path/to/packages/pkg-1/src/index.ts`,
+      'rootverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/`,
+      'rootverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/`,
+      'rootverse:': `${mockProjectRoot}/`,
+      'testverse+pkg-2:': `${mockProjectRoot}/path/to/packages/pkg-2/test/`,
+      'testverse+pkg-1:': `${mockProjectRoot}/path/to/packages/pkg-1/test/`,
+      'testverse:': `${mockProjectRoot}/test/`,
+      'typeverse:': `${mockProjectRoot}/types/`
+    });
   });
 });
 
@@ -1078,7 +1100,10 @@ describe('::mapRawSpecifierToRawAliasMapping', () => {
     ).toStrictEqual(mockHybridrepoMappings[5]);
 
     expect(
-      mapRawSpecifierToRawAliasMapping(mockHybridrepoMappings, 'rootverse+pkg-1:stuff.ts')
+      mapRawSpecifierToRawAliasMapping(
+        mockHybridrepoMappings,
+        'rootverse+pkg-1:stuff.ts'
+      )
     ).toStrictEqual(mockHybridrepoMappings[7]);
 
     expect(
@@ -1166,7 +1191,10 @@ describe('::mapRawSpecifierToPath', () => {
     ).toBe('path/to/packages/pkg-2/src/some/other/thing.ts');
 
     expect(
-      mapRawSpecifierToPath(mockHybridrepoMappings, 'rootverse+pkg-2:some/other/thing.ts')
+      mapRawSpecifierToPath(
+        mockHybridrepoMappings,
+        'rootverse+pkg-2:some/other/thing.ts'
+      )
     ).toBe('path/to/packages/pkg-2/some/other/thing.ts');
 
     expect(mapRawSpecifierToPath(mockHybridrepoMappings, 'rootverse:package.json')).toBe(
@@ -1236,7 +1264,9 @@ describe('::ensureRawSpecifierOk', () => {
       ensureRawSpecifierOk(mockHybridrepoMappings, '@-xun/project-utils/resolver')
     ).not.toThrow();
 
-    expect(() => ensureRawSpecifierOk(mockHybridrepoMappings, 'node:path')).not.toThrow();
+    expect(() =>
+      ensureRawSpecifierOk(mockHybridrepoMappings, 'node:path')
+    ).not.toThrow();
 
     expect(() =>
       ensureRawSpecifierOk(
@@ -1309,7 +1339,9 @@ describe('::ensureRawSpecifierOk', () => {
 
     expect(() =>
       ensureRawSpecifierOk(mockHybridrepoMappings, '..', { path: '/in/some/file.abc' })
-    ).toThrow(ErrorMessage.SpecifierNotOkRelativeNotRootverse('..', '/in/some/file.abc'));
+    ).toThrow(
+      ErrorMessage.SpecifierNotOkRelativeNotRootverse('..', '/in/some/file.abc')
+    );
 
     expect(() => ensureRawSpecifierOk(mockHybridrepoMappings, './something.js')).toThrow(
       ErrorMessage.SpecifierNotOkRelativeNotRootverse('./something.js')
@@ -1440,7 +1472,10 @@ describe('::ensureRawSpecifierOk', () => {
         path: '/in/some/file.abc'
       })
     ).toThrow(
-      ErrorMessage.SpecifierNotOkMissingExtension('typeverse:global', '/in/some/file.abc')
+      ErrorMessage.SpecifierNotOkMissingExtension(
+        'typeverse:global',
+        '/in/some/file.abc'
+      )
     );
   });
 

@@ -321,7 +321,10 @@ function gatherPackageBuildTargets_(
             group === WellKnownImportAlias.Rootverse ||
             group === WellKnownImportAlias.Typeverse;
 
-          const specifierResolvedPath = mapRawSpecifierToPath(rawAliasMapping, specifier);
+          const specifierResolvedPath = mapRawSpecifierToPath(
+            rawAliasMapping,
+            specifier
+          );
           assert(specifierResolvedPath, ErrorMessage.GuruMeditation());
 
           if (isMultiversal || isUniversal) {
@@ -428,7 +431,10 @@ export function specifierToPackageName(specifier: string) {
   return packageName;
 }
 
-function relativePathsArrayToAbsolute(relativePaths: RelativePath[], root: AbsolutePath) {
+function relativePathsArrayToAbsolute(
+  relativePaths: RelativePath[],
+  root: AbsolutePath
+) {
   return relativePaths.map((path) => toPath(root, path));
 }
 

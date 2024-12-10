@@ -3130,7 +3130,10 @@ describe('::resolveEntryPointsFromExportsTarget', () => {
         },
         operation: 'resolveEntryPointsFromExportsTarget'
       },
-      library: { ...defaultLibraryConfig, packageJson: dummyDefaultsPackage.packageJson },
+      library: {
+        ...defaultLibraryConfig,
+        packageJson: dummyDefaultsPackage.packageJson
+      },
       node: { ...defaultNodeConfig, packageName: dummyDefaultsPackage.name },
       conditions: [undefined, ['import']],
       targets: ['./default-1.js', './default-2.js'],
@@ -3464,7 +3467,10 @@ describe('::resolveEntryPointsFromExportsTarget', () => {
       },
       conditions: [['custom-edge-1'], ['custom-edge-1']],
       targets: ['./string-3.js', null],
-      subpaths: [['./null-in-fallback-edge-case-1', './null-in-fallback-edge-case-2'], []]
+      subpaths: [
+        ['./null-in-fallback-edge-case-1', './null-in-fallback-edge-case-2'],
+        []
+      ]
     });
 
     registerCoreResolverTest(context);
@@ -4800,7 +4806,10 @@ describe('::resolveEntryPointsFromImportsTarget', () => {
         },
         operation: 'resolveEntryPointsFromImportsTarget'
       },
-      library: { ...defaultLibraryConfig, packageJson: dummyDefaultsPackage.packageJson },
+      library: {
+        ...defaultLibraryConfig,
+        packageJson: dummyDefaultsPackage.packageJson
+      },
       node: {
         ...defaultNodeConfig,
         rootPackagePath: dummyDefaultsPackage.path,

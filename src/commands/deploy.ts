@@ -207,7 +207,8 @@ export default function command({
     // TODO: replace this option with "xscripts release"
     'bump-version': {
       boolean: true,
-      description: 'Bump the patch version in package.json after the deployment completes'
+      description:
+        'Bump the patch version in package.json after the deployment completes'
     }
   });
 

@@ -2210,7 +2210,10 @@ describe('::withBuilderExtensions', () => {
       {
         const { handlerResult } = await runner({ x: true, y: true });
         expect(handlerResult).toMatchObject({
-          message: ErrorMessage.DemandSpecificXorViolation(['y', $exists], ['x', $exists])
+          message: ErrorMessage.DemandSpecificXorViolation(
+            ['y', $exists],
+            ['x', $exists]
+          )
         });
       }
 
@@ -2227,42 +2230,60 @@ describe('::withBuilderExtensions', () => {
       {
         const { handlerResult } = await runner({ x: true, y: true, z: true });
         expect(handlerResult).toMatchObject({
-          message: ErrorMessage.DemandSpecificXorViolation(['y', $exists], ['x', $exists])
+          message: ErrorMessage.DemandSpecificXorViolation(
+            ['y', $exists],
+            ['x', $exists]
+          )
         });
       }
 
       {
         const { handlerResult } = await runner({ x: true, y: true, z: true });
         expect(handlerResult).toMatchObject({
-          message: ErrorMessage.DemandSpecificXorViolation(['y', $exists], ['x', $exists])
+          message: ErrorMessage.DemandSpecificXorViolation(
+            ['y', $exists],
+            ['x', $exists]
+          )
         });
       }
 
       {
         const { handlerResult } = await runner({ x: true, y: true, w: true });
         expect(handlerResult).toMatchObject({
-          message: ErrorMessage.DemandSpecificXorViolation(['y', $exists], ['x', $exists])
+          message: ErrorMessage.DemandSpecificXorViolation(
+            ['y', $exists],
+            ['x', $exists]
+          )
         });
       }
 
       {
         const { handlerResult } = await runner({ x: true, z: true, w: true });
         expect(handlerResult).toMatchObject({
-          message: ErrorMessage.DemandSpecificXorViolation(['w', $exists], ['z', $exists])
+          message: ErrorMessage.DemandSpecificXorViolation(
+            ['w', $exists],
+            ['z', $exists]
+          )
         });
       }
 
       {
         const { handlerResult } = await runner({ y: true, z: true, w: true });
         expect(handlerResult).toMatchObject({
-          message: ErrorMessage.DemandSpecificXorViolation(['w', $exists], ['z', $exists])
+          message: ErrorMessage.DemandSpecificXorViolation(
+            ['w', $exists],
+            ['z', $exists]
+          )
         });
       }
 
       {
         const { handlerResult } = await runner({ x: true, y: true, z: true, w: true });
         expect(handlerResult).toMatchObject({
-          message: ErrorMessage.DemandSpecificXorViolation(['y', $exists], ['x', $exists])
+          message: ErrorMessage.DemandSpecificXorViolation(
+            ['y', $exists],
+            ['x', $exists]
+          )
         });
       }
     });
@@ -2346,7 +2367,10 @@ describe('::withBuilderExtensions', () => {
       {
         const { handlerResult } = await runner({ x: true, z: true });
         expect(handlerResult).toMatchObject({
-          message: ErrorMessage.DemandSpecificXorViolation(['z', $exists], ['x', $exists])
+          message: ErrorMessage.DemandSpecificXorViolation(
+            ['z', $exists],
+            ['x', $exists]
+          )
         });
       }
 
@@ -2360,7 +2384,10 @@ describe('::withBuilderExtensions', () => {
       {
         const { handlerResult } = await runner({ x: true, z: true, y: true });
         expect(handlerResult).toMatchObject({
-          message: ErrorMessage.DemandSpecificXorViolation(['z', $exists], ['x', $exists])
+          message: ErrorMessage.DemandSpecificXorViolation(
+            ['z', $exists],
+            ['x', $exists]
+          )
         });
       }
     });

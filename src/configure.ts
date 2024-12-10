@@ -169,7 +169,10 @@ export const configureExecutionContext = async function (context) {
         __dirname.startsWith(rootPackageDistDirPath));
 
     rootDebugLogger('__dirname: %O', __dirname);
-    rootDebugLogger('nodeModulesDirTsconfigFilePath: %O', nodeModulesDirTsconfigFilePath);
+    rootDebugLogger(
+      'nodeModulesDirTsconfigFilePath: %O',
+      nodeModulesDirTsconfigFilePath
+    );
     rootDebugLogger(
       'isRunningFromWithinCurrentProjectDistDir: %O',
       isRunningFromWithinCurrentProjectDistDir

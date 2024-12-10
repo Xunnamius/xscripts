@@ -255,7 +255,9 @@ createFixture({
   fixtureName: 'badMonorepoNonPackageDir',
   prototypeRoot: 'bad-monorepo-non-package-dir',
   attributes: { cjs: true, polyrepo: true },
-  namedPackageMapData: [{ name: 'pkg-1', root: 'pkgs/pkg-1', attributes: { cjs: true } }],
+  namedPackageMapData: [
+    { name: 'pkg-1', root: 'pkgs/pkg-1', attributes: { cjs: true } }
+  ],
   brokenPackageRoots: ['pkgs/pkg-10', 'pkgs/pkg-100']
 });
 
@@ -617,7 +619,8 @@ export function fixtureToProjectMetadata(
       })
     ) as NonNullable<ProjectMetadata['subRootPackages']>;
 
-    mockProjectMetadata.subRootPackages.broken = fixtures[fixtureName].brokenPackageRoots;
+    mockProjectMetadata.subRootPackages.broken =
+      fixtures[fixtureName].brokenPackageRoots;
 
     mockProjectMetadata.subRootPackages.unnamed = new Map(
       fixtures[fixtureName].unnamedPackageMapData.map(([key, package_]) => {

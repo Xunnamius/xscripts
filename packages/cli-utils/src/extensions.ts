@@ -1,5 +1,8 @@
 import { $executionContext } from '@black-flag/core';
-import { CommandNotImplementedError, type ExecutionContext } from '@black-flag/core/util';
+import {
+  CommandNotImplementedError,
+  type ExecutionContext
+} from '@black-flag/core/util';
 
 import {
   withBuilderExtensions,

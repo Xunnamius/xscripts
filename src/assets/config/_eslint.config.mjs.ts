@@ -376,7 +376,9 @@ function jestRules(): NonNullable<EslintConfig['rules']> {
     'jest/padding-around-test-blocks': 'off',
     'jest/require-hook': [
       'error',
-      { allowedFunctionCalls: ['reconfigureJestGlobalsToSkipTestsInThisFileIfRequested'] }
+      {
+        allowedFunctionCalls: ['reconfigureJestGlobalsToSkipTestsInThisFileIfRequested']
+      }
     ],
 
     // * typescript-eslint

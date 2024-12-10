@@ -52,7 +52,9 @@ describe('::isAccessible', () => {
 
       mockedAccessSync.mockImplementation(() => undefined);
 
-      expect(isAccessible.sync('/pretend/it/does/exist', { useCached: true })).toBeTrue();
+      expect(
+        isAccessible.sync('/pretend/it/does/exist', { useCached: true })
+      ).toBeTrue();
     });
 
     it('returns false for path without default accessibility (R_OK)', () => {
@@ -84,7 +86,9 @@ describe('::isAccessible', () => {
 
       mockedAccessSync.mockImplementation(() => toss(new Error('no')));
 
-      expect(isAccessible.sync('/pretend/it/does/exist', { useCached: true })).toBeTrue();
+      expect(
+        isAccessible.sync('/pretend/it/does/exist', { useCached: true })
+      ).toBeTrue();
 
       mockedAccessSync.mockImplementation(() => toss(new Error('no')));
 
@@ -178,7 +182,9 @@ describe('::readJson', () => {
       mockedReadFileSync.mockImplementation(() => toss(new Error('contrived')));
 
       expect(() =>
-        readJson.sync('/does/not/exist/package.json' as AbsolutePath, { useCached: true })
+        readJson.sync('/does/not/exist/package.json' as AbsolutePath, {
+          useCached: true
+        })
       ).toThrow(ErrorMessage.NotReadable('/does/not/exist/package.json'));
     });
 
@@ -665,7 +671,10 @@ describe('::readXPackageJsonAtRoot', () => {
       mockedReadFileAsync.mockImplementation(() => Promise.resolve('{{'));
 
       await expect(
-        readXPackageJsonAtRoot(fixtures.goodPolyrepo.root, { useCached: true, try: true })
+        readXPackageJsonAtRoot(fixtures.goodPolyrepo.root, {
+          useCached: true,
+          try: true
+        })
       ).resolves.toBeEmptyObject();
     });
 
@@ -770,9 +779,12 @@ describe('::deriveVirtualPrettierignoreLines', () => {
         ].join('\n');
       });
 
-      const result = deriveVirtualPrettierignoreLines.sync('/fake/root' as AbsolutePath, {
-        useCached: false
-      });
+      const result = deriveVirtualPrettierignoreLines.sync(
+        '/fake/root' as AbsolutePath,
+        {
+          useCached: false
+        }
+      );
 
       expect(result).toStrictEqual(['.git', 'item-1', 'item-2']);
 

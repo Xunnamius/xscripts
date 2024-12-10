@@ -261,7 +261,8 @@ Use --import-section-file to add a custom release section to the changelog. The 
         debug.extend('cc')('conventionalConfig: %O', conventionalConfig);
 
         const { default: makeChangelogSectionStream } = await import('@-xun/changelog');
-        const { gitRawCommitsOpts, parserOpts, writerOpts, options } = conventionalConfig;
+        const { gitRawCommitsOpts, parserOpts, writerOpts, options } =
+          conventionalConfig;
         const handlebarsTemplateGlobalContext = {};
 
         const changelogSectionStream = makeChangelogSectionStream(
@@ -293,7 +294,8 @@ Use --import-section-file to add a custom release section to the changelog. The 
         debug('running pipeline...');
 
         const withheldChangelogPatchSections: string[] = [];
-        let additionalSection: { version: string; notes: string } | undefined = undefined;
+        let additionalSection: { version: string; notes: string } | undefined =
+          undefined;
 
         if (importSectionFile) {
           debug('importing additional release section from: %O', importSectionFile);

@@ -121,7 +121,9 @@ function readJson_<T>(
  * function's options for details.** To fetch fresh results, set the `useCached`
  * option to `false` or clear the internal cache with {@link cache.clear}.
  */
-export function readJson<T = JsonValue>(...args: ParametersNoFirst<typeof readJson_<T>>) {
+export function readJson<T = JsonValue>(
+  ...args: ParametersNoFirst<typeof readJson_<T>>
+) {
   return readJson_<T>(false, ...args);
 }
 

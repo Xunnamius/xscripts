@@ -8,7 +8,9 @@ const { moduleExport } = require('@-xun/scripts/assets/config/release.config.cjs
 
 const { parserOpts, writerOpts } = require('./conventional.config.cjs');
 // TODO: delete this
-const { analyzeProjectStructure } = require('./dist/packages/project-utils/src/index.js');
+const {
+  analyzeProjectStructure
+} = require('./dist/packages/project-utils/src/index.js');
 
 // TODO: delete this
 const {

@@ -338,7 +338,9 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
         promisedLinters.push(
           runLinter('npx', npxEslintArguments, {
             cwd: projectRoot,
-            env: { XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS: allowWarningComments.toString() }
+            env: {
+              XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS: allowWarningComments.toString()
+            }
           })
         );
       }

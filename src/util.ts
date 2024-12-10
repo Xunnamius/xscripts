@@ -268,7 +268,12 @@ export type LoadDotEnvSettings = {
  */
 export type LoadDotEnvSimplifiedSettings = Merge<
   LoadDotEnvSettings,
-  { log?: undefined; onFail?: undefined; failInstructions?: undefined; force?: undefined }
+  {
+    log?: undefined;
+    onFail?: undefined;
+    failInstructions?: undefined;
+    force?: undefined;
+  }
 >;
 
 /**

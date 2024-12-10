@@ -574,7 +574,8 @@ const eslintPluginJestStyle = eslintPluginJest.configs['flat/style'];
 assert(eslintPluginJestAll);
 assert(eslintPluginJestStyle);
 
-const eslintPluginNodeRecommendedExtEither = eslintPluginNode.configs['flat/recommended'];
+const eslintPluginNodeRecommendedExtEither =
+  eslintPluginNode.configs['flat/recommended'];
 const eslintPluginNodeRecommendedExtMjs =
   eslintPluginNode.configs['flat/recommended-module'];
 const eslintPluginNodeRecommendedExtCjs =

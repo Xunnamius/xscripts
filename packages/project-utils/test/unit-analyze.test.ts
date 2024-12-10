@@ -176,7 +176,9 @@ describe('::pathToPackage', () => {
     const firstPackage = fixtures.goodHybridrepo.namedPackageMapData[0][1];
     const secondPackage = fixtures.goodHybridrepo.unnamedPackageMapData[0][1];
 
-    expect(pathToPackage(firstPackage.root, projectMetadata)).toStrictEqual(firstPackage);
+    expect(pathToPackage(firstPackage.root, projectMetadata)).toStrictEqual(
+      firstPackage
+    );
 
     expect(
       pathToPackage(
@@ -2723,7 +2725,10 @@ describe('::gatherPackageBuildTargets', () => {
       expect(
         gatherPackageBuildTargets.sync(
           subRootPackages.get('@namespaced/webpack-common-config')!,
-          { includeExternalsPatterns: ['packages/private/src/index.ts'], useCached: true }
+          {
+            includeExternalsPatterns: ['packages/private/src/index.ts'],
+            useCached: true
+          }
         )
       ).toStrictEqual({
         targets: {
@@ -3174,7 +3179,10 @@ describe('::gatherPackageBuildTargets', () => {
       await expect(
         gatherPackageBuildTargets(
           subRootPackages.get('@namespaced/webpack-common-config')!,
-          { includeExternalsPatterns: ['packages/private/src/index.ts'], useCached: true }
+          {
+            includeExternalsPatterns: ['packages/private/src/index.ts'],
+            useCached: true
+          }
         )
       ).resolves.toStrictEqual({
         targets: {

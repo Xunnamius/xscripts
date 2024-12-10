@@ -118,7 +118,9 @@ void (async () => {
 
   if (typos.length) {
     console.warn('WARNING: there may be misspelled words in your commit message!');
-    console.warn('Commit messages can be fixed before push with `git commit -S --amend`');
+    console.warn(
+      'Commit messages can be fixed before push with `git commit -S --amend`'
+    );
     console.warn('---');
 
     for (const typo of typos.slice(0, 5)) {

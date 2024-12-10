@@ -6,7 +6,9 @@ const {
 } = require('@-xun/scripts/assets/config/conventional.config.cjs');
 
 // TODO: delete this
-const { analyzeProjectStructure } = require('./dist/packages/project-utils/src/index.js');
+const {
+  analyzeProjectStructure
+} = require('./dist/packages/project-utils/src/index.js');
 
 module.exports = moduleExport({
   configOverrides(config) {

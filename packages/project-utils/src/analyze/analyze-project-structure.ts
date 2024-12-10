@@ -741,7 +741,12 @@ function getProjectAttributes(
 
   if (runSynchronously) {
     if (
-      isAccessibleFromRoot(true, toRelativePath(nextjsConfigProjectBase), root, useCached)
+      isAccessibleFromRoot(
+        true,
+        toRelativePath(nextjsConfigProjectBase),
+        root,
+        useCached
+      )
     ) {
       attributes[ProjectAttribute.Next] = true;
     }
@@ -881,7 +886,9 @@ function getWorkspaceAttributes(
 
   if (!['module', 'commonjs'].includes(type)) {
     throw new ProjectError(
-      ErrorMessage.BadProjectTypeInPackageJson(toPath(root, packageJsonConfigPackageBase))
+      ErrorMessage.BadProjectTypeInPackageJson(
+        toPath(root, packageJsonConfigPackageBase)
+      )
     );
   }
 
@@ -914,7 +921,12 @@ function getWorkspaceAttributes(
     }
 
     if (
-      isAccessibleFromRoot(true, toRelativePath(sharedConfigPackageBase), root, useCached)
+      isAccessibleFromRoot(
+        true,
+        toRelativePath(sharedConfigPackageBase),
+        root,
+        useCached
+      )
     ) {
       attributes[WorkspaceAttribute.Shared] = true;
     }

@@ -21,7 +21,9 @@ import {
 
 import type { LiteralUnion, Promisable } from 'type-fest';
 
-const globalDebug = createDebugLogger({ namespace: `${rootPackageJsonName}:jest-setup` });
+const globalDebug = createDebugLogger({
+  namespace: `${rootPackageJsonName}:jest-setup`
+});
 
 globalDebug(`rootPackageJsonName: "${rootPackageJsonName}"`);
 globalDebug(`rootPackageJsonVersion: "${rootPackageJsonVersion}"`);
@@ -31,7 +33,9 @@ globalDebug(`rootPackageJsonVersion: "${rootPackageJsonVersion}"`);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export declare type AnyFunction = (...args: any[]) => unknown;
 
-export function asMockedFunction<T extends AnyFunction = never>(): jest.MockedFunction<T>;
+export function asMockedFunction<
+  T extends AnyFunction = never
+>(): jest.MockedFunction<T>;
 export function asMockedFunction<T extends AnyFunction>(fn: T): jest.MockedFunction<T>;
 export function asMockedFunction<T extends AnyFunction>(fn?: T): jest.MockedFunction<T> {
   return (fn ?? jest.fn()) as unknown as jest.MockedFunction<T>;
@@ -941,7 +945,9 @@ export function webpackTestFixture(): MockFixture {
     description: 'setting up webpack jest integration test',
     setup: async (context) => {
       if (typeof context.options.webpackVersion !== 'string') {
-        throw new TypeError('invalid or missing options.webpackVersion, expected string');
+        throw new TypeError(
+          'invalid or missing options.webpackVersion, expected string'
+        );
       }
 
       const indexPath = Object.keys(context.fileContents).find((path) => {

@@ -167,7 +167,9 @@ export type ReleaseTask =
       type: 'pre' | 'post';
       id: number;
       skippable: boolean;
-      npmScripts: StringKeyOf<OmitIndexSignature<NonNullable<XPackageJson['scripts']>>>[];
+      npmScripts: StringKeyOf<
+        OmitIndexSignature<NonNullable<XPackageJson['scripts']>>
+      >[];
       actionDescription?: string;
       helpDescription: string;
       emoji?: string;

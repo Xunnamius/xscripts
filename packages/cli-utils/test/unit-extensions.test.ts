@@ -108,15 +108,17 @@ describe('::withStandardBuilder', () => {
       builder(blackFlag, false, undefined);
       builder(blackFlag, false, argv);
 
-      await withHandlerExtensions(({ hush, quiet, silent, [$executionContext]: ctx }) => {
-        expect(hush).toBeTrue();
-        expect(quiet).toBeFalse();
-        expect(silent).toBeFalse();
+      await withHandlerExtensions(
+        ({ hush, quiet, silent, [$executionContext]: ctx }) => {
+          expect(hush).toBeTrue();
+          expect(quiet).toBeFalse();
+          expect(silent).toBeFalse();
 
-        expect(ctx.state.isHushed).toBeTrue();
-        expect(ctx.state.isQuieted).toBeUndefined();
-        expect(ctx.state.isSilenced).toBeUndefined();
-      })(argv);
+          expect(ctx.state.isHushed).toBeTrue();
+          expect(ctx.state.isQuieted).toBeUndefined();
+          expect(ctx.state.isSilenced).toBeUndefined();
+        }
+      )(argv);
     }
 
     {
@@ -130,15 +132,17 @@ describe('::withStandardBuilder', () => {
       builder(blackFlag, false, undefined);
       builder(blackFlag, false, argv);
 
-      await withHandlerExtensions(({ hush, quiet, silent, [$executionContext]: ctx }) => {
-        expect(hush).toBeTrue();
-        expect(quiet).toBeTrue();
-        expect(silent).toBeFalse();
+      await withHandlerExtensions(
+        ({ hush, quiet, silent, [$executionContext]: ctx }) => {
+          expect(hush).toBeTrue();
+          expect(quiet).toBeTrue();
+          expect(silent).toBeFalse();
 
-        expect(ctx.state.isHushed).toBeTrue();
-        expect(ctx.state.isQuieted).toBeTrue();
-        expect(ctx.state.isSilenced).toBeUndefined();
-      })(argv);
+          expect(ctx.state.isHushed).toBeTrue();
+          expect(ctx.state.isQuieted).toBeTrue();
+          expect(ctx.state.isSilenced).toBeUndefined();
+        }
+      )(argv);
     }
 
     {
@@ -152,15 +156,17 @@ describe('::withStandardBuilder', () => {
       builder(blackFlag, false, undefined);
       builder(blackFlag, false, argv);
 
-      await withHandlerExtensions(({ hush, quiet, silent, [$executionContext]: ctx }) => {
-        expect(hush).toBeTrue();
-        expect(quiet).toBeTrue();
-        expect(silent).toBeTrue();
+      await withHandlerExtensions(
+        ({ hush, quiet, silent, [$executionContext]: ctx }) => {
+          expect(hush).toBeTrue();
+          expect(quiet).toBeTrue();
+          expect(silent).toBeTrue();
 
-        expect(ctx.state.isHushed).toBeTrue();
-        expect(ctx.state.isQuieted).toBeTrue();
-        expect(ctx.state.isSilenced).toBeTrue();
-      })(argv);
+          expect(ctx.state.isHushed).toBeTrue();
+          expect(ctx.state.isQuieted).toBeTrue();
+          expect(ctx.state.isSilenced).toBeTrue();
+        }
+      )(argv);
     }
   });
 });

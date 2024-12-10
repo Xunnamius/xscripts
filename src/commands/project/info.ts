@@ -17,7 +17,11 @@ import {
   type GlobalExecutionContext
 } from 'universe:configure.ts';
 
-import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe:util.ts';
+import {
+  runGlobalPreChecks,
+  withGlobalBuilder,
+  withGlobalUsage
+} from 'universe:util.ts';
 
 /**
  * @see {@link ProjectInfoScope}

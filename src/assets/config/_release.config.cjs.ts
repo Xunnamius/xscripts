@@ -386,7 +386,9 @@ export async function generateNotes(
   });
 
   if (!prettyTrimmedNotes) {
-    throw new Error(`unexpectedly empty temporary changelog file: ${releaseSectionPath}`);
+    throw new Error(
+      `unexpectedly empty temporary changelog file: ${releaseSectionPath}`
+    );
   }
 
   return (

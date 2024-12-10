@@ -177,18 +177,20 @@ export default async function command({
 
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
     function (_blackFlag, _helpOrVersionSet, argv) {
-      const baseParameters: BfeBuilderObject<CustomCliArguments, GlobalExecutionContext> =
-        {
-          scope: { choices: distributablesBuilderScopes },
-          'clean-output-dir': {
-            alias: 'clean',
-            boolean: true,
-            description: 'Force-delete the output directory before transpilation',
-            default: projectMetadata_
-              ? !projectAttributes[ProjectAttribute.Next]
-              : '(project-dependent)'
-          }
-        };
+      const baseParameters: BfeBuilderObject<
+        CustomCliArguments,
+        GlobalExecutionContext
+      > = {
+        scope: { choices: distributablesBuilderScopes },
+        'clean-output-dir': {
+          alias: 'clean',
+          boolean: true,
+          description: 'Force-delete the output directory before transpilation',
+          default: projectMetadata_
+            ? !projectAttributes[ProjectAttribute.Next]
+            : '(project-dependent)'
+        }
+      };
 
       const additionalParameters: BfeBuilderObject<
         CustomCliArguments,
@@ -430,7 +432,10 @@ Finally, note that, when attempting to build a Next.js package, this command wil
           debug('moduleSystem: %O', moduleSystem_);
           debug('outputExtension (original): %O', outputExtension);
           debug('skipOutputChecks: %O', skipOutputChecks_);
-          debug('skipOutputValidityCheckFor (original): %O', skipOutputValidityCheckFor_);
+          debug(
+            'skipOutputValidityCheckFor (original): %O',
+            skipOutputValidityCheckFor_
+          );
           debug(
             'skipOutputExtraneityCheckFor (original): %O',
             skipOutputExtraneityCheckFor_
@@ -684,7 +689,9 @@ distrib root: ${absoluteOutputDirPath}
           );
 
           if (cleanOutputDir) {
-            debug(`forcefully deleting build output directory: ${absoluteOutputDirPath}`);
+            debug(
+              `forcefully deleting build output directory: ${absoluteOutputDirPath}`
+            );
             await forceDeletePaths(absoluteOutputDirPath);
           }
 
@@ -854,7 +861,11 @@ distrib root: ${absoluteOutputDirPath}
                 (await babelTransformAsync(sourcePath, babelOptions)) || {};
 
               if (code) {
-                debug('write-out transpilation result: %O => %O', sourcePath, outputPath);
+                debug(
+                  'write-out transpilation result: %O => %O',
+                  sourcePath,
+                  outputPath
+                );
                 await writeFile(outputPath, code);
               } else {
                 debug.error('transpilation returned an empty result: %O', outputPath);
@@ -1164,7 +1175,10 @@ distrib root: ${absoluteOutputDirPath}
                 }
               }
 
-              debug('skipOutputValidityCheckFor (final): %O', skipOutputValidityCheckFor);
+              debug(
+                'skipOutputValidityCheckFor (final): %O',
+                skipOutputValidityCheckFor
+              );
 
               debug(
                 'skipOutputExtraneityCheckFor (final): %O',

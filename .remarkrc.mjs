@@ -233,7 +233,9 @@ const config =
             : formatConfig.settings)
         },
         plugins: [
-          ...(process.env.NODE_ENV === 'lint' ? lintConfig.plugins : formatConfig.plugins)
+          ...(process.env.NODE_ENV === 'lint'
+            ? lintConfig.plugins
+            : formatConfig.plugins)
         ]
       };
 

@@ -102,7 +102,10 @@ export default function command({
       boolean: true,
       description: 'Only target package.json files for formatting',
       default: false,
-      conflicts: ['renumber-references', { 'only-markdown': true, 'only-prettier': true }]
+      conflicts: [
+        'renumber-references',
+        { 'only-markdown': true, 'only-prettier': true }
+      ]
     },
     'only-markdown': {
       boolean: true,

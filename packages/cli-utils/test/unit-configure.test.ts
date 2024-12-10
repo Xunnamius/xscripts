@@ -164,7 +164,10 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
     };
 
     {
-      const { meta, argv, context } = await makeMocks({ withListr2Support: true, state });
+      const { meta, argv, context } = await makeMocks({
+        withListr2Support: true,
+        state
+      });
 
       await withMockedOutput(async () => {
         await makeStandardConfigureErrorHandlingEpilogue()(meta, argv, context);
@@ -193,7 +196,10 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
     };
 
     {
-      const { meta, argv, context } = await makeMocks({ withListr2Support: true, state });
+      const { meta, argv, context } = await makeMocks({
+        withListr2Support: true,
+        state
+      });
 
       await withMockedOutput(async ({ errorSpy }) => {
         await makeStandardConfigureErrorHandlingEpilogue()(meta, argv, context);
@@ -230,7 +236,10 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
     };
 
     {
-      const { meta, argv, context } = await makeMocks({ withListr2Support: true, state });
+      const { meta, argv, context } = await makeMocks({
+        withListr2Support: true,
+        state
+      });
 
       await withMockedOutput(async ({ errorSpy }) => {
         await makeStandardConfigureErrorHandlingEpilogue()(meta, argv, context);
@@ -574,7 +583,9 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
                 cause: new Error('2', {
                   cause: new Error('2', {
                     cause: new Error('1', {
-                      cause: new Error('3', { cause: new Error('3', { cause: 'final' }) })
+                      cause: new Error('3', {
+                        cause: new Error('3', { cause: 'final' })
+                      })
                     })
                   })
                 })
@@ -658,7 +669,9 @@ describe('::makeStandardConfigureErrorHandlingEpilogue', () => {
           [expect.stringContaining(`test::<error> ${TAB}⮕  8`)],
           [expect.stringContaining(`test::<error> ${TAB}⮕  9`)],
           [expect.stringContaining(`test::<error> ${TAB}⮕  10`)],
-          [expect.stringContaining('test::<error> (remaining entries have been hidden)')],
+          [
+            expect.stringContaining('test::<error> (remaining entries have been hidden)')
+          ],
           [''],
           [expect.stringContaining('test::<error> ❌ Fatal task errors:')],
           [expect.stringContaining(`test::<error> ${TAB}❗ Dummy task error`)]

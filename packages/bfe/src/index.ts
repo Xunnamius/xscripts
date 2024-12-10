@@ -660,7 +660,10 @@ export type WithBuilderExtensionsReturnType<
   CustomExecutionContext extends ExecutionContext
 > = [
   builder: BfeBuilderFunction<CustomCliArguments, CustomExecutionContext>,
-  withHandlerExtensions: WithHandlerExtensions<CustomCliArguments, CustomExecutionContext>
+  withHandlerExtensions: WithHandlerExtensions<
+    CustomCliArguments,
+    CustomExecutionContext
+  >
 ];
 
 /**
@@ -770,7 +773,9 @@ export function withBuilderExtensions<
 
       if (isSecondPass) {
         defaultedOptions = (
-          latestBfInstance as unknown as { parsed?: { defaulted?: Record<string, true> } }
+          latestBfInstance as unknown as {
+            parsed?: { defaulted?: Record<string, true> };
+          }
         ).parsed?.defaulted;
 
         assertHard(defaultedOptions, ErrorMessage.UnexpectedlyFalsyDetailedArguments());
@@ -823,7 +828,9 @@ export function withBuilderExtensions<
               updaters.forEach(({ when, update }, index) => {
                 if (superOption in argv && when(argv[superOption], argv)) {
                   subOptionConfig =
-                    typeof update === 'function' ? update(subOptionConfig, argv) : update;
+                    typeof update === 'function'
+                      ? update(subOptionConfig, argv)
+                      : update;
 
                   debug(
                     'accepted configuration update #%o to suboption %O: %O',
@@ -898,7 +905,11 @@ export function withBuilderExtensions<
             `Required Options ${demandedAtLeastOne.length > 1 ? `${count} ` : ''}(mutually exclusive):`
           );
 
-          debug(`added "Required (mutually exclusive)" grouping #%O: %O`, count, options);
+          debug(
+            `added "Required (mutually exclusive)" grouping #%O: %O`,
+            count,
+            options
+          );
         });
 
         for (const [groupName, options] of Object.entries(customGroups)) {
@@ -957,7 +968,9 @@ export function withBuilderExtensions<
         debug('real argv: %O', realArgv);
 
         const defaultedOptions = (
-          latestBfInstance as unknown as { parsed?: { defaulted?: Record<string, true> } }
+          latestBfInstance as unknown as {
+            parsed?: { defaulted?: Record<string, true> };
+          }
         ).parsed?.defaulted;
 
         debug('defaultedOptions: %O', defaultedOptions);
@@ -1119,7 +1132,10 @@ export function withBuilderExtensions<
             }
           });
 
-          assertSoft(sawAtLeastOne, ErrorMessage.DemandGenericXorViolation(groupEntries));
+          assertSoft(
+            sawAtLeastOne,
+            ErrorMessage.DemandGenericXorViolation(groupEntries)
+          );
         });
 
         // ? Take advantage of our loop through optionsMetadata.implied to
@@ -1341,7 +1357,10 @@ export async function getInvocableExtendedHandler<
   } else {
     // ! We cannot trust the type of command if we've reached this point
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    assertHard(command && typeof command === 'object', ErrorMessage.FalsyCommandExport());
+    assertHard(
+      command && typeof command === 'object',
+      ErrorMessage.FalsyCommandExport()
+    );
 
     // * Now we can trust its type :)
     config = command;

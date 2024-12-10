@@ -16,7 +16,11 @@ import {
   type GlobalExecutionContext
 } from 'universe:configure.ts';
 
-import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe:util.ts';
+import {
+  runGlobalPreChecks,
+  withGlobalBuilder,
+  withGlobalUsage
+} from 'universe:util.ts';
 
 const frontmatter = `\n⮞  `;
 
@@ -40,7 +44,8 @@ export default function command({
           boolean: true,
           description: 'List all tasks along with their implementation code',
           default: argv?._.length ? true : false,
-          defaultDescription: '"true" if one or more task names passed; "false" otherwise'
+          defaultDescription:
+            '"true" if one or more task names passed; "false" otherwise'
         }
       };
     }

@@ -21,7 +21,11 @@ import {
 } from 'universe:configure.ts';
 
 import { ErrorMessage } from 'universe:error.ts';
-import { runGlobalPreChecks, withGlobalBuilder, withGlobalUsage } from 'universe:util.ts';
+import {
+  runGlobalPreChecks,
+  withGlobalBuilder,
+  withGlobalUsage
+} from 'universe:util.ts';
 
 const matchNothing = '(?!)';
 

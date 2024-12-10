@@ -468,7 +468,9 @@ export function moduleExport({
           ErrorMessage.MonkeyPatchFailedToTake(__filename)
         );
 
-        const commit = safeDeepClone(cubby.proxiedTargets.get(commit_) as typeof commit_);
+        const commit = safeDeepClone(
+          cubby.proxiedTargets.get(commit_) as typeof commit_
+        );
 
         const debug_ = debug.extend('writerOpts:transform');
         debug_('pre-transform commit: %O', commit);
@@ -1015,7 +1017,8 @@ export async function getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix(
 
     reference = isXpipelineReferenceMoreRecent ? xpipelineReference : initTagReference;
   } else {
-    reference = xpipelineReference || initTagReference || noSpecialInitialCommitIndicator;
+    reference =
+      xpipelineReference || initTagReference || noSpecialInitialCommitIndicator;
   }
 
   debug(

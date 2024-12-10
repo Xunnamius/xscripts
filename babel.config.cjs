@@ -161,7 +161,9 @@ const babelPluginTransformRewriteImportsDefinitionModuleResolver = [
         )
       ),
       // ? Replace any JS/TS extensions with .js (recognized by/as .d.ts)
-      ...Object.fromEntries(dTsExtensionsToReplace.map((extension) => [extension, '.js']))
+      ...Object.fromEntries(
+        dTsExtensionsToReplace.map((extension) => [extension, '.js'])
+      )
     }
   }
 ];

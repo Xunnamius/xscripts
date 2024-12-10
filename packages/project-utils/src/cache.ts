@@ -282,7 +282,9 @@ function getFromCache(
 ): FunctionToCacheParameters<typeof deriveVirtualGitignoreLines>[1] | undefined;
 function getFromCache(
   scope: CacheScope.DeriveVirtualPrettierignoreLines,
-  ...args: ArrayNoLast<FunctionToCacheParameters<typeof deriveVirtualPrettierignoreLines>>
+  ...args: ArrayNoLast<
+    FunctionToCacheParameters<typeof deriveVirtualPrettierignoreLines>
+  >
 ): FunctionToCacheParameters<typeof deriveVirtualPrettierignoreLines>[1] | undefined;
 function getFromCache(
   scope: CacheScope.IsAccessible,

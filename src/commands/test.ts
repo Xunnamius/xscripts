@@ -498,7 +498,9 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
               : toRelativePath(projectRoot, package_.root);
           });
 
-        testPathIgnorePatterns.push(...testIgnorePathSegments.map((root) => `/${root}/`));
+        testPathIgnorePatterns.push(
+          ...testIgnorePathSegments.map((root) => `/${root}/`)
+        );
 
         if (testPathIgnorePatterns.length) {
           npxJestArguments.push(
@@ -554,7 +556,8 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
         const tstycheTargetRelativePaths = tstycheTargetAbsolutePaths
           .filter(
-            (path) => path.startsWith(packageRoot + '/') && tstycheTargetRegExp.test(path)
+            (path) =>
+              path.startsWith(packageRoot + '/') && tstycheTargetRegExp.test(path)
           )
           .map((path) => toRelativePath(packageRoot, path) as string);
 

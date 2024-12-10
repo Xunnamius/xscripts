@@ -565,7 +565,9 @@ export function deriveAliasesForJest(rawAliasMappings: readonly RawAliasMapping[
  *
  * See also: https://www.typescriptlang.org/tsconfig/#paths
  */
-export function deriveAliasesForTypeScript(rawAliasMappings: readonly RawAliasMapping[]) {
+export function deriveAliasesForTypeScript(
+  rawAliasMappings: readonly RawAliasMapping[]
+) {
   return Object.fromEntries(
     rawAliasMappings.map(([rawAlias, rawPath]) => {
       const aliasSuffix = rawAlias.suffix === 'open' ? `${uriSchemeDelimiter}*` : '';
