@@ -14,7 +14,7 @@ export default {
       files: '**/*.?(@(c|m))@(ts|js)?(x)',
       options: {
         parser: 'babel-ts',
-        printWidth: 90
+        printWidth: 89
       }
     }
   ]
