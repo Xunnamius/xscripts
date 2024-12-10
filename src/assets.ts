@@ -1,6 +1,9 @@
+import { readdir } from 'node:fs/promises';
+
 import { CliError } from '@black-flag/core';
 import mergeWith from 'lodash.mergewith';
 
+import { type ExtendedDebugger } from 'multiverse+debug';
 import { type ProjectAttribute, type ProjectMetadata } from 'multiverse+project-utils';
 
 import {
@@ -9,7 +12,7 @@ import {
   type RelativePath
 } from 'multiverse+project-utils:fs.ts';
 
-import { createDebugLogger } from 'multiverse+rejoinder';
+import { createDebugLogger, type ExtendedLogger } from 'multiverse+rejoinder';
 
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
@@ -188,6 +191,14 @@ export type TransformerContext = {
    * Whether or not to derive aliases and inject them into the configuration.
    */
   shouldDeriveAliases: boolean;
+  /**
+   * Global logging function.
+   */
+  log: ExtendedLogger;
+  /**
+   * Global debugging function.
+   */
+  debug: ExtendedDebugger;
 };
 
 /**
@@ -221,10 +232,33 @@ export type RetrievalOptions = {
 /**
  * A mapping between file paths relative _to the project root_ and the contents
  * of said files.
+ *
+ * The file's contents should be calculated within and returned by a
+ * string-returning function. This allows the work of actually generating file
+ * contents to be done lazily while still allowing access to a complete listing
+ * of project-root-relative asset paths.
  */
 export type TransformerResult = Promisable<{
-  [projectRootRelativePath: string]: string;
+  [projectRootRelativePath: RelativePath]: () => string;
 }>;
+
+/**
+ * @see {@link TransformerContext}
+ */
+export type IncomingTransformerContext = Omit<TransformerContext, 'asset'>;
+
+/**
+ * This represents one or more fully-resolved configuration assets. A single
+ * configuration asset can contain the means to build multiple different files,
+ * hence this being a record mapping file paths to file content strings.
+ *
+ * Each property of this object is actually a getter that will lazily load its
+ * value on demand. **Do not** enumerate this object's entries or values (e.g.
+ * with `Object.assign`) unless you want to load every given asset file's
+ * contents into memory at once. **You can, however, safely enumerate its keys**
+ * (e.g. with `Object.keys`) to get a list of all the asset paths.
+ */
+export type ReifiedConfigAssetPaths = Record<RelativePath, string>;
 
 /**
  * Retrieve an asset via its identifier (typically a filename). For example, to
@@ -232,9 +266,14 @@ export type TransformerResult = Promisable<{
  * in `./config/_eslint.config.mjs.ts`, pass `"eslint.config.mjs"` as the
  * `asset` parameter.
  *
- * Throws if no corresponding transformer for `asset` can be found.
+ * This function returns a record with asset paths for keys and their
+ * corresponding asset file contents (lazily loaded) for values.
  *
- * Expects a full context object (i.e. {@link TransformerContext}).
+ * This function throws if no corresponding transformer for `asset` can be
+ * found. Also note that some individual config assets may contain several asset
+ * file paths.
+ *
+ * @see {@link retrieveAllRelevantConfigAssets}
  */
 export async function retrieveConfigAsset({
   asset,
@@ -242,9 +281,9 @@ export async function retrieveConfigAsset({
   options: _options = {}
 }: {
   asset: string;
-  context: Omit<TransformerContext, 'asset'>;
+  context: IncomingTransformerContext;
   options?: TransformerOptions & RetrievalOptions;
-}): Promise<TransformerResult> {
+}): Promise<ReifiedConfigAssetPaths> {
   const debug = createDebugLogger({
     namespace: `${globalDebuggerNamespace}:config-asset`
   });
@@ -256,8 +295,7 @@ export async function retrieveConfigAsset({
     `_${asset}.${assetContainerFiletype}`
   );
 
-  debug('retrieving config asset');
-  debug('transformerPath: %O', transformerPath);
+  debug('lazily retrieving config asset: %O', transformerPath);
 
   try {
     const { transformer } = (await import(transformerPath)) as Awaited<
@@ -272,6 +310,60 @@ export async function retrieveConfigAsset({
       cause: error
     });
   }
+}
+
+/**
+ * Retrieve all available asset paths relative to (conditioned on) `context`.
+ * Since computing asset file contents are deferred until the entry value is
+ * accessed (via getters), calling this function is **quick and safe** and
+ * **will _not_ immediately load a bunch of assets into memory**.
+ *
+ * This function returns a {@link ReifiedConfigAssetPaths} with asset paths for
+ * keys and their corresponding asset file contents (lazily loaded) for values.
+ *
+ * @see {@link retrieveConfigAsset}
+ */
+export async function retrieveAllRelevantConfigAssets({
+  context,
+  options = {}
+}: {
+  context: IncomingTransformerContext;
+  options?: TransformerOptions;
+}): Promise<ReifiedConfigAssetPaths> {
+  const { default: mergeDescriptors } = await import('merge-descriptors');
+
+  const debug = createDebugLogger({
+    namespace: `${globalDebuggerNamespace}:config-asset-all`
+  });
+
+  const reifiedAssetPromises = [] as Promise<ReifiedConfigAssetPaths>[];
+
+  for (const asset of await readdir(assetConfigDirectory)) {
+    const transformerPath = toPath(assetConfigDirectory, asset);
+    reifiedAssetPromises.push(
+      (async function () {
+        try {
+          debug('importing transformer: %O', transformerPath);
+          const { transformer } = (await import(transformerPath)) as Awaited<
+            ReturnType<typeof makeTransformer>
+          >;
+
+          debug('executing transformer: %O', transformerPath);
+          return await transformer({ ...context, asset }, options);
+        } catch (error) {
+          throw new CliError(ErrorMessage.AssetRetrievalFailed(transformerPath, error), {
+            cause: error
+          });
+        }
+      })()
+    );
+  }
+
+  // eslint-disable-next-line unicorn/no-array-reduce
+  return (await Promise.all(reifiedAssetPromises)).reduce<ReifiedConfigAssetPaths>(
+    (result, reifiedAsset) => mergeDescriptors(result, reifiedAsset),
+    {}
+  );
 }
 
 /**
@@ -392,6 +484,10 @@ ${value.join('\n\n---✄---\n\n')}
  * Create a transformer function that takes a custom {@link TransformerContext}
  * instance, and an optional {@link TransformerOptions}, and returns a
  * {@link TransformerResult}.
+ *
+ * Transformers are responsible for returning only relevant asset paths (and
+ * their contents) conditioned on the current context; e.g.: when
+ * `--assets-preset=lib`.
  */
 export function makeTransformer({
   transform
@@ -404,24 +500,40 @@ export function makeTransformer({
       context: TransformerContext,
       { trimContents }: TransformerOptions = {}
     ) {
-      const transformed = await transform(context);
-
-      Object.entries(transformed).forEach(([file, fileContents]) => {
-        transformed[file] =
-          fileContents[
-            trimContents === 'start'
-              ? 'trimStart'
-              : trimContents === 'end'
-                ? 'trimEnd'
-                : trimContents === false
-                  ? 'toString'
-                  : 'trim'
-          ]();
-
-        if (trimContents === 'both-then-append-newline' || trimContents === undefined) {
-          transformed[file] += '\n';
-        }
+      const transformed: ReifiedConfigAssetPaths = {};
+      const debug = createDebugLogger({
+        namespace: `${globalDebuggerNamespace}:make-transformer`
       });
+
+      for (const [file, fileContentsFn] of Object.entries(await transform(context))) {
+        // ? Lazily compute file contents but calculate file paths immediately
+        Object.defineProperty(transformed, file, {
+          enumerable: true,
+          get() {
+            debug('lazily loading file contents of asset: %O', file);
+
+            let fileContents =
+              fileContentsFn()[
+                trimContents === 'start'
+                  ? 'trimStart'
+                  : trimContents === 'end'
+                    ? 'trimEnd'
+                    : trimContents === false
+                      ? 'toString'
+                      : 'trim'
+              ]();
+
+            if (
+              trimContents === 'both-then-append-newline' ||
+              trimContents === undefined
+            ) {
+              fileContents += '\n';
+            }
+
+            return fileContents;
+          }
+        });
+      }
 
       return transformed;
     }

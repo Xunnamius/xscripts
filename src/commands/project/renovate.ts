@@ -24,50 +24,10 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { type Package, type XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 import {
-  allContributorsConfigProjectBase,
-  babelConfigProjectBase,
-  browserslistrcConfigProjectBase,
-  changelogPatchConfigPackageBase,
-  codecovConfigProjectBase,
-  commitlintConfigProjectBase,
-  directoryGithubConfigProjectBase,
-  directoryHuskyProjectBase,
-  directorySrcPackageBase,
-  directoryTestPackageBase,
-  directoryTypesProjectBase,
-  directoryVscodeProjectBase,
-  directoryWikiProjectBase,
-  dotEnvDefaultConfigPackageBase,
-  editorConfigProjectBase,
-  eslintConfigProjectBase,
-  gacConfigPackageBase,
-  gitattributesConfigProjectBase,
-  gitignoreConfigProjectBase,
-  jestConfigProjectBase,
-  lintStagedConfigProjectBase,
   markdownArchitectureProjectBase,
-  markdownContributingProjectBase,
-  markdownLicensePackageBase,
-  markdownMaintainingProjectBase,
   markdownReadmePackageBase,
-  markdownSecurityProjectBase,
-  ncuConfigProjectBase,
-  nextjsConfigProjectBase,
   packageJsonConfigPackageBase,
-  postcssConfigProjectBase,
-  prettierConfigProjectBase,
-  prettierIgnoreConfigProjectBase,
-  remarkConfigProjectBase,
-  spellcheckIgnoreConfigProjectBase,
-  tailwindConfigProjectBase,
-  toPath,
-  Tsconfig,
-  tstycheConfigProjectBase,
-  turboConfigProjectBase,
-  webpackConfigProjectBase,
-  xchangelogConfigProjectBase,
-  xreleaseConfigProjectBase,
-  type RelativePath
+  toPath
 } from 'multiverse+project-utils:fs.ts';
 
 import {
@@ -79,6 +39,11 @@ import {
 } from 'multiverse+rejoinder';
 
 import { version as packageVersion } from 'rootverse:package.json';
+
+import {
+  retrieveAllRelevantConfigAssets,
+  type IncomingTransformerContext
+} from 'universe:assets.ts';
 
 import {
   default as format,
@@ -171,106 +136,6 @@ const canaryProtectRuleset: NewRuleset = {
   ],
   bypass_actors: []
 };
-
-/**
- * Returns a mapping between {@link RenovationPreset}s and the config asset
- * paths they represent.
- *
- * Note that a single config asset can itself contain many config asset paths.
- *
- * ! This data structure is checked for validity at runtime !
- *
- * @see {@link RenovationPreset}
- */
-function getRenovationPresetAssets() {
-  const minimalUpsert = [
-    codecovConfigProjectBase,
-    editorConfigProjectBase,
-    // ? Will also pull in .env (dummy file)
-    dotEnvDefaultConfigPackageBase,
-    gitattributesConfigProjectBase,
-    gitignoreConfigProjectBase,
-    ncuConfigProjectBase,
-    prettierIgnoreConfigProjectBase,
-    remarkConfigProjectBase,
-    xchangelogConfigProjectBase,
-    // ? Will selectively and carefully renovate this file
-    packageJsonConfigPackageBase,
-    prettierConfigProjectBase,
-    xreleaseConfigProjectBase,
-    // ? Will also pull in the other tsc*.json files when necessary
-    Tsconfig.ProjectBase
-  ];
-
-  const basicUpsert = [
-    ...minimalUpsert,
-    // ? Will pull in different .github configuration files depending on preset
-    directoryGithubConfigProjectBase,
-    directoryHuskyProjectBase,
-    directoryVscodeProjectBase,
-    directorySrcPackageBase,
-    directoryTestPackageBase,
-    directoryTypesProjectBase,
-    babelConfigProjectBase,
-    changelogPatchConfigPackageBase,
-    commitlintConfigProjectBase,
-    eslintConfigProjectBase,
-    gacConfigPackageBase,
-    jestConfigProjectBase,
-    lintStagedConfigProjectBase,
-    // ? Will selectively and carefully renovate this file
-    markdownReadmePackageBase,
-    markdownSecurityProjectBase,
-    spellcheckIgnoreConfigProjectBase,
-    turboConfigProjectBase
-  ];
-
-  const libUpsert = [
-    ...basicUpsert,
-    directoryWikiProjectBase,
-    allContributorsConfigProjectBase,
-    markdownArchitectureProjectBase,
-    markdownContributingProjectBase,
-    markdownLicensePackageBase,
-    markdownMaintainingProjectBase,
-    tstycheConfigProjectBase
-  ];
-
-  const reactUpsert = [
-    ...minimalUpsert,
-    browserslistrcConfigProjectBase,
-    postcssConfigProjectBase,
-    tailwindConfigProjectBase
-  ];
-
-  const presets = {
-    [RenovationPreset.Minimal]: {
-      upsert: minimalUpsert,
-      delete: []
-    },
-    [RenovationPreset.Basic]: { upsert: basicUpsert, delete: [] },
-    [RenovationPreset.Cli]: { upsert: [...basicUpsert], delete: [] },
-    [RenovationPreset.Lib]: { upsert: libUpsert, delete: [] },
-    [RenovationPreset.LibEsm]: { upsert: [...libUpsert], delete: [] },
-    [RenovationPreset.LibWeb]: {
-      upsert: [...libUpsert, browserslistrcConfigProjectBase],
-      delete: []
-    },
-    [RenovationPreset.React]: {
-      upsert: [...reactUpsert, webpackConfigProjectBase],
-      delete: []
-    },
-    [RenovationPreset.Nextjs]: {
-      upsert: [...reactUpsert, nextjsConfigProjectBase],
-      delete: []
-    }
-  } as Record<RenovationPreset, { upsert: string[]; delete: string[] }>;
-
-  return presets as unknown as Record<
-    RenovationPreset,
-    { upsert: RelativePath[]; delete: RelativePath[] }
-  >;
-}
 
 /**
  * @see {@link ProjectRenovateScope}
@@ -900,8 +765,6 @@ function parsePackageJsonRepositoryIntoOwnerAndRepo({ repository, name }: XPacka
 
   softAssert(ErrorMessage.BadRepositoryInCwdPackageJson(name));
 }
-
-const tabDash = `\n${SHORT_TAB}${SHORT_TAB}- `;
 
 /**
  * @see {@link RenovationTask}
@@ -1634,40 +1497,19 @@ By default, this command will preserve the origin repository's pre-existing conf
     actionDescription: 'Regenerating targeted configuration and template assets',
     shortHelpDescription: 'Regenerate targeted configuration and template asset files',
     longHelpDescription: `
-This renovation will regenerate one or more asset configurations in the project. That is: existing conflicting configurations are overwritten, missing configurations are created, and old configurations are deleted (when using --assets-preset).
+This renovation will regenerate one or more files in the project, each represented by an "asset". An asset is a collection mapping one or more project-root-relative "asset paths" (relative to the project root) to their generated contents. When writing content to its respective asset path on the filesystem, existing files are overwritten, missing files are created, and obsolete files are deleted.
 
-Invoking this renovation requires specifying which assets to target via --target-assets or --assets-preset. Both --target-assets and --assets-preset can be used together or standalone. There is an additional optional parameter, --skip-assets, that can further narrow the files targeted for renovation.
+Provide --assets-preset to specify which assets to regenerate. The parameter accepts one of the following presets: ${renovationPresets.join(', ')}. The asset paths of assets included in the preset will be targeted for renovation unless that path is also matched by --skip-asset-paths.
 
-The --target-assets and --skip-assets parameters accept regular expressions that are matched against the project-root-relative paths of potential configuration assets to be written out.
+Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the asset paths to be written out. Any asset paths matching one of the aforesaid regular expressions will be discarded instead of written out.
 
-Assets with paths included in the preset provided by --assets-preset, or paths matching one of the regular expressions in --target-assets, will be targeted for renovation unless that path is also matched by a regular expression in --skip-assets.
+When regenerating files containing import aliases, --with-aliases-loaded-from can be used to include aliases in addition to the hardcoded aliases that come with xscripts. The --with-aliases-loaded-from parameter expects a path to a JavaScript file with an alias map (i.e. RawAliasMapping[]) as its default export.
 
-After invoking this renovation, you should use your IDE's diff tools to compare and contrast the latest best practices with the project's current configuration setup. This renovation should be re-run each time a package is added to or removed from a xscripts-compliant monorepo to ensure proper alias support.
+After invoking this renovation, you should use your IDE's diff tools to compare and contrast the latest best practices with the project's current configuration setup.
 
-The --assets-preset flag can be passed one of the following presets:${Object.entries(
-      getRenovationPresetAssets()
-    ).reduce(function (
-      str,
-      [presetName, { upsert: upsertionTargets, delete: deletionTargets }]
-    ) {
-      return (
-        str +
-        `
-\n--assets-preset=${presetName}${upsertionTargets.length + deletionTargets.length === 0 ? ' (currently a no-op)' : ''}
+This renovation should be re-run each time a package is added to, or removed from, a xscripts-compliant monorepo.
 
-${SHORT_TAB}Upserts: ${
-          upsertionTargets.length
-            ? tabDash + upsertionTargets.join(tabDash) + '\n'
-            : 'nothing'
-        }
-${SHORT_TAB}Deletes: ${
-          deletionTargets.length ? tabDash + deletionTargets.join(tabDash) : 'nothing'
-        }
-`.trimEnd()
-      );
-    }, '')}
-
-There are also so-called "orphaned assets," which are asset configurations that are not included in the presets listed above. They can still be targeted using --target-assets. See the xscripts wiki documentation for details.
+See the xscripts wiki documentation for details on all available assets and their asset paths.
 `,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
@@ -1675,47 +1517,14 @@ There are also so-called "orphaned assets," which are asset configurations that 
       'assets-preset': {
         alias: 'preset',
         choices: renovationPresets,
-        description: 'A preset list of assets to target for regeneration',
-        subOptionOf: {
-          'regenerate-assets': {
-            when: (superOptionValue) => superOptionValue,
-            update(oldOptionConfig) {
-              return {
-                ...oldOptionConfig,
-                demandThisOptionOr: 'target-assets'
-              };
-            }
-          }
-        }
+        description: 'Select a hardcoded set of assets to regenerate'
       },
-      'skip-assets': {
-        alias: 'skip-asset',
-        array: true,
-        string: true,
-        conflicts: 'target-assets',
-        description:
-          'Regular expressions used to remove matching assets from regeneration targets',
-        default: [],
-        requires: { 'assets-preset': true },
-        subOptionOf: {
-          'assets-preset': {
-            when: (superOptionValue) => superOptionValue,
-            update({ conflicts: _, ...oldOptionConfig }) {
-              return oldOptionConfig;
-            }
-          }
-        },
-        coerce(assets: string[]) {
-          // ! These regular expressions can never use the global (g) flag
-          return assets.map((str) => new RegExp(str, 'u'));
-        }
-      },
-      'target-assets': {
-        alias: 'target-asset',
+      'skip-asset-paths': {
+        alias: 'skip-asset-path',
         array: true,
         string: true,
         description:
-          'Regular expressions used to add matching assets to regeneration targets',
+          'Asset paths matching these regular expressions are discarded when regenerating',
         default: [],
         coerce(assets: string[]) {
           // ! These regular expressions can never use the global (g) flag
@@ -1725,33 +1534,84 @@ There are also so-called "orphaned assets," which are asset configurations that 
       'with-aliases-loaded-from': {
         string: true,
         description:
-          'Import additional definitions from JS file when regenerating aliases'
+          'Additional import aliases are sourced from this file when regenerating'
       }
     },
     async run(argv_, { debug, log }) {
       const argv = argv_ as RenovationTaskArgv;
+      const {
+        [$executionContext]: { projectMetadata }
+      } = argv;
+
+      const preset = argv.assetsPreset as RenovationPreset | undefined;
+      const skipAssetPaths = argv.skipAssetPaths as RegExp[];
+      const additionalAliasesJsPath = argv.withAliasesLoadedFrom as string | undefined;
+
+      hardAssert(projectMetadata, ErrorMessage.GuruMeditation());
+
+      const context: IncomingTransformerContext = {
+        targetAssetsPreset: preset,
+        badges: '',
+        packageName: '',
+        packageVersion: '',
+        packageDescription: '',
+        packageBuildDetailsShort: '',
+        packageBuildDetailsLong: '',
+        projectMetadata,
+        titleName: '',
+        repoName: '',
+        repoType: projectMetadata.type,
+        repoUrl: '',
+        repoSnykUrl: '',
+        repoReferenceDocs: '',
+        repoReferenceLicense: '',
+        repoReferenceNewIssue: '',
+        repoReferencePrCompare: '',
+        repoReferenceSelf: '',
+        repoReferenceSponsor: '',
+        repoReferenceContributing: '',
+        repoReferenceSupport: '',
+        repoReferenceAllContributors: '',
+        repoReferenceAllContributorsEmojis: '',
+        repoReferenceDefinitionsBadge: '',
+        repoReferenceDefinitionsPackage: '',
+        repoReferenceDefinitionsRepo: '',
+        shouldDeriveAliases: true,
+        log,
+        debug
+      };
+
+      debug('transformer context: %O', context);
+
+      const reifiedAssetPaths = await retrieveAllRelevantConfigAssets({ context });
+      debug('relevant asset paths: %O', Object.keys(reifiedAssetPaths));
 
       // TODO: Replace missing context items with "<!-- TODO -->" if they are
       // TODO: not resolvable (and note it in debug messaging)
 
-      // TODO: existing overwrites, missing created, =!=> obsolete deleted <=!=
+      // TODO: move replacement region paragraphs at end of generic help text
+      // TODO: into regenerate's help text instead
 
-      // TODO: replacer region count must match in document or entire document
-      // TODO: will be overwritten
+      // TODO: implement skipAssetPaths and additionalAliasesJsPath
 
-      // TODO: sanity check assetsWithAliasDefinitions
-      // TODO: print overview of aliases
-      // TODO: regenerate package.json carefully, reuse existing scripts
+      // TODO: support $delete symbol
 
-      // TODO: package.json?minimal
-      // TODO: error if preset asset path not matched
-      // TODO: README.md no license blurb if no license
-      // TODO: .env.default also makes a dummy .env file with only the VAR= lines
+      // TODO: (assets) fix asset files (need to return string fn) and fix tests
 
-      // TODO: regenerate wrt asset preset
+      // TODO: (assets) existing overwrites; missing created; obsolete is
+      // TODO: deleted if contents === $delete symbol
 
-      const renovationPresetAssets = getRenovationPresetAssets();
-      debug('renovationPresetAssets: %O', renovationPresetAssets);
+      // TODO: (assets) replacer region count must match in document or entire
+      // TODO: document will be overwritten
+
+      // TODO: (assets) regenerate package.json carefully; reuse existing
+
+      // TODO: (assets) return asset paths conditioned on context (like minimal)
+
+      // TODO: (assets) README.md no license blurb if no license
+
+      // TODO: (assets)  .env.default also makes a dummy .env file with only
+      // TODO: the VAR= lines
 
       // ? Typescript wants this here because of our "as const" for some reason
       return undefined;

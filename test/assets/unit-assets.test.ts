@@ -55,13 +55,14 @@ import {
   deepMergeConfig,
   makeTransformer,
   retrieveConfigAsset,
-  type TransformerContext,
-  type TransformerResult
+  type IncomingTransformerContext,
+  type ReifiedConfigAssetPaths,
+  type TransformerContext
 } from 'universe:assets.ts';
 
 import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
 
-const dummyContext: Omit<TransformerContext, 'asset'> = {
+const dummyContext: IncomingTransformerContext = {
   targetAssetsPreset: undefined,
   badges: 'badges',
   packageName: 'package-name',
@@ -95,7 +96,9 @@ const dummyContext: Omit<TransformerContext, 'asset'> = {
   repoReferenceDefinitionsBadge: 'repo-reference-definitions-badge',
   repoReferenceDefinitionsPackage: 'repo-reference-definitions-package',
   repoReferenceDefinitionsRepo: 'repo-reference-definitions-repo',
-  shouldDeriveAliases: true
+  shouldDeriveAliases: true,
+  log: (() => undefined) as unknown as IncomingTransformerContext['log'],
+  debug: (() => undefined) as unknown as IncomingTransformerContext['debug']
 };
 
 describe('::retrieveConfigAsset', () => {
@@ -764,7 +767,7 @@ describe('::makeTransformer', () => {
 
     const { transformer } = makeTransformer({
       transform(context) {
-        return { file: JSON.stringify(context) };
+        return { file: () => JSON.stringify(context) };
       }
     });
 
@@ -895,7 +898,7 @@ describe('::deepMergeConfig', () => {
   });
 });
 
-function expectAssetsToMatchSnapshots(assets: Awaited<TransformerResult>) {
+function expectAssetsToMatchSnapshots(assets: ReifiedConfigAssetPaths) {
   for (const [key, asset] of Object.entries(assets)) {
     expect(key + '\n⏶⏷⏶⏷⏶\n' + asset).toMatchSnapshot(key);
   }
