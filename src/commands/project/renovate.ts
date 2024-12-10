@@ -1592,9 +1592,14 @@ See the xscripts wiki documentation for details on all available assets and thei
       // TODO: move replacement region paragraphs at end of generic help text
       // TODO: into regenerate's help text instead
 
-      // TODO: implement skipAssetPaths and additionalAliasesJsPath
+      // TODO: implement skipAssetPaths (filter) and additionalAliasesJsPath
 
       // TODO: support $delete symbol
+
+      // TODO: calculate relevant asset paths properly
+
+      // TODO: await write out of all contents but use keys to that all
+      // TODO: computations are async instead of sync
 
       // TODO: (assets) fix asset files (need to return string fn) and fix tests
 

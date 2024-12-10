@@ -302,7 +302,7 @@ export async function retrieveConfigAsset({
       ReturnType<typeof makeTransformer>
     >;
 
-    debug('transformer import succeeded. Executing transformer...');
+    debug('executing config asset transformer: %O', transformerPath);
 
     return await transformer({ ...context, asset }, options);
   } catch (error) {
@@ -339,6 +339,10 @@ export async function retrieveAllRelevantConfigAssets({
   const reifiedAssetPromises = [] as Promise<ReifiedConfigAssetPaths>[];
 
   for (const asset of await readdir(assetConfigDirectory)) {
+    if (asset.endsWith('.d.ts') || (!asset.endsWith('.js') && !asset.endsWith('.ts'))) {
+      continue;
+    }
+
     const transformerPath = toPath(assetConfigDirectory, asset);
     reifiedAssetPromises.push(
       (async function () {
