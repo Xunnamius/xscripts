@@ -24,7 +24,6 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { type Package, type XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 import {
-  AbsolutePath,
   allContributorsConfigProjectBase,
   babelConfigProjectBase,
   browserslistrcConfigProjectBase,
