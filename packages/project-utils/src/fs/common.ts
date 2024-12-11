@@ -68,6 +68,10 @@ export function toAbsolutePath(
  * {@link AbsolutePath}s, `process.cwd()` will be prepended to them before
  * calculation.
  *
+ * Note that the returned path will never start with `./` (this prefix is
+ * elided), but may start with
+ * `../`.
+ *
  * @see {@link resolve}
  */
 export function toRelativePath(from: string, to: string): RelativePath;
@@ -77,6 +81,9 @@ export function toRelativePath(from: string, to: string): RelativePath;
  * If `to` is already relative and/or is the empty string (`""`), it is returned
  * as-is without any modifications. Otherwise, a {@link RelativePath} from
  * `process.cwd()` to `to` will be returned.
+ *
+ * Note that the returned path will never start with `./` (this prefix is
+ * elided), but may start with `../`.
  *
  * @see {@link resolve}
  */

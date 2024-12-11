@@ -27,6 +27,7 @@ import {
   markdownArchitectureProjectBase,
   markdownReadmePackageBase,
   packageJsonConfigPackageBase,
+  toAbsolutePath,
   toPath
 } from 'multiverse+project-utils:fs.ts';
 
@@ -41,7 +42,7 @@ import {
 import { version as packageVersion } from 'rootverse:package.json';
 
 import {
-  retrieveAllRelevantConfigAssets,
+  gatherAssetsFromAllTransformers,
   type IncomingTransformerContext
 } from 'universe:assets.ts';
 
@@ -227,11 +228,11 @@ export type RenovationTask = Omit<
 };
 
 /**
- * These presets each represent a list of assets from `src/assets/config`. By
- * specifying a preset, only the assets it represents will be renovated and all
- * others will be ignored.
+ * These presets determine which assets will be returned by which transformers
+ * during renovation. By specifying a preset, only the assets it represents will
+ * be renovated. All others will be ignored.
  *
- * @see {@link renovationPresetAssets}
+ * See the xscripts wiki for details.
  */
 export enum RenovationPreset {
   /**
@@ -242,65 +243,64 @@ export enum RenovationPreset {
    * xscripts, or for which xscripts has been bolted-on after the fact (such as
    * the case with `xchangelog` and `xrelease`).
    *
-   * @see {@link renovationPresetAssets}
+   * See the xscripts wiki for details.
    */
   Minimal = 'minimal',
   /**
-   * Represents the most basic asset configuration necessary for xscripts to be
-   * fully functional.
+   * Represents the most basic assets necessary for xscripts to be fully
+   * functional.
    *
    * This preset is the basis for all others (except `RenovationPreset.Minimal`)
    * and can be used on any xscripts-compliant project when only a subset of
    * renovations are desired, such as when regenerating aliases.
    *
-   * @see {@link renovationPresetAssets}
+   * See the xscripts wiki for details.
    */
   Basic = 'basic',
   /**
-   * Represents the standard asset configuration for an xscripts-compliant
-   * command-line interface project (such as `@black-flag/core`-powered tools
-   * like `xscripts` itself).
+   * Represents the standard assets for an xscripts-compliant command-line
+   * interface project (such as `@black-flag/core`-powered tools like `xscripts`
+   * itself).
    *
-   * @see {@link renovationPresetAssets}
+   * See the xscripts wiki for details.
    */
   Cli = 'cli',
   /**
-   * Represents the standard asset configuration for an xscripts-compliant
-   * library project built for both CJS and ESM consumers (such as the case with
+   * Represents the standard assets for an xscripts-compliant library project
+   * built for both CJS and ESM consumers (such as the case with
    * `@black-flag/core`) and potentially also browser and other consumers as
    * well.
    *
-   * @see {@link renovationPresetAssets}
+   * See the xscripts wiki for details.
    */
   Lib = 'lib',
   /**
-   * Represents the standard asset configuration for an xscripts-compliant
-   * library project built exclusively for ESM and ESM-compatible consumers
-   * (such as the case with the `unified-utils` monorepo).
+   * Represents the standard assets for an xscripts-compliant library project
+   * built exclusively for ESM and ESM-compatible consumers (such as the case
+   * with the `unified-utils` monorepo).
    *
-   * @see {@link renovationPresetAssets}
+   * See the xscripts wiki for details.
    */
   LibEsm = 'lib-esm',
   /**
-   * Represents the standard asset configuration for an xscripts-compliant
-   * library project built exclusively for ESM consumers operating in a
-   * browser-like runtime (such as the case with the `next-utils` monorepo).
+   * Represents the standard assets for an xscripts-compliant library project
+   * built exclusively for ESM consumers operating in a browser-like runtime
+   * (such as the case with the `next-utils` monorepo).
    *
-   * @see {@link renovationPresetAssets}
+   * See the xscripts wiki for details.
    */
   LibWeb = 'lib-web',
   /**
-   * Represents the standard asset configuration for an xscripts-compliant React
-   * project.
+   * Represents the standard assets for an xscripts-compliant React project.
    *
-   * @see {@link renovationPresetAssets}
+   * See the xscripts wiki for details.
    */
   React = 'react',
   /**
-   * Represents the standard asset configuration for an xscripts-compliant
-   * Next.js + React project.
+   * Represents the standard assets for an xscripts-compliant Next.js + React
+   * project.
    *
-   * @see {@link renovationPresetAssets}
+   * See the xscripts wiki for details.
    */
   Nextjs = 'nextjs'
 }
@@ -1540,6 +1540,7 @@ See the xscripts wiki documentation for details on all available assets and thei
     async run(argv_, { debug, log }) {
       const argv = argv_ as RenovationTaskArgv;
       const {
+        force,
         [$executionContext]: { projectMetadata }
       } = argv;
 
@@ -1549,15 +1550,30 @@ See the xscripts wiki documentation for details on all available assets and thei
 
       hardAssert(projectMetadata, ErrorMessage.GuruMeditation());
 
+      const {
+        cwdPackage: { root: packageRoot },
+        rootPackage: { root: projectRoot }
+      } = projectMetadata;
+
       const context: IncomingTransformerContext = {
+        log,
+        debug,
+
+        toPackageAbsolutePath: (pathLike) => toAbsolutePath(packageRoot, pathLike),
+        toProjectAbsolutePath: (pathLike) => toAbsolutePath(projectRoot, pathLike),
+
+        forceOverwritePotentiallyDestructive: force,
+        shouldDeriveAliases: true,
+        scope: DefaultGlobalScope.Unlimited,
         targetAssetsPreset: preset,
+        projectMetadata,
+
         badges: '',
         packageName: '',
         packageVersion: '',
         packageDescription: '',
         packageBuildDetailsShort: '',
         packageBuildDetailsLong: '',
-        projectMetadata,
         titleName: '',
         repoName: '',
         repoType: projectMetadata.type,
@@ -1575,16 +1591,14 @@ See the xscripts wiki documentation for details on all available assets and thei
         repoReferenceAllContributorsEmojis: '',
         repoReferenceDefinitionsBadge: '',
         repoReferenceDefinitionsPackage: '',
-        repoReferenceDefinitionsRepo: '',
-        shouldDeriveAliases: true,
-        log,
-        debug
+        repoReferenceDefinitionsRepo: ''
       };
 
       debug('transformer context: %O', context);
 
-      const reifiedAssetPaths = await retrieveAllRelevantConfigAssets({ context });
-      debug('relevant asset paths: %O', Object.keys(reifiedAssetPaths));
+      const reifiedAssetPaths = await gatherAssetsFromAllTransformers({
+        transformerContext: context
+      });
 
       // TODO: Replace missing context items with "<!-- TODO -->" if they are
       // TODO: not resolvable (and note it in debug messaging)
@@ -1601,7 +1615,7 @@ See the xscripts wiki documentation for details on all available assets and thei
       // TODO: await write out of all contents but use keys to that all
       // TODO: computations are async instead of sync
 
-      // TODO: (assets) fix asset files (need to return string fn) and fix tests
+      // TODO: (assets) fix each individual asset file (need to return str fn)
 
       // TODO: (assets) existing overwrites; missing created; obsolete is
       // TODO: deleted if contents === $delete symbol
@@ -1617,6 +1631,8 @@ See the xscripts wiki documentation for details on all available assets and thei
 
       // TODO: (assets)  .env.default also makes a dummy .env file with only
       // TODO: the VAR= lines
+
+      // TODO: fix all tests and ensure everything is covered (check coverage)
 
       // ? Typescript wants this here because of our "as const" for some reason
       return undefined;
