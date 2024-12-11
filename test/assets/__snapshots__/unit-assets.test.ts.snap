@@ -520,8 +520,10 @@ Thank you for your contribution!
 }
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> all-contributors: .all-contributorsrc 1`] = `
-".all-contributorsrc
+exports[`::gatherAssetsFromTransformer <config assets> all-contributors: /dummy/.all-contributorsrc 1`] = `
+"key: /dummy/.all-contributorsrc
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 {
   "projectName": "package-name",
@@ -556,8 +558,10 @@ exports[`::gatherAssetsFromTransformer <config assets> all-contributors: .all-co
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> architecture (markdown): ARCHITECTURE.md 1`] = `
-"ARCHITECTURE.md
+exports[`::gatherAssetsFromTransformer <config assets> architecture (markdown): /dummy/ARCHITECTURE.md 1`] = `
+"key: /dummy/ARCHITECTURE.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 <!-- xscripts-renovate-region-start -->
 
@@ -586,8 +590,10 @@ There are as of yet no notable deviations or additions. See the linked document
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> babel: babel.config.cjs 1`] = `
-"babel.config.cjs
+exports[`::gatherAssetsFromTransformer <config assets> babel: /dummy/babel.config.cjs 1`] = `
+"key: /dummy/babel.config.cjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
@@ -597,7 +603,7 @@ const { deepMergeConfig } = require('@-xun/scripts/assets');
 const {
   moduleExport,
   assertEnvironment
-} = require('@-xun/scripts/assets/config/babel.config.cjs');
+} = require('@-xun/scripts/assets/babel.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
@@ -610,7 +616,7 @@ module.exports = deepMergeConfig(
     ...assertEnvironment({ projectRoot: __dirname })
   }),
   /**
-   * @type {import('@-xun/scripts/assets/config/babel.config.cjs').BabelConfig}
+   * @type {import('@-xun/scripts/assets/babel.config.cjs').BabelConfig}
    */
   {
     // Any custom configs here will be deep merged with moduleExport's result
@@ -662,8 +668,10 @@ function getBabelAliases() {
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> browserslist: .browserslistrc 1`] = `
-".browserslistrc
+exports[`::gatherAssetsFromTransformer <config assets> browserslist: /dummy/.browserslistrc 1`] = `
+"key: /dummy/.browserslistrc
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 [production]
 last 2 versions
@@ -680,8 +688,10 @@ current node
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> changelog.patch.mjs: changelog.patch.mjs 1`] = `
-"changelog.patch.mjs
+exports[`::gatherAssetsFromTransformer <config assets> changelog.patch.mjs: /dummy/changelog.patch.mjs 1`] = `
+"key: /dummy/changelog.patch.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 
@@ -696,8 +706,10 @@ export default [
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> codecov: .codecov.yml 1`] = `
-".codecov.yml
+exports[`::gatherAssetsFromTransformer <config assets> codecov: /dummy/.codecov.yml 1`] = `
+"key: /dummy/.codecov.yml
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 coverage:
   range: '75...100'
@@ -722,21 +734,25 @@ flag_management:
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> commit-spell: .spellcheckignore 1`] = `
-".spellcheckignore
+exports[`::gatherAssetsFromTransformer <config assets> commit-spell: /dummy/.spellcheckignore 1`] = `
+"key: /dummy/.spellcheckignore
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> commitlint.config.mjs: commitlint.config.mjs 1`] = `
-"commitlint.config.mjs
+exports[`::gatherAssetsFromTransformer <config assets> commitlint.config.mjs: /dummy/commitlint.config.mjs 1`] = `
+"key: /dummy/commitlint.config.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
 
 import { deepMergeConfig } = from '@-xun/scripts/assets';
-import { moduleExport } = from '@-xun/scripts/assets/config/commitlint.config.mjs';
+import { moduleExport } = from '@-xun/scripts/assets/commitlint.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } = from 'rejoinder';
 
@@ -752,8 +768,10 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> contributing (markdown): CONTRIBUTING.md 1`] = `
-"CONTRIBUTING.md
+exports[`::gatherAssetsFromTransformer <config assets> contributing (markdown): /dummy/CONTRIBUTING.md 1`] = `
+"key: /dummy/CONTRIBUTING.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # Contributing
 
@@ -856,33 +874,59 @@ At this point, you're ready to create your PR and ✨ contribute ✨!
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): .env.default 1`] = `
-".env.default
+exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): /dummy/.env 1`] = `
+"key: /dummy/.env
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+CODECOV_TOKEN=
+GITHUB_TOKEN=
+NPM_TOKEN=
+GIT_AUTHOR_NAME=
+GIT_COMMITTER_NAME=
+GIT_AUTHOR_EMAIL=
+GIT_COMMITTER_EMAIL=
+GPG_PASSPHRASE=
+GPG_PRIVATE_KEY=
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): /dummy/.env 2`] = `
+"key: /dummy/.env
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+CODECOV_TOKEN=
+GITHUB_TOKEN=
+NPM_TOKEN=
+GIT_AUTHOR_NAME=
+GIT_COMMITTER_NAME=
+GIT_AUTHOR_EMAIL=
+GIT_COMMITTER_EMAIL=
+GPG_PASSPHRASE=
+GPG_PRIVATE_KEY=
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): /dummy/.env.default 1`] = `
+"key: /dummy/.env.default
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # shellcheck disable=all
 
 # Codecov test analysis token
 #
-# Required: if deploying
-# On-Sync: mirror
-#
 # The token used during CI/CD to analyze and upload build artifact code quality
 # data to Codecov.
 CODECOV_TOKEN=
 
-# GitHub deploy token
-#
-# Alias: GH_TOKEN
-# Required: if deploying
-# On-Sync: mirror
+# GitHub deploy token (alias GH_TOKEN)
 #
 # The token used during CI/CD to interact with GitHub's API.
 GITHUB_TOKEN=
 
 # NPM deploy token
-#
-# Required: if deploying
-# On-Sync: mirror
 #
 # The token used during CD to login to NPM. Not referenced during non-CI/CD
 # (i.e. local, manual) deployments.
@@ -890,40 +934,25 @@ NPM_TOKEN=
 
 # Git push author name
 #
-# Required: if deploying
-# On-Sync: mirror
-#
 # The token used during CD to set the author name of the git push.
 GIT_AUTHOR_NAME=
 
 # Git commit committer name
-#
-# Required: if deploying
-# On-Sync: mirror
 #
 # The token used during CD to set the name attached to any git commits.
 GIT_COMMITTER_NAME=
 
 # Git push author email
 #
-# Required: if deploying
-# On-Sync: mirror
-#
 # The token used during CD to set the author email of the git push.
 GIT_AUTHOR_EMAIL=
 
 # Git commit committer email
 #
-# Required: if deploying
-# On-Sync: mirror
-#
 # The token used during CD to set the email attached to any git commits.
 GIT_COMMITTER_EMAIL=
 
 # GPG private key passphrase
-#
-# Required: if deploying with CI/CD
-# On-Sync: mirror
 #
 # The passphrase used to unlock GPG_PRIVATE_KEY. Not referenced during non-CI/CD
 # (i.e. local, manual) deployments.
@@ -931,42 +960,31 @@ GPG_PASSPHRASE=
 
 # GPG private key
 #
-# Required: if deploying with CI/CD
-# On-Sync: mirror
-#
 # The GPG key used to sign all git commits and releases. Not referenced during
 # non-CI/CD (i.e. local, manual) deployments.
 GPG_PRIVATE_KEY=
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): .env.default 2`] = `
-".env.default
+exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): /dummy/.env.default 2`] = `
+"key: /dummy/.env.default
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # shellcheck disable=all
 
 # Codecov test analysis token
 #
-# Required: if deploying
-# On-Sync: mirror
-#
 # The token used during CI/CD to analyze and upload build artifact code quality
 # data to Codecov.
 CODECOV_TOKEN=
 
-# GitHub deploy token
-#
-# Alias: GH_TOKEN
-# Required: if deploying
-# On-Sync: mirror
+# GitHub deploy token (alias GH_TOKEN)
 #
 # The token used during CI/CD to interact with GitHub's API.
 GITHUB_TOKEN=
 
 # NPM deploy token
-#
-# Required: if deploying
-# On-Sync: mirror
 #
 # The token used during CD to login to NPM. Not referenced during non-CI/CD
 # (i.e. local, manual) deployments.
@@ -974,40 +992,25 @@ NPM_TOKEN=
 
 # Git push author name
 #
-# Required: if deploying
-# On-Sync: mirror
-#
 # The token used during CD to set the author name of the git push.
 GIT_AUTHOR_NAME=
 
 # Git commit committer name
-#
-# Required: if deploying
-# On-Sync: mirror
 #
 # The token used during CD to set the name attached to any git commits.
 GIT_COMMITTER_NAME=
 
 # Git push author email
 #
-# Required: if deploying
-# On-Sync: mirror
-#
 # The token used during CD to set the author email of the git push.
 GIT_AUTHOR_EMAIL=
 
 # Git commit committer email
 #
-# Required: if deploying
-# On-Sync: mirror
-#
 # The token used during CD to set the email attached to any git commits.
 GIT_COMMITTER_EMAIL=
 
 # GPG private key passphrase
-#
-# Required: if deploying with CI/CD
-# On-Sync: mirror
 #
 # The passphrase used to unlock GPG_PRIVATE_KEY. Not referenced during non-CI/CD
 # (i.e. local, manual) deployments.
@@ -1015,17 +1018,16 @@ GPG_PASSPHRASE=
 
 # GPG private key
 #
-# Required: if deploying with CI/CD
-# On-Sync: mirror
-#
 # The GPG key used to sign all git commits and releases. Not referenced during
 # non-CI/CD (i.e. local, manual) deployments.
 GPG_PRIVATE_KEY=
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> editor-config: .editorconfig 1`] = `
-".editorconfig
+exports[`::gatherAssetsFromTransformer <config assets> editor-config: /dummy/.editorconfig 1`] = `
+"key: /dummy/.editorconfig
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 root = true
 
@@ -1039,8 +1041,10 @@ indent_size = 2
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> eslint: eslint.config.mjs 1`] = `
-"eslint.config.mjs
+exports[`::gatherAssetsFromTransformer <config assets> eslint: /dummy/eslint.config.mjs 1`] = `
+"key: /dummy/eslint.config.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 
@@ -1049,7 +1053,7 @@ import { deepMergeConfig } from '@-xun/scripts/assets.ts';
 import {
   moduleExport,
   assertEnvironment
-} from '@-xun/scripts/assets/config/eslint.config.mjs';
+} from '@-xun/scripts/assets/eslint.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 /*import { createDebugLogger } from 'rejoinder';*/
@@ -1059,7 +1063,7 @@ import {
 const config = deepMergeConfig(
   moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
   /**
-   * @type {import('@-xun/scripts/assets/config/eslint.config.mjs').EslintConfig}
+   * @type {import('@-xun/scripts/assets/eslint.config.mjs').EslintConfig}
    */
   {
     // Any custom configs here will be deep merged with moduleExport
@@ -1188,14 +1192,16 @@ function getEslintAliases() {
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> git-add-then-commit: gac.config.mjs 1`] = `
-"gac.config.mjs
+exports[`::gatherAssetsFromTransformer <config assets> git-add-then-commit: /dummy/gac.config.mjs 1`] = `
+"key: /dummy/gac.config.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-import { moduleExport } from '@-xun/scripts/assets/config/gac.config.mjs';
+import { moduleExport } from '@-xun/scripts/assets/gac.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
 
@@ -1203,7 +1209,7 @@ import { moduleExport } from '@-xun/scripts/assets/config/gac.config.mjs';
 
 const config = deepMergeConfig(moduleExport(),
 /**
- * @type {import('@-xun/scripts/assets/config/gac.config.mjs').GacConfig}
+ * @type {import('@-xun/scripts/assets/gac.config.mjs').GacConfig}
  */
 {
   // Any custom configs here will be deep merged with moduleExport's result
@@ -1215,15 +1221,19 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> git-attributes: .gitattributes 1`] = `
-".gitattributes
+exports[`::gatherAssetsFromTransformer <config assets> git-attributes: /dummy/.gitattributes 1`] = `
+"key: /dummy/.gitattributes
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 * text=auto eol=lf
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> git-ignore: .gitignore 1`] = `
-".gitignore
+exports[`::gatherAssetsFromTransformer <config assets> git-ignore: /dummy/.gitignore 1`] = `
+"key: /dummy/.gitignore
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # ! Note that any pattern with a / in the beginning OR MIDDLE (but not end) will
 # ! be consider relative to the this file ONLY. Matching subdirs will NOT match!
@@ -1335,8 +1345,10 @@ CertificateAuthorityCertificate.pem
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/CODE_OF_CONDUCT.md 1`] = `
-".github/CODE_OF_CONDUCT.md
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/CODE_OF_CONDUCT.md 1`] = `
+"key: /dummy/.github/CODE_OF_CONDUCT.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # Contributor Covenant Code of Conduct
 
@@ -1423,8 +1435,10 @@ For answers to common questions about this code of conduct, see
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/CODEOWNERS 1`] = `
-".github/CODEOWNERS
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/CODEOWNERS 1`] = `
+"key: /dummy/.github/CODEOWNERS
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # See https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners
 
@@ -1432,8 +1446,10 @@ exports[`::gatherAssetsFromTransformer <config assets> github (directory): .gith
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/FUNDING.yml 1`] = `
-".github/FUNDING.yml
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/FUNDING.yml 1`] = `
+"key: /dummy/.github/FUNDING.yml
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # These are supported funding model platforms
 
@@ -1451,8 +1467,10 @@ custom: # Replace with up to 4 custom sponsorship URLs e.g., ['link1', 'link2']
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/ISSUE_TEMPLATE/BUG_REPORT.md 1`] = `
-".github/ISSUE_TEMPLATE/BUG_REPORT.md
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/ISSUE_TEMPLATE/BUG_REPORT.md 1`] = `
+"key: /dummy/.github/ISSUE_TEMPLATE/BUG_REPORT.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 ---
 name: 🤯 Bug report
@@ -1534,8 +1552,10 @@ Relevant log lines:
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/ISSUE_TEMPLATE/FEATURE_REQUEST.md 1`] = `
-".github/ISSUE_TEMPLATE/FEATURE_REQUEST.md
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/ISSUE_TEMPLATE/FEATURE_REQUEST.md 1`] = `
+"key: /dummy/.github/ISSUE_TEMPLATE/FEATURE_REQUEST.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 ---
 name: 🤩 Feature request
@@ -1566,8 +1586,10 @@ temporary workarounds you've come up with.
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/ISSUE_TEMPLATE/config.yml 1`] = `
-".github/ISSUE_TEMPLATE/config.yml
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/ISSUE_TEMPLATE/config.yml 1`] = `
+"key: /dummy/.github/ISSUE_TEMPLATE/config.yml
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 blank_issues_enabled: true
 contact_links:
@@ -1577,8 +1599,10 @@ contact_links:
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/PULL_REQUEST_TEMPLATE.md 1`] = `
-".github/PULL_REQUEST_TEMPLATE.md
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/PULL_REQUEST_TEMPLATE.md 1`] = `
+"key: /dummy/.github/PULL_REQUEST_TEMPLATE.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 <!-- Add a brief description of your PR here |-->
 
@@ -1598,8 +1622,10 @@ exports[`::gatherAssetsFromTransformer <config assets> github (directory): .gith
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/SUPPORT.md 1`] = `
-".github/SUPPORT.md
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/SUPPORT.md 1`] = `
+"key: /dummy/.github/SUPPORT.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # Support [![Average issue resolution time][badge-issue-resolution]][link-issue-resolution] [![Issue open percentage][badge-issue-percentage]][open-issues]
 
@@ -1663,8 +1689,10 @@ you for contribution 🎉, your efforts are greatly appreciated! 🙌🏿
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/dependabot.yml 1`] = `
-".github/dependabot.yml
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/dependabot.yml 1`] = `
+"key: /dummy/.github/dependabot.yml
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 version: 2
 updates:
@@ -1688,8 +1716,10 @@ updates:
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/pipeline.config.js 1`] = `
-".github/pipeline.config.js
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/pipeline.config.js 1`] = `
+"key: /dummy/.github/pipeline.config.js
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 /**
  * This object is used to configure the GitHub Actions that comprise the
@@ -1754,8 +1784,10 @@ module.exports = {
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/workflows/README.md 1`] = `
-".github/workflows/README.md
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): /dummy/.github/workflows/README.md 1`] = `
+"key: /dummy/.github/workflows/README.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 Details on pipeline design and operation can be found [here][1].
 
@@ -1763,8 +1795,10 @@ Details on pipeline design and operation can be found [here][1].
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> husky (directory): .husky/commit-msg 1`] = `
-".husky/commit-msg
+exports[`::gatherAssetsFromTransformer <config assets> husky (directory): /dummy/.husky/commit-msg 1`] = `
+"key: /dummy/.husky/commit-msg
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 #!/bin/sh
 
@@ -1784,8 +1818,10 @@ NODE_NO_WARNINGS=1 node spellcheck-commit.cjs
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> husky (directory): .husky/pre-commit 1`] = `
-".husky/pre-commit
+exports[`::gatherAssetsFromTransformer <config assets> husky (directory): /dummy/.husky/pre-commit 1`] = `
+"key: /dummy/.husky/pre-commit
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 #!/bin/sh
 
@@ -1803,8 +1839,10 @@ NODE_NO_WARNINGS=1 lint-staged --concurrent false
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> husky (directory): .husky/pre-push 1`] = `
-".husky/pre-push
+exports[`::gatherAssetsFromTransformer <config assets> husky (directory): /dummy/.husky/pre-push 1`] = `
+"key: /dummy/.husky/pre-push
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 #!/bin/sh
 
@@ -1835,8 +1873,10 @@ fi
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> jest: jest.config.mjs 1`] = `
-"jest.config.mjs
+exports[`::gatherAssetsFromTransformer <config assets> jest: /dummy/jest.config.mjs 1`] = `
+"key: /dummy/jest.config.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
@@ -1846,7 +1886,7 @@ import { deepMergeConfig } from '@-xun/scripts/assets';
 import {
   moduleExport,
   assertEnvironment
-} from '@-xun/scripts/assets/config/jest.config.mjs';
+} from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -1856,7 +1896,7 @@ import {
 const config = deepMergeConfig(
   moduleExport({ derivedAliases: getJestAliases(), ...assertEnvironment() }),
   /**
-   * @type {import('@-xun/scripts/assets/config/jest.config.mjs').JestConfig}
+   * @type {import('@-xun/scripts/assets/jest.config.mjs').JestConfig}
    */
   {
     // Any custom configs here will be deep merged with moduleExport's result
@@ -1910,8 +1950,10 @@ function getJestAliases() {
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> license (markdown): LICENSE 1`] = `
-"LICENSE
+exports[`::gatherAssetsFromTransformer <config assets> license (markdown): /dummy/LICENSE 1`] = `
+"key: /dummy/LICENSE
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 MIT License
 
@@ -1937,14 +1979,16 @@ SOFTWARE.
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> lint-staged: lint-staged.config.mjs 1`] = `
-"lint-staged.config.mjs
+exports[`::gatherAssetsFromTransformer <config assets> lint-staged: /dummy/lint-staged.config.mjs 1`] = `
+"key: /dummy/lint-staged.config.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-import { moduleExport } from '@-xun/scripts/assets/config/lint-staged.config.mjs';
+import { moduleExport } from '@-xun/scripts/assets/lint-staged.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
 
@@ -1960,8 +2004,10 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> maintaining (markdown): MAINTAINING.md 1`] = `
-"MAINTAINING.md
+exports[`::gatherAssetsFromTransformer <config assets> maintaining (markdown): /dummy/MAINTAINING.md 1`] = `
+"key: /dummy/MAINTAINING.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # Maintaining
 
@@ -2305,13 +2351,13 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/config/_release.config.cjs.ts#L147-L157
+  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/2da3d8abed3de3d2ebc33d3cd54da3190dc2c63c/src/assets/config/_conventional.config.cjs.ts#L201-L214
+  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
@@ -2329,14 +2375,16 @@ Thank you so much for helping to maintain this project!
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> next.js: next.config.mjs 1`] = `
-"next.config.mjs
+exports[`::gatherAssetsFromTransformer <config assets> next.js: /dummy/next.config.mjs 1`] = `
+"key: /dummy/next.config.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-import { moduleExport } from '@-xun/scripts/assets/config/next.config.mjs';
+import { moduleExport } from '@-xun/scripts/assets/next.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
 
@@ -2352,8 +2400,10 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> npm-check-updates: .ncurc.cjs 1`] = `
-".ncurc.cjs
+exports[`::gatherAssetsFromTransformer <config assets> npm-check-updates: /dummy/.ncurc.cjs 1`] = `
+"key: /dummy/.ncurc.cjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
@@ -2376,8 +2426,10 @@ module.exports = {
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> package.json: package.json 1`] = `
-"package.json
+exports[`::gatherAssetsFromTransformer <config assets> package.json: /dummy/package.json 1`] = `
+"key: /dummy/package.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 {
   "name": "package-name",
@@ -2456,14 +2508,16 @@ exports[`::gatherAssetsFromTransformer <config assets> package.json: package.jso
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> postcss: postcss.config.mjs 1`] = `
-"postcss.config.mjs
+exports[`::gatherAssetsFromTransformer <config assets> postcss: /dummy/postcss.config.mjs 1`] = `
+"key: /dummy/postcss.config.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-import { moduleExport } from '@-xun/scripts/assets/config/postcss.config.mjs';
+import { moduleExport } from '@-xun/scripts/assets/postcss.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
 
@@ -2479,14 +2533,16 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> prettier: prettier.config.mjs 1`] = `
-"prettier.config.mjs
+exports[`::gatherAssetsFromTransformer <config assets> prettier: /dummy/prettier.config.mjs 1`] = `
+"key: /dummy/prettier.config.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-import { moduleExport } from '@-xun/scripts/assets/config/prettier.config.mjs';
+import { moduleExport } from '@-xun/scripts/assets/prettier.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
 
@@ -2495,7 +2551,7 @@ import { moduleExport } from '@-xun/scripts/assets/config/prettier.config.mjs';
 const config = deepMergeConfig(
   moduleExport(),
   /**
-   * @type {import('@-xun/scripts/assets/config/prettier.config.mjs').PrettierConfig}
+   * @type {import('@-xun/scripts/assets/prettier.config.mjs').PrettierConfig}
    */
   {
     // Any custom configs here will be deep merged with moduleExport's result
@@ -2508,8 +2564,10 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> prettier-ignore: .prettierignore 1`] = `
-".prettierignore
+exports[`::gatherAssetsFromTransformer <config assets> prettier-ignore: /dummy/.prettierignore 1`] = `
+"key: /dummy/.prettierignore
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # * Paths below are ignored by prettier as well as remark and doctoc when called
 # * with \`xscripts format\`.
@@ -2565,8 +2623,10 @@ fixtures
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> readme (markdown): README.md 1`] = `
-"README.md
+exports[`::gatherAssetsFromTransformer <config assets> readme (markdown): /dummy/README.md 1`] = `
+"key: /dummy/README.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 <!-- xscripts-renovate-region-start -->
 
@@ -2737,8 +2797,10 @@ repo-reference-definitions-repo
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> remark: .remarkrc.mjs 1`] = `
-".remarkrc.mjs
+exports[`::gatherAssetsFromTransformer <config assets> remark: /dummy/.remarkrc.mjs 1`] = `
+"key: /dummy/.remarkrc.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 
@@ -2747,7 +2809,7 @@ import { deepMergeConfig } from '@-xun/scripts/assets';
 import {
   moduleExport,
   assertEnvironment
-} from '@-xun/scripts/assets/config/.remarkrc.mjs';
+} from '@-xun/scripts/assets/.remarkrc.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -2757,7 +2819,7 @@ import {
 const config = deepMergeConfig(
   moduleExport(await assertEnvironment()),
   /**
-   * @type {import('@-xun/scripts/assets/config/.remarkrc.mjs').RemarkConfig}
+   * @type {import('@-xun/scripts/assets/.remarkrc.mjs').RemarkConfig}
    */
   {
     // Any custom configs here will be deep merged with moduleExport
@@ -2770,8 +2832,10 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> security (markdown): SECURITY.md 1`] = `
-"SECURITY.md
+exports[`::gatherAssetsFromTransformer <config assets> security (markdown): /dummy/SECURITY.md 1`] = `
+"key: /dummy/SECURITY.md
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 # Security ☠️ [![Known Vulnerabilities][2]][1]
 
@@ -2794,21 +2858,25 @@ Thank you for your contribution!
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> src (directory): src/index.ts 1`] = `
-"src/index.ts
+exports[`::gatherAssetsFromTransformer <config assets> src (directory): /dummy/src/index.ts 1`] = `
+"key: /dummy/src/index.ts
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 export {};
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tailwind: tailwind.config.mjs 1`] = `
-"tailwind.config.mjs
+exports[`::gatherAssetsFromTransformer <config assets> tailwind: /dummy/tailwind.config.mjs 1`] = `
+"key: /dummy/tailwind.config.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-import { moduleExport } from '@-xun/scripts/assets/config/tailwind.config.mjs';
+import { moduleExport } from '@-xun/scripts/assets/tailwind.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
 
@@ -2824,8 +2892,10 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> test (directory): test/index.ts 1`] = `
-"test/index.ts
+exports[`::gatherAssetsFromTransformer <config assets> test (directory): /dummy/test/index.ts 1`] = `
+"key: /dummy/test/index.ts
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 /**
  ** This file exports test utilities specific to this project and beyond what is
@@ -2836,17 +2906,10 @@ export {};
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> test (directory): test/setup.ts 1`] = `
-"test/setup.ts
-⏶⏷⏶⏷⏶
-// ? https://github.com/jest-community/jest-extended#typescript
-import 'jest-extended';
-import 'jest-extended/all';
-"
-`;
-
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): tsc.package.docs.json 1`] = `
-"tsc.package.docs.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/tsc.package.docs.json 1`] = `
+"key: /dummy/tsc.package.docs.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 /**
  ** This file extends the project root tsconfig.json file for use with
@@ -2874,8 +2937,10 @@ exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): 
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): tsc.package.lint.json 1`] = `
-"tsc.package.lint.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/tsc.package.lint.json 1`] = `
+"key: /dummy/tsc.package.lint.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 /**
  ** This file extends the project root tsconfig.json file for use with linting
@@ -2903,47 +2968,51 @@ exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): 
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): tsc.package.types.json 1`] = `
-"tsc.package.types.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/tsc.package.types.json 1`] = `
+"key: /dummy/tsc.package.types.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 /**
- ** This file extends the project root tsconfig.json file for use with tsc at
- ** the package level.
- **
- ** Use this file to exert some control over how tsc generates package-specific
- ** definition files.
- */
+** This file extends the project root tsconfig.json file for use with tsc at
+** the package level.
+**
+** Use this file to exert some control over how tsc generates package-specific
+** definition files.
+*/
 
 {
-  "$schema": "https://json.schemastore.org/tsconfig.json",
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "allowJs": false,
-    "checkJs": false,
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "isolatedModules": false,
-    "noEmit": false,
-    "outDir": "dist",
-    "rootDir": "./"
-  },
-  "include": ["types/**/*", "src/**/*"],
-  "exclude": [
-    "**/dist/**/*",
-    "**/test/fixtures/**/*",
-    "**/node_modules/**/*",
-    "packages/**/*",
-    "packages/**/.*",
-    "**/*.ignore",
-    "**/*.ignore.*/**/*",
-    "**/ignore.*"
-  ]
+"$schema": "https://json.schemastore.org/tsconfig.json",
+"extends": "./tsconfig.json",
+"compilerOptions": {
+"allowJs": false,
+"checkJs": false,
+"declaration": true,
+"emitDeclarationOnly": true,
+"isolatedModules": false,
+"noEmit": false,
+"outDir": "dist",
+"rootDir": "./"
+},
+"include": ["types/**/*", "src/**/*"],
+"exclude": [
+"**/dist/**/*",
+"**/test/fixtures/**/*",
+"**/node_modules/**/*",
+"packages/**/*",
+"packages/**/.*",
+"**/*.ignore",
+"**/*.ignore.*/**/*",
+"**/ignore.*"
+]
 }
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): tsc.project.lint.json 1`] = `
-"tsc.project.lint.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/tsc.project.lint.json 1`] = `
+"key: /dummy/tsc.project.lint.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 /**
  ** This file extends the project root tsconfig.json file for use with linting
@@ -2954,24 +3023,26 @@ exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): 
  ** repository at once.
  */
 
-{
-  "$schema": "https://json.schemastore.org/tsconfig.json",
-  "extends": "./tsconfig.json",
-  "include": ["**/*", "**/.*/**/*", "**/.*"],
-  "exclude": [
-    "**/dist/**/*",
-    "**/test/fixtures/**/*",
-    "**/node_modules/**/*",
-    "**/*.ignore",
-    "**/*.ignore.*/**/*",
-    "**/ignore.*"
-  ]
+ {
+ "$schema": "https://json.schemastore.org/tsconfig.json",
+ "extends": "./tsconfig.json",
+ "include": ["**/*", "**/.*/**/*", "**/.*"],
+ "exclude": [
+ "**/dist/**/*",
+ "**/test/fixtures/**/*",
+ "**/node_modules/**/*",
+ "**/*.ignore",
+ "**/*.ignore.*/**/*",
+ "**/ignore.*"
+ ]
 }
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): tsconfig.json 1`] = `
-"tsconfig.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/tsconfig.json 1`] = `
+"key: /dummy/tsconfig.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 {
   "compilerOptions": {
@@ -3068,22 +3139,28 @@ exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): 
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tstyche.config.json: tstyche.config.json 1`] = `
-"tstyche.config.json
+exports[`::gatherAssetsFromTransformer <config assets> tstyche.config.json: /dummy/tstyche.config.json 1`] = `
+"key: /dummy/tstyche.config.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 {"$schema":"https://tstyche.org/schemas/config.json","testFileMatch":["**/type-*.test.ts","**/type-*.test.tsx"]}
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> turbo.json: turbo.json 1`] = `
-"turbo.json
+exports[`::gatherAssetsFromTransformer <config assets> turbo.json: /dummy/turbo.json 1`] = `
+"key: /dummy/turbo.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 {}
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> types (directory): types/example 1`] = `
-"types/example
+exports[`::gatherAssetsFromTransformer <config assets> types (directory): /dummy/types/example 1`] = `
+"key: /dummy/types/example
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 declare module 'glob-gitignore' {
   import type { GlobOptions } from 'glob';
@@ -3113,15 +3190,19 @@ declare module 'glob-gitignore' {
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> types (directory): types/global.ts 1`] = `
-"types/global.ts
+exports[`::gatherAssetsFromTransformer <config assets> types (directory): /dummy/types/global.ts 1`] = `
+"key: /dummy/types/global.ts
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 export type {};
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): .vscode/launch.example.json 1`] = `
-".vscode/launch.example.json
+exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): /dummy/.vscode/launch.example.json 1`] = `
+"key: /dummy/.vscode/launch.example.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 {
   "configurations": [
@@ -3238,8 +3319,10 @@ exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): .vsco
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): .vscode/settings.json 1`] = `
-".vscode/settings.json
+exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): /dummy/.vscode/settings.json 1`] = `
+"key: /dummy/.vscode/settings.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 {
   // ! Note that some of these configurations are ignored when the project is
@@ -3257,8 +3340,10 @@ exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): .vsco
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): .vscode/tasks.example.json 1`] = `
-".vscode/tasks.example.json
+exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): /dummy/.vscode/tasks.example.json 1`] = `
+"key: /dummy/.vscode/tasks.example.json
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 {
   // See https://go.microsoft.com/fwlink/?LinkId=733558
@@ -3290,14 +3375,16 @@ exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): .vsco
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> webpack: webpack.config.mjs 1`] = `
-"webpack.config.mjs
+exports[`::gatherAssetsFromTransformer <config assets> webpack: /dummy/webpack.config.mjs 1`] = `
+"key: /dummy/webpack.config.mjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-import { moduleExport } from '@-xun/scripts/assets/config/webpack.config.mjs';
+import { moduleExport } from '@-xun/scripts/assets/webpack.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
 
@@ -3313,8 +3400,10 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> xchangelog: conventional.config.cjs 1`] = `
-"conventional.config.cjs
+exports[`::gatherAssetsFromTransformer <config assets> xchangelog: /dummy/conventional.config.cjs 1`] = `
+"key: /dummy/conventional.config.cjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
@@ -3322,7 +3411,7 @@ exports[`::gatherAssetsFromTransformer <config assets> xchangelog: conventional.
 const {
   moduleExport,
   assertEnvironment
-} = require('@-xun/scripts/assets/config/conventional.config.cjs');
+} = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
@@ -3342,14 +3431,16 @@ module.exports = moduleExport({
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> xrelease: release.config.cjs 1`] = `
-"release.config.cjs
+exports[`::gatherAssetsFromTransformer <config assets> xrelease: /dummy/release.config.cjs 1`] = `
+"key: /dummy/release.config.cjs
+scope: unlimited
+preset: undefined
 ⏶⏷⏶⏷⏶
 // @ts-check
 'use strict';
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/config/release.config.cjs');
+const { moduleExport } = require('@-xun/scripts/assets/release.config.cjs');
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
 
@@ -3358,7 +3449,7 @@ const { moduleExport } = require('@-xun/scripts/assets/config/release.config.cjs
 module.exports = deepMergeConfig(
   moduleExport(assertEnvironment({ projectRoot: __dirname })),
   /**
-   * @type {import('@-xun/scripts/assets/config/release.config.cjs').ReleaseConfig}
+   * @type {import('@-xun/scripts/assets/release.config.cjs').ReleaseConfig}
    */
   {
     // Any custom configs here will be deep merged with moduleExport's result

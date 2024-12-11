@@ -64,6 +64,7 @@ import {
   type TransformerContext
 } from 'universe:assets.ts';
 
+import { type RenovationPreset } from 'universe:commands/project/renovate.ts';
 import { DefaultGlobalScope } from 'universe:configure.ts';
 
 import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
@@ -105,32 +106,38 @@ const dummyContext: IncomingTransformerContext = {
   shouldDeriveAliases: true,
   log: (() => undefined) as unknown as IncomingTransformerContext['log'],
   debug: (() => undefined) as unknown as IncomingTransformerContext['debug'],
-  toProjectAbsolutePath: () => '/dummy/absolute/path' as AbsolutePath,
-  toPackageAbsolutePath: () => '/dummy/absolute/path/to/package' as AbsolutePath,
+  toProjectAbsolutePath: (path: string) => `/dummy/${path}` as AbsolutePath,
+  toPackageAbsolutePath: (path: string) => `/dummy/packages/pkg/${path}` as AbsolutePath,
   forceOverwritePotentiallyDestructive: false,
   scope: DefaultGlobalScope.Unlimited
 };
 
 describe('::gatherAssetsFromTransformer', () => {
-  it('retrieve an asset via its filename', async () => {
+  it('invoke a transformer via its filename', async () => {
     expect.hasAssertions();
 
-    await expect(
-      gatherAssetsFromTransformer({
-        transformerId: allContributorsConfigProjectBase,
-        transformerContext: {
-          packageName: 'pkg-name',
-          shouldDeriveAliases: false
-        } as TransformerContext,
-        options: { transformerFiletype: 'ts' }
-      })
-    ).resolves.toStrictEqual(
-      await (
-        await import('universe:assets/transformers/_.all-contributorsrc.ts')
-      ).transformer({
-        asset: allContributorsConfigProjectBase,
-        packageName: 'pkg-name'
-      } as TransformerContext)
+    const transformerContext = {
+      ...dummyContext,
+      packageName: 'pkg-name',
+      shouldDeriveAliases: false
+    } as IncomingTransformerContext;
+
+    const assets = await gatherAssetsFromTransformer({
+      transformerId: allContributorsConfigProjectBase,
+      transformerContext,
+      options: { transformerFiletype: 'ts' }
+    });
+
+    const dummyAbsolutePath = dummyContext.toProjectAbsolutePath(
+      allContributorsConfigProjectBase
+    );
+
+    const expectedAssets = await (
+      await import('universe:assets/transformers/_.all-contributorsrc.ts')
+    ).transformer({ ...transformerContext, asset: allContributorsConfigProjectBase });
+
+    await expect(assets[dummyAbsolutePath]()).resolves.toStrictEqual(
+      await expectedAssets[dummyAbsolutePath]()
     );
   });
 
@@ -140,10 +147,10 @@ describe('::gatherAssetsFromTransformer', () => {
     await expect(
       gatherAssetsFromTransformer({
         transformerId: 'fake-does-not-exist',
-        transformerContext: {} as TransformerContext
+        transformerContext: {} as IncomingTransformerContext
       })
     ).rejects.toMatchObject({
-      message: expect.stringMatching(/failed to retrieve asset.+cannot find module/i)
+      message: expect.stringMatching(/failed to retrieve asset/)
     });
   });
 
@@ -157,7 +164,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('browserslist', async () => {
@@ -169,7 +180,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('codecov', async () => {
@@ -181,7 +196,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('editor-config', async () => {
@@ -193,7 +212,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('dotenv (default)', async () => {
@@ -206,7 +229,11 @@ describe('::gatherAssetsFromTransformer', () => {
           options: { transformerFiletype: 'ts' }
         });
 
-        expectAssetsToMatchSnapshots(assets);
+        await expectAssetsToMatchSnapshots(
+          assets,
+          dummyContext.scope,
+          dummyContext.targetAssetsPreset
+        );
       }
 
       {
@@ -216,7 +243,11 @@ describe('::gatherAssetsFromTransformer', () => {
           options: { transformerFiletype: 'ts' }
         });
 
-        expectAssetsToMatchSnapshots(assets);
+        await expectAssetsToMatchSnapshots(
+          assets,
+          dummyContext.scope,
+          dummyContext.targetAssetsPreset
+        );
       }
     });
 
@@ -229,7 +260,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('github (directory)', async () => {
@@ -241,7 +276,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('git-ignore', async () => {
@@ -253,7 +292,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('husky (directory)', async () => {
@@ -265,7 +308,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('npm-check-updates', async () => {
@@ -277,7 +324,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('prettier', async () => {
@@ -289,7 +340,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('prettier-ignore', async () => {
@@ -301,7 +356,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('remark', async () => {
@@ -313,7 +372,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('commit-spell', async () => {
@@ -325,7 +388,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('vscode (directory)', async () => {
@@ -337,7 +404,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('architecture (markdown)', async () => {
@@ -349,7 +420,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('babel', async () => {
@@ -361,7 +436,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('changelog.patch.mjs', async () => {
@@ -373,7 +452,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('commitlint.config.mjs', async () => {
@@ -385,7 +468,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('contributing (markdown)', async () => {
@@ -397,7 +484,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('xchangelog', async () => {
@@ -409,7 +500,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('eslint', async () => {
@@ -421,7 +516,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('git-add-then-commit', async () => {
@@ -433,7 +532,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('jest', async () => {
@@ -445,7 +548,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('license (markdown)', async () => {
@@ -457,7 +564,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('lint-staged', async () => {
@@ -469,7 +580,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('maintaining (markdown)', async () => {
@@ -481,7 +596,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('next.js', async () => {
@@ -493,7 +612,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('package.json', async () => {
@@ -505,7 +628,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('postcss', async () => {
@@ -517,7 +644,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('readme (markdown)', async () => {
@@ -529,7 +660,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('xrelease', async () => {
@@ -541,7 +676,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('security (markdown)', async () => {
@@ -553,7 +692,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('src (directory)', async () => {
@@ -565,7 +708,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('tailwind', async () => {
@@ -577,7 +724,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('test (directory)', async () => {
@@ -589,7 +740,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('tsconfig (all variants)', async () => {
@@ -601,7 +756,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('tstyche.config.json', async () => {
@@ -613,7 +772,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('turbo.json', async () => {
@@ -625,7 +788,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('types (directory)', async () => {
@@ -637,7 +804,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
 
     it('webpack', async () => {
@@ -649,7 +820,11 @@ describe('::gatherAssetsFromTransformer', () => {
         options: { transformerFiletype: 'ts' }
       });
 
-      expectAssetsToMatchSnapshots(assets);
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.targetAssetsPreset
+      );
     });
   });
 });
@@ -678,7 +853,7 @@ describe('::compileTemplates', () => {
     } as Record<RelativePath, RelativePath>;
 
     await expect(
-      compileTemplates(assets, { ...dummyContext, asset: 'combined' })
+      toAssetsMap(await compileTemplates(assets, { ...dummyContext, asset: 'combined' }))
     ).resolves.toMatchSnapshot();
   });
 });
@@ -775,17 +950,16 @@ describe('::makeTransformer', () => {
   it('returns a transformer', async () => {
     expect.hasAssertions();
 
+    const path = 'abs-path' as AbsolutePath;
+
     const { transformer } = makeTransformer(function (context) {
-      return [
-        { path: 'abs-path' as AbsolutePath, generate: () => JSON.stringify(context) }
-      ];
+      return [{ path, generate: () => JSON.stringify(context) }];
     });
 
     const context = { asset: 'name' } as TransformerContext;
+    const assets = await transformer(context);
 
-    await expect(transformer(context)).resolves.toStrictEqual({
-      file: JSON.stringify(context) + '\n'
-    });
+    await expect(assets[path]()).resolves.toStrictEqual(JSON.stringify(context) + '\n');
   });
 
   describe('::TransformerOptions', () => {
@@ -811,10 +985,9 @@ describe('::makeTransformer', () => {
         expect.hasAssertions();
 
         const { transformer } = makeTransformer(() => files);
+        const assets = await transformer(context, { trimContents: 'start' });
 
-        await expect(
-          transformer(context, { trimContents: 'start' })
-        ).resolves.toStrictEqual({
+        await expect(toAssetsMap(assets)).resolves.toStrictEqual({
           file1: files[0].generate().trimStart(),
           file2: files[1].generate().trimStart()
         });
@@ -824,10 +997,9 @@ describe('::makeTransformer', () => {
         expect.hasAssertions();
 
         const { transformer } = makeTransformer(() => files);
+        const assets = await transformer(context, { trimContents: 'end' });
 
-        await expect(
-          transformer(context, { trimContents: 'end' })
-        ).resolves.toStrictEqual({
+        await expect(toAssetsMap(assets)).resolves.toStrictEqual({
           file1: files[0].generate().trimEnd(),
           file2: files[1].generate().trimEnd()
         });
@@ -837,10 +1009,9 @@ describe('::makeTransformer', () => {
         expect.hasAssertions();
 
         const { transformer } = makeTransformer(() => files);
+        const assets = await transformer(context, { trimContents: 'both' });
 
-        await expect(
-          transformer(context, { trimContents: 'both' })
-        ).resolves.toStrictEqual({
+        await expect(toAssetsMap(assets)).resolves.toStrictEqual({
           file1: files[0].generate().trim(),
           file2: files[1].generate().trim()
         });
@@ -851,27 +1022,34 @@ describe('::makeTransformer', () => {
 
         const { transformer } = makeTransformer(() => files);
 
-        await expect(
-          transformer(context, { trimContents: 'both-then-append-newline' })
-        ).resolves.toStrictEqual({
-          file1: files[0].generate().trim() + '\n',
-          file2: files[1].generate().trim() + '\n'
-        });
+        {
+          const assets = await transformer(context, {
+            trimContents: 'both-then-append-newline'
+          });
 
-        await expect(transformer(context)).resolves.toStrictEqual({
-          file1: files[0].generate().trim() + '\n',
-          file2: files[1].generate().trim() + '\n'
-        });
+          await expect(toAssetsMap(assets)).resolves.toStrictEqual({
+            file1: files[0].generate().trim() + '\n',
+            file2: files[1].generate().trim() + '\n'
+          });
+        }
+
+        {
+          const assets = await transformer(context);
+
+          await expect(toAssetsMap(assets)).resolves.toStrictEqual({
+            file1: files[0].generate().trim() + '\n',
+            file2: files[1].generate().trim() + '\n'
+          });
+        }
       });
 
       it('false does no trimming', async () => {
         expect.hasAssertions();
 
         const { transformer } = makeTransformer(() => files);
+        const assets = await transformer(context, { trimContents: false });
 
-        await expect(
-          transformer(context, { trimContents: false })
-        ).resolves.toStrictEqual({
+        await expect(toAssetsMap(assets)).resolves.toStrictEqual({
           file1: files[0].generate(),
           file2: files[1].generate()
         });
@@ -894,8 +1072,26 @@ describe('::deepMergeConfig', () => {
   });
 });
 
-function expectAssetsToMatchSnapshots(assets: ReifiedAssets) {
+async function expectAssetsToMatchSnapshots(
+  assets: ReifiedAssets,
+  scope: DefaultGlobalScope,
+  preset: RenovationPreset | undefined
+) {
   for (const [key, asset] of Object.entries(assets)) {
-    expect(key + '\n⏶⏷⏶⏷⏶\n' + asset).toMatchSnapshot(key);
+    expect(
+      `key: ${key}\nscope: ${scope}\npreset: ${String(preset)}\n⏶⏷⏶⏷⏶\n` +
+        // eslint-disable-next-line no-await-in-loop
+        (await asset())
+    ).toMatchSnapshot(key);
   }
+}
+
+async function toAssetsMap(assets: ReifiedAssets | Asset[]) {
+  const entries = Array.isArray(assets)
+    ? assets.map(({ path, generate }) => [path, generate] as const)
+    : Object.entries(assets);
+
+  return Object.fromEntries(
+    await Promise.all(entries.map(async ([k, v]) => [k, await v()]))
+  );
 }
