@@ -2,8 +2,8 @@ import {
   deriveAliasesForTypeScript,
   generateRawAliasMap
 } from 'multiverse+project-utils:alias.ts';
-import { Package, ProjectAttribute } from 'multiverse+project-utils:analyze.ts';
 
+import { ProjectAttribute, type Package } from 'multiverse+project-utils:analyze.ts';
 import { Tsconfig } from 'multiverse+project-utils:fs.ts';
 
 import { makeTransformer } from 'universe:assets.ts';
