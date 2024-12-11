@@ -34,7 +34,8 @@ const packageMainPaths = Object.values(
   .map((xport) =>
     !xport || typeof xport === 'string' || Array.isArray(xport)
       ? null
-      : `${__dirname}/../${String(xport.node ?? xport.default)}`
+      : // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        `${__dirname}/../${String(xport.node ?? xport.default)}`
   )
   .filter(Boolean) as string[];
 
