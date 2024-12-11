@@ -1555,7 +1555,7 @@ See the xscripts wiki documentation for details on all available assets and thei
         rootPackage: { root: projectRoot }
       } = projectMetadata;
 
-      const context: IncomingTransformerContext = {
+      const transformerContext: IncomingTransformerContext = {
         log,
         debug,
 
@@ -1594,10 +1594,13 @@ See the xscripts wiki documentation for details on all available assets and thei
         repoReferenceDefinitionsRepo: ''
       };
 
-      debug('transformer context: %O', context);
+      debug('preset: %O', preset);
+      debug('skipAssetPaths: %O', skipAssetPaths);
+      debug('additionalAliasesJsPath: %O', additionalAliasesJsPath);
+      debug('transformer context: %O', transformerContext);
 
       const reifiedAssetPaths = await gatherAssetsFromAllTransformers({
-        transformerContext: context
+        transformerContext
       });
 
       // TODO: Replace missing context items with "<!-- TODO -->" if they are

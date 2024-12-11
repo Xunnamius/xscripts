@@ -597,7 +597,7 @@ async function invokeTransformerAndReifyAssets({
       options
     );
 
-    debug('transformer %O returned reified assets: %O', reifiedAssets);
+    debug('transformer %O returned reified assets: %O', transformerPath, reifiedAssets);
     return reifiedAssets;
   } catch (error) {
     throw new CliError(ErrorMessage.AssetRetrievalFailed(transformerPath), {
