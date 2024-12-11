@@ -40,6 +40,7 @@ import {
 
 import {
   deriveVirtualGitignoreLines,
+  directorySrcPackageBase,
   getCurrentWorkingDirectory,
   isAccessible,
   nextjsConfigProjectBase,
@@ -49,6 +50,7 @@ import {
   toAbsolutePath,
   toPath,
   toRelativePath,
+  vercelConfigProjectBase,
   webpackConfigProjectBase,
   type AbsolutePath,
   type RelativePath
@@ -59,6 +61,7 @@ import { type ParametersNoFirst } from 'rootverse+project-utils:src/util.ts';
 import type { Merge, PackageJson, Promisable } from 'type-fest';
 
 const debug = debug_.extend('getProjectMetadata');
+const vercelProjectMetadataPath = '.vercel/project.json' as RelativePath;
 
 /**
  * @see {@link analyzeProjectStructure}
@@ -765,14 +768,24 @@ function getProjectAttributes(
 
     if (
       repoType === ProjectAttribute.Monorepo &&
-      isAccessibleFromRoot(true, toRelativePath('src'), root, useCached)
+      isAccessibleFromRoot(
+        true,
+        toRelativePath(directorySrcPackageBase),
+        root,
+        useCached
+      )
     ) {
       attributes[ProjectAttribute.Hybridrepo] = true;
     }
 
     if (
-      isAccessibleFromRoot(true, toRelativePath('vercel.json'), root, useCached) ||
-      isAccessibleFromRoot(true, toRelativePath('.vercel/project.json'), root, useCached)
+      isAccessibleFromRoot(
+        true,
+        toRelativePath(vercelConfigProjectBase),
+        root,
+        useCached
+      ) ||
+      isAccessibleFromRoot(true, vercelProjectMetadataPath, root, useCached)
     ) {
       attributes[ProjectAttribute.Vercel] = true;
     }
@@ -795,20 +808,23 @@ function getProjectAttributes(
           root,
           useCached
         ),
-        isAccessibleFromRoot(false, toRelativePath('src'), root, useCached),
-        isAccessibleFromRoot(false, toRelativePath('vercel.json'), root, useCached).then(
-          async (result) => {
-            return (
-              result ||
-              isAccessibleFromRoot(
-                false,
-                toRelativePath('.vercel/project.json'),
-                root,
-                useCached
-              )
-            );
-          }
-        )
+        isAccessibleFromRoot(
+          false,
+          toRelativePath(directorySrcPackageBase),
+          root,
+          useCached
+        ),
+        isAccessibleFromRoot(
+          false,
+          toRelativePath(vercelConfigProjectBase),
+          root,
+          useCached
+        ).then(async (result) => {
+          return (
+            result ||
+            isAccessibleFromRoot(false, vercelProjectMetadataPath, root, useCached)
+          );
+        })
       ]);
 
       if (hasNext) {

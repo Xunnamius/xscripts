@@ -181,6 +181,11 @@ export const tailwindConfigProjectBase = 'tailwind.config.mjs';
 export const turboConfigProjectBase = 'turbo.json';
 
 /**
+ * The basename of the well-known @vercel/cli configuration file.
+ */
+export const vercelConfigProjectBase = 'vercel.json';
+
+/**
  * The basename of the well-known generated types output directory.
  */
 export const directoryTypesProjectBase = 'types';
