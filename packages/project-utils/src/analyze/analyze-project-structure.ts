@@ -600,6 +600,7 @@ function setSubrootPackagesAndCwdPackage(
     const workspacePackage = {
       id: packageId,
       root: packageRoot,
+      relativeRoot: toRelativePath(projectRoot, packageRoot),
       projectMetadata,
       json: packageJson,
       attributes

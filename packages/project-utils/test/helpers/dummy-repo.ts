@@ -568,12 +568,14 @@ function createFixture({
     root: subRoot,
     attributes
   }: PackageMapDatum): PackageMapEntry {
+    const root = fs.toPath(prototypeRoot, subRoot);
     return [
       name,
       {
         id: basename(subRoot),
-        root: fs.toPath(prototypeRoot, subRoot),
-        json: require(fs.toPath(prototypeRoot, subRoot, 'package.json')),
+        root,
+        relativeRoot: fs.toRelativePath(prototypeRoot, root),
+        json: require(fs.toPath(root, 'package.json')),
         attributes,
         // ? Side-step this whole thing
         projectMetadata: expect.anything()

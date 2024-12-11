@@ -76,6 +76,14 @@ export type WorkspacePackage<Json extends PackageJson | XPackageJson = XPackageJ
    */
   root: AbsolutePath;
   /**
+   * The path to the root directory of the package _relative to the project
+   * root_.
+   *
+   * Note: the `./` prefix (_not_ `../`), if present, is elided from the
+   * returned path.
+   */
+  relativeRoot: RelativePath;
+  /**
    * The contents of the package's `package.json` file.
    */
   json: Json;
@@ -785,6 +793,7 @@ export function isWorkspacePackage(o: unknown): o is WorkspacePackage {
     typeof o === 'object' &&
     'id' in o &&
     'root' in o &&
+    'relativeRoot' in o &&
     'json' in o &&
     'attributes' in o &&
     'projectMetadata' in o
