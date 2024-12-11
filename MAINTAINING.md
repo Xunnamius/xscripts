@@ -341,7 +341,7 @@ Thank you so much for helping to maintain this project!
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/2da3d8abed3de3d2ebc33d3cd54da3190dc2c63c/src/assets/config/_conventional.config.cjs.ts#L201-L214
+  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
