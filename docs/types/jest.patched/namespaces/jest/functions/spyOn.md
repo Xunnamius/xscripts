@@ -21,7 +21,7 @@ other test libraries.
 
 • **Key** *extends* `string` \| `number` \| `symbol`
 
-• **A** *extends* `"get"` \| `"set"` = [`PropertyAccessors`](../type-aliases/PropertyAccessors.md)\<`Key`, `T`\>
+• **A** *extends* `"set"` \| `"get"` = [`PropertyAccessors`](../type-aliases/PropertyAccessors.md)\<`Key`, `T`\>
 
 • **Value** = `Required`\<`T`\>\[`Key`\]
 

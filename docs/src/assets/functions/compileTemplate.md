@@ -8,8 +8,8 @@
 
 > **compileTemplate**(`templatePath`, `context`): `Promise`\<`string`\>
 
-Takes a path relative to the `src/assets/template` directory and returns the
-asset at that path with all handlebars-style template variables (e.g.
+Takes a path relative to the `src/assets/templates` directory and returns the
+template at that path with all handlebars-style template variables (e.g.
 `{{variableName}}`) with matching keys in `TemplateContext` replaced with
 their contextual values.
 
@@ -38,4 +38,4 @@ user must manually narrow, similar to a merge conflict in git. See
 
 ## Defined in
 
-[src/assets.ts:286](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/assets.ts#L286)
+[src/assets.ts:494](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/assets.ts#L494)

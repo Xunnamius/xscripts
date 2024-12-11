@@ -215,10 +215,6 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-##### error
-
-`unknown`
-
 #### Returns
 
 `string`
@@ -767,6 +763,48 @@ readonly `string`[]
 
 `string`
 
+### RenovationEncounteredObsoleteProtectionRules()
+
+#### Parameters
+
+##### branch
+
+`string`
+
+#### Returns
+
+`string`
+
+### RenovationRepositoryExtraneousRuleset()
+
+#### Parameters
+
+##### rulesetName
+
+`string`
+
+#### Returns
+
+`string`
+
+### RenovationRunnerExecutionFailed()
+
+#### Returns
+
+`string`
+
+### RenovationSubtaskOperationFailed()
+
+#### Parameters
+
+##### index
+
+`number`
+
+#### Returns
+
+`string`
+
 ### RequiresMinArgs()
 
 #### Parameters
@@ -931,4 +969,4 @@ readonly `string`[]
 
 ## Defined in
 
-[src/error.ts:63](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/error.ts#L63)
+[src/error.ts:61](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/error.ts#L61)

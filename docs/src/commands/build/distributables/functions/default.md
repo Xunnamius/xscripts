@@ -6,7 +6,7 @@
 
 # Function: default()
 
-> **default**(`__namedParameters`): `Promise`\<`object`\>
+> **default**(`__namedParameters`): `Promise`\<\{ `aliases`: `string`[]; `builder`: `BfeBuilderFunction`\<[`CustomCliArguments`](../type-aliases/CustomCliArguments.md), [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\>; `description`: `string`; `handler`: (`argv`) => `Promisable`\<`void`\>; `usage`: `string`; \}\>
 
 ## Parameters
 
@@ -16,38 +16,8 @@
 
 ## Returns
 
-`Promise`\<`object`\>
-
-### aliases
-
-> **aliases**: `string`[]
-
-### builder
-
-> **builder**: `BfeBuilderFunction`\<[`CustomCliArguments`](../type-aliases/CustomCliArguments.md), [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\>
-
-### description
-
-> **description**: `string` = `'Transpile sources and assets into production-ready distributables'`
-
-### handler()
-
-> **handler**: (`argv`) => `Promisable`\<`void`\>
-
-#### Parameters
-
-##### argv
-
-`Arguments`\<[`CustomCliArguments`](../type-aliases/CustomCliArguments.md), [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\>
-
-#### Returns
-
-`Promisable`\<`void`\>
-
-### usage
-
-> **usage**: `string`
+`Promise`\<\{ `aliases`: `string`[]; `builder`: `BfeBuilderFunction`\<[`CustomCliArguments`](../type-aliases/CustomCliArguments.md), [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\>; `description`: `string`; `handler`: (`argv`) => `Promisable`\<`void`\>; `usage`: `string`; \}\>
 
 ## Defined in
 
-[src/commands/build/distributables.ts:165](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/commands/build/distributables.ts#L165)
+[src/commands/build/distributables.ts:165](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/build/distributables.ts#L165)

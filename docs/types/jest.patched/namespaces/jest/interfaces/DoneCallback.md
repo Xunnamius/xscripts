@@ -32,7 +32,7 @@ node\_modules/@types/jest/index.d.ts:495
 
 ##### error?
 
-`string` | \{`message`: `string`; \}
+`string` | \{ `message`: `string`; \}
 
 #### Returns
 

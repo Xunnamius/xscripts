@@ -6,12 +6,12 @@
 
 # Function: compileTemplates()
 
-> **compileTemplates**(`templates`, `context`): `Promise`\<`Record`\<`string`, `string`\>\>
+> **compileTemplates**(`templates`, `context`): `Promise`\<[`Asset`](../type-aliases/Asset.md)[]\>
 
-Takes an object of name-path pairs, each representing the name of a template
-and the path to its contents (relative to the template asset directory), and
-returns that same object with each path value replaced by the result of
-calling [compileTemplate](compileTemplate.md) with said path as an argument.
+This function takes an object of absolute path keys with relative path
+values; each pair represents an output path and an input path relative to the
+template asset directory. This function returns a [ReifiedAssets](../type-aliases/ReifiedAssets.md)
+instance with values that lazily invoke [compileTemplate](compileTemplate.md).
 
 Some template variables accept an optional `linkText` parameter which, if
 given, will be replaced by a link of the form `[linkText](contextual-value)`;
@@ -26,7 +26,7 @@ user must manually narrow, similar to a merge conflict in git. See
 
 ### templates
 
-`Record`\<`string`, `RelativePath`\>
+`Record`\<`AbsolutePath`, `RelativePath`\>
 
 ### context
 
@@ -34,8 +34,8 @@ user must manually narrow, similar to a merge conflict in git. See
 
 ## Returns
 
-`Promise`\<`Record`\<`string`, `string`\>\>
+`Promise`\<[`Asset`](../type-aliases/Asset.md)[]\>
 
 ## Defined in
 
-[src/assets.ts:318](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/assets.ts#L318)
+[src/assets.ts:464](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/assets.ts#L464)

@@ -6,7 +6,7 @@
 
 # Function: runGlobalPreChecks()
 
-> **runGlobalPreChecks**(`__namedParameters`): `Promise`\<`object`\>
+> **runGlobalPreChecks**(`__namedParameters`): `Promise`\<\{ `projectMetadata`: `NonNullable`\<[`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\[`"projectMetadata"`\]\>; \}\>
 
 This function runs common checks against the runtime to ensure the
 environment is suitable for running xscripts.
@@ -31,12 +31,8 @@ returning it (or throwing a CliError if undefined).
 
 ## Returns
 
-`Promise`\<`object`\>
-
-### projectMetadata
-
-> **projectMetadata**: `NonNullable`\<[`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\[`"projectMetadata"`\]\>
+`Promise`\<\{ `projectMetadata`: `NonNullable`\<[`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\[`"projectMetadata"`\]\>; \}\>
 
 ## Defined in
 
-[src/util.ts:106](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/util.ts#L106)
+[src/util.ts:122](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/util.ts#L122)

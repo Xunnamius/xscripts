@@ -14,4 +14,4 @@
 
 ## Defined in
 
-[src/commands/project/prepare.ts:39](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/commands/project/prepare.ts#L39)
+[src/commands/project/prepare.ts:39](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/project/prepare.ts#L39)

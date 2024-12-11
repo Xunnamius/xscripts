@@ -8,6 +8,11 @@
 
 ## Index
 
+### Type Aliases
+
+- [LoadDotEnvSettings](type-aliases/LoadDotEnvSettings.md)
+- [LoadDotEnvSimplifiedSettings](type-aliases/LoadDotEnvSimplifiedSettings.md)
+
 ### Functions
 
 - [\_\_read\_file\_sync](functions/read_file_sync.md)
@@ -18,9 +23,10 @@
 - [copyFile](functions/copyFile.md)
 - [determineRepoWorkingTreeDirty](functions/determineRepoWorkingTreeDirty.md)
 - [findOneConfigurationFile](functions/findOneConfigurationFile.md)
+- [getRelevantDotEnvFilePaths](functions/getRelevantDotEnvFilePaths.md)
 - [hasExitCode](functions/hasExitCode.md)
 - [isNonEmptyString](functions/isNonEmptyString.md)
-- [loadDotEnvAndCheckVariables](functions/loadDotEnvAndCheckVariables.md)
+- [loadDotEnv](functions/loadDotEnv.md)
 - [makeDirectory](functions/makeDirectory.md)
 - [readFile](functions/readFile.md)
 - [runGlobalPreChecks](functions/runGlobalPreChecks.md)

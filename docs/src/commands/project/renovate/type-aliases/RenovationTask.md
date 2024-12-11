@@ -6,7 +6,7 @@
 
 # Type Alias: RenovationTask
 
-> **RenovationTask**: `BfeBuilderObjectValue`\<`Record`\<`string`, `unknown`\>, [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\> & `object`
+> **RenovationTask**: `Omit`\<`BfeBuilderObjectValue`\<`Record`\<`string`, `unknown`\>, [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\>, `"alias"` \| `"demandThisOptionOr"`\> & `object`
 
 ## Type declaration
 
@@ -67,7 +67,7 @@ The description reported to the user when `--help` is called (via option).
 
 ### subOptions
 
-> **subOptions**: `BfeBuilderObject`\<`Record`\<`string`, `unknown`\>, [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\>
+> **subOptions**: `Record`\<`string`, `Omit`\<`BfeBuilderObjectValue`\<`Record`\<`string`, `unknown`\>, [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\>, `"requires"` \| \`demand$\{string\}\`\> & `object`\>
 
 Suboptions of this task are only relevant when this task's flag is given
 on the CLI.
@@ -85,6 +85,10 @@ renovation.
 
 The alternative names of the task.
 
+#### See
+
+BfeBuilderObjectValue.alias
+
 ### taskName
 
 > **taskName**: `string`
@@ -93,4 +97,4 @@ The name of the task.
 
 ## Defined in
 
-[src/commands/project/renovate.ts:106](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/commands/project/renovate.ts#L106)
+[src/commands/project/renovate.ts:163](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/project/renovate.ts#L163)

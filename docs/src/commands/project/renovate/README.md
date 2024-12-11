@@ -8,6 +8,10 @@
 
 ## Index
 
+### Enumerations
+
+- [RenovationPreset](enumerations/RenovationPreset.md)
+
 ### Type Aliases
 
 - [CustomCliArguments](type-aliases/CustomCliArguments.md)
@@ -18,6 +22,7 @@
 ### Variables
 
 - [projectRenovateScopes](variables/projectRenovateScopes.md)
+- [renovationPresets](variables/renovationPresets.md)
 - [renovationTasks](variables/renovationTasks.md)
 
 ### Functions

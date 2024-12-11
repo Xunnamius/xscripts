@@ -136,7 +136,7 @@
 
 #### github-clone-remote-wiki.longHelpDescription
 
-> `readonly` **longHelpDescription**: `"This renovation will clone the repository's wiki into the (gitignored) .wiki/ directory at the project root. If a wiki does not exist, this command will throw an error; in such a case, use --github-reconfigure-repo first to enable wikis before running this renovation."`
+> `readonly` **longHelpDescription**: `"This renovation will enable the wiki for the origin repository (if it is not enabled already) and then clone that wiki into the (gitignored) .wiki/ directory at the project root."`
 
 #### github-clone-remote-wiki.requiresForce
 
@@ -144,7 +144,7 @@
 
 #### github-clone-remote-wiki.shortHelpDescription
 
-> `readonly` **shortHelpDescription**: `"Clone the origin repository's wikis into a (gitignored) directory"` = `"Clone the origin repository's wikis into a (gitignored) directory"`
+> `readonly` **shortHelpDescription**: `"Clone the origin repository's wiki into a (gitignored) directory"` = `"Clone the origin repository's wiki into a (gitignored) directory"`
 
 #### github-clone-remote-wiki.subOptions
 
@@ -240,7 +240,7 @@
 
 #### github-kill-master.longHelpDescription
 
-> `readonly` **longHelpDescription**: "This renovation will kill any and all references to any \"master\" ref throughout the repository. This includes renaming the \"master\" branch to \"main,\" deleting the \"master\" branch on the remote origin repository, and setting the default branch to \"main\" both locally and remotely if it is not the case already."
+> `readonly` **longHelpDescription**: "This renovation will kill any and all references to any \"master\" ref throughout the repository. This includes renaming the \"master\" branch to \"main,\" deleting the \"master\" branch on the origin repository, and setting the default branch to \"main\" both locally and remotely if it is not the case already."
 
 #### github-kill-master.requiresForce
 
@@ -292,7 +292,7 @@
 
 #### github-pause-rulesets.longHelpDescription
 
-> `readonly` **longHelpDescription**: "This renovation will temporarily disable all rulesets in the repository for 5 minutes, after which this command will re-enable them.\n\nUpon executing this renovation, you will be presented with a countdown until protections will be re-enabled. You may press any key to immediately re-enable protections and exit the program.\n\nIf this renovation does not exit cleanly, re-running it (or --github-reconfigure-repo) will restore and re-enable any disabled rulesets."
+> `readonly` **longHelpDescription**: "This renovation will temporarily deactivate all rulesets in the repository for 5 minutes, after which this command will reactivate them.\n\nUpon executing this renovation, you will be presented with a countdown until protections will be reactivated. You may press any key to immediately reactivate protections and exit the program.\n\nIf this renovation does not exit cleanly, re-running it (or --github-reconfigure-repo) will reactivate any erroneously disabled rulesets."
 
 #### github-pause-rulesets.requiresForce
 
@@ -300,7 +300,7 @@
 
 #### github-pause-rulesets.shortHelpDescription
 
-> `readonly` **shortHelpDescription**: `"Temporarily pause origin repository ruleset protections"`
+> `readonly` **shortHelpDescription**: `"Temporarily deactivate origin repository ruleset protections"`
 
 #### github-pause-rulesets.subOptions
 
@@ -344,39 +344,46 @@
 
 #### github-reconfigure-repo.longHelpDescription
 
-> `readonly` **longHelpDescription**: \`This renovation will apply a standard configuration preset to the remote origin repository. Specifically, this renovation will:
+> `readonly` **longHelpDescription**: \`This renovation will apply a standard configuration preset to the origin repository. Specifically, this renovation will:
 
-- Update the "repository details"
-$\{string\} - Set description (with default emoji) to package.json::description if not already set
-$\{string\} - Set website to npm.im URL if not already set
-$\{string\} - Set topics to package.json::keywords if not already set
-$\{string\} - Include "Releases" and remove "Packages" and "Deployments" sidebar sections
-- Set the user to star the repository
-- Set the user to watch "all activity" in the repository
-- Enable wikis with editing restricted to collaborators only
-- Enable issues
-- Enable sponsorships
-- Enable repository preservation
-- Enable discussions
-- Enable projects
-- Disable "allow merge commits"
-- Enable "allow squash merging"
-- Enable "allow rebase merging"
-- Enable "always suggest updating pull request branches"
-- Enable "allow auto-merge"
-- (Re-)create and (re-)enable the "standard-protect" and "canary-protect" rulesets; issue warnings about the existence of any other rulesets
-$\{string\} - "standard-protect" restricts deletions of, requires signed commits for, and blocks force pushes to the repository's main branch and any maintenance branches
-$\{string\} - "canary-protect" restricts deletions of and requires signed commits for the repository's canary branch(es), but does NOT block force pushes to these branches
-- Clear out any classic branch protection settings
+- Update the repository's metadata
+$\{string\} - Set description to package.json::description only if not already set
+$\{string\}$\{string\} - With default emoji prefix: ⚡
+$\{string\} - Set homepage to "https://npm.im/pkg-name" only if not already set
+$\{string\} - Enable ambient repository-wide secret scanning
+$\{string\} - Enable scanning pushes for secrets
+$\{string\} - Enable issues
+$\{string\} - Enable projects
+$\{string\} - Enable squash merging for pull requests
+$\{string\} - Disable normal merging for pull requests
+$\{string\} - Enable rebase merging for pull requests
+$\{string\} - Disable branch deletion on successful pull request merge
+$\{string\} - Enable suggesting forced-synchronization of pull request branches
+$\{string\} - Set topics to lowercased package.json::keywords
+- Set the repository to "starred" by the current user
+- Set the repository to "watched" (via "all activity") by the current user
+- Create/enable the "standard-protect" and "canary-protect" rulesets
+$\{string\} - If the rulesets already exist and --force was given, they're deleted, recreated, then enabled
+$\{string\} - If the rulesets already exist and --force wasn't given, they're enabled
+$\{string\} - A warning is issued if any other ruleset is encountered
+$\{string\} - A warning is issued if a legacy "classic branch protection" setting is encountered for well-known branches
+- Upload missing GitHub Actions environment secrets (encrypted)
+$\{string\} - Only secrets that do not already exist will be uploaded
+$\{string\} - If --force was given, all existing secrets will be deleted before the upload
+$\{string\} - Secrets will be sourced from the package and project .env files
+$\{string\}$\{string\} - Empty/unset variables in .env files will be ignored
+
+Due to the current limitations of GitHub's REST API, the following renovations are not able to be automated and should be configured manually:
+
+\* Include "Releases" and remove "Packages" and "Deployments" sidebar sections
+\* Enable sponsorships
+\* Enable repository preservation (arctic code vault)
+\* Enable discussions
 - Enable "private vulnerability reporting"
 - Enable "dependency graph"
 - Enable "dependabot" (i.e. "dependabot alerts" and "dependabot security updates")
-- Enable "secret scanning" (i.e. "alerts" and "push protection")
-- Overwrite the repository's "environment secrets" for GitHub Actions using the closest .env file
-$\{string\} - The filesystem will be walked starting from the current directory upward until a suitable .env file is found or the filesystem root is reached
-$\{string\} - .env.default is used if .env is not available
-$\{string\} - Secrets are never deleted by this command, only added/overwritten
-\`
+
+By default, this command will preserve the origin repository's pre-existing configuration. Run this command with --force to overwrite any pre-existing configuration EXCEPT the origin repository's description and homepage, which can never be overwritten by this renovation.\`
 
 #### github-reconfigure-repo.requiresForce
 
@@ -428,7 +435,7 @@ $\{string\} - Secrets are never deleted by this command, only added/overwritten
 
 #### github-rename-repo.longHelpDescription
 
-> `readonly` **longHelpDescription**: "This renovation will rename the remote origin repository, rename (move) the repository directory on the local filesystem, and update the remotes in .git/config accordingly.\n\nIf the origin repository cannot be renamed, the rename attempt will be aborted and no local changes will occur."
+> `readonly` **longHelpDescription**: "This renovation will rename the origin repository, rename (move) the repository directory on the local filesystem, and update the remotes in .git/config accordingly.\n\nIf the origin repository cannot be renamed, the rename attempt will be aborted and no local changes will occur."
 
 #### github-rename-repo.requiresForce
 
@@ -461,6 +468,20 @@ $\{string\} - Secrets are never deleted by this command, only added/overwritten
 #### github-rename-repo.subOptions.new-name.subOptionOf.github-rename-repo
 
 > `readonly` **github-rename-repo**: `object`
+
+#### github-rename-repo.subOptions.new-name.subOptionOf.github-rename-repo.when()
+
+> `readonly` **when**: (`superOptionValue`) => `any`
+
+##### Parameters
+
+###### superOptionValue
+
+`any`
+
+##### Returns
+
+`any`
 
 #### github-rename-repo.subOptions.new-name.subOptionOf.github-rename-repo.update()
 
@@ -854,18 +875,6 @@ false
 
 BfeBuilderObjectValueExtensions.implies
 
-#### github-rename-repo.subOptions.new-name.subOptionOf.github-rename-repo.when()
-
-##### Parameters
-
-###### superOptionValue
-
-`any`
-
-##### Returns
-
-`any`
-
 #### github-rename-repo.supportedScopes
 
 > `readonly` **supportedScopes**: [[`Unlimited`](../../../../configure/enumerations/DefaultGlobalScope.md#unlimited)]
@@ -890,77 +899,13 @@ BfeBuilderObjectValueExtensions.implies
 
 `Promise`\<`undefined`\>
 
-### regenerate-aliases
-
-> `readonly` **regenerate-aliases**: `object`
-
-#### regenerate-aliases.actionDescription
-
-> `readonly` **actionDescription**: `"Regenerating project aliases"` = `'Regenerating project aliases'`
-
-#### regenerate-aliases.emoji
-
-> `readonly` **emoji**: `"🧭"` = `'🧭'`
-
-#### regenerate-aliases.longHelpDescription
-
-> `readonly` **longHelpDescription**: `string`
-
-#### regenerate-aliases.requiresForce
-
-> `readonly` **requiresForce**: `false` = `false`
-
-#### regenerate-aliases.shortHelpDescription
-
-> `readonly` **shortHelpDescription**: `"Regenerate the assets files that define project-wide import aliases"` = `'Regenerate the assets files that define project-wide import aliases'`
-
-#### regenerate-aliases.subOptions
-
-> `readonly` **subOptions**: `object`
-
-#### regenerate-aliases.subOptions.with-aliases-loaded-from
-
-> `readonly` **with-aliases-loaded-from**: `object`
-
-#### regenerate-aliases.subOptions.with-aliases-loaded-from.description
-
-> `readonly` **description**: `"Include additional alias definitions imported from a JavaScript file"` = `'Include additional alias definitions imported from a JavaScript file'`
-
-#### regenerate-aliases.subOptions.with-aliases-loaded-from.string
-
-> `readonly` **string**: `true` = `true`
-
-#### regenerate-aliases.supportedScopes
-
-> `readonly` **supportedScopes**: [[`Unlimited`](../../../../configure/enumerations/DefaultGlobalScope.md#unlimited)]
-
-#### regenerate-aliases.taskAliases
-
-> `readonly` **taskAliases**: [] = `[]`
-
-#### regenerate-aliases.run()
-
-##### Parameters
-
-###### argv\_
-
-`unknown`
-
-###### \_\_namedParameters
-
-[`RenovationTaskContext`](../type-aliases/RenovationTaskContext.md)
-
-##### Returns
-
-`Promise`\<`undefined`\>
-
 ### regenerate-assets
 
 > `readonly` **regenerate-assets**: `object`
 
 #### regenerate-assets.actionDescription
 
-> `readonly` **actionDescription**: `"Regenerating configuration and template assets"` = `'Regenerating configuration and template assets'`
+> `readonly` **actionDescription**: `"Regenerating targeted configuration and template assets"` = `'Regenerating targeted configuration and template assets'`
 
 #### regenerate-assets.emoji
 
@@ -968,7 +913,21 @@ BfeBuilderObjectValueExtensions.implies
 
 #### regenerate-assets.longHelpDescription
 
-> `readonly` **longHelpDescription**: "This renovation will regenerate all configuration assets in the project. Existing conflicting configurations are overwritten. Missing configurations are created. Old configurations are deleted.\n\nAfter running this renovation, you should use your IDE's diff tools to compare and contrast the latest best practices with the project's current configuration setup.\n\nNote that this renovation is a superset of --regenerate-aliases; invoking both renovations is pointlessly redundant."
+> `readonly` **longHelpDescription**: \`
+This renovation will regenerate one or more files in the project, each represented by an "asset". An asset is a collection mapping one or more project-root-relative "asset paths" (relative to the project root) to their generated contents. When writing content to its respective asset path on the filesystem, existing files are overwritten, missing files are created, and obsolete files are deleted.
+
+Provide --assets-preset to specify which assets to regenerate. The parameter accepts one of the following presets: $\{string\}. The asset paths of assets included in the preset will be targeted for renovation unless that path is also matched by --skip-asset-paths.
+
+Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the asset paths to be written out. Any asset paths matching one of the aforesaid regular expressions will be discarded instead of written out.
+
+When regenerating files containing import aliases, --with-aliases-loaded-from can be used to include aliases in addition to the hardcoded aliases that come with xscripts. The --with-aliases-loaded-from parameter expects a path to a JavaScript file with an alias map (i.e. RawAliasMapping\[\]) as its default export.
+
+After invoking this renovation, you should use your IDE's diff tools to compare and contrast the latest best practices with the project's current configuration setup.
+
+This renovation should be re-run each time a package is added to, or removed from, a xscripts-compliant monorepo.
+
+See the xscripts wiki documentation for details on all available assets and their asset paths.
+\`
 
 #### regenerate-assets.requiresForce
 
@@ -976,65 +935,73 @@ BfeBuilderObjectValueExtensions.implies
 
 #### regenerate-assets.shortHelpDescription
 
-> `readonly` **shortHelpDescription**: `"Regenerate all configuration and template asset files"` = `'Regenerate all configuration and template asset files'`
+> `readonly` **shortHelpDescription**: `"Regenerate targeted configuration and template asset files"` = `'Regenerate targeted configuration and template asset files'`
 
 #### regenerate-assets.subOptions
 
 > `readonly` **subOptions**: `object`
 
-#### regenerate-assets.subOptions.only-assets
+#### regenerate-assets.subOptions.assets-preset
 
-> `readonly` **only-assets**: `object`
+> `readonly` **assets-preset**: `object`
 
-#### regenerate-assets.subOptions.only-assets.alias
+#### regenerate-assets.subOptions.assets-preset.alias
 
-> `readonly` **alias**: `"only-asset"` = `'only-asset'`
+> `readonly` **alias**: `"preset"` = `'preset'`
 
-#### regenerate-assets.subOptions.only-assets.array
+#### regenerate-assets.subOptions.assets-preset.choices
+
+> `readonly` **choices**: [`RenovationPreset`](../enumerations/RenovationPreset.md)[] = `renovationPresets`
+
+#### regenerate-assets.subOptions.assets-preset.description
+
+> `readonly` **description**: `"Select a hardcoded set of assets to regenerate"` = `'Select a hardcoded set of assets to regenerate'`
+
+#### regenerate-assets.subOptions.skip-asset-paths
+
+> `readonly` **skip-asset-paths**: `object`
+
+#### regenerate-assets.subOptions.skip-asset-paths.alias
+
+> `readonly` **alias**: `"skip-asset-path"` = `'skip-asset-path'`
+
+#### regenerate-assets.subOptions.skip-asset-paths.array
 
 > `readonly` **array**: `true` = `true`
 
-#### regenerate-assets.subOptions.only-assets.conflicts
-
-> `readonly` **conflicts**: `"skip-assets"` = `'skip-assets'`
-
-#### regenerate-assets.subOptions.only-assets.default
+#### regenerate-assets.subOptions.skip-asset-paths.default
 
 > `readonly` **default**: readonly [] = `[]`
 
-#### regenerate-assets.subOptions.only-assets.description
+#### regenerate-assets.subOptions.skip-asset-paths.description
 
-> `readonly` **description**: `"One or more regular expressions used to include matching project-root-relative file paths (all others will be ignored)"` = `'One or more regular expressions used to include matching project-root-relative file paths (all others will be ignored)'`
+> `readonly` **description**: `"Asset paths matching these regular expressions are discarded when regenerating"` = `'Asset paths matching these regular expressions are discarded when regenerating'`
 
-#### regenerate-assets.subOptions.only-assets.string
+#### regenerate-assets.subOptions.skip-asset-paths.string
 
 > `readonly` **string**: `true` = `true`
 
-#### regenerate-assets.subOptions.skip-assets
+#### regenerate-assets.subOptions.skip-asset-paths.coerce()
 
-> `readonly` **skip-assets**: `object`
+##### Parameters
 
-#### regenerate-assets.subOptions.skip-assets.alias
+###### assets
 
-> `readonly` **alias**: `"skip-asset"` = `'skip-asset'`
+`string`[]
 
-#### regenerate-assets.subOptions.skip-assets.array
+##### Returns
 
-> `readonly` **array**: `true` = `true`
+`RegExp`[]
 
-#### regenerate-assets.subOptions.skip-assets.conflicts
+#### regenerate-assets.subOptions.with-aliases-loaded-from
 
-> `readonly` **conflicts**: `"only-assets"` = `'only-assets'`
+> `readonly` **with-aliases-loaded-from**: `object`
 
-#### regenerate-assets.subOptions.skip-assets.default
+#### regenerate-assets.subOptions.with-aliases-loaded-from.description
 
-> `readonly` **default**: readonly [] = `[]`
+> `readonly` **description**: `"Additional import aliases are sourced from this file when regenerating"` = `'Additional import aliases are sourced from this file when regenerating'`
 
-#### regenerate-assets.subOptions.skip-assets.description
-
-> `readonly` **description**: `"One or more regular expressions used to ignore matching project-root-relative file paths (all others will be included)"` = `'One or more regular expressions used to ignore matching project-root-relative file paths (all others will be included)'`
-
-#### regenerate-assets.subOptions.skip-assets.string
+#### regenerate-assets.subOptions.with-aliases-loaded-from.string
 
 > `readonly` **string**: `true` = `true`
 
@@ -1232,4 +1199,4 @@ BfeBuilderObjectValueExtensions.implies
 
 ## Defined in
 
-[src/commands/project/renovate.ts:549](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/commands/project/renovate.ts#L549)
+[src/commands/project/renovate.ts:772](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/project/renovate.ts#L772)

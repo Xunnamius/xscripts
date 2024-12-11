@@ -6,44 +6,26 @@
 
 # Function: makeTransformer()
 
-> **makeTransformer**(`__namedParameters`): `object`
+> **makeTransformer**(`transform`): [`TransformerContainer`](../type-aliases/TransformerContainer.md)
 
-Create a transformer function that takes a custom [TransformerContext](../type-aliases/TransformerContext.md)
-instance, and an optional [TransformerOptions](../type-aliases/TransformerOptions.md), and returns a
-[TransformerResult](../type-aliases/TransformerResult.md).
+Accepts a [Transform](../type-aliases/Transform.md) function and returns a
+[TransformerContainer](../type-aliases/TransformerContainer.md) containing a single [Transformer](../type-aliases/Transformer.md).
+
+[Transformer](../type-aliases/Transformer.md)s are responsible for returning only relevant asset paths
+(and their lazily-generated contents) conditioned on the current context;
+e.g.: when running `npx xscripts project renovate --regenerate-assets
+--assets-preset=lib`.
 
 ## Parameters
 
-### \_\_namedParameters
+### transform
 
-#### transform
-
-(`context`) => [`TransformerResult`](../type-aliases/TransformerResult.md)
+[`Transform`](../type-aliases/Transform.md)
 
 ## Returns
 
-`object`
-
-### transformer()
-
-#### Parameters
-
-##### this
-
-`void`
-
-##### context
-
-[`TransformerContext`](../type-aliases/TransformerContext.md)
-
-##### \_\_namedParameters
-
-[`TransformerOptions`](../type-aliases/TransformerOptions.md) = `{}`
-
-#### Returns
-
-`Promise`\<`object`\>
+[`TransformerContainer`](../type-aliases/TransformerContainer.md)
 
 ## Defined in
 
-[src/assets.ts:390](https://github.com/Xunnamius/xscripts/blob/2521de366121a50ffeca631b4ec62db9c60657e5/src/assets.ts#L390)
+[src/assets.ts:411](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/assets.ts#L411)
