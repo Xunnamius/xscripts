@@ -80,7 +80,7 @@ import { SHORT_TAB, TAB } from 'multiverse+rejoinder';
 import {
   extensionsTypescript,
   hasTypescriptExtension
-} from 'universe:assets/config/_babel.config.cjs.ts';
+} from 'universe:assets/transformers/_babel.config.cjs.ts';
 
 import { TesterScope } from 'universe:commands/test.ts';
 

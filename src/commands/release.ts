@@ -6,7 +6,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { run, runNoRejectOnBadExit, type RunOptions } from '@-xun/run';
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 // ? Patches global Proxy and spawn functions; see documentation for details
-import '@-xun/scripts/assets/config/conventional.config.cjs';
+import '@-xun/scripts/assets/conventional.config.cjs';
 import { type Merge, type OmitIndexSignature, type StringKeyOf } from 'type-fest';
 
 import {
@@ -45,7 +45,7 @@ import {
   type ExtendedLogger
 } from 'multiverse+rejoinder';
 
-import { getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix } from 'universe:assets/config/_conventional.config.cjs.ts';
+import { getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix } from 'universe:assets/transformers/_conventional.config.cjs.ts';
 
 import {
   default as renovate,
@@ -1018,7 +1018,7 @@ const protoReleaseTask: ProtoCoreReleaseTask = {
       ],
       {
         env: {
-          NODE_OPTIONS: `${NODE_OPTIONS ? `${NODE_OPTIONS} ` : ''}--require @-xun/scripts/assets/config/conventional.config.cjs`,
+          NODE_OPTIONS: `${NODE_OPTIONS ? `${NODE_OPTIONS} ` : ''}--require @-xun/scripts/assets/conventional.config.cjs`,
           XSCRIPTS_SPECIAL_INITIAL_COMMIT,
           HUSKY: '0'
           // ? process.env is already automatically included

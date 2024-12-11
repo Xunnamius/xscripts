@@ -4,7 +4,7 @@ import { pipeline } from 'node:stream/promises';
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import { valid as isValidSemver } from 'semver';
 // ? Patches global Proxy and spawn functions; see documentation for details
-import '@-xun/scripts/assets/config/conventional.config.cjs';
+import '@-xun/scripts/assets/conventional.config.cjs';
 
 import {
   getInvocableExtendedHandler,
@@ -24,7 +24,7 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import {
   defaultChangelogTopmatter,
   getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix
-} from 'universe:assets/config/_conventional.config.cjs.ts';
+} from 'universe:assets/transformers/_conventional.config.cjs.ts';
 
 import {
   default as format,

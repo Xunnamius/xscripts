@@ -3,7 +3,7 @@
 const {
   moduleExport,
   noSpecialInitialCommitIndicator
-} = require('@-xun/scripts/assets/config/conventional.config.cjs');
+} = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: delete this
 const {

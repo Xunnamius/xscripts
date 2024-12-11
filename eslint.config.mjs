@@ -20,9 +20,9 @@ import {
 import {
   extensionsJavascript,
   extensionsTypescript
-} from '@-xun/scripts/assets/config/babel.config.cjs';
+} from '@-xun/scripts/assets/babel.config.cjs';
 
-import { overwriteProperty } from '@-xun/scripts/assets/config/eslint.config.mjs';
+import { overwriteProperty } from '@-xun/scripts/assets/eslint.config.mjs';
 
 import {
   isAccessible,
@@ -34,7 +34,7 @@ import packageJson from './package.json' with { type: 'json' };
 // TODO: add these back:
 // TODO: specific to this project; delete these after generalization
 //'**/dummy-repo/**/*',
-//'src/assets/template/.remarkrc.mjs'
+//'src/assets/templates/.remarkrc.mjs'
 
 // TODO: import this from project-utils:alias instead
 const uriSchemeDelimiter = ':';
@@ -56,7 +56,7 @@ if (typeof packageJsonEnginesNode !== 'string') {
 
 /*import { createDebugLogger } from 'debug';
 import { deepMergeConfig } from '@-xun/scripts/assets';
-import { moduleExport } from '@-xun/scripts/assets/config/eslint.config.mjs';*/
+import { moduleExport } from '@-xun/scripts/assets/eslint.config.mjs';*/
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 /*const debug = createDebugLogger({
@@ -619,7 +619,7 @@ const config = makeTsEslintConfig(
       '!**/src/**/*',
       // TODO: specific to this project; delete these after generalization
       '**/dummy-repo/**/*',
-      'src/assets/template/.remarkrc.mjs'
+      'src/assets/templates/.remarkrc.mjs'
     ]
   },
 

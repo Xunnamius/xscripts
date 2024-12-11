@@ -4,7 +4,7 @@
 const debug = require('debug')('xscripts:semantic-release-config');
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/config/release.config.cjs');
+const { moduleExport } = require('@-xun/scripts/assets/release.config.cjs');
 
 const { parserOpts, writerOpts } = require('./conventional.config.cjs');
 
@@ -16,7 +16,7 @@ const {
 // TODO: delete this
 const {
   noSpecialInitialCommitIndicator
-} = require('./dist/src/assets/config/_conventional.config.cjs.js');
+} = require('./dist/src/assets/transformers/_conventional.config.cjs.js');
 
 module.exports = deepMergeConfig(
   moduleExport({

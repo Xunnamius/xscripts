@@ -30,9 +30,9 @@
       "types": "./dist/src/assets.d.ts",
       "default": "./dist/src/assets.js"
     },
-    "./assets/config/*": {
-      "types": "./dist/src/assets/config/_*.d.ts",
-      "default": "./dist/src/assets/config/_*.js"
+    "./assets/*": {
+      "types": "./dist/src/assets/transformers/_*.d.ts",
+      "default": "./dist/src/assets/transformers/_*.js"
     },
     "./configure": {
       "types": "./dist/src/configure.d.ts",
@@ -52,8 +52,8 @@
       "assets": [
         "dist/src/assets.d.ts"
       ],
-      "assets/config/*": [
-        "dist/src/assets/config/_*.d.ts"
+      "assets/*": [
+        "dist/src/assets/transformers/_*.d.ts"
       ],
       "configure": [
         "dist/src/configure.d.ts"

@@ -34,7 +34,7 @@ import {
 
 import { SHORT_TAB } from 'multiverse+rejoinder';
 
-import { baseConfig } from 'universe:assets/config/_jest.config.mjs.ts';
+import { baseConfig } from 'universe:assets/transformers/_jest.config.mjs.ts';
 
 import {
   DefaultGlobalScope,

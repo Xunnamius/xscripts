@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
-// * These tests ensure changelog-related asset config exports function as
-// * expected.
+// * These tests ensure changelog-related asset exports function as expected.
 
 import assert from 'node:assert';
 
@@ -20,7 +19,7 @@ import {
   noSpecialInitialCommitIndicator,
   noteTitleForBreakingChange,
   wellKnownCommitTypes
-} from 'universe:assets/config/_conventional.config.cjs.ts';
+} from 'universe:assets/transformers/_conventional.config.cjs.ts';
 
 import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
 
