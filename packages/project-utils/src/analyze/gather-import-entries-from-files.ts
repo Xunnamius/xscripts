@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 
-import { hasExtensionAcceptedByBabel } from '@-xun/scripts/assets/config/babel.config.cjs';
+import { hasExtensionAcceptedByBabel } from '@-xun/scripts/assets/babel.config.cjs';
 import { type PluginObj, type TransformOptions } from '@babel/core';
 
 import {

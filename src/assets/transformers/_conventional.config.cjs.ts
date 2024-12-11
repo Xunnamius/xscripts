@@ -83,7 +83,7 @@ const rootPackageExcludedPathspecs = [
  * The location of the handlebars templates in relation to this file's location
  * on disk.
  */
-const templateDirectory = '../template/conventional-changelog';
+const templateDirectory = '../templates/conventional-changelog';
 
 /**
  * Matches a valid GitHub username with respect to the following:
