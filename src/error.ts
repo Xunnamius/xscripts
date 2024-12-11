@@ -1,5 +1,3 @@
-import { isNativeError } from 'node:util/types';
-
 import { makeNamedError } from 'named-app-errors';
 
 import { ErrorMessage as UpstreamErrorMessage } from 'multiverse+cli-utils:error.ts';
@@ -247,9 +245,8 @@ export const ErrorMessage = {
   CodecovRetrievalFailed(url: string) {
     return `failed to download a suitable codecov binary from ${url}`;
   },
-  AssetRetrievalFailed(path: string, error: unknown) {
-    const errorMessage = isNativeError(error) ? error.message : String(error);
-    return `failed to retrieve asset at ${path}: ${errorMessage}`;
+  AssetRetrievalFailed(path: string) {
+    return `failed to retrieve asset from transformer at ${path}`;
   },
   UnmatchedCommitType(type: string | undefined, variableName: string) {
     return `unmatched commit type ${type ? `"${type}" ` : ''}in ${variableName}`;

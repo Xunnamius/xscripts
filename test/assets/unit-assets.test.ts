@@ -1,5 +1,7 @@
 // * These tests ensure universe assets exports function as expected
 
+import { type Merge } from 'type-fest';
+
 import { ProjectAttribute } from 'multiverse+project-utils:analyze.ts';
 
 import {
@@ -45,6 +47,7 @@ import {
   webpackConfigProjectBase,
   xchangelogConfigProjectBase,
   xreleaseConfigProjectBase,
+  type AbsolutePath,
   type RelativePath
 } from 'multiverse+project-utils:fs.ts';
 
@@ -53,12 +56,15 @@ import {
   compileTemplateInMemory,
   compileTemplates,
   deepMergeConfig,
+  gatherAssetsFromTransformer,
   makeTransformer,
-  retrieveConfigAsset,
+  type Asset,
   type IncomingTransformerContext,
-  type ReifiedConfigAssetPaths,
+  type ReifiedAssets,
   type TransformerContext
 } from 'universe:assets.ts';
+
+import { DefaultGlobalScope } from 'universe:configure.ts';
 
 import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
 
@@ -98,25 +104,29 @@ const dummyContext: IncomingTransformerContext = {
   repoReferenceDefinitionsRepo: 'repo-reference-definitions-repo',
   shouldDeriveAliases: true,
   log: (() => undefined) as unknown as IncomingTransformerContext['log'],
-  debug: (() => undefined) as unknown as IncomingTransformerContext['debug']
+  debug: (() => undefined) as unknown as IncomingTransformerContext['debug'],
+  toProjectAbsolutePath: () => '/dummy/absolute/path' as AbsolutePath,
+  toPackageAbsolutePath: () => '/dummy/absolute/path/to/package' as AbsolutePath,
+  forceOverwritePotentiallyDestructive: false,
+  scope: DefaultGlobalScope.Unlimited
 };
 
-describe('::retrieveConfigAsset', () => {
+describe('::gatherAssetsFromTransformer', () => {
   it('retrieve an asset via its filename', async () => {
     expect.hasAssertions();
 
     await expect(
-      retrieveConfigAsset({
-        asset: allContributorsConfigProjectBase,
-        context: {
+      gatherAssetsFromTransformer({
+        transformerId: allContributorsConfigProjectBase,
+        transformerContext: {
           packageName: 'pkg-name',
           shouldDeriveAliases: false
         } as TransformerContext,
-        options: { assetContainerFiletype: 'ts' }
+        options: { transformerFiletype: 'ts' }
       })
     ).resolves.toStrictEqual(
       await (
-        await import('universe:assets/config/_.all-contributorsrc.ts')
+        await import('universe:assets/transformers/_.all-contributorsrc.ts')
       ).transformer({
         asset: allContributorsConfigProjectBase,
         packageName: 'pkg-name'
@@ -128,9 +138,9 @@ describe('::retrieveConfigAsset', () => {
     expect.hasAssertions();
 
     await expect(
-      retrieveConfigAsset({
-        asset: 'fake-does-not-exist',
-        context: {} as TransformerContext
+      gatherAssetsFromTransformer({
+        transformerId: 'fake-does-not-exist',
+        transformerContext: {} as TransformerContext
       })
     ).rejects.toMatchObject({
       message: expect.stringMatching(/failed to retrieve asset.+cannot find module/i)
@@ -141,10 +151,10 @@ describe('::retrieveConfigAsset', () => {
     it('all-contributors', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: allContributorsConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: allContributorsConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -153,10 +163,10 @@ describe('::retrieveConfigAsset', () => {
     it('browserslist', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: browserslistrcConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: browserslistrcConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -165,10 +175,10 @@ describe('::retrieveConfigAsset', () => {
     it('codecov', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: codecovConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: codecovConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -177,10 +187,10 @@ describe('::retrieveConfigAsset', () => {
     it('editor-config', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: editorConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: editorConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -190,20 +200,20 @@ describe('::retrieveConfigAsset', () => {
       expect.hasAssertions();
 
       {
-        const assets = await retrieveConfigAsset({
-          asset: dotEnvDefaultConfigProjectBase,
-          context: dummyContext,
-          options: { assetContainerFiletype: 'ts' }
+        const assets = await gatherAssetsFromTransformer({
+          transformerId: dotEnvDefaultConfigProjectBase,
+          transformerContext: dummyContext,
+          options: { transformerFiletype: 'ts' }
         });
 
         expectAssetsToMatchSnapshots(assets);
       }
 
       {
-        const assets = await retrieveConfigAsset({
-          asset: dotEnvDefaultConfigPackageBase,
-          context: dummyContext,
-          options: { assetContainerFiletype: 'ts' }
+        const assets = await gatherAssetsFromTransformer({
+          transformerId: dotEnvDefaultConfigPackageBase,
+          transformerContext: dummyContext,
+          options: { transformerFiletype: 'ts' }
         });
 
         expectAssetsToMatchSnapshots(assets);
@@ -213,10 +223,10 @@ describe('::retrieveConfigAsset', () => {
     it('git-attributes', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: gitattributesConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: gitattributesConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -225,10 +235,10 @@ describe('::retrieveConfigAsset', () => {
     it('github (directory)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: directoryGithubConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: directoryGithubConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -237,10 +247,10 @@ describe('::retrieveConfigAsset', () => {
     it('git-ignore', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: gitignoreConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: gitignoreConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -249,10 +259,10 @@ describe('::retrieveConfigAsset', () => {
     it('husky (directory)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: directoryHuskyProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: directoryHuskyProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -261,10 +271,10 @@ describe('::retrieveConfigAsset', () => {
     it('npm-check-updates', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: ncuConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: ncuConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -273,10 +283,10 @@ describe('::retrieveConfigAsset', () => {
     it('prettier', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: prettierConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: prettierConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -285,10 +295,10 @@ describe('::retrieveConfigAsset', () => {
     it('prettier-ignore', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: prettierIgnoreConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: prettierIgnoreConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -297,10 +307,10 @@ describe('::retrieveConfigAsset', () => {
     it('remark', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: remarkConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: remarkConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -309,10 +319,10 @@ describe('::retrieveConfigAsset', () => {
     it('commit-spell', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: spellcheckIgnoreConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: spellcheckIgnoreConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -321,10 +331,10 @@ describe('::retrieveConfigAsset', () => {
     it('vscode (directory)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: directoryVscodeProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: directoryVscodeProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -333,10 +343,10 @@ describe('::retrieveConfigAsset', () => {
     it('architecture (markdown)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: markdownArchitectureProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: markdownArchitectureProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -345,10 +355,10 @@ describe('::retrieveConfigAsset', () => {
     it('babel', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: babelConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: babelConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -357,10 +367,10 @@ describe('::retrieveConfigAsset', () => {
     it('changelog.patch.mjs', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: changelogPatchConfigPackageBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: changelogPatchConfigPackageBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -369,10 +379,10 @@ describe('::retrieveConfigAsset', () => {
     it('commitlint.config.mjs', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: commitlintConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: commitlintConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -381,10 +391,10 @@ describe('::retrieveConfigAsset', () => {
     it('contributing (markdown)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: markdownContributingProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: markdownContributingProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -393,10 +403,10 @@ describe('::retrieveConfigAsset', () => {
     it('xchangelog', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: xchangelogConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: xchangelogConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -405,10 +415,10 @@ describe('::retrieveConfigAsset', () => {
     it('eslint', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: eslintConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: eslintConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -417,10 +427,10 @@ describe('::retrieveConfigAsset', () => {
     it('git-add-then-commit', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: gacConfigPackageBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: gacConfigPackageBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -429,10 +439,10 @@ describe('::retrieveConfigAsset', () => {
     it('jest', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: jestConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: jestConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -441,10 +451,10 @@ describe('::retrieveConfigAsset', () => {
     it('license (markdown)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: markdownLicensePackageBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: markdownLicensePackageBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -453,10 +463,10 @@ describe('::retrieveConfigAsset', () => {
     it('lint-staged', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: lintStagedConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: lintStagedConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -465,10 +475,10 @@ describe('::retrieveConfigAsset', () => {
     it('maintaining (markdown)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: markdownMaintainingProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: markdownMaintainingProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -477,10 +487,10 @@ describe('::retrieveConfigAsset', () => {
     it('next.js', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: nextjsConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: nextjsConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -489,10 +499,10 @@ describe('::retrieveConfigAsset', () => {
     it('package.json', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: packageJsonConfigPackageBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: packageJsonConfigPackageBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -501,10 +511,10 @@ describe('::retrieveConfigAsset', () => {
     it('postcss', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: postcssConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: postcssConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -513,10 +523,10 @@ describe('::retrieveConfigAsset', () => {
     it('readme (markdown)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: markdownReadmePackageBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: markdownReadmePackageBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -525,10 +535,10 @@ describe('::retrieveConfigAsset', () => {
     it('xrelease', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: xreleaseConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: xreleaseConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -537,10 +547,10 @@ describe('::retrieveConfigAsset', () => {
     it('security (markdown)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: markdownSecurityProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: markdownSecurityProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -549,10 +559,10 @@ describe('::retrieveConfigAsset', () => {
     it('src (directory)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: directorySrcPackageBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: directorySrcPackageBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -561,10 +571,10 @@ describe('::retrieveConfigAsset', () => {
     it('tailwind', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: tailwindConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: tailwindConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -573,10 +583,10 @@ describe('::retrieveConfigAsset', () => {
     it('test (directory)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: directoryTestPackageBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: directoryTestPackageBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -585,10 +595,10 @@ describe('::retrieveConfigAsset', () => {
     it('tsconfig (all variants)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: Tsconfig.ProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: Tsconfig.ProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -597,10 +607,10 @@ describe('::retrieveConfigAsset', () => {
     it('tstyche.config.json', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: tstycheConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: tstycheConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -609,10 +619,10 @@ describe('::retrieveConfigAsset', () => {
     it('turbo.json', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: turboConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: turboConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -621,10 +631,10 @@ describe('::retrieveConfigAsset', () => {
     it('types (directory)', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: directoryTypesProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: directoryTypesProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -633,10 +643,10 @@ describe('::retrieveConfigAsset', () => {
     it('webpack', async () => {
       expect.hasAssertions();
 
-      const assets = await retrieveConfigAsset({
-        asset: webpackConfigProjectBase,
-        context: dummyContext,
-        options: { assetContainerFiletype: 'ts' }
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: webpackConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
       });
 
       expectAssetsToMatchSnapshots(assets);
@@ -765,10 +775,10 @@ describe('::makeTransformer', () => {
   it('returns a transformer', async () => {
     expect.hasAssertions();
 
-    const { transformer } = makeTransformer({
-      transform(context) {
-        return { file: () => JSON.stringify(context) };
-      }
+    const { transformer } = makeTransformer(function (context) {
+      return [
+        { path: 'abs-path' as AbsolutePath, generate: () => JSON.stringify(context) }
+      ];
     });
 
     const context = { asset: 'name' } as TransformerContext;
@@ -780,104 +790,90 @@ describe('::makeTransformer', () => {
 
   describe('::TransformerOptions', () => {
     describe('::trimContents', () => {
-      const files = {
-        file1: `
+      const files = [
+        {
+          path: 'file1',
+          generate: () => `
           contents1
-        `,
-        file2: `
-        contents2
-      `
-      };
+        `
+        },
+        {
+          path: 'file2',
+          generate: () => `
+            contents2
+          `
+        }
+      ] as Merge<Asset, { generate: () => string }>[];
 
       const context = { asset: 'name' } as TransformerContext;
 
       it('"start" trims each file start', async () => {
         expect.hasAssertions();
 
-        const { transformer } = makeTransformer({
-          transform() {
-            return { ...files };
-          }
-        });
+        const { transformer } = makeTransformer(() => files);
 
         await expect(
           transformer(context, { trimContents: 'start' })
         ).resolves.toStrictEqual({
-          file1: files.file1.trimStart(),
-          file2: files.file2.trimStart()
+          file1: files[0].generate().trimStart(),
+          file2: files[1].generate().trimStart()
         });
       });
 
       it('"end" trims each file end', async () => {
         expect.hasAssertions();
 
-        const { transformer } = makeTransformer({
-          transform() {
-            return { ...files };
-          }
-        });
+        const { transformer } = makeTransformer(() => files);
 
         await expect(
           transformer(context, { trimContents: 'end' })
         ).resolves.toStrictEqual({
-          file1: files.file1.trimEnd(),
-          file2: files.file2.trimEnd()
+          file1: files[0].generate().trimEnd(),
+          file2: files[1].generate().trimEnd()
         });
       });
 
       it('"both" trims each file both', async () => {
         expect.hasAssertions();
 
-        const { transformer } = makeTransformer({
-          transform() {
-            return { ...files };
-          }
-        });
+        const { transformer } = makeTransformer(() => files);
 
         await expect(
           transformer(context, { trimContents: 'both' })
         ).resolves.toStrictEqual({
-          file1: files.file1.trim(),
-          file2: files.file2.trim()
+          file1: files[0].generate().trim(),
+          file2: files[1].generate().trim()
         });
       });
 
       it('"both-then-append-newline" (or defaulted) trims each file both-then-append-newline', async () => {
         expect.hasAssertions();
 
-        const { transformer } = makeTransformer({
-          transform() {
-            return { ...files };
-          }
-        });
+        const { transformer } = makeTransformer(() => files);
 
         await expect(
           transformer(context, { trimContents: 'both-then-append-newline' })
         ).resolves.toStrictEqual({
-          file1: files.file1.trim() + '\n',
-          file2: files.file2.trim() + '\n'
+          file1: files[0].generate().trim() + '\n',
+          file2: files[1].generate().trim() + '\n'
         });
 
         await expect(transformer(context)).resolves.toStrictEqual({
-          file1: files.file1.trim() + '\n',
-          file2: files.file2.trim() + '\n'
+          file1: files[0].generate().trim() + '\n',
+          file2: files[1].generate().trim() + '\n'
         });
       });
 
       it('false does no trimming', async () => {
         expect.hasAssertions();
 
-        const { transformer } = makeTransformer({
-          transform() {
-            return { ...files };
-          }
-        });
+        const { transformer } = makeTransformer(() => files);
 
         await expect(
           transformer(context, { trimContents: false })
         ).resolves.toStrictEqual({
-          file1: files.file1,
-          file2: files.file2
+          file1: files[0].generate(),
+          file2: files[1].generate()
         });
       });
     });
@@ -898,7 +894,7 @@ describe('::deepMergeConfig', () => {
   });
 });
 
-function expectAssetsToMatchSnapshots(assets: ReifiedConfigAssetPaths) {
+function expectAssetsToMatchSnapshots(assets: ReifiedAssets) {
   for (const [key, asset] of Object.entries(assets)) {
     expect(key + '\n⏶⏷⏶⏷⏶\n' + asset).toMatchSnapshot(key);
   }

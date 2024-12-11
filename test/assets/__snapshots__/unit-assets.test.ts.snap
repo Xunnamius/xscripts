@@ -520,7 +520,7 @@ Thank you for your contribution!
 }
 `;
 
-exports[`::retrieveConfigAsset <config assets> all-contributors: .all-contributorsrc 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> all-contributors: .all-contributorsrc 1`] = `
 ".all-contributorsrc
 ⏶⏷⏶⏷⏶
 {
@@ -556,7 +556,7 @@ exports[`::retrieveConfigAsset <config assets> all-contributors: .all-contributo
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> architecture (markdown): ARCHITECTURE.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> architecture (markdown): ARCHITECTURE.md 1`] = `
 "ARCHITECTURE.md
 ⏶⏷⏶⏷⏶
 <!-- xscripts-renovate-region-start -->
@@ -586,7 +586,7 @@ There are as of yet no notable deviations or additions. See the linked document
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> babel: babel.config.cjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> babel: babel.config.cjs 1`] = `
 "babel.config.cjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -662,7 +662,7 @@ function getBabelAliases() {
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> browserslist: .browserslistrc 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> browserslist: .browserslistrc 1`] = `
 ".browserslistrc
 ⏶⏷⏶⏷⏶
 [production]
@@ -680,7 +680,7 @@ current node
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> changelog.patch.mjs: changelog.patch.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> changelog.patch.mjs: changelog.patch.mjs 1`] = `
 "changelog.patch.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -696,7 +696,7 @@ export default [
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> codecov: .codecov.yml 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> codecov: .codecov.yml 1`] = `
 ".codecov.yml
 ⏶⏷⏶⏷⏶
 coverage:
@@ -722,14 +722,14 @@ flag_management:
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> commit-spell: .spellcheckignore 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> commit-spell: .spellcheckignore 1`] = `
 ".spellcheckignore
 ⏶⏷⏶⏷⏶
 
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> commitlint.config.mjs: commitlint.config.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> commitlint.config.mjs: commitlint.config.mjs 1`] = `
 "commitlint.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -752,7 +752,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> contributing (markdown): CONTRIBUTING.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> contributing (markdown): CONTRIBUTING.md 1`] = `
 "CONTRIBUTING.md
 ⏶⏷⏶⏷⏶
 # Contributing
@@ -856,7 +856,7 @@ At this point, you're ready to create your PR and ✨ contribute ✨!
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> dotenv (default): .env.default 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): .env.default 1`] = `
 ".env.default
 ⏶⏷⏶⏷⏶
 # shellcheck disable=all
@@ -940,7 +940,7 @@ GPG_PRIVATE_KEY=
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> dotenv (default): .env.default 2`] = `
+exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): .env.default 2`] = `
 ".env.default
 ⏶⏷⏶⏷⏶
 # shellcheck disable=all
@@ -1024,7 +1024,7 @@ GPG_PRIVATE_KEY=
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> editor-config: .editorconfig 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> editor-config: .editorconfig 1`] = `
 ".editorconfig
 ⏶⏷⏶⏷⏶
 root = true
@@ -1039,7 +1039,7 @@ indent_size = 2
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> eslint: eslint.config.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> eslint: eslint.config.mjs 1`] = `
 "eslint.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1188,7 +1188,7 @@ function getEslintAliases() {
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> git-add-then-commit: gac.config.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> git-add-then-commit: gac.config.mjs 1`] = `
 "gac.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1215,14 +1215,14 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> git-attributes: .gitattributes 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> git-attributes: .gitattributes 1`] = `
 ".gitattributes
 ⏶⏷⏶⏷⏶
 * text=auto eol=lf
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> git-ignore: .gitignore 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> git-ignore: .gitignore 1`] = `
 ".gitignore
 ⏶⏷⏶⏷⏶
 # ! Note that any pattern with a / in the beginning OR MIDDLE (but not end) will
@@ -1335,7 +1335,7 @@ CertificateAuthorityCertificate.pem
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/CODE_OF_CONDUCT.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/CODE_OF_CONDUCT.md 1`] = `
 ".github/CODE_OF_CONDUCT.md
 ⏶⏷⏶⏷⏶
 # Contributor Covenant Code of Conduct
@@ -1423,7 +1423,7 @@ For answers to common questions about this code of conduct, see
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/CODEOWNERS 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/CODEOWNERS 1`] = `
 ".github/CODEOWNERS
 ⏶⏷⏶⏷⏶
 # See https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners
@@ -1432,7 +1432,7 @@ exports[`::retrieveConfigAsset <config assets> github (directory): .github/CODEO
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/FUNDING.yml 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/FUNDING.yml 1`] = `
 ".github/FUNDING.yml
 ⏶⏷⏶⏷⏶
 # These are supported funding model platforms
@@ -1451,7 +1451,7 @@ custom: # Replace with up to 4 custom sponsorship URLs e.g., ['link1', 'link2']
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/ISSUE_TEMPLATE/BUG_REPORT.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/ISSUE_TEMPLATE/BUG_REPORT.md 1`] = `
 ".github/ISSUE_TEMPLATE/BUG_REPORT.md
 ⏶⏷⏶⏷⏶
 ---
@@ -1534,7 +1534,7 @@ Relevant log lines:
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/ISSUE_TEMPLATE/FEATURE_REQUEST.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/ISSUE_TEMPLATE/FEATURE_REQUEST.md 1`] = `
 ".github/ISSUE_TEMPLATE/FEATURE_REQUEST.md
 ⏶⏷⏶⏷⏶
 ---
@@ -1566,7 +1566,7 @@ temporary workarounds you've come up with.
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/ISSUE_TEMPLATE/config.yml 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/ISSUE_TEMPLATE/config.yml 1`] = `
 ".github/ISSUE_TEMPLATE/config.yml
 ⏶⏷⏶⏷⏶
 blank_issues_enabled: true
@@ -1577,7 +1577,7 @@ contact_links:
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/PULL_REQUEST_TEMPLATE.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/PULL_REQUEST_TEMPLATE.md 1`] = `
 ".github/PULL_REQUEST_TEMPLATE.md
 ⏶⏷⏶⏷⏶
 <!-- Add a brief description of your PR here |-->
@@ -1598,7 +1598,7 @@ exports[`::retrieveConfigAsset <config assets> github (directory): .github/PULL_
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/SUPPORT.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/SUPPORT.md 1`] = `
 ".github/SUPPORT.md
 ⏶⏷⏶⏷⏶
 # Support [![Average issue resolution time][badge-issue-resolution]][link-issue-resolution] [![Issue open percentage][badge-issue-percentage]][open-issues]
@@ -1663,7 +1663,7 @@ you for contribution 🎉, your efforts are greatly appreciated! 🙌🏿
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/dependabot.yml 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/dependabot.yml 1`] = `
 ".github/dependabot.yml
 ⏶⏷⏶⏷⏶
 version: 2
@@ -1688,7 +1688,7 @@ updates:
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/pipeline.config.js 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/pipeline.config.js 1`] = `
 ".github/pipeline.config.js
 ⏶⏷⏶⏷⏶
 /**
@@ -1754,7 +1754,7 @@ module.exports = {
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> github (directory): .github/workflows/README.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> github (directory): .github/workflows/README.md 1`] = `
 ".github/workflows/README.md
 ⏶⏷⏶⏷⏶
 Details on pipeline design and operation can be found [here][1].
@@ -1763,7 +1763,7 @@ Details on pipeline design and operation can be found [here][1].
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> husky (directory): .husky/commit-msg 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> husky (directory): .husky/commit-msg 1`] = `
 ".husky/commit-msg
 ⏶⏷⏶⏷⏶
 #!/bin/sh
@@ -1784,7 +1784,7 @@ NODE_NO_WARNINGS=1 node spellcheck-commit.cjs
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> husky (directory): .husky/pre-commit 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> husky (directory): .husky/pre-commit 1`] = `
 ".husky/pre-commit
 ⏶⏷⏶⏷⏶
 #!/bin/sh
@@ -1803,7 +1803,7 @@ NODE_NO_WARNINGS=1 lint-staged --concurrent false
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> husky (directory): .husky/pre-push 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> husky (directory): .husky/pre-push 1`] = `
 ".husky/pre-push
 ⏶⏷⏶⏷⏶
 #!/bin/sh
@@ -1835,7 +1835,7 @@ fi
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> jest: jest.config.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> jest: jest.config.mjs 1`] = `
 "jest.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1910,7 +1910,7 @@ function getJestAliases() {
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> license (markdown): LICENSE 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> license (markdown): LICENSE 1`] = `
 "LICENSE
 ⏶⏷⏶⏷⏶
 MIT License
@@ -1937,7 +1937,7 @@ SOFTWARE.
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> lint-staged: lint-staged.config.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> lint-staged: lint-staged.config.mjs 1`] = `
 "lint-staged.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -1960,7 +1960,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> maintaining (markdown): MAINTAINING.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> maintaining (markdown): MAINTAINING.md 1`] = `
 "MAINTAINING.md
 ⏶⏷⏶⏷⏶
 # Maintaining
@@ -2329,7 +2329,7 @@ Thank you so much for helping to maintain this project!
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> next.js: next.config.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> next.js: next.config.mjs 1`] = `
 "next.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -2352,7 +2352,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> npm-check-updates: .ncurc.cjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> npm-check-updates: .ncurc.cjs 1`] = `
 ".ncurc.cjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -2376,7 +2376,7 @@ module.exports = {
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> package.json: package.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> package.json: package.json 1`] = `
 "package.json
 ⏶⏷⏶⏷⏶
 {
@@ -2456,7 +2456,7 @@ exports[`::retrieveConfigAsset <config assets> package.json: package.json 1`] = 
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> postcss: postcss.config.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> postcss: postcss.config.mjs 1`] = `
 "postcss.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -2479,7 +2479,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> prettier: prettier.config.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> prettier: prettier.config.mjs 1`] = `
 "prettier.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -2508,7 +2508,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> prettier-ignore: .prettierignore 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> prettier-ignore: .prettierignore 1`] = `
 ".prettierignore
 ⏶⏷⏶⏷⏶
 # * Paths below are ignored by prettier as well as remark and doctoc when called
@@ -2565,7 +2565,7 @@ fixtures
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> readme (markdown): README.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> readme (markdown): README.md 1`] = `
 "README.md
 ⏶⏷⏶⏷⏶
 <!-- xscripts-renovate-region-start -->
@@ -2737,7 +2737,7 @@ repo-reference-definitions-repo
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> remark: .remarkrc.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> remark: .remarkrc.mjs 1`] = `
 ".remarkrc.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -2770,7 +2770,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> security (markdown): SECURITY.md 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> security (markdown): SECURITY.md 1`] = `
 "SECURITY.md
 ⏶⏷⏶⏷⏶
 # Security ☠️ [![Known Vulnerabilities][2]][1]
@@ -2794,14 +2794,14 @@ Thank you for your contribution!
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> src (directory): src/index.ts 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> src (directory): src/index.ts 1`] = `
 "src/index.ts
 ⏶⏷⏶⏷⏶
 export {};
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> tailwind: tailwind.config.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> tailwind: tailwind.config.mjs 1`] = `
 "tailwind.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -2824,7 +2824,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> test (directory): test/index.ts 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> test (directory): test/index.ts 1`] = `
 "test/index.ts
 ⏶⏷⏶⏷⏶
 /**
@@ -2836,7 +2836,7 @@ export {};
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> test (directory): test/setup.ts 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> test (directory): test/setup.ts 1`] = `
 "test/setup.ts
 ⏶⏷⏶⏷⏶
 // ? https://github.com/jest-community/jest-extended#typescript
@@ -2845,7 +2845,7 @@ import 'jest-extended/all';
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsc.package.docs.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): tsc.package.docs.json 1`] = `
 "tsc.package.docs.json
 ⏶⏷⏶⏷⏶
 /**
@@ -2874,7 +2874,7 @@ exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsc.pack
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsc.package.lint.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): tsc.package.lint.json 1`] = `
 "tsc.package.lint.json
 ⏶⏷⏶⏷⏶
 /**
@@ -2903,7 +2903,7 @@ exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsc.pack
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsc.package.types.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): tsc.package.types.json 1`] = `
 "tsc.package.types.json
 ⏶⏷⏶⏷⏶
 /**
@@ -2942,7 +2942,7 @@ exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsc.pack
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsc.project.lint.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): tsc.project.lint.json 1`] = `
 "tsc.project.lint.json
 ⏶⏷⏶⏷⏶
 /**
@@ -2970,7 +2970,7 @@ exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsc.proj
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsconfig.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): tsconfig.json 1`] = `
 "tsconfig.json
 ⏶⏷⏶⏷⏶
 {
@@ -3068,21 +3068,21 @@ exports[`::retrieveConfigAsset <config assets> tsconfig (all variants): tsconfig
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> tstyche.config.json: tstyche.config.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> tstyche.config.json: tstyche.config.json 1`] = `
 "tstyche.config.json
 ⏶⏷⏶⏷⏶
 {"$schema":"https://tstyche.org/schemas/config.json","testFileMatch":["**/type-*.test.ts","**/type-*.test.tsx"]}
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> turbo.json: turbo.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> turbo.json: turbo.json 1`] = `
 "turbo.json
 ⏶⏷⏶⏷⏶
 {}
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> types (directory): types/example 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> types (directory): types/example 1`] = `
 "types/example
 ⏶⏷⏶⏷⏶
 declare module 'glob-gitignore' {
@@ -3113,14 +3113,14 @@ declare module 'glob-gitignore' {
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> types (directory): types/global.ts 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> types (directory): types/global.ts 1`] = `
 "types/global.ts
 ⏶⏷⏶⏷⏶
 export type {};
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> vscode (directory): .vscode/launch.example.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): .vscode/launch.example.json 1`] = `
 ".vscode/launch.example.json
 ⏶⏷⏶⏷⏶
 {
@@ -3238,7 +3238,7 @@ exports[`::retrieveConfigAsset <config assets> vscode (directory): .vscode/launc
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> vscode (directory): .vscode/settings.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): .vscode/settings.json 1`] = `
 ".vscode/settings.json
 ⏶⏷⏶⏷⏶
 {
@@ -3257,7 +3257,7 @@ exports[`::retrieveConfigAsset <config assets> vscode (directory): .vscode/setti
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> vscode (directory): .vscode/tasks.example.json 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> vscode (directory): .vscode/tasks.example.json 1`] = `
 ".vscode/tasks.example.json
 ⏶⏷⏶⏷⏶
 {
@@ -3290,7 +3290,7 @@ exports[`::retrieveConfigAsset <config assets> vscode (directory): .vscode/tasks
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> webpack: webpack.config.mjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> webpack: webpack.config.mjs 1`] = `
 "webpack.config.mjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -3313,7 +3313,7 @@ export default config;
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> xchangelog: conventional.config.cjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> xchangelog: conventional.config.cjs 1`] = `
 "conventional.config.cjs
 ⏶⏷⏶⏷⏶
 // @ts-check
@@ -3342,7 +3342,7 @@ module.exports = moduleExport({
 "
 `;
 
-exports[`::retrieveConfigAsset <config assets> xrelease: release.config.cjs 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> xrelease: release.config.cjs 1`] = `
 "release.config.cjs
 ⏶⏷⏶⏷⏶
 // @ts-check
