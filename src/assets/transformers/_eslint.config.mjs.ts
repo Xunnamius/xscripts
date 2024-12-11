@@ -749,6 +749,7 @@ export function moduleExport({
 export const { transformer } = makeTransformer(function ({
   asset,
   shouldDeriveAliases,
+  toProjectAbsolutePath,
   projectMetadata
 }) {
   const derivedAliasesSourceSnippet = shouldDeriveAliases
