@@ -2,7 +2,7 @@
 /* eslint-disable unicorn/no-array-reduce */
 import { chmod, rename, stat, symlink } from 'node:fs/promises';
 import { builtinModules } from 'node:module';
-import { dirname, extname } from 'node:path';
+import { extname } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { isNativeError } from 'node:util/types';
 
@@ -63,6 +63,7 @@ import {
   isAbsolutePath,
   isAccessible,
   toAbsolutePath,
+  toDirname,
   toPath,
   toRelativePath,
   Tsconfig,
@@ -807,7 +808,7 @@ distrib root: ${absoluteOutputDirPath}
           // * might not have been mirrored by tsc above
           await Promise.all(
             allBuildTargets.map((target) => {
-              const path = toPath(absoluteOutputDirPath, dirname(target));
+              const path = toPath(absoluteOutputDirPath, toDirname(target));
               debug('make directory deep structure: %O', path);
 
               return makeDirectory(path);
@@ -1235,7 +1236,7 @@ distrib root: ${absoluteOutputDirPath}
                   // ? Is the specifier a relative import?
                   else if (isDotRelativePathRegExp.test(specifier)) {
                     const absoluteSpecifier = toAbsolutePath(
-                      dirname(filepath),
+                      toDirname(filepath),
                       specifier
                     );
 

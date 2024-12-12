@@ -11,7 +11,7 @@ const fs = require('node:fs');
 
 // TODO: replace with project-utils/fs versions
 const {
-  dirname,
+  dirname: toDirname,
   join: joinPath,
   relative: toRelativePath,
   resolve: toAbsolutePath
@@ -457,14 +457,16 @@ function makeDistReplacerEntry(
         if (!knownEntrypoints[importTargetOutputFilepath]) {
           const isDir = fs.statSync(importTargetOutputFilepath).isDirectory();
           const packageJsonFile = findUp.sync('package.json', {
-            cwd: isDir ? importTargetOutputFilepath : dirname(importTargetOutputFilepath)
+            cwd: isDir
+              ? importTargetOutputFilepath
+              : toDirname(importTargetOutputFilepath)
           });
 
           if (packageJsonFile) {
             /**
              * @type {any}
              */
-            const packageDir = dirname(packageJsonFile);
+            const packageDir = toAbsolutePath(toDirname(packageJsonFile));
 
             const {
               exports: xports,
@@ -546,7 +548,7 @@ function makeDistReplacerEntry(
       }
 
       const result = toRelativePath(
-        dirname(transpilationOutputFilepath),
+        toDirname(transpilationOutputFilepath),
         importTargetOutputFilepath
       );
 

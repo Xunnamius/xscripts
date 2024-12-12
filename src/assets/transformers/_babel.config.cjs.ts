@@ -3,7 +3,6 @@
 
 import assert from 'node:assert';
 import { statSync } from 'node:fs';
-import { dirname } from 'node:path';
 
 import findUp from 'find-up~5';
 import semver from 'semver';
@@ -22,6 +21,7 @@ import {
   getCurrentWorkingDirectory,
   readXPackageJsonAtRoot,
   toAbsolutePath,
+  toDirname,
   toPath,
   toRelativePath,
   type AbsolutePath,
@@ -628,11 +628,13 @@ function makeDistReplacerEntry(
         if (!knownEntrypoints[importTargetOutputFilepath]) {
           const isDir = statSync(importTargetOutputFilepath).isDirectory();
           const packageJsonFile = findUp.sync('package.json', {
-            cwd: isDir ? importTargetOutputFilepath : dirname(importTargetOutputFilepath)
+            cwd: isDir
+              ? importTargetOutputFilepath
+              : toDirname(importTargetOutputFilepath)
           }) as AbsolutePath | undefined;
 
           if (packageJsonFile) {
-            const packageDir = dirname(packageJsonFile) as AbsolutePath;
+            const packageDir = toDirname(packageJsonFile);
 
             const {
               exports: packageExports,
@@ -713,7 +715,7 @@ function makeDistReplacerEntry(
       }
 
       const result = toRelativePath(
-        dirname(transpilationOutputFilepath),
+        toDirname(transpilationOutputFilepath),
         importTargetOutputFilepath
       );
 
