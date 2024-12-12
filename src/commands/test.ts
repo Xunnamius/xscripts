@@ -452,12 +452,10 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
           for (const buildTargetPath of externalBuildTargets) {
             const buildTargetPackage = allPackagesExceptCwd.find((package_) => {
-              const relativeRoot = toRelativePath(projectRoot, package_.root);
-
-              return relativeRoot === ''
-                ? // TODO: do something about these hardcoded workspace paths...
-                  !buildTargetPath.startsWith('packages/')
-                : buildTargetPath.startsWith(relativeRoot);
+              return 'relativeRoot' in package_
+                ? buildTargetPath.startsWith(package_.relativeRoot)
+                : // TODO: do something about these hardcoded workspace paths...
+                  !buildTargetPath.startsWith('packages/');
             });
 
             if (buildTargetPackage) {
