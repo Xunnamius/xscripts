@@ -52,6 +52,8 @@ import {
   type RelativePath
 } from 'multiverse+project-utils:fs.ts';
 
+import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
+
 import {
   compileTemplate,
   compileTemplateInMemory,
@@ -105,14 +107,17 @@ const dummyContext: IncomingTransformerContext = {
   repoReferenceDefinitionsPackage: 'repo-reference-definitions-package',
   repoReferenceDefinitionsRepo: 'repo-reference-definitions-repo',
   shouldDeriveAliases: true,
-  log: (() => undefined) as unknown as IncomingTransformerContext['log'],
-  debug: (() => undefined) as unknown as IncomingTransformerContext['debug'],
+  log: createGenericLogger({ namespace: 'unit-assets-dummy-context' }),
+  debug: createDebugLogger({ namespace: 'unit-assets-dummy-context' }),
   toProjectAbsolutePath: (...pathsLike) => toAbsolutePath('/dummy', ...pathsLike),
   toPackageAbsolutePath: (...pathsLike) =>
     toAbsolutePath('/dummy/packages/pkg', ...pathsLike),
   forceOverwritePotentiallyDestructive: false,
   scope: DefaultGlobalScope.Unlimited
 };
+
+dummyContext.log.enabled = false;
+dummyContext.debug.enabled = false;
 
 describe('::gatherAssetsFromTransformer', () => {
   it('invoke a transformer via its filename', async () => {
