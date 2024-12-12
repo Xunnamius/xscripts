@@ -103,12 +103,12 @@ export type TransformerContext = {
    * Takes a {@link RelativePath}-like object and joins it to `rootPackage.root`
    * from {@link ProjectMetadata}.
    */
-  toProjectAbsolutePath: (pathLike: RelativePath | string) => AbsolutePath;
+  toProjectAbsolutePath: (...pathsLike: (RelativePath | string)[]) => AbsolutePath;
   /**
    * Takes a {@link RelativePath}-like object and joins it to `cwdPackage.root`
    * from {@link ProjectMetadata}.
    */
-  toPackageAbsolutePath: (pathLike: RelativePath | string) => AbsolutePath;
+  toPackageAbsolutePath: (...pathsLike: (RelativePath | string)[]) => AbsolutePath;
 
   /**
    * The value of the `asset` parameter passed to
@@ -597,7 +597,7 @@ async function invokeTransformerAndReifyAssets({
       options
     );
 
-    debug('transformer %O returned reified assets: %O', transformerPath, reifiedAssets);
+    debug('transformer %O returned assets: %O', transformerPath, reifiedAssets);
     return reifiedAssets;
   } catch (error) {
     throw new CliError(ErrorMessage.AssetRetrievalFailed(transformerPath), {

@@ -41,6 +41,7 @@ import {
   remarkConfigProjectBase,
   spellcheckIgnoreConfigProjectBase,
   tailwindConfigProjectBase,
+  toAbsolutePath,
   Tsconfig,
   tstycheConfigProjectBase,
   turboConfigProjectBase,
@@ -106,8 +107,9 @@ const dummyContext: IncomingTransformerContext = {
   shouldDeriveAliases: true,
   log: (() => undefined) as unknown as IncomingTransformerContext['log'],
   debug: (() => undefined) as unknown as IncomingTransformerContext['debug'],
-  toProjectAbsolutePath: (path: string) => `/dummy/${path}` as AbsolutePath,
-  toPackageAbsolutePath: (path: string) => `/dummy/packages/pkg/${path}` as AbsolutePath,
+  toProjectAbsolutePath: (...pathsLike) => toAbsolutePath('/dummy', ...pathsLike),
+  toPackageAbsolutePath: (...pathsLike) =>
+    toAbsolutePath('/dummy/packages/pkg', ...pathsLike),
   forceOverwritePotentiallyDestructive: false,
   scope: DefaultGlobalScope.Unlimited
 };

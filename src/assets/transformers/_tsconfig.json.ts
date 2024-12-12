@@ -3,10 +3,14 @@ import {
   generateRawAliasMap
 } from 'multiverse+project-utils:alias.ts';
 
-import { ProjectAttribute, type Package } from 'multiverse+project-utils:analyze.ts';
+import {
+  isRootPackage,
+  ProjectAttribute,
+  type Package
+} from 'multiverse+project-utils:analyze.ts';
 import { Tsconfig } from 'multiverse+project-utils:fs.ts';
 
-import { makeTransformer } from 'universe:assets.ts';
+import { makeTransformer, type Asset } from 'universe:assets.ts';
 import { RenovationPreset } from 'universe:commands/project/renovate.ts';
 import { DefaultGlobalScope } from 'universe:configure.ts';
 import { makeGeneratedAliasesWarningComment } from 'universe:constant.ts';
@@ -185,6 +189,7 @@ export const { transformer } = makeTransformer(function ({
   targetAssetsPreset,
   scope
 }) {
+  const assets: Asset[] = [];
   const { cwdPackage, rootPackage, subRootPackages } = projectMetadata;
   const derivedAliasesSourceSnippet = shouldDeriveAliases
     ? JSON.stringify(
@@ -197,24 +202,22 @@ export const { transformer } = makeTransformer(function ({
         .replace(/^}/m, '    }')
     : '{}';
 
-  const assets = [
-    {
-      path: toProjectAbsolutePath(Tsconfig.ProjectBase),
-      generate: () =>
-        tsconfigFiles[Tsconfig.ProjectBase].replace(
-          '{derivedAliasesSourceSnippet}',
-          derivedAliasesSourceSnippet
-        )
-    },
-    {
-      path: toProjectAbsolutePath(Tsconfig.ProjectLint),
-      generate: () => tsconfigFiles[Tsconfig.ProjectLint]
-    },
-    {
-      path: toProjectAbsolutePath(Tsconfig.PackageTypes),
-      generate: () => tsconfigFiles[Tsconfig.PackageTypes]
-    }
-  ];
+  if (scope === DefaultGlobalScope.Unlimited || isRootPackage(cwdPackage)) {
+    assets.push(
+      {
+        path: toProjectAbsolutePath(Tsconfig.ProjectBase),
+        generate: () =>
+          tsconfigFiles[Tsconfig.ProjectBase].replace(
+            '{derivedAliasesSourceSnippet}',
+            derivedAliasesSourceSnippet
+          )
+      },
+      {
+        path: toProjectAbsolutePath(Tsconfig.ProjectLint),
+        generate: () => tsconfigFiles[Tsconfig.ProjectLint]
+      }
+    );
+  }
 
   if (scope === DefaultGlobalScope.ThisPackage) {
     addPackageAssets(cwdPackage);
@@ -228,34 +231,32 @@ export const { transformer } = makeTransformer(function ({
   return assets;
 
   function addPackageAssets(package_: Package) {
-    const isPackageTheRootPackage = package_ === rootPackage;
+    const isPackageTheRootPackage = isRootPackage(package_);
     const isInHybridrepoOrPolyrepo =
       rootPackage.attributes[ProjectAttribute.Hybridrepo] ||
       rootPackage.attributes[ProjectAttribute.Polyrepo];
 
-    if (
-      targetAssetsPreset !== RenovationPreset.Minimal &&
-      (!isPackageTheRootPackage || isInHybridrepoOrPolyrepo)
-    ) {
-      // TODO: don't these need to be tweaked more for monorepo packages? If
-      // TODO: so, then we can't rely on the overwrite mechanic working in our
-      // TODO: favor and we'll need extra logic to not overwrite the
-      // TODO: project-level types tsconfig and to write out the correct paths
-      // TODO: when project-level vs package-level
-      assets.push(
-        {
-          path: toProjectAbsolutePath(Tsconfig.PackageLint),
-          generate: () => tsconfigFiles[Tsconfig.PackageLint]
-        },
-        {
-          path: toProjectAbsolutePath(Tsconfig.PackageDocumentation),
-          generate: () => tsconfigFiles[Tsconfig.PackageDocumentation]
-        },
-        {
-          path: toProjectAbsolutePath(Tsconfig.PackageTypes),
-          generate: () => tsconfigFiles[Tsconfig.PackageTypes]
-        }
-      );
+    if (!isPackageTheRootPackage || isInHybridrepoOrPolyrepo) {
+      const relativeRoot = 'relativeRoot' in package_ ? package_.relativeRoot : '';
+
+      assets.push({
+        path: toProjectAbsolutePath(relativeRoot, Tsconfig.PackageTypes),
+        generate: () => tsconfigFiles[Tsconfig.PackageTypes]
+      });
+
+      if (targetAssetsPreset !== RenovationPreset.Minimal) {
+        // TODO: don't these need to be tweaked more for monorepo packages?
+        assets.push(
+          {
+            path: toProjectAbsolutePath(relativeRoot, Tsconfig.PackageLint),
+            generate: () => tsconfigFiles[Tsconfig.PackageLint]
+          },
+          {
+            path: toProjectAbsolutePath(relativeRoot, Tsconfig.PackageDocumentation),
+            generate: () => tsconfigFiles[Tsconfig.PackageDocumentation]
+          }
+        );
+      }
     }
   }
 });

@@ -1,6 +1,9 @@
+import { type Jsonifiable } from 'type-fest';
+
 import {
   isRootPackage,
   ProjectAttribute,
+  type Package,
   type XPackageJson,
   type XPackageJsonHybridrepoProjectRoot,
   type XPackageJsonMonorepoPackageRoot,
@@ -9,10 +12,12 @@ import {
 } from 'multiverse+project-utils:analyze/common.ts';
 
 import { generatePackageJsonEngineMaintainedNodeVersions } from 'multiverse+project-utils:analyze/generate-package-json-engine-maintained-node-versions.ts';
+import { packageJsonConfigPackageBase } from 'multiverse+project-utils:fs.ts';
 
 import { version as xscriptsVersion } from 'rootverse:package.json';
 
-import { compileTemplateInMemory, makeTransformer } from 'universe:assets.ts';
+import { makeTransformer, type Asset } from 'universe:assets.ts';
+import { DefaultGlobalScope } from 'universe:configure.ts';
 
 export const baseXPackageJson = {
   name: '{{packageName}}',
@@ -110,36 +115,57 @@ export const baseMonorepoPackageRootXPackageJson = {
 
 export const { transformer } = makeTransformer(function (context) {
   const {
-    asset,
+    scope,
     toProjectAbsolutePath,
-    projectMetadata: {
-      rootPackage: { attributes: projectAttributes },
-      cwdPackage
-    }
+    projectMetadata: { rootPackage, cwdPackage, subRootPackages }
   } = context;
 
-  const packageJsonString = JSON.stringify(getBasePackageJson(), undefined, 2);
+  const assets: Asset[] = [];
+  const { attributes: projectAttributes } = rootPackage;
 
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => compileTemplateInMemory(packageJsonString, context)
+  if (scope === DefaultGlobalScope.ThisPackage) {
+    addPackageAssets(cwdPackage);
+  } else {
+    const allPackages = [cwdPackage].concat(...(subRootPackages?.values() || []));
+    for (const package_ of allPackages) {
+      addPackageAssets(package_);
     }
-  ];
+  }
 
-  function getBasePackageJson() {
+  return assets;
+
+  function addPackageAssets(package_: Package) {
     if (projectAttributes[ProjectAttribute.Polyrepo]) {
-      return basePolyrepoXPackageJson;
+      assets.push({
+        path: toProjectAbsolutePath(packageJsonConfigPackageBase),
+        generate: () => stringify(basePolyrepoXPackageJson)
+      });
+    } else {
+      const isPackageTheRootPackage = isRootPackage(package_);
+      const relativeRoot = 'relativeRoot' in package_ ? package_.relativeRoot : '';
+
+      if (isPackageTheRootPackage) {
+        assets.push(
+          rootPackage.attributes[ProjectAttribute.Hybridrepo]
+            ? {
+                path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
+                generate: () => stringify(baseHybridrepoProjectRootXPackageJson)
+              }
+            : {
+                path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
+                generate: () => stringify(baseMonorepoProjectRootXPackageJson)
+              }
+        );
+      } else {
+        assets.push({
+          path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
+          generate: () => stringify(baseMonorepoPackageRootXPackageJson)
+        });
+      }
     }
-
-    const isCwdPackageTheRootPackage = isRootPackage(cwdPackage);
-
-    if (isCwdPackageTheRootPackage) {
-      return baseMonorepoPackageRootXPackageJson;
-    }
-
-    return projectAttributes[ProjectAttribute.Hybridrepo]
-      ? baseHybridrepoProjectRootXPackageJson
-      : baseMonorepoProjectRootXPackageJson;
   }
 });
+
+function stringify(o: Jsonifiable) {
+  return JSON.stringify(o, undefined, 2);
+}

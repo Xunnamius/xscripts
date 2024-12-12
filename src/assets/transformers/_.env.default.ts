@@ -1,10 +1,12 @@
 import {
   dotEnvConfigPackageBase,
   dotEnvDefaultConfigPackageBase,
-  isAccessible
+  isAccessible,
+  type AbsolutePath
 } from 'multiverse+project-utils:fs.ts';
 
-import { makeTransformer } from 'universe:assets.ts';
+import { makeTransformer, type Asset } from 'universe:assets.ts';
+import { readFile } from 'universe:util.ts';
 
 // {@xscripts/notExtraneous dotenv-cli}
 
@@ -13,7 +15,8 @@ const startsWithAlphaNumeric = /^[a-z0-9]/i;
 export const { transformer } = makeTransformer(async function ({
   toProjectAbsolutePath,
   forceOverwritePotentiallyDestructive,
-  log
+  log,
+  debug
 }) {
   const secretsFilePath = toProjectAbsolutePath(dotEnvConfigPackageBase);
   const doesSecretsFileAlreadyExist = await isAccessible(secretsFilePath, {
@@ -23,7 +26,7 @@ export const { transformer } = makeTransformer(async function ({
   const shouldOverwriteSecretsFile =
     forceOverwritePotentiallyDestructive || !doesSecretsFileAlreadyExist;
 
-  const assets = [
+  const assets: Asset[] = [
     {
       path: toProjectAbsolutePath(dotEnvDefaultConfigPackageBase),
       generate
@@ -32,24 +35,50 @@ export const { transformer } = makeTransformer(async function ({
 
   if (shouldOverwriteSecretsFile) {
     if (doesSecretsFileAlreadyExist) {
-      log.warn('secrets file will be overwritten: %O', secretsFilePath);
+      log.warn(
+        'secrets file will be updated (current secrets are preserved): %O',
+        secretsFilePath
+      );
     }
 
     assets.push({
       path: secretsFilePath,
-      generate: generateDummyDotEnv
+      generate: () => generateDummyDotEnv({ merge: secretsFilePath })
     });
   }
 
   return assets;
-});
 
-function generateDummyDotEnv() {
-  return generate()
-    .split('\n')
-    .filter((str) => startsWithAlphaNumeric.test(str))
-    .join('\n');
-}
+  async function generateDummyDotEnv({ merge }: { merge: AbsolutePath }) {
+    debug('generating dummy dotenv file');
+
+    let dotEnvLines = generate()
+      .split('\n')
+      .filter((str) => startsWithAlphaNumeric.test(str));
+
+    if (merge) {
+      const currentDotEnv = await readFile(merge);
+      const currentDotEnvVariables = currentDotEnv
+        .split('\n')
+        .filter((str) => startsWithAlphaNumeric.test(str) && str.includes('='))
+        .map((str) => str.split('=')[0] + '=');
+
+      debug('currentDotEnvVariables: %O', currentDotEnvVariables);
+
+      const linesToAppend = dotEnvLines.filter((line) =>
+        currentDotEnvVariables.every((variable) => !line.startsWith(variable))
+      );
+
+      debug('linesToAppend: %O', linesToAppend);
+
+      if (linesToAppend.length) {
+        dotEnvLines = [currentDotEnv, '\n'].concat(dotEnvLines);
+      }
+    }
+
+    return dotEnvLines.join('\n');
+  }
+});
 
 function generate() {
   return `
