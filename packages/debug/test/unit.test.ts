@@ -43,6 +43,12 @@ describe('::debugFactory', () => {
     const log = debugFactory('namespace');
     expect(log.namespace).toBe('namespace:');
   });
+
+  it.todo('seamlessly supports double-colon root namespace workaround');
+
+  it.todo(
+    'double-colon workaround preserves simple process.env.DEBUG activation behavior'
+  );
 });
 
 describe('::extendDebugger', () => {

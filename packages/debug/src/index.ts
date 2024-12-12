@@ -7,6 +7,8 @@ import type { Merge } from 'type-fest';
 
 type _InternalDebuggerNoExtends = Omit<InternalDebugger, 'extend'>;
 
+const debugStringSplitterRegExp = /[\s,]+/;
+
 /**
  * Represents a property on a "root" {@link ExtendedDebugger} instance that
  * returns an array of its {@link UnextendableInternalDebugger} sub-instances
@@ -98,27 +100,52 @@ export interface ExtendedDebugger extends _InternalDebuggerNoExtends, DebuggerEx
 export type DebuggerExtension<
   T = UnextendableInternalDebugger,
   U = ExtendedDebugger
-> = _DebuggerExtension<T> & {
-  /**
-   * An array of sub-instances (e.g. "error", "warn", etc), including the root
-   * instance.
-   */
-  [$instances]: Merge<
-    _DebuggerExtension<T>,
-    {
-      /**
-       * A cyclical reference to the current logger.
-       */
-      $log: U;
-    }
-  >;
-};
+> = DebuggerSubInstanceTypeGuard<
+  _DebuggerSubInstances<T> & {
+    /**
+     * An array of sub-instances (e.g. "error", "warn", etc), including the root
+     * instance.
+     */
+    [$instances]: DebuggerSubInstanceTypeGuard<
+      Merge<
+        _DebuggerSubInstances<T>,
+        {
+          /**
+           * A cyclical reference to the current logger.
+           */
+          $log: U;
+        }
+      >
+    >;
+  }
+>;
 
 /**
- * The single source of truth for the keys and types of the convenience various
- * sub-instances (e.g. "error", "warn", etc).
+ * @see {@link extendedDebuggerSubInstanceProperties}
  */
-type _DebuggerExtension<T = UnextendableInternalDebugger> = {
+export type ExtendedDebuggerSubInstanceProperties =
+  (typeof extendedDebuggerSubInstanceProperties)[number];
+
+/**
+ * The single source of truth for the keys and types of the various convenience
+ * sub-instances (e.g. "error", "warn", etc).
+ *
+ * This array of property strings is guaranteed to be accurate thanks to
+ * internal use of the `DebuggerSubInstanceTypeGuard` type (not publicly
+ * exported).
+ */
+export const extendedDebuggerSubInstanceProperties = [
+  'message',
+  'error',
+  'warn'
+] as const satisfies (keyof _DebuggerSubInstances)[];
+
+// ? We use this seemingly redundant data structure here because we want
+// ? comments for the sub-instance properties. We type check that
+// ? extendedDebuggerSubInstanceProperties matches _DebuggerSubInstances
+// ? with a combination of satisfies (above) and assigning unknown sub-instance
+// ? names to "never"
+type _DebuggerSubInstances<T = UnextendableInternalDebugger> = {
   /**
    * A sub-instance for outputting messages to the attention of the reader.
    */
@@ -132,6 +159,16 @@ type _DebuggerExtension<T = UnextendableInternalDebugger> = {
    */
   warn: T;
 };
+
+// ? An internal type ensuring all debugger sub-instances are defined and none
+// ? are missing due to developer mistake. If such an mistake were to occur, the
+// ? resulting return type of the dubious properties becomes "never," which
+// ? should alert the developer (future me!) that this mistake occurred
+type DebuggerSubInstanceTypeGuard<RealType extends object> = RealType &
+  Merge<
+    Record<keyof _DebuggerSubInstances, never>,
+    Record<(typeof extendedDebuggerSubInstanceProperties)[number], unknown>
+  >;
 
 /**
  * We append a colon to the end of root namespaces (namespaces without colons)
@@ -154,7 +191,7 @@ function maybeAppendColon(str: string, delimiter: string) {
   return !str
     ? str
     : str
-        .split(/[\s,]+/)
+        .split(debugStringSplitterRegExp)
         .map((subStr) => {
           switch (subStr) {
             case '':
@@ -180,7 +217,27 @@ function maybeAppendColon(str: string, delimiter: string) {
  */
 export const debugFactory = new Proxy(getDebugger as unknown as ExtendedDebug, {
   apply(_target, _this: unknown, args: Parameters<InternalDebug>) {
-    args[0] = maybeAppendColon(args[0], ':');
+    const originalNamespace = args[0];
+    const ourNamespace = (args[0] = maybeAppendColon(originalNamespace, ':'));
+
+    // ? Interop necessary to preserve "rootNamespace:*" activation behavior
+    if (
+      process.env.DEBUG &&
+      !originalNamespace.includes(':') &&
+      !originalNamespace.endsWith('*')
+    ) {
+      process.env.DEBUG = process.env.DEBUG.split(debugStringSplitterRegExp)
+        .map(function (incomingNamespace) {
+          return incomingNamespace.startsWith(ourNamespace + ':') &&
+            !incomingNamespace.startsWith(ourNamespace + '::')
+            ? incomingNamespace.slice(0, ourNamespace.length + 1) +
+                ':' +
+                incomingNamespace.slice(ourNamespace.length + 1)
+            : incomingNamespace;
+        })
+        .join(',');
+    }
+
     return extendDebugger(getDebugger(...args));
   },
   get(target, property: PropertyKey, proxy: ExtendedDebug) {
