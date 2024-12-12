@@ -57,22 +57,28 @@ export const { transformer } = makeTransformer(async function ({
       .filter((str) => startsWithAlphaNumeric.test(str));
 
     if (merge) {
-      const currentDotEnv = await readFile(merge);
-      const currentDotEnvVariables = currentDotEnv
-        .split('\n')
-        .filter((str) => startsWithAlphaNumeric.test(str) && str.includes('='))
-        .map((str) => str.split('=')[0] + '=');
+      const currentDotEnv = await readFile(merge).catch((error: unknown) => {
+        debug.message('unable to read in an existing .env file: %O', error);
+        return '';
+      });
 
-      debug('currentDotEnvVariables: %O', currentDotEnvVariables);
+      if (currentDotEnv) {
+        const currentDotEnvVariables = currentDotEnv
+          .split('\n')
+          .filter((str) => startsWithAlphaNumeric.test(str) && str.includes('='))
+          .map((str) => str.split('=')[0] + '=');
 
-      const linesToAppend = dotEnvLines.filter((line) =>
-        currentDotEnvVariables.every((variable) => !line.startsWith(variable))
-      );
+        debug('currentDotEnvVariables: %O', currentDotEnvVariables);
 
-      debug('linesToAppend: %O', linesToAppend);
+        const linesToAppend = dotEnvLines.filter((line) =>
+          currentDotEnvVariables.every((variable) => !line.startsWith(variable))
+        );
 
-      if (linesToAppend.length) {
-        dotEnvLines = [currentDotEnv, '\n'].concat(dotEnvLines);
+        debug('linesToAppend: %O', linesToAppend);
+
+        if (linesToAppend.length) {
+          dotEnvLines = [currentDotEnv, '\n'].concat(linesToAppend);
+        }
       }
     }
 
