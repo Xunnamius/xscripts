@@ -307,7 +307,7 @@ export function generateRawAliasMap(
         packageId: undefined
       },
       {
-        path: toRelativePath(directorySrcPackageBase, 'index'),
+        path: toRelativePath(toPath(directorySrcPackageBase, 'index')),
         suffix: 'none',
         extensionless: false
       }
