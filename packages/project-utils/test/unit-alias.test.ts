@@ -468,7 +468,11 @@ describe('::makeRawAliasMapping', () => {
         { path: 'the/path:for/alias-1' as RelativePath }
       )
     ).toThrow(
-      ErrorMessage.IllegalAliasValueInvalidCharacters('alias-1', '').split(':')[0]
+      ErrorMessage.IllegalAliasValueInvalidCharacters(
+        'alias-1',
+        'the/path:for/alias-1',
+        ''
+      ).split(':')[0]
     );
   });
 
@@ -485,7 +489,10 @@ describe('::makeRawAliasMapping', () => {
         { path: '/the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
-      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
+      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix(
+        'alias-1',
+        '/the/path/for/alias-1'
+      ).split(':')[0]
     );
 
     expect(() =>
@@ -498,7 +505,10 @@ describe('::makeRawAliasMapping', () => {
         { path: 'the/path/for/alias-1/' as RelativePath }
       )
     ).toThrow(
-      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
+      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix(
+        'alias-1',
+        'the/path/for/alias-1/'
+      ).split(':')[0]
     );
   });
 
@@ -511,7 +521,10 @@ describe('::makeRawAliasMapping', () => {
         { path: './the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
-      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
+      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix(
+        'alias-1',
+        './the/path/for/alias-1'
+      ).split(':')[0]
     );
 
     expect(() =>
@@ -520,7 +533,10 @@ describe('::makeRawAliasMapping', () => {
         { path: '../the/path/for/alias-1' as RelativePath }
       )
     ).toThrow(
-      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
+      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix(
+        'alias-1',
+        '../the/path/for/alias-1'
+      ).split(':')[0]
     );
 
     expect(() =>
@@ -529,7 +545,7 @@ describe('::makeRawAliasMapping', () => {
         { path: '.' as RelativePath }
       )
     ).toThrow(
-      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
+      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1', '.').split(':')[0]
     );
 
     expect(() =>
@@ -538,7 +554,7 @@ describe('::makeRawAliasMapping', () => {
         { path: '..' as RelativePath }
       )
     ).toThrow(
-      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1').split(':')[0]
+      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix('alias-1', '..').split(':')[0]
     );
   });
 });
@@ -563,8 +579,18 @@ describe('::generateRawAliasMap', () => {
         rootPackage: { root: mockProjectRoot },
         subRootPackages: {
           all: [
-            { id: 'pkg-1', json: {}, root: '/path/to/root/path/to/packages/pkg-1' },
-            { id: 'pkg-2', json: {}, root: '/path/to/root/path/to/packages/pkg-2' }
+            {
+              id: 'pkg-1',
+              json: {},
+              root: '/path/to/root/path/to/packages/pkg-1',
+              relativeRoot: 'path/to/packages/pkg-1'
+            },
+            {
+              id: 'pkg-2',
+              json: {},
+              root: '/path/to/root/path/to/packages/pkg-2',
+              relativeRoot: 'path/to/packages/pkg-2'
+            }
           ]
         }
       } as ProjectMetadata)
@@ -579,11 +605,36 @@ describe('::generateRawAliasMap', () => {
         rootPackage: { root: mockProjectRoot },
         subRootPackages: {
           all: [
-            { id: 'a', json: {}, root: '/path/to/root/packages/a' },
-            { id: 'aa', json: {}, root: '/path/to/root/packages/aa' },
-            { id: 'a2', json: {}, root: '/path/to/root/packages/a2' },
-            { id: 'b2', json: {}, root: '/path/to/root/packages/b2' },
-            { id: 'a1', json: {}, root: '/path/to/root/packages/a1' }
+            {
+              id: 'a',
+              json: {},
+              root: '/path/to/root/packages/a',
+              relativeRoot: 'packages/a'
+            },
+            {
+              id: 'aa',
+              json: {},
+              root: '/path/to/root/packages/aa',
+              relativeRoot: 'packages/aa'
+            },
+            {
+              id: 'a2',
+              json: {},
+              root: '/path/to/root/packages/a2',
+              relativeRoot: 'packages/a2'
+            },
+            {
+              id: 'b2',
+              json: {},
+              root: '/path/to/root/packages/b2',
+              relativeRoot: 'packages/b2'
+            },
+            {
+              id: 'a1',
+              json: {},
+              root: '/path/to/root/packages/a1',
+              relativeRoot: 'packages/a1'
+            }
           ]
         }
       } as ProjectMetadata)

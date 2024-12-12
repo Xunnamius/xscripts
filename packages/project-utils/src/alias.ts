@@ -237,7 +237,11 @@ export function makeRawAliasMapping(
 
   if (invalidPathRegExp.test(rawPath.path)) {
     throw new ProjectError(
-      ErrorMessage.IllegalAliasValueInvalidCharacters(rawAlias.alias, invalidPathRegExp)
+      ErrorMessage.IllegalAliasValueInvalidCharacters(
+        rawAlias.alias,
+        rawPath.path,
+        invalidPathRegExp
+      )
     );
   }
 
@@ -249,7 +253,7 @@ export function makeRawAliasMapping(
     isDotRelativePathRegExp.test(rawPath.path)
   ) {
     throw new ProjectError(
-      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix(rawAlias.alias)
+      ErrorMessage.IllegalAliasValueInvalidSeparatorAdfix(rawAlias.alias, rawPath.path)
     );
   }
 

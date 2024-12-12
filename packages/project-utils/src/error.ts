@@ -321,11 +321,15 @@ export const ErrorMessage = {
   IllegalAliasKeyInvalidCharacters(key: string, invalids: RegExp | string) {
     return `encountered illegal alias "${key}": alias key cannot include any of the following characters: ${toCharacters(invalids)}`;
   },
-  IllegalAliasValueInvalidCharacters(key: string, invalids: RegExp | string) {
-    return `encountered illegal alias "${key}": alias value (path) cannot include any of the following characters: ${toCharacters(invalids)}`;
+  IllegalAliasValueInvalidCharacters(
+    key: string,
+    path: string,
+    invalids: RegExp | string
+  ) {
+    return `encountered illegal alias "${key}": alias value (path) "${path}" cannot include any of the following characters: ${toCharacters(invalids)}`;
   },
-  IllegalAliasValueInvalidSeparatorAdfix(key: string) {
-    return `encountered illegal alias "${key}": alias value (path) cannot begin or end with the "/" or "\\" characters, or resemble a relative specifier`;
+  IllegalAliasValueInvalidSeparatorAdfix(key: string, path: string) {
+    return `encountered illegal alias "${key}": alias value (path) "${path}" cannot begin or end with the "/" or "\\" characters, or resemble a relative specifier`;
   },
   IllegalAliasBadSuffix(key: string) {
     return `encountered illegal alias "${key}": when the alias value (path) is configured with \`{ suffix: 'open' }\`, the alias key must also be configured with \`{ suffix: 'open' }\``;
