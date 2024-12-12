@@ -1,4 +1,4 @@
-import { isAbsolute, join, relative, resolve } from 'node:path';
+import { isAbsolute, join, relative, resolve, dirname } from 'node:path';
 
 import { type Tagged } from 'type-fest';
 
@@ -115,6 +115,19 @@ export function toPath(...paths: [RelativePath, ...(string | Path)[]]): Relative
 export function toPath(...paths: (string | Path)[]): Path;
 export function toPath(...paths: string[]) {
   return join(...paths);
+}
+
+/**
+ * This function returns the directory name of `path`, i.e. `path`'s parent
+ * directory. `"."` is returned if no non-root parent is derivable.
+ *
+ * @see {@link dirname}
+ */
+export function toDirname(path: AbsolutePath): AbsolutePath;
+export function toDirname(path: RelativePath): RelativePath;
+export function toDirname(path: string | Path): Path;
+export function toDirname(path: string) {
+  return dirname(path);
 }
 
 /**

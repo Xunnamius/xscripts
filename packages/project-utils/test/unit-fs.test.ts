@@ -21,6 +21,7 @@ import {
   readJsonc,
   readXPackageJsonAtRoot,
   toAbsolutePath,
+  toDirname,
   toPath,
   toRelativePath,
   type AbsolutePath,
@@ -1229,6 +1230,34 @@ describe('::toPath', () => {
     expect.hasAssertions();
     expect(toPath('')).toBe('.');
     expect(toPath('', '')).toBe('.');
+  });
+});
+
+describe('::toDirname', () => {
+  it('returns an AbsolutePath or RelativePath or Path depending on inputs', () => {
+    expect.hasAssertions();
+
+    expect(toDirname('pretend/it/does/exist')).toBe('pretend/it/does');
+    expect(toDirname(toPath('pretend', 'it', 'does', 'exist'))).toBe('pretend/it/does');
+    expect(toDirname(toAbsolutePath('/', 'pretend', 'it', 'does', 'exist'))).toBe(
+      '/pretend/it/does'
+    );
+
+    const p1: AbsolutePath = toDirname('/something/here' as AbsolutePath);
+    // @ts-expect-error: should fail or something is wrong
+    const p2: RelativePath = toDirname('something/here' as AbsolutePath);
+    // @ts-expect-error: should fail or something is wrong
+    const p3: AbsolutePath = toDirname('something/here' as RelativePath);
+    const p4: RelativePath = toDirname('something/here' as RelativePath);
+    const p5: AbsolutePath = toDirname(
+      toPath('/something' as AbsolutePath, 'here' as RelativePath)
+    );
+    const p6: RelativePath = toDirname(
+      toPath('something' as RelativePath, 'here' as AbsolutePath)
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    void p1, p2, p3, p4, p5, p6;
   });
 });
 

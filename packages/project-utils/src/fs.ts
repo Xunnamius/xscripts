@@ -12,6 +12,7 @@ export {
   isAbsolutePath,
   isRelativePath,
   toAbsolutePath,
+  toDirname,
   toPath,
   toRelativePath,
   type AbsolutePath,

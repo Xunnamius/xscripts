@@ -1,5 +1,4 @@
 import assert from 'node:assert';
-import { dirname } from 'node:path';
 
 import { sync as findUp } from 'find-up~5';
 
@@ -48,6 +47,7 @@ import {
   readXPackageJsonAtRoot,
   sharedConfigPackageBase,
   toAbsolutePath,
+  toDirname,
   toPath,
   toRelativePath,
   vercelConfigProjectBase,
@@ -372,7 +372,7 @@ function syncAnalyzeProjectStructure(
 
 function determineProjectRootFromCwd(cwd: AbsolutePath): AbsolutePath {
   try {
-    return toAbsolutePath(dirname(findUp('.git', { cwd, type: 'directory' })!));
+    return toDirname(toAbsolutePath(findUp('.git', { cwd, type: 'directory' })!));
   } catch {
     throw new NotAGitRepositoryError();
   }
@@ -687,7 +687,7 @@ function determineCwdPackage(
   }
 
   // ? At least the root package.json is guaranteed to exist at this point.
-  const cwdPackageRoot = toAbsolutePath(dirname(findUp('package.json', { cwd })!));
+  const cwdPackageRoot = toDirname(toAbsolutePath(findUp('package.json', { cwd })!));
 
   if (cwdPackageRoot === projectRoot) {
     return runSynchronously ? rootPackage : Promise.resolve(rootPackage);
