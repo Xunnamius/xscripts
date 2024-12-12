@@ -220,22 +220,42 @@ export const debugFactory = new Proxy(getDebugger as unknown as ExtendedDebug, {
     const originalNamespace = args[0];
     const ourNamespace = (args[0] = maybeAppendColon(originalNamespace, ':'));
 
-    // ? Interop necessary to preserve "rootNamespace:*" activation behavior
+    // ? Interop necessary to preserve (and expand!) "rootNamespace:*"
+    // ? activation behavior
     if (
       process.env.DEBUG &&
       !originalNamespace.includes(':') &&
       !originalNamespace.endsWith('*')
     ) {
-      process.env.DEBUG = process.env.DEBUG.split(debugStringSplitterRegExp)
-        .map(function (incomingNamespace) {
-          return incomingNamespace.startsWith(ourNamespace + ':') &&
-            !incomingNamespace.startsWith(ourNamespace + '::')
-            ? incomingNamespace.slice(0, ourNamespace.length + 1) +
-                ':' +
-                incomingNamespace.slice(ourNamespace.length + 1)
-            : incomingNamespace;
-        })
-        .join(',');
+      getDebugger.enable(
+        process.env.DEBUG.split(debugStringSplitterRegExp)
+          .map(function (incomingNamespace_) {
+            const incomingNamespaceNegation = incomingNamespace_.startsWith('-')
+              ? '-'
+              : '';
+
+            const incomingNamespace = incomingNamespaceNegation
+              ? incomingNamespace_.slice(1)
+              : incomingNamespace_;
+
+            if (incomingNamespace === originalNamespace) {
+              return incomingNamespaceNegation + incomingNamespace + ':';
+            }
+
+            const outgoingNamespace =
+              incomingNamespace !== ourNamespace &&
+              incomingNamespace.startsWith(ourNamespace) &&
+              !incomingNamespace.startsWith(ourNamespace + ':') &&
+              !incomingNamespace.startsWith(ourNamespace + '*')
+                ? incomingNamespace.slice(0, ourNamespace.length) +
+                  ':' +
+                  incomingNamespace.slice(ourNamespace.length)
+                : incomingNamespace;
+
+            return incomingNamespaceNegation + outgoingNamespace;
+          })
+          .join(',')
+      );
     }
 
     return extendDebugger(getDebugger(...args));
