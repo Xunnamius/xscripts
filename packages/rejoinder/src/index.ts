@@ -571,7 +571,8 @@ function makeExtendedLogger(
                 // ? This is "this-recovering" code.
                 const returnValue = value.apply(target, args);
                 // ? Whenever we'd return a vanilla debug instance, return the
-                // ? wrapper program instead.
+                // ? wrapper Proxy instead.
+
                 /* istanbul ignore next */
                 return isPromise(returnValue)
                   ? returnValue.then((realReturnValue) =>
