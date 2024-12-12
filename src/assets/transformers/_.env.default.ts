@@ -2,6 +2,7 @@ import {
   dotEnvConfigPackageBase,
   dotEnvDefaultConfigPackageBase,
   isAccessible,
+  toRelativePath,
   type AbsolutePath
 } from 'multiverse+project-utils:fs.ts';
 
@@ -36,8 +37,8 @@ export const { transformer } = makeTransformer(async function ({
   if (shouldOverwriteSecretsFile) {
     if (doesSecretsFileAlreadyExist) {
       log.warn(
-        'secrets file will be updated (current secrets are preserved): %O',
-        secretsFilePath
+        'Regenerating sensitive file (current secrets preserved): %O',
+        toRelativePath(toProjectAbsolutePath(), secretsFilePath)
       );
     }
 
@@ -49,40 +50,58 @@ export const { transformer } = makeTransformer(async function ({
 
   return assets;
 
+  // ! NEVER log the return value of this function
   async function generateDummyDotEnv({ merge }: { merge: AbsolutePath }) {
     debug('generating dummy dotenv file');
 
-    let dotEnvLines = generate()
+    let __SENSITIVE__outputFileContents = '';
+    const dummyDotEnvVariables = generate()
       .split('\n')
       .filter((str) => startsWithAlphaNumeric.test(str));
 
     if (merge) {
-      const currentDotEnv = await readFile(merge).catch((error: unknown) => {
-        debug.message('unable to read in an existing .env file: %O', error);
-        return '';
-      });
+      const __SENSITIVE__currentDotEnv = await readFile(merge).catch(
+        (error: unknown) => {
+          debug.message('unable to read in an existing .env file: %O', error);
+          return '';
+        }
+      );
 
-      if (currentDotEnv) {
-        const currentDotEnvVariables = currentDotEnv
+      if (__SENSITIVE__currentDotEnv) {
+        const currentDotEnvVariables = __SENSITIVE__currentDotEnv
           .split('\n')
           .filter((str) => startsWithAlphaNumeric.test(str) && str.includes('='))
           .map((str) => str.split('=')[0] + '=');
 
+        // ! CAREFUL not to log sensitive information!
+        debug('default dotenv template variables: %O', dummyDotEnvVariables);
+
+        // ! CAREFUL not to log sensitive information!
         debug('currentDotEnvVariables: %O', currentDotEnvVariables);
 
-        const linesToAppend = dotEnvLines.filter((line) =>
+        const variablesToAppend = dummyDotEnvVariables.filter((line) =>
           currentDotEnvVariables.every((variable) => !line.startsWith(variable))
         );
 
-        debug('linesToAppend: %O', linesToAppend);
+        // ! CAREFUL not to log sensitive information!
+        debug('variablesToAppend: %O', variablesToAppend);
 
-        if (linesToAppend.length) {
-          dotEnvLines = [currentDotEnv, '\n'].concat(linesToAppend);
-        }
+        // ? We NEVER overwrite the current secrets file, we only append to it
+        __SENSITIVE__outputFileContents = [__SENSITIVE__currentDotEnv, '\n']
+          .concat(variablesToAppend)
+          .join('\n');
       }
     }
 
-    return dotEnvLines.join('\n');
+    if (!__SENSITIVE__outputFileContents) {
+      // ! CAREFUL not to log sensitive information!
+      debug('default dotenv template variables: %O', dummyDotEnvVariables);
+      __SENSITIVE__outputFileContents = dummyDotEnvVariables.join('\n');
+    }
+
+    // ! CAREFUL not to log sensitive information!
+    debug('output file content size: ~%O bytes', __SENSITIVE__outputFileContents.length);
+    return __SENSITIVE__outputFileContents;
   }
 });
 

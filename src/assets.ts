@@ -526,7 +526,12 @@ export function compileTemplateInMemory(
 ): string {
   const debug = debug_.extend('config-template');
 
-  debug('rawTemplate: %O', rawTemplate);
+  debug(
+    'raw template from transformer %O (~%O bytes): %O',
+    context.asset,
+    rawTemplate.length,
+    rawTemplate
+  );
 
   // eslint-disable-next-line unicorn/no-array-reduce
   const compiledTemplate = Object.entries(context).reduce((result, [key, value]) => {
@@ -551,7 +556,12 @@ ${value.join('\n\n---✄---\n\n')}
     return result;
   }, rawTemplate);
 
-  debug('compiledTemplate: %O', compiledTemplate);
+  debug(
+    'compiled template size for transformer %O: ~%O bytes',
+    context.asset,
+    compiledTemplate.length
+  );
+
   return compiledTemplate;
 }
 
