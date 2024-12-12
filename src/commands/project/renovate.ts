@@ -35,8 +35,7 @@ import {
   SHORT_TAB,
   SINGLE_SPACE,
   type ExtendedDebugger,
-  type ExtendedLogger,
-  type UnextendableInternalLogger
+  type ExtendedLogger
 } from 'multiverse+rejoinder';
 
 import { version as packageVersion } from 'rootverse:package.json';
