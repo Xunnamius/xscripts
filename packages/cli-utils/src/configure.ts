@@ -2,6 +2,8 @@ import { isNativeError } from 'node:util/types';
 
 import {
   createListrManager,
+  disableLoggers,
+  LoggerType,
   TAB,
   type ExtendedDebugger,
   type ExtendedLogger
@@ -157,6 +159,9 @@ export function makeStandardConfigureErrorHandlingEpilogue(): ConfigureErrorHand
         }
       }
     }
+
+    // ? Disable output logging after this point (not including debug loggers)
+    disableLoggers({ type: LoggerType.GenericOutput });
   };
 }
 

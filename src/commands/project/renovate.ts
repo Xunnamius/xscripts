@@ -695,18 +695,6 @@ function checkRuntimeIsReadyForNpm(argv: RenovationTaskArgv, log: ExtendedLogger
   });
 }
 
-let allowOctokitOutput = true;
-
-function wrapLogger(
-  logger: ExtendedDebugger | ExtendedLogger | UnextendableInternalLogger
-) {
-  return function (...args: Parameters<typeof logger>) {
-    if (allowOctokitOutput) {
-      logger.apply(undefined, args);
-    }
-  };
-}
-
 async function makeOctokit({
   debug,
   log
@@ -726,9 +714,9 @@ async function makeOctokit({
     auth: process.env.GITHUB_TOKEN,
     log: {
       debug: debug.extend('gh'),
-      info: wrapLogger(ghLog),
-      warn: wrapLogger(ghLog.message),
-      error: wrapLogger(ghLog.warn)
+      info: ghLog,
+      warn: ghLog.message,
+      error: ghLog.warn
     },
     throttle: {
       onRateLimit: (retryAfter, options, _octokit, retryCount) => {
@@ -1164,38 +1152,32 @@ By default, this command will preserve the origin repository's pre-existing conf
 
       // TODO: include this algo/case in the eventual task runner implementation
 
-      try {
-        if (parallel) {
-          const results = await Promise.allSettled(
-            subtaskPromiseFunctions.map((fn) => fn())
-          );
+      if (parallel) {
+        const results = await Promise.allSettled(
+          subtaskPromiseFunctions.map((fn) => fn())
+        );
 
-          const { reason: firstError } =
-            results.find((result) => result.status !== 'fulfilled') || {};
+        const { reason: firstError } =
+          results.find((result) => result.status !== 'fulfilled') || {};
 
-          if (firstError) {
-            throw firstError;
-          }
-        } else {
-          let firstError = undefined;
+        if (firstError) {
+          throw firstError;
+        }
+      } else {
+        let firstError = undefined;
 
-          for (const subtaskPromiseFunction of subtaskPromiseFunctions) {
-            try {
-              // eslint-disable-next-line no-await-in-loop
-              await subtaskPromiseFunction();
-            } catch (error) {
-              firstError ||= error;
-            }
-          }
-
-          if (firstError) {
-            throw firstError as Error;
+        for (const subtaskPromiseFunction of subtaskPromiseFunctions) {
+          try {
+            // eslint-disable-next-line no-await-in-loop
+            await subtaskPromiseFunction();
+          } catch (error) {
+            firstError ||= error;
           }
         }
-      } catch (error) {
-        // ? Disable further output from Octokit
-        allowOctokitOutput = false;
-        throw error;
+
+        if (firstError) {
+          throw firstError as Error;
+        }
       }
 
       // ? Typescript wants this here because of our "as const" for some reason
