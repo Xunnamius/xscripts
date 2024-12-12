@@ -13,6 +13,8 @@ import {
 import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
 
 import {
+  directorySrcPackageBase,
+  directoryTestPackageBase,
   toPath,
   toRelativePath,
   type RelativePath
@@ -294,7 +296,7 @@ export function generateRawAliasMap(
         group: WellKnownImportAlias.Universe,
         packageId: undefined
       },
-      { path: toRelativePath('src') }
+      { path: toRelativePath(directorySrcPackageBase) }
     ),
     // ! Order matters here. Hence, less-specific goes ahead of more-specific.
     makeRawAliasMapping(
@@ -304,7 +306,11 @@ export function generateRawAliasMap(
         group: WellKnownImportAlias.Universe,
         packageId: undefined
       },
-      { path: toRelativePath('src/index'), suffix: 'none', extensionless: false }
+      {
+        path: toRelativePath(directorySrcPackageBase, 'index'),
+        suffix: 'none',
+        extensionless: false
+      }
     )
   ];
 
@@ -340,9 +346,7 @@ export function generateRawAliasMap(
   );
 
   if (projectPackagesReversed) {
-    projectPackagesReversed.forEach(function ({ id, root: packageRoot }) {
-      const relativeRoot = toRelativePath(projectMetadata.rootPackage.root, packageRoot);
-
+    projectPackagesReversed.forEach(function ({ id, relativeRoot }) {
       multiverseAliases.push(
         makeRawAliasMapping(
           {
@@ -350,7 +354,7 @@ export function generateRawAliasMap(
             group: WellKnownImportAlias.Multiverse,
             packageId: id
           },
-          { path: toPath(relativeRoot, 'src') }
+          { path: toPath(relativeRoot, directorySrcPackageBase) }
         )
       );
 
@@ -361,7 +365,7 @@ export function generateRawAliasMap(
             group: WellKnownImportAlias.Testverse,
             packageId: id
           },
-          { path: toPath(relativeRoot, 'test') }
+          { path: toPath(relativeRoot, directoryTestPackageBase) }
         )
       );
 
@@ -379,9 +383,7 @@ export function generateRawAliasMap(
 
     // ! Order matters here due to string matching. Hence, less-specific goes
     // ! ahead of more-specific.
-    projectPackagesReversed.forEach(function ({ id, root: packageRoot }) {
-      const relativeRoot = toRelativePath(projectMetadata.rootPackage.root, packageRoot);
-
+    projectPackagesReversed.forEach(function ({ id, relativeRoot }) {
       multiverseAliases.push(
         makeRawAliasMapping(
           {
@@ -391,7 +393,7 @@ export function generateRawAliasMap(
             packageId: id
           },
           {
-            path: toPath(relativeRoot, 'src', 'index'),
+            path: toPath(relativeRoot, directorySrcPackageBase, 'index'),
             suffix: 'none',
             extensionless: false
           }
@@ -407,7 +409,7 @@ export function generateRawAliasMap(
         group: WellKnownImportAlias.Testverse,
         packageId: undefined
       },
-      { path: toRelativePath('test') }
+      { path: toRelativePath(directoryTestPackageBase) }
     )
   );
 
