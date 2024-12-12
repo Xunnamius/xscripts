@@ -1,6 +1,9 @@
 import { Manager } from '@listr2/manager';
 
-import { type ExtendedDebugger } from 'multiverse+debug';
+import {
+  extendedDebuggerSubInstanceProperties,
+  type ExtendedDebugger
+} from 'multiverse+debug';
 
 import {
   createDebugLogger,
@@ -12,8 +15,8 @@ import {
   enableLoggers,
   enableLoggingByTag,
   getLoggersByType,
+  LoggerType,
   resetInternalState,
-  TAB,
   type ExtendedLogger,
   type GenericListrTask
 } from 'multiverse+rejoinder';
@@ -21,16 +24,13 @@ import {
 import { withMockedEnv, withMockedOutput } from 'multiverse+test-utils';
 
 const namespace = 'namespace';
+const globalDummyFilter = new RegExp(
+  `${LoggerType.DebugOnly}|${LoggerType.GenericOutput}`,
+  'g'
+);
 
 beforeEach(() => {
   resetInternalState();
-});
-
-describe('::TAB', () => {
-  it('exports TAB', async () => {
-    expect.hasAssertions();
-    expect(TAB).toBeString();
-  });
 });
 
 describe('::createGenericLogger', () => {
@@ -410,7 +410,7 @@ describe('::disableLoggers', () => {
   } = {} as any;
 
   beforeEach(() => {
-    loggers.log = createGenericLogger({ namespace: 'generic' });
+    loggers.log = createGenericLogger({ namespace: LoggerType.GenericOutput });
     loggers.log.log = jest.fn();
 
     loggers.listr = createListrTaskLogger({
@@ -419,7 +419,7 @@ describe('::disableLoggers', () => {
     });
     loggers.listr.log = jest.fn();
 
-    loggers.debug = createDebugLogger({ namespace: 'debug' });
+    loggers.debug = createDebugLogger({ namespace: LoggerType.DebugOnly });
     loggers.debug.log = jest.fn();
   });
 
@@ -430,7 +430,7 @@ describe('::disableLoggers', () => {
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    disableLoggers({ type: 'all' });
+    disableLoggers({ type: LoggerType.All });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeFalse();
@@ -444,13 +444,13 @@ describe('::disableLoggers', () => {
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    disableLoggers({ type: 'all' });
+    disableLoggers({ type: LoggerType.All });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeFalse();
     expect(loggers.debug.enabled).toBeFalse();
 
-    disableLoggers({ type: 'all' });
+    disableLoggers({ type: LoggerType.All });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeFalse();
@@ -464,19 +464,19 @@ describe('::disableLoggers', () => {
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    disableLoggers({ type: 'all', filter: 'generic' });
+    disableLoggers({ type: LoggerType.All, filter: LoggerType.GenericOutput });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    disableLoggers({ type: 'all', filter: 'listr' });
+    disableLoggers({ type: LoggerType.All, filter: 'listr' });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeFalse();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    disableLoggers({ type: 'all', filter: 'debug' });
+    disableLoggers({ type: LoggerType.All, filter: LoggerType.DebugOnly });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeFalse();
@@ -486,7 +486,7 @@ describe('::disableLoggers', () => {
 
     expect(loggers.debug.enabled).toBeTrue();
 
-    disableLoggers({ type: 'all', filter: 'debug' });
+    disableLoggers({ type: LoggerType.All, filter: LoggerType.DebugOnly });
 
     expect(loggers.debug.enabled).toBeFalse();
   });
@@ -498,7 +498,7 @@ describe('::disableLoggers', () => {
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    disableLoggers({ type: 'all', filter: /generic|debug/ });
+    disableLoggers({ type: LoggerType.All, filter: globalDummyFilter });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeTrue();
@@ -512,7 +512,10 @@ describe('::disableLoggers', () => {
     loggers.listr.enabled = true;
     loggers.debug.enabled = true;
 
-    const parameters = { type: 'all', filter: /generic|debug/g } as const;
+    const parameters = {
+      type: LoggerType.All,
+      filter: globalDummyFilter
+    } as const;
 
     disableLoggers(parameters);
 
@@ -540,7 +543,7 @@ describe('::disableLoggers', () => {
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeTrue();
 
-    disableLoggers({ type: 'stdout' });
+    disableLoggers({ type: LoggerType.GenericOutput });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeFalse();
@@ -549,7 +552,7 @@ describe('::disableLoggers', () => {
     loggers.log.enabled = true;
     loggers.listr.enabled = true;
 
-    disableLoggers({ type: 'debug' });
+    disableLoggers({ type: LoggerType.DebugOnly });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
@@ -565,19 +568,25 @@ describe('::disableLoggers', () => {
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeTrue();
 
-    disableLoggers({ type: 'all', filter: 'no-match' });
+    disableLoggers({ type: LoggerType.All, filter: 'no-match' });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeTrue();
 
-    disableLoggers({ type: 'debug', filter: /log|listr/ });
+    disableLoggers({
+      type: LoggerType.DebugOnly,
+      filter: new RegExp(`${LoggerType.GenericOutput}|listr`)
+    });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeTrue();
 
-    disableLoggers({ type: 'stdout', filter: /debug/ });
+    disableLoggers({
+      type: LoggerType.GenericOutput,
+      filter: new RegExp(LoggerType.DebugOnly)
+    });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
@@ -594,7 +603,7 @@ describe('::enableLoggers', () => {
   } = {} as any;
 
   beforeEach(() => {
-    loggers.log = createGenericLogger({ namespace: 'generic' });
+    loggers.log = createGenericLogger({ namespace: LoggerType.GenericOutput });
     loggers.log.log = jest.fn();
 
     loggers.listr = createListrTaskLogger({
@@ -603,7 +612,7 @@ describe('::enableLoggers', () => {
     });
     loggers.listr.log = jest.fn();
 
-    loggers.debug = createDebugLogger({ namespace: 'debug' });
+    loggers.debug = createDebugLogger({ namespace: LoggerType.DebugOnly });
     loggers.debug.log = jest.fn();
   });
 
@@ -614,7 +623,7 @@ describe('::enableLoggers', () => {
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    enableLoggers({ type: 'all' });
+    enableLoggers({ type: LoggerType.All });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
@@ -628,13 +637,13 @@ describe('::enableLoggers', () => {
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    enableLoggers({ type: 'all' });
+    enableLoggers({ type: LoggerType.All });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeTrue();
 
-    enableLoggers({ type: 'all' });
+    enableLoggers({ type: LoggerType.All });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
@@ -648,19 +657,19 @@ describe('::enableLoggers', () => {
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    enableLoggers({ type: 'all', filter: 'generic' });
+    enableLoggers({ type: LoggerType.All, filter: LoggerType.GenericOutput });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    enableLoggers({ type: 'all', filter: 'listr' });
+    enableLoggers({ type: LoggerType.All, filter: 'listr' });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    enableLoggers({ type: 'all', filter: 'debug' });
+    enableLoggers({ type: LoggerType.All, filter: LoggerType.DebugOnly });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
@@ -670,7 +679,7 @@ describe('::enableLoggers', () => {
 
     expect(loggers.log.enabled).toBeFalse();
 
-    enableLoggers({ type: 'all', filter: 'generic' });
+    enableLoggers({ type: LoggerType.All, filter: LoggerType.GenericOutput });
 
     expect(loggers.log.enabled).toBeTrue();
   });
@@ -682,7 +691,7 @@ describe('::enableLoggers', () => {
     expect(loggers.listr.enabled).toBeTrue();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    enableLoggers({ type: 'all', filter: /generic|debug/ });
+    enableLoggers({ type: LoggerType.All, filter: globalDummyFilter });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
@@ -696,7 +705,7 @@ describe('::enableLoggers', () => {
     loggers.listr.enabled = false;
     loggers.debug.enabled = false;
 
-    const parameters = { type: 'all', filter: /generic|debug/g } as const;
+    const parameters = { type: LoggerType.All, filter: globalDummyFilter } as const;
 
     enableLoggers(parameters);
 
@@ -725,7 +734,7 @@ describe('::enableLoggers', () => {
     expect(loggers.listr.enabled).toBeFalse();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    enableLoggers({ type: 'stdout' });
+    enableLoggers({ type: LoggerType.GenericOutput });
 
     expect(loggers.log.enabled).toBeTrue();
     expect(loggers.listr.enabled).toBeTrue();
@@ -734,7 +743,7 @@ describe('::enableLoggers', () => {
     loggers.log.enabled = false;
     loggers.listr.enabled = false;
 
-    enableLoggers({ type: 'debug' });
+    enableLoggers({ type: LoggerType.DebugOnly });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeFalse();
@@ -751,19 +760,25 @@ describe('::enableLoggers', () => {
     expect(loggers.listr.enabled).toBeFalse();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    enableLoggers({ type: 'all', filter: 'no-match' });
+    enableLoggers({ type: LoggerType.All, filter: 'no-match' });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeFalse();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    enableLoggers({ type: 'debug', filter: /log|listr/ });
+    enableLoggers({
+      type: LoggerType.DebugOnly,
+      filter: new RegExp(`${LoggerType.GenericOutput}|listr`)
+    });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeFalse();
     expect(loggers.debug.enabled).toBeFalsy();
 
-    enableLoggers({ type: 'stdout', filter: /debug/ });
+    enableLoggers({
+      type: LoggerType.GenericOutput,
+      filter: new RegExp(LoggerType.DebugOnly)
+    });
 
     expect(loggers.log.enabled).toBeFalse();
     expect(loggers.listr.enabled).toBeFalse();
@@ -955,36 +970,113 @@ describe('::getLoggersByType', () => {
   it('returns subset of loggers by type', async () => {
     expect.hasAssertions();
 
-    const debug1 = createDebugLogger({ namespace: 'debug' });
-    const log1 = createGenericLogger({ namespace: 'generic' });
+    const debug1 = createDebugLogger({ namespace: LoggerType.DebugOnly });
+    const log1 = createGenericLogger({ namespace: LoggerType.GenericOutput });
     const listr1 = createListrTaskLogger({
       namespace: 'listr',
       task: { output: '' } as GenericListrTask
     });
 
-    const debug2 = createDebugLogger({ namespace: 'debug' });
-    const log2 = createGenericLogger({ namespace: 'generic' });
+    const debug2 = createDebugLogger({ namespace: LoggerType.DebugOnly });
+    const log2 = createGenericLogger({ namespace: LoggerType.GenericOutput });
     const listr2 = createListrTaskLogger({
       namespace: 'listr',
       task: { output: '' } as GenericListrTask
     });
 
-    expect(getLoggersByType({ type: 'all' })).toIncludeAllMembers([
-      debug1,
-      log1,
-      listr1,
-      debug2,
-      log2,
-      listr2
+    expect(getLoggersByType({ type: LoggerType.All })).toIncludeSameMembers([
+      ...extractAllLoggers(debug1),
+      ...extractAllLoggers(log1),
+      ...extractAllLoggers(listr1),
+      ...extractAllLoggers(debug2),
+      ...extractAllLoggers(log2),
+      ...extractAllLoggers(listr2)
     ]);
 
-    expect(getLoggersByType({ type: 'debug' })).toIncludeAllMembers([debug1, debug2]);
+    expect(getLoggersByType({ type: LoggerType.DebugOnly })).toIncludeSameMembers([
+      ...extractAllLoggers(debug1),
+      ...extractAllLoggers(debug2)
+    ]);
 
-    expect(getLoggersByType({ type: 'stdout' })).toIncludeAllMembers([
-      log1,
-      listr1,
-      log2,
-      listr2
+    expect(getLoggersByType({ type: LoggerType.GenericOutput })).toIncludeSameMembers([
+      ...extractAllLoggers(log1),
+      ...extractAllLoggers(listr1),
+      ...extractAllLoggers(log2),
+      ...extractAllLoggers(listr2)
+    ]);
+  });
+
+  it('skips returning internal loggers when includeInternal is disabled', async () => {
+    expect.hasAssertions();
+
+    const debug1 = createDebugLogger({ namespace: LoggerType.DebugOnly });
+    const log1 = createGenericLogger({ namespace: LoggerType.GenericOutput });
+    const listr1 = createListrTaskLogger({
+      namespace: 'listr',
+      task: { output: '' } as GenericListrTask
+    });
+
+    const debug2 = createDebugLogger({ namespace: LoggerType.DebugOnly });
+    const log2 = createGenericLogger({ namespace: LoggerType.GenericOutput });
+    const listr2 = createListrTaskLogger({
+      namespace: 'listr',
+      task: { output: '' } as GenericListrTask
+    });
+
+    expect(
+      getLoggersByType({ type: LoggerType.All, includeInternal: false })
+    ).toIncludeSameMembers([debug1, log1, listr1, debug2, log2, listr2]);
+
+    expect(
+      getLoggersByType({ type: LoggerType.DebugOnly, includeInternal: false })
+    ).toIncludeSameMembers([debug1, debug2]);
+
+    expect(
+      getLoggersByType({ type: LoggerType.GenericOutput, includeInternal: false })
+    ).toIncludeSameMembers([log1, listr1, log2, listr2]);
+  });
+
+  it('tracks extended loggers', async () => {
+    expect.hasAssertions();
+
+    const dbg = createDebugLogger({ namespace: LoggerType.DebugOnly });
+    const dbgDbg = dbg.extend(LoggerType.DebugOnly);
+    const dbgDbgDbg = dbgDbg.extend(LoggerType.DebugOnly);
+
+    const log = createGenericLogger({ namespace: LoggerType.GenericOutput });
+    const logLog = log.extend(LoggerType.GenericOutput);
+    const logLogLog = logLog.extend(LoggerType.GenericOutput);
+
+    expect(getLoggersByType({ type: LoggerType.GenericOutput })).toIncludeSameMembers([
+      ...extractAllLoggers(log),
+      ...extractAllLoggers(logLog),
+      ...extractAllLoggers(logLogLog)
+    ]);
+
+    expect(getLoggersByType({ type: LoggerType.DebugOnly })).toIncludeSameMembers([
+      ...extractAllLoggers(dbg),
+      ...extractAllLoggers(dbgDbg),
+      ...extractAllLoggers(dbgDbgDbg)
+    ]);
+
+    expect(getLoggersByType({ type: LoggerType.All })).toIncludeSameMembers([
+      ...extractAllLoggers(dbg),
+      ...extractAllLoggers(dbgDbg),
+      ...extractAllLoggers(dbgDbgDbg),
+      ...extractAllLoggers(log),
+      ...extractAllLoggers(logLog),
+      ...extractAllLoggers(logLogLog)
     ]);
   });
 });
+
+/**
+ * Returns the logger that was passed in along with any of its properties that
+ * are themselves loggers (like `::warn` and `::message`).
+ */
+function extractAllLoggers(logger: ExtendedDebugger | ExtendedLogger) {
+  return [
+    logger,
+    ...extendedDebuggerSubInstanceProperties.map((property) => logger[property])
+  ];
+}

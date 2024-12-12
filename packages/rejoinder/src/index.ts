@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // TODO: replace this with the actual rejoinder and vice-versa!
 
@@ -22,6 +23,7 @@ import {
 import {
   $instances,
   debugFactory,
+  extendedDebuggerSubInstanceProperties,
   type DebuggerExtension,
   type ExtendedDebugger,
   type InternalDebugger,
@@ -29,6 +31,9 @@ import {
 } from 'multiverse+debug';
 
 import type { Entry } from 'type-fest';
+
+// eslint-disable-next-line unicorn/prevent-abbreviations
+const extendedLoggerFnPropsWeakMap = new WeakMap<Function, Function>();
 
 /**
  * These color codes correspond to a reddish color on the console.
@@ -38,6 +43,15 @@ export const ansiRedColorCodes = [1, 9, 52, 88, 124, 160, 196];
 export const ansiOrangeColorCodes = [3, 11, 94, 136, 178, 214, 220];
 
 export { debugFactory as extendedDebugFactory, type ExtendedDebugger };
+
+/**
+ * An enum representing the types of loggers classified by output target.
+ */
+export enum LoggerType {
+  All = 'all',
+  GenericOutput = 'logger',
+  DebugOnly = 'debugger'
+}
 
 /**
  * A pre-customized Listr {@link Manager} instance.
@@ -150,8 +164,8 @@ export type GenericListrTask = ListrTaskWrapper<
  * output.
  */
 const metadata = {
-  stdout: [] as ExtendedLogger[],
-  debug: [] as ExtendedDebugger[],
+  logger: [] as (ExtendedLogger | UnextendableInternalLogger)[],
+  debugger: [] as (ExtendedDebugger | UnextendableInternalDebugger)[],
   denylist: new Set<string>()
 };
 
@@ -198,10 +212,15 @@ export function createGenericLogger({
    */
   namespace: string;
 }) {
-  const logger = makeExtendedLogger(debugFactory(namespace), consoleLog, consoleError);
-
-  metadata.stdout.push(logger);
-  return logger;
+  return withMetadataTracking(
+    LoggerType.GenericOutput,
+    makeExtendedLogger(
+      debugFactory(namespace),
+      LoggerType.GenericOutput,
+      consoleLog,
+      consoleError
+    )
+  );
 }
 
 /**
@@ -224,15 +243,16 @@ export function createListrTaskLogger({
    */
   task: GenericListrTask;
 }) {
-  const logger = makeExtendedLogger(
-    debugFactory(namespace),
-    function (...args: unknown[]) {
-      task.output = args.join(' ').trim();
-    }
+  return withMetadataTracking(
+    LoggerType.GenericOutput,
+    makeExtendedLogger(
+      debugFactory(namespace),
+      LoggerType.GenericOutput,
+      function (...args: unknown[]) {
+        task.output = args.join(' ').trim();
+      }
+    )
   );
-
-  metadata.stdout.push(logger);
-  return logger;
 }
 
 /**
@@ -249,9 +269,12 @@ export function createDebugLogger({
    */
   namespace: string;
 }) {
-  const debug = debugFactory(namespace);
+  const debug = withMetadataTracking(
+    LoggerType.DebugOnly,
+    withPatchedExtend(debugFactory(namespace))
+  );
+
   debug.log = consoleError;
-  metadata.debug.push(debug);
   return debug;
 }
 
@@ -286,7 +309,7 @@ export function createListrManager<T = any>(options?: {
     renderer: 'default',
     fallbackRenderer: 'verbose',
     fallbackRendererCondition: () =>
-      !!process.env.DEBUG || metadata.debug.some((l) => l.enabled),
+      !!process.env.DEBUG || metadata.debugger.some((logger) => logger.enabled),
     rendererOptions: {
       collapseSubtasks: false,
       collapseSkips: false,
@@ -305,10 +328,12 @@ export function createListrManager<T = any>(options?: {
 
 /**
  * Return an array of all known loggers of a specific type: either `stdout`,
- * `debug`, or both (`all`).
+ * `debug`, or both (`all`). Pre-extended loggers (e.g. `::message`,
+ * `::warn`, and `::error`) are excluded unless `includeInternal` is `true`.
  */
 export function getLoggersByType({
-  type
+  type,
+  includeInternal = true
 }: {
   /**
    * The type of loggers to return. Valid values are one of:
@@ -319,19 +344,28 @@ export function getLoggersByType({
    *
    * - `all` returns all loggers
    */
-  type: 'all' | 'stdout' | 'debug';
+  type: LoggerType;
+  /**
+   * Whether to include unextendable/internal/pre-extended loggers like
+   * `::message` and `::warn` in output.
+   *
+   * @default true
+   */
+  includeInternal?: boolean;
 }) {
   const instances = [];
 
-  if (type === 'all' || type === 'stdout') {
-    instances.push(...metadata.stdout);
+  if (type === LoggerType.All || type === LoggerType.GenericOutput) {
+    instances.push(...metadata.logger);
   }
 
-  if (type === 'all' || type === 'debug') {
-    instances.push(...metadata.debug);
+  if (type === LoggerType.All || type === LoggerType.DebugOnly) {
+    instances.push(...metadata.debugger);
   }
 
-  return instances;
+  return includeInternal
+    ? instances
+    : instances.filter((instance) => 'newline' in instance);
 }
 
 /**
@@ -350,7 +384,7 @@ export function disableLoggers({
    *
    * - `all` disables all loggers
    */
-  type: 'all' | 'stdout' | 'debug';
+  type: LoggerType;
 
   /**
    * Optionally filter the loggers to be disabled. If `filter` is a string, only
@@ -360,11 +394,7 @@ export function disableLoggers({
    */
   filter?: string | RegExp;
 }) {
-  const instances = getLoggersByType({ type }).flatMap((l) =>
-    Object.values(l[$instances])
-  );
-
-  for (const instance of instances) {
+  for (const instance of getLoggersByType({ type })) {
     if (
       !filter ||
       (typeof filter === 'string' && instance.namespace === filter) ||
@@ -391,7 +421,7 @@ export function enableLoggers({
    *
    * - `all` enables all loggers
    */
-  type: 'all' | 'stdout' | 'debug';
+  type: LoggerType;
 
   /**
    * Optionally filter the loggers to be enabled. If `filter` is a string, only
@@ -401,11 +431,7 @@ export function enableLoggers({
    */
   filter?: string | RegExp;
 }) {
-  const instances = getLoggersByType({ type }).flatMap((l) =>
-    Object.values(l[$instances])
-  );
-
-  for (const instance of instances) {
+  for (const instance of getLoggersByType({ type })) {
     if (
       !filter ||
       (typeof filter === 'string' && instance.namespace === filter) ||
@@ -459,8 +485,8 @@ export function getDisabledTags() {
  * prior.
  */
 export function resetInternalState() {
-  metadata.debug.length = 0;
-  metadata.stdout.length = 0;
+  metadata.debugger.length = 0;
+  metadata.logger.length = 0;
   metadata.denylist.clear();
 }
 
@@ -469,6 +495,7 @@ export function resetInternalState() {
  */
 function makeExtendedLogger(
   extendedDebugger: ExtendedDebugger,
+  type: Exclude<LoggerType, LoggerType.All>,
   /**
    * This function will be called with various arguments of unknown type when
    * default (e.g. stdout) output should be sent to the user, such as when
@@ -506,10 +533,14 @@ function makeExtendedLogger(
     get(target, property: PropertyKey, proxy: ExtendedLogger) {
       if (property === 'extend') {
         return function (...args: Parameters<ExtendedLogger['extend']>) {
-          return makeExtendedLogger(
-            extendedDebugger.extend(...args),
-            underlyingDefaultLogFn,
-            underlyingAlternateLogFn
+          return withMetadataTracking(
+            type,
+            makeExtendedLogger(
+              extendedDebugger.extend(...args),
+              type,
+              underlyingDefaultLogFn,
+              underlyingAlternateLogFn
+            )
           );
         };
       }
@@ -523,16 +554,37 @@ function makeExtendedLogger(
       const value: unknown = target[property as keyof typeof target];
 
       if (typeof value === 'function') {
-        return function (...args: unknown[]) {
-          // ? This is "this-recovering" code.
-          const returnValue = value.apply(target, args);
-          // ? Whenever we'd return a yargs instance, return the wrapper
-          // ? program instead.
-          /* istanbul ignore next */
-          return isPromise(returnValue)
-            ? returnValue.then((realReturnValue) => maybeReturnProxy(realReturnValue))
-            : maybeReturnProxy(returnValue);
-        };
+        // ? We do Proxy inception here because, if value is an internal
+        // ? debugger instance, we need to ensure (1) its properties are
+        // ? accessible and (2) each property always returns the same instance
+        // ? (i.e. "===" strict equality).
+
+        // ? Note that ExtendedDebugger instances already ship with this
+        // ? functionality, and our job here is to ensure ExtendedLoggers
+        // ? maintain API parity.
+
+        if (!extendedLoggerFnPropsWeakMap.has(value)) {
+          extendedLoggerFnPropsWeakMap.set(
+            value,
+            new Proxy(value, {
+              apply(_target, _this: unknown, args: unknown[]) {
+                // ? This is "this-recovering" code.
+                const returnValue = value.apply(target, args);
+                // ? Whenever we'd return a vanilla debug instance, return the
+                // ? wrapper program instead.
+                /* istanbul ignore next */
+                return isPromise(returnValue)
+                  ? returnValue.then((realReturnValue) =>
+                      maybeReturnProxy(realReturnValue)
+                    )
+                  : maybeReturnProxy(returnValue);
+              }
+            })
+          );
+        }
+
+        // ? Ensure the same respective strictly-equal object is always returned
+        return extendedLoggerFnPropsWeakMap.get(value);
       }
 
       return value;
@@ -638,4 +690,36 @@ function decorateWithTagSupport<T extends (...args: any[]) => any>(
       return fn(...args);
     }
   });
+}
+
+function withMetadataTracking(
+  type: Exclude<LoggerType, LoggerType.All>,
+  logger: ExtendedDebugger | ExtendedLogger
+) {
+  metadata[type].push(
+    logger,
+    ...extendedDebuggerSubInstanceProperties.map((property) => logger[property])
+  );
+
+  return logger;
+}
+
+/**
+ * Recursively patches {@link ExtendedDebugger.extend} so that all debugger
+ * instances are properly tracked.
+ */
+function withPatchedExtend(instance: ExtendedDebugger) {
+  const oldExtend = instance.extend.bind(instance);
+
+  // ? We don't use a Proxy here because it's overkill; we don't need access to
+  // ? the original extend function's properties. A side effect of not using a
+  // ? Proxy is that we need to recursively patch the extend function (below)
+  instance.extend = function (...args: Parameters<ExtendedDebugger['extend']>) {
+    return withMetadataTracking(
+      LoggerType.DebugOnly,
+      withPatchedExtend(oldExtend(...args))
+    );
+  };
+
+  return instance;
 }
