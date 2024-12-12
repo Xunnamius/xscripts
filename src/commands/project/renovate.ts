@@ -1497,19 +1497,17 @@ By default, this command will preserve the origin repository's pre-existing conf
     actionDescription: 'Regenerating targeted configuration and template assets',
     shortHelpDescription: 'Regenerate targeted configuration and template asset files',
     longHelpDescription: `
-This renovation will regenerate one or more files in the project, each represented by an "asset". An asset is a collection mapping one or more project-root-relative "asset paths" (relative to the project root) to their generated contents. When writing content to its respective asset path on the filesystem, existing files are overwritten, missing files are created, and obsolete files are deleted.
+This renovation will regenerate one or more files in the project, each represented by an "asset". An asset is a collection mapping output paths to generated content. When writing out content to an output path, existing files are overwritten, missing files are created, and obsolete files are deleted.
 
-Provide --assets-preset to specify which assets to regenerate. The parameter accepts one of the following presets: ${renovationPresets.join(', ')}. The asset paths of assets included in the preset will be targeted for renovation unless that path is also matched by --skip-asset-paths.
+Provide --assets-preset (required) to specify which assets to regenerate. The parameter accepts one of the following presets: ${renovationPresets.join(', ')}. The paths of assets included in the preset will be targeted for renovation except those paths matched by --skip-asset-paths.
 
-Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the asset paths to be written out. Any asset paths matching one of the aforesaid regular expressions will be discarded instead of written out.
+Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the paths to be written out. Any paths matching one of the aforesaid regular expressions will have their contents discarded instead of written out.
 
-When regenerating files containing import aliases, --with-aliases-loaded-from can be used to include aliases in addition to the hardcoded aliases that come with xscripts. The --with-aliases-loaded-from parameter expects a path to a JavaScript file with an alias map (i.e. RawAliasMapping[]) as its default export.
+When regenerating files containing import aliases, --with-aliases-loaded-from can be used to include aliases beyond those hardcoded into xscript. The parameter accepts a path to a JavaScript file with an alias map (i.e. \`RawAliasMapping[]\`) as its default export.
 
 After invoking this renovation, you should use your IDE's diff tools to compare and contrast the latest best practices with the project's current configuration setup.
 
-This renovation should be re-run each time a package is added to, or removed from, a xscripts-compliant monorepo.
-
-See the xscripts wiki documentation for details on all available assets and their asset paths.
+This renovation should be re-run each time a package is added to, or removed from, a xscripts-compliant monorepo. See the xscripts wiki documentation for more details on this command and all available assets.
 `,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
@@ -1517,14 +1515,24 @@ See the xscripts wiki documentation for details on all available assets and thei
       'assets-preset': {
         alias: 'preset',
         choices: renovationPresets,
-        description: 'Select a hardcoded set of assets to regenerate'
+        description: 'Select a set of assets to target for regeneration',
+        subOptionOf: {
+          'regenerate-assets': {
+            when: (superOptionValue) => superOptionValue,
+            update(oldOptionConfig) {
+              return {
+                ...oldOptionConfig,
+                demandThisOption: true
+              };
+            }
+          }
+        }
       },
       'skip-asset-paths': {
         alias: 'skip-asset-path',
         array: true,
         string: true,
-        description:
-          'Asset paths matching these regular expressions are discarded when regenerating',
+        description: 'skip regenerating assets matching a regular expression',
         default: [],
         coerce(assets: string[]) {
           // ! These regular expressions can never use the global (g) flag
@@ -1533,8 +1541,7 @@ See the xscripts wiki documentation for details on all available assets and thei
       },
       'with-aliases-loaded-from': {
         string: true,
-        description:
-          'Additional import aliases are sourced from this file when regenerating'
+        description: 'Load additional import aliases when regenerating'
       }
     },
     async run(argv_, { debug, log }) {
@@ -1544,7 +1551,7 @@ See the xscripts wiki documentation for details on all available assets and thei
         [$executionContext]: { projectMetadata }
       } = argv;
 
-      const preset = argv.assetsPreset as RenovationPreset | undefined;
+      const preset = argv.assetsPreset as RenovationPreset;
       const skipAssetPaths = argv.skipAssetPaths as RegExp[];
       const additionalAliasesJsPath = argv.withAliasesLoadedFrom as string | undefined;
 
@@ -1559,8 +1566,10 @@ See the xscripts wiki documentation for details on all available assets and thei
         log,
         debug,
 
-        toPackageAbsolutePath: (pathLike) => toAbsolutePath(packageRoot, pathLike),
-        toProjectAbsolutePath: (pathLike) => toAbsolutePath(projectRoot, pathLike),
+        toPackageAbsolutePath: (...pathsLike) =>
+          toAbsolutePath(packageRoot, ...pathsLike),
+        toProjectAbsolutePath: (...pathsLike) =>
+          toAbsolutePath(projectRoot, ...pathsLike),
 
         forceOverwritePotentiallyDestructive: force,
         shouldDeriveAliases: true,
@@ -1613,7 +1622,7 @@ See the xscripts wiki documentation for details on all available assets and thei
 
       // TODO: support $delete symbol
 
-      // TODO: calculate relevant asset paths properly
+      // TODO: calculate relevant paths properly
 
       // TODO: await write out of all contents but use keys to that all
       // TODO: computations are async instead of sync
@@ -1628,7 +1637,7 @@ See the xscripts wiki documentation for details on all available assets and thei
 
       // TODO: (assets) regenerate package.json carefully; reuse existing
 
-      // TODO: (assets) return asset paths conditioned on context (like minimal)
+      // TODO: (assets) return paths conditioned on context (like minimal)
 
       // TODO: (assets) README.md no license blurb if no license
 
