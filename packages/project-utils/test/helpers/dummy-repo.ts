@@ -136,7 +136,10 @@ export type PackageMapDatum = {
    * A package's name (for named packages) or its id (for unnamed packages).
    */
   name: string;
-  root: string;
+  /**
+   * A **relative** path to a dummy project root (will be made absolute later).
+   */
+  root: fs.RelativePath | string;
   attributes: WorkspacePackage['attributes'];
 };
 
@@ -574,7 +577,7 @@ function createFixture({
       {
         id: basename(subRoot),
         root,
-        relativeRoot: fs.toRelativePath(prototypeRoot, root),
+        relativeRoot: subRoot as fs.RelativePath,
         json: require(fs.toPath(root, 'package.json')),
         attributes,
         // ? Side-step this whole thing
