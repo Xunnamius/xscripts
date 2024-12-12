@@ -811,6 +811,7 @@ export function isRootPackage(o: unknown): o is RootPackage {
     typeof o === 'object' &&
     !('id' in o) &&
     'root' in o &&
+    !('relativeRoot' in o) &&
     'json' in o &&
     'attributes' in o &&
     'projectMetadata' in o
