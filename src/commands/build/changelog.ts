@@ -59,9 +59,53 @@ import {
 } from 'universe:util.ts';
 
 import type { XchangelogConfig } from '@-xun/changelog' with { 'resolution-mode': 'import' };
-import type { EmptyObject, Promisable } from 'type-fest';
+import type { Promisable } from 'type-fest';
 
 const extractVersionRegExp = /^#+\s(?:(?:[^[\s]*\[?@([^\s\]]+))|(?:([^\s\]]+)))/;
+
+/**
+ * A changelog patch that will be applied to the changelog file.
+ *
+ * It mirrors the parameters of {@link String.prototype.replace} in form and
+ * function. That is: each `ChangelogPatch` `searchValue` will be replaced by
+ * `replaceValue` in the changelog file.
+ *
+ * Note that replacements are made in-place, meaning order does matter.
+ */
+export type ChangelogPatch = [searchValue: string | RegExp, replaceValue: string];
+
+/**
+ * An array of zero or more {@link ChangelogPatch}es.
+ *
+ * `changelog.patch.mjs` can export via default either `ChangelogPatches` or a
+ * {@link ChangelogPatcherFunction}.
+ */
+export type ChangelogPatches = ChangelogPatch[];
+
+/**
+ * A function that receives the current contents of the changelog file and a
+ * `patcher` function. `ChangelogPatcherFunction` must return a string that will
+ * become the new contents of the changelog file.
+ *
+ * `patcher` is the optional second parameter of `ChangelogPatcherFunction` that
+ * accepts a `changelog` string and `patches`, which is an array of
+ * {@link ChangelogPatches}. `patcher` can be used to quickly apply an array of
+ * `patches` to the given `changelog` string. Its use is entirely optional.
+ *
+ * `changelog.patch.mjs` can export via default either
+ * `ChangelogPatcherFunction` or a {@link ChangelogPatches} array.
+ */
+export type ChangelogPatcherFunction = (
+  changelog: string,
+  patcher: (changelog: string, patches: ChangelogPatches) => string
+) => Promisable<string>;
+
+/**
+ * Represents the result of importing a `changelog.patch.mjs` file.
+ * `changelog.patch.mjs` can export via default either
+ * {@link ChangelogPatcherFunction} or a {@link ChangelogPatches} array.
+ */
+export type ImportedChangelogPatcher = ChangelogPatches | ChangelogPatcherFunction;
 
 /**
  * Determines the output format of the changelog file.
@@ -457,28 +501,25 @@ Use --import-section-file to add a custom release section to the changelog. The 
         debug(`changelogPatcherProjectPath: %O`, changelogPatcherProjectPath);
         debug(`changelogPatcherPackagePath: %O`, changelogPatcherPackagePath);
 
-        const patcherProject: ImportedChangelogPatcher | undefined = await import(
-          changelogPatcherProjectPath
-        ).catch((error: unknown) => {
-          debug.warn('failed to import %O: %O', changelogPatcherProjectPath, error);
-          return undefined;
-        });
+        const patcherProject = await import(changelogPatcherProjectPath).catch(
+          (error: unknown) => {
+            debug.warn('failed to import %O: %O', changelogPatcherProjectPath, error);
+            return undefined;
+          }
+        );
 
-        const patcherPackage: ImportedChangelogPatcher | undefined =
-          changelogPatcherPackagePath
-            ? await import(changelogPatcherPackagePath).catch((error: unknown) => {
-                debug.warn(
-                  'failed to import %O: %O',
-                  changelogPatcherPackagePath,
-                  error
-                );
-                return undefined;
-              })
-            : undefined;
+        const patcherPackage = changelogPatcherPackagePath
+          ? await import(changelogPatcherPackagePath).catch((error: unknown) => {
+              debug.warn('failed to import %O: %O', changelogPatcherPackagePath, error);
+              return undefined;
+            })
+          : undefined;
 
         if (patcherProject || patcherPackage) {
-          const changelogPatcherProject = patcherProject?.default;
-          const changelogPatcherPackage = patcherPackage?.default;
+          const changelogPatcherProject: ImportedChangelogPatcher | undefined =
+            patcherProject?.default;
+          const changelogPatcherPackage: ImportedChangelogPatcher | undefined =
+            patcherPackage?.default;
 
           if (!changelogPatcherProject && !changelogPatcherPackage) {
             throw new Error(ErrorMessage.DefaultImportFalsy());
@@ -541,48 +582,3 @@ Use --import-section-file to add a custom release section to the changelog. The 
     })
   } satisfies ChildConfiguration<CustomCliArguments, GlobalExecutionContext>;
 }
-
-/**
- * A changelog patch that will be applied to the changelog file.
- *
- * It mirrors the parameters of {@link String.prototype.replace} in form and
- * function. That is: each `ChangelogPatch` `searchValue` will be replaced by
- * `replaceValue` in the changelog file.
- *
- * Note that replacements are made in-place, meaning order does matter.
- */
-export type ChangelogPatch = [searchValue: string | RegExp, replaceValue: string];
-
-/**
- * An array of zero or more {@link ChangelogPatch}es.
- *
- * `changelog.patch.js` (or `changelog.patch.[cm]js`) can export via default
- * either `ChangelogPatches` or a {@link ChangelogPatcherFunction}.
- */
-export type ChangelogPatches = ChangelogPatch[];
-
-/**
- * A function that receives the current contents of the changelog file and a
- * `patcher` function. `ChangelogPatcherFunction` must return a string that will
- * become the new contents of the changelog file.
- *
- * `patcher` is the optional second parameter of `ChangelogPatcherFunction` that
- * accepts a `changelog` string and `patches`, which is an array of
- * {@link ChangelogPatches}. `patcher` can be used to quickly apply an array of
- * `patches` to the given `changelog` string. Its use is entirely optional.
- *
- * `changelog.patch.js` (or `changelog.patch.[cm]js`) can export via default
- * either `ChangelogPatcherFunction` or a {@link ChangelogPatches} array.
- */
-export type ChangelogPatcherFunction = (
-  changelog: string,
-  patcher: (changelog: string, patches: ChangelogPatches) => string
-) => Promisable<string>;
-
-/**
- * Represents the result of importing a `changelog.patch.js` (or
- * `changelog.patch.[cm]js`) file from a CJS/ESM file.
- */
-export type ImportedChangelogPatcher = (ChangelogPatches | ChangelogPatcherFunction) & {
-  default?: ImportedChangelogPatcher;
-};
