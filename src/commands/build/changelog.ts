@@ -24,6 +24,7 @@ import { isRootPackage } from 'multiverse+project-utils:analyze.ts';
 
 import {
   changelogPatchConfigPackageBase,
+  changelogPatchConfigProjectBase,
   toPath,
   xchangelogConfigProjectBase,
   type Path
@@ -446,7 +447,7 @@ Use --import-section-file to add a custom release section to the changelog. The 
       if (patchChangelog) {
         const changelogPatcherProjectPath = toPath(
           projectRoot,
-          changelogPatchConfigPackageBase
+          changelogPatchConfigProjectBase
         );
 
         const changelogPatcherPackagePath = isRootPackage(cwdPackage)
@@ -524,12 +525,12 @@ Use --import-section-file to add a custom release section to the changelog. The 
                 userspacePatcher(contents, changelogPatcher)
               );
             } else {
-              softAssert(ErrorMessage.BadChangelogPatcher(patcherPath));
+              softAssert(ErrorMessage.BadMjsImport(patcherPath));
             }
           }
         } else {
           debug(
-            'changelog patching skipped: no importable changelog.patch.mjs files found at project root or package root'
+            'changelog patching skipped: no importable patch configuration files found at project root or package root'
           );
         }
       } else {
