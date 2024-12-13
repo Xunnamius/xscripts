@@ -97,10 +97,10 @@ export const ErrorMessage = {
     return `assertion failed: asset context value at expected key "${key}" is either not a string, is empty, or is undefined`;
   },
   BadPostNpmInstallScript(path: string) {
-    return `unable to execute "${path}" as a JavaScript module. Please ensure it is syntactically sound`;
+    return `unable to execute "${path}" as a JavaScript (ESM) module. Please ensure it is syntactically sound`;
   },
-  BadChangelogPatcher(path: string) {
-    return `unable to import "${path}" as a JavaScript module. Please ensure it is syntactically sound and contains the expected exports (see documentation)`;
+  BadMjsImport(path: string) {
+    return `unable to import "${path}" as a JavaScript (ESM) module. Please ensure it is syntactically sound and contains the expected exports (see documentation)`;
   },
   BadAdditionalChangelogSection(path: string) {
     return `unable to extract valid semver version from changelog section file at path: ${path}`;
@@ -217,6 +217,9 @@ export const ErrorMessage = {
   },
   ReleaseRunnerExecutionFailed() {
     return 'one or more release tasks failed to complete';
+  },
+  PreparationRunnerExecutionFailed() {
+    return 'one or more prepare tasks failed to complete';
   },
   RenovationRunnerExecutionFailed() {
     return 'one or more renovation tasks failed to complete';
