@@ -13,6 +13,11 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { isRootPackage } from 'multiverse+project-utils:analyze.ts';
 
 import {
+  postNpmInstallPackageBase,
+  toAbsolutePath
+} from 'multiverse+project-utils:fs.ts';
+
+import {
   UnlimitedGlobalScope as PreparationScope,
   type GlobalCliArguments,
   type GlobalExecutionContext
@@ -21,17 +26,10 @@ import {
 import { ErrorMessage } from 'universe:error.ts';
 
 import {
-  findOneConfigurationFile,
   runGlobalPreChecks,
   withGlobalBuilder,
   withGlobalUsage
 } from 'universe:util.ts';
-
-const wellKnownPostNpmInstallFilenames = [
-  'post-npm-install.mjs',
-  'post-npm-install.cjs',
-  'post-npm-install.js'
-];
 
 /**
  * @see {@link PreparationScope}
@@ -84,13 +82,9 @@ The project-level initialization tasks executed by this command are, in order:
 4. If the current working directory _is not_ the project root, exit immediately
 5. If the current working directory is the project root and the project is a monorepo, search each package root for a post-npm-install script and run them as they are found (with cwd set to each respective package's root)
 
-The following file names, when present at a package root, are recognized as post-npm-install scripts:
+The ${postNpmInstallPackageBase} file, when present at a package root, is recognized as a post-npm-install script. Each package in a project (including the root package) can contain at most one post-npm-install script.
 
-- ${wellKnownPostNpmInstallFilenames.join('\n- ')}
-
-Each package in a project (including the root package) can contain at most one post-npm-install script. Further note that post-npm-install scripts MUST BE IDEMPOTENT, as they _will_ be invoked multiple times over the lifetime of long-lived projects.
-
-Typically, this command should not be executed manually but by your package manager automatically at "install time," i.e. when running \`npm install\` locally. With respect to NPM, this command should be run whenever NPM would run its "prepare" life cycle operation. See https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-operation-order for details.
+Typically, this command should not be executed manually but by your package manager automatically at "install time," i.e. when running \`npm install\` locally. With respect to NPM, this command should be run whenever NPM would run its "prepare" life cycle operation. Therefore, note that post-npm-install scripts MUST BE IDEMPOTENT, as they _will_ be invoked multiple times over the lifetime of long-lived projects, including at odd times like during package publication/release. See https://docs.npmjs.com/cli/v10/using-npm/scripts#life-cycle-operation-order for details.
 
 This command exits immediately (becomes a no-op) when the CI environment variable is defined, or when the NODE_ENV environment variable is NOT either undefined or equal to "development". Provide --force to force this command to perform project initialization without regard for any environment variables.
 
@@ -119,7 +113,11 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
       debug('parallel: %O', parallel);
       debug('runToCompletion: %O', runToCompletion);
 
-      const { cwdPackage, subRootPackages } = projectMetadata;
+      const {
+        rootPackage: { root: projectRoot },
+        cwdPackage,
+        subRootPackages
+      } = projectMetadata;
 
       const { root: cwdPackageRoot } = cwdPackage;
       const isCwdTheProjectRoot = isRootPackage(cwdPackage);
@@ -128,94 +126,112 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
         process.env.NODE_ENV === undefined || process.env.NODE_ENV === 'development';
       const isRunningNpmInstallCommand = process.env.npm_command === 'install';
 
+      debug('projectRoot: %O', projectRoot);
+      debug('cwdPackageRoot: %O', cwdPackageRoot);
       debug('isCwdTheProjectRoot: %O', isCwdTheProjectRoot);
       debug('isInCiEnvironment: %O', isInCiEnvironment);
       debug('isInDevelopmentEnvironment: %O', isInDevelopmentEnvironment);
       debug('isRunningNpmInstallCommand: %O', isRunningNpmInstallCommand);
 
-      const tasks: Promise<unknown>[] = [];
+      if (runToCompletion) {
+        debug.message(
+          'preparation tasks will run to completion even if an error occurs'
+        );
+      }
 
       if (force || (!isInCiEnvironment && isInDevelopmentEnvironment)) {
-        if (isCwdTheProjectRoot) {
-          tasks.push(runWithInheritedIo('npx', ['husky']));
-        }
+        const errors: [identifier: string, error: unknown][] = [];
 
-        if (!parallel) {
-          debug('running task synchronously...');
-          await Promise.all(tasks);
-        }
+        const tasks: Promise<unknown>[] = [
+          runWithInheritedIo('npx', ['husky'], { cwd: projectRoot }).catch(
+            (error: unknown) => errors.push(['husky executable', error])
+          )
+        ];
 
         if (force || isRunningNpmInstallCommand) {
-          const roots = [cwdPackageRoot];
+          const roots = [
+            projectRoot,
+            ...(subRootPackages?.all.map(({ root }) => root) || [])
+          ];
 
-          if (isCwdTheProjectRoot && subRootPackages) {
-            roots.push(...subRootPackages.all.map(({ root }) => root));
-          }
+          for (const root of roots) {
+            const postNpmInstallPath = toAbsolutePath(root, postNpmInstallPackageBase);
+            debug('postNpmInstallPath: %O', postNpmInstallPath);
 
-          const subTasks = roots.map((packageRoot) => {
-            return async function () {
-              const postNpmInstallFile = await findOneConfigurationFile(
-                wellKnownPostNpmInstallFilenames,
-                packageRoot
-              );
+            genericLogger(
+              [LogTag.IF_NOT_HUSHED],
+              'Executing post-npm-install script at: %O',
+              postNpmInstallPath
+            );
 
-              debug('postNpmInstallFile: %O', postNpmInstallFile);
+            tasks.push(
+              import(postNpmInstallPath)
+                .then(() => {
+                  debug(
+                    'post-install script execution successful: %O',
+                    postNpmInstallPath
+                  );
+                })
+                .catch((error: unknown) => {
+                  debug.error('execution attempt failed catastrophically: %O', error);
+                  errors.push([postNpmInstallPath, error]);
 
-              if (postNpmInstallFile) {
-                genericLogger(
-                  [LogTag.IF_NOT_HUSHED],
-                  'Executing post-npm-install script at: %O',
-                  postNpmInstallFile
-                );
-
-                try {
-                  await import(postNpmInstallFile);
-                  debug('execution successful');
-                } catch (error) {
-                  debug('execution attempt failed catastrophically: %O', error);
                   throw new CliError(
-                    ErrorMessage.BadPostNpmInstallScript(postNpmInstallFile),
+                    ErrorMessage.BadPostNpmInstallScript(postNpmInstallPath),
                     { cause: error }
                   );
-                }
-              } else {
-                debug(
-                  'unable to execute a post-npm-install script since one does not exist or is not readable at: %O',
-                  packageRoot
-                );
-              }
-            };
-          });
-
-          if (parallel) {
-            debug('running tasks in parallel...');
-            await Promise.all(
-              subTasks.map(async (task) => {
-                try {
-                  await task();
-                } catch (error) {
-                  if (!runToCompletion) {
-                    throw error;
-                  }
-                }
-              })
+                })
             );
-          } else {
-            for (const task of subTasks) {
+          }
+        }
+
+        // TODO: use this in eventual task-runner API factorization along with
+        // TODO: what's in renovate, release, etc
+
+        if (parallel) {
+          debug.message('running tasks in parallel...');
+          await Promise.all(
+            tasks.map(async (task) => {
               try {
-                // ? Order matters
-                // eslint-disable-next-line no-await-in-loop
-                await task();
+                await task;
               } catch (error) {
                 if (!runToCompletion) {
                   throw error;
                 }
               }
+            })
+          );
+        } else {
+          debug.message('running tasks serially...');
+          for (const task of tasks) {
+            try {
+              // ? Order matters
+              // eslint-disable-next-line no-await-in-loop
+              await task;
+            } catch (error) {
+              if (!runToCompletion) {
+                throw error;
+              }
             }
           }
-
-          genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
         }
+
+        if (errors.length) {
+          genericLogger.newline([LogTag.IF_NOT_SILENCED], 'alternate');
+
+          for (const [description, error] of errors) {
+            log.error(
+              [LogTag.IF_NOT_SILENCED],
+              'Preparation task %O experienced a fatal execution error:\n%O',
+              description,
+              error
+            );
+          }
+
+          throw new CliError(ErrorMessage.PreparationRunnerExecutionFailed());
+        }
+
+        genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
       } else {
         genericLogger([LogTag.IF_NOT_QUIETED], 'Skipped project preparation');
       }
