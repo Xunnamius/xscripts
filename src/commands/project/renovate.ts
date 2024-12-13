@@ -1,4 +1,6 @@
 /* eslint-disable unicorn/prevent-abbreviations */
+import { rm } from 'node:fs/promises';
+
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import libsodium from 'libsodium-wrappers';
 import getInObject from 'lodash.get';
@@ -21,14 +23,16 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
-import { type Package, type XPackageJson } from 'multiverse+project-utils:analyze.ts';
+import { type RawAliasMapping } from 'multiverse+project-utils:alias.ts';
 
 import {
+  aliasMapConfigPackageBase,
   markdownArchitectureProjectBase,
   markdownReadmePackageBase,
   packageJsonConfigPackageBase,
   toAbsolutePath,
-  toPath
+  toPath,
+  toRelativePath
 } from 'multiverse+project-utils:fs.ts';
 
 import {
@@ -41,6 +45,7 @@ import {
 import { version as packageVersion } from 'rootverse:package.json';
 
 import {
+  $delete,
   gatherAssetsFromAllTransformers,
   type IncomingTransformerContext
 } from 'universe:assets.ts';
@@ -72,6 +77,8 @@ import {
 
 import type { RestEndpointMethodTypes } from '@octokit/rest' with { 'resolution-mode': 'import' };
 import type { CamelCasedProperties, KeysOfUnion, Merge } from 'type-fest';
+import type { ProjectMetadata } from 'multiverse+project-utils';
+import type { Package, XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 type NewRuleset = Merge<
   RestEndpointMethodTypes['repos']['createRepoRuleset']['parameters'],
@@ -154,11 +161,17 @@ export type RenovationTaskContext = {
   debug: ExtendedDebugger;
 };
 
+/**
+ * @internal
+ */
 export type RenovationTaskArgv = BfeStrictArguments<
   CustomCliArguments,
   GlobalExecutionContext
 >;
 
+/**
+ * @internal
+ */
 export type RenovationTask = Omit<
   BfeBuilderObjectValue<Record<string, unknown>, GlobalExecutionContext>,
   'alias' | 'demandThisOptionOr'
@@ -225,6 +238,25 @@ export type RenovationTask = Omit<
    */
   run: (argv: unknown, taskContextPartial: RenovationTaskContext) => Promise<void>;
 };
+
+/**
+ * A function that receives the current {@link ProjectMetadata} and must return
+ * an array of {@link RawAliasMapping}s.
+ *
+ * `aliases.config.mjs` can export via default either `RawAliasMapperFunction`
+ * or an array of {@link RawAliasMapping}s.
+ */
+export type RawAliasMapperFunction = (
+  projectMetadata: ProjectMetadata,
+  outputFunctions: { log: ExtendedLogger; debug: ExtendedDebugger }
+) => RawAliasMapping[];
+
+/**
+ * Represents the result of importing an `aliases.config.mjs` file.
+ * `aliases.config.mjs` can export via default either
+ * {@link RawAliasMapperFunction} or an array of {@link RawAliasMapping}s.
+ */
+export type ImportedAliasMap = RawAliasMapping[] | RawAliasMapperFunction;
 
 /**
  * These presets determine which assets will be returned by which transformers
@@ -374,10 +406,6 @@ Renovations are performed on the entire project by default, and typically involv
 
 If this command is invoked in a repository with an unclean working directory, it will fail unless --force is given. Similarly, tasks with potentially destructive or permanent consequences must be manually authorized via --force. That said, all renovation tasks are idempotent: running the same renovations back-to-back on an otherwise-unchanged project/package is essentially a no-op.
 
-When renovating a Markdown file using an asset template that is divided into replacer regions via the magic comments "<!-- xscripts-renovate-region-start -->", "<!-- xscripts-renovate-region-end -->", and potentially "<!-- xscripts-renovate-region-definitions -->"; and if the existing renovation target has corresponding replacer regions defined; this command will perform so-called "regional replacements," where only the content within the renovation regions (i.e. between the "start" and "end" comments) will be modified. Regional replacements can be used to allow ultimate flexibility and customization of Markdown assets while still maintaining a consistent look and feel across xscripts-powered projects. This benefit is most evident in each package's ${markdownReadmePackageBase} file, and each project's ${markdownArchitectureProjectBase} file, among others.
-
-When attempting to renovate a Markdown file without replacer regions when its corresponding asset template does have replacer regions, the entire file will be overwritten like normal.
-
 Currently, this command only functions with origin repositories hosted on GitHub.`),
     handler: withGlobalHandler(async function (argv) {
       const { $0: scriptFullName, scope, parallel, force, runToCompletion } = argv;
@@ -461,6 +489,11 @@ Currently, this command only functions with origin repositories hosted on GitHub
 
         debug('waiting for renovation tasks to finish running...');
 
+        // TODO: This task runner logic appears in at least four places in this
+        // TODO: code base alone. We need to make this into a package :)
+
+        const errors: unknown[] = [];
+
         if (parallel) {
           const promises = taskPromiseFunctions.map((p) => p());
 
@@ -469,17 +502,13 @@ Currently, this command only functions with origin repositories hosted on GitHub
               'renovation tasks will run to completion even if an error occurs'
             );
 
-            const results = await Promise.allSettled(promises);
-
-            for (const result of results) {
-              if (result.status === 'fulfilled') {
-                debug("a renovation task runner's promise has fulfilled");
-              } else {
-                throw new CliError(ErrorMessage.RenovationRunnerExecutionFailed(), {
-                  cause: result.reason
-                });
-              }
-            }
+            errors.push(
+              ...(await Promise.allSettled(promises))
+                .map((result) =>
+                  result.status === 'rejected' ? result.reason : undefined
+                )
+                .filter((r) => !!r)
+            );
           } else {
             try {
               await Promise.all(promises);
@@ -490,15 +519,13 @@ Currently, this command only functions with origin repositories hosted on GitHub
             }
           }
         } else {
-          let firstError = undefined as unknown;
-
           for (const taskPromiseFunction of taskPromiseFunctions) {
             try {
               // eslint-disable-next-line no-await-in-loop
               await taskPromiseFunction();
             } catch (error) {
               if (runToCompletion) {
-                firstError ||= error;
+                errors.push(error);
               } else {
                 throw new CliError(ErrorMessage.RenovationRunnerExecutionFailed(), {
                   cause: error
@@ -506,12 +533,20 @@ Currently, this command only functions with origin repositories hosted on GitHub
               }
             }
           }
+        }
 
-          if (firstError) {
-            throw new CliError(ErrorMessage.RenovationRunnerExecutionFailed(), {
-              cause: firstError
-            });
+        if (errors.length) {
+          genericLogger.newline([LogTag.IF_NOT_SILENCED], 'alternate');
+
+          for (const error of errors) {
+            log.error(
+              [LogTag.IF_NOT_SILENCED],
+              'Renovation task execution error:\n%O',
+              error
+            );
           }
+
+          throw new CliError(ErrorMessage.RenovationRunnerExecutionFailed());
         }
       } finally {
         genericLogger.newline([LogTag.IF_NOT_QUIETED]);
@@ -753,6 +788,8 @@ function parsePackageJsonRepositoryIntoOwnerAndRepo({ repository, name }: XPacka
   softAssert(ErrorMessage.BadRepositoryInCwdPackageJson(name));
 }
 
+// TODO: When we settle on a unified task-runner API, these should be placed
+// TODO: into their own files. Maybe they should be so placed before then...
 /**
  * @see {@link RenovationTask}
  */
@@ -1484,7 +1521,9 @@ Provide --assets-preset (required) to specify which assets to regenerate. The pa
 
 Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the paths to be written out. Any paths matching one of the aforesaid regular expressions will have their contents discarded instead of written out.
 
-When regenerating files containing import aliases, --with-aliases-loaded-from can be used to include aliases beyond those hardcoded into xscript. The parameter accepts a path to a JavaScript file with an alias map (i.e. \`RawAliasMapping[]\`) as its default export.
+This renovation attempts to import the \`import-aliases.mjs\` file if it exists at the root of the project. Use this file to provide additional \`RawAliasMapping[]\`s to include when regenerating files defining the project's import aliases. This file must contain an alias map (i.e. \`RawAliasMapping[]\`) as its default export. See the xscripts wiki documentation for further details.
+
+When renovating a Markdown file using an template that is divided into replacer regions via the magic comments "<!-- xscripts-renovate-region-start -->", "<!-- xscripts-renovate-region-end -->", and potentially "<!-- xscripts-renovate-region-definitions -->"; and if the existing renovation target has the same number of corresponding replacer regions defined; this command will perform so-called "regional replacements," where only the content within the renovation regions (i.e. between the "start" and "end" comments) will be modified. Regional replacements can be used to allow ultimate flexibility and customization of Markdown assets while still maintaining a consistent look and feel across xscripts-powered projects. This benefit is most evident in each package's ${markdownReadmePackageBase} file, and each project's ${markdownArchitectureProjectBase} file, among others. On the other hand, when attempting to renovate a Markdown asset without replacer regions when its corresponding template does have replacer regions, the entire file will be overwritten like normal.
 
 After invoking this renovation, you should use your IDE's diff tools to compare and contrast the latest best practices with the project's current configuration setup.
 
@@ -1514,15 +1553,7 @@ This renovation should be re-run each time a package is added to, or removed fro
         array: true,
         string: true,
         description: 'skip regenerating assets matching a regular expression',
-        default: [],
-        coerce(assets: string[]) {
-          // ! These regular expressions can never use the global (g) flag
-          return assets.map((str) => new RegExp(str, 'u'));
-        }
-      },
-      'with-aliases-loaded-from': {
-        string: true,
-        description: 'Load additional import aliases when regenerating'
+        default: []
       }
     },
     async run(argv_, { debug, log }) {
@@ -1534,7 +1565,6 @@ This renovation should be re-run each time a package is added to, or removed fro
 
       const preset = argv.assetsPreset as RenovationPreset;
       const skipAssetPaths = argv.skipAssetPaths as RegExp[];
-      const additionalAliasesJsPath = argv.withAliasesLoadedFrom as string | undefined;
 
       hardAssert(projectMetadata, ErrorMessage.GuruMeditation());
 
@@ -1557,6 +1587,10 @@ This renovation should be re-run each time a package is added to, or removed fro
         scope: DefaultGlobalScope.Unlimited,
         targetAssetsPreset: preset,
         projectMetadata,
+        additionalRawAliasMappings: await importAdditionalRawAliasMappings(
+          projectMetadata,
+          { log, debug }
+        ),
 
         badges: '',
         packageName: '',
@@ -1586,46 +1620,79 @@ This renovation should be re-run each time a package is added to, or removed fro
 
       debug('preset: %O', preset);
       debug('skipAssetPaths: %O', skipAssetPaths);
-      debug('additionalAliasesJsPath: %O', additionalAliasesJsPath);
       debug('transformer context: %O', transformerContext);
 
-      const reifiedAssetPaths = await gatherAssetsFromAllTransformers({
-        transformerContext
-      });
+      const reifiedAssetPathEntries = Object.entries(
+        await gatherAssetsFromAllTransformers({
+          transformerContext
+        })
+      );
 
-      // TODO: Replace missing context items with "<!-- TODO -->" if they are
-      // TODO: not resolvable (and note it in debug messaging)
+      const results = await Promise.allSettled(
+        reifiedAssetPathEntries.map(async function ([
+          outputPathString,
+          generateContent
+        ]) {
+          const outputPath = toRelativePath(projectRoot, outputPathString);
 
-      // TODO: move replacement region paragraphs at end of generic help text
-      // TODO: into regenerate's help text instead
+          if (skipAssetPaths.some((r) => r.test(outputPath))) {
+            debug('skipped asset due to --skip-asset-paths exclusion: %O', outputPath);
+            log(`🟧 ${outputPath}`);
+            return;
+          }
 
-      // TODO: implement skipAssetPaths (filter) and additionalAliasesJsPath
+          try {
+            const content = await generateContent();
 
-      // TODO: support $delete symbol
+            if (content === $delete) {
+              debug.message(
+                'deleting asset due to presence of $delete symbol: %O',
+                outputPath
+              );
+              await rm(outputPath, { force: true });
+              log(`🗑️ ${outputPath}`);
+            } else {
+              await writeFile(outputPath, content);
+              log(`✅ ${outputPath}`);
+            }
+          } catch (error) {
+            debug.error('content generation failure: %O', error);
+            log.error(`❗ ${outputPath}`);
+            throw new Error('wrapper', { cause: { error, outputPath } });
+          }
+        })
+      );
 
-      // TODO: calculate relevant paths properly
+      const errorCount = results.filter((r) => r.status !== 'fulfilled').length;
 
-      // TODO: await write out of all contents but use keys to that all
-      // TODO: computations are async instead of sync
+      log.message(
+        [LogTag.IF_NOT_QUIETED],
+        '%O/%O renovations succeeded',
+        results.length - errorCount,
+        results.length
+      );
 
-      // TODO: (assets) fix each individual asset file (need to return str fn)
+      if (errorCount > 0) {
+        let firstError = new Error(ErrorMessage.GuruMeditation());
 
-      // TODO: (assets) existing overwrites; missing created; obsolete is
-      // TODO: deleted if contents === $delete symbol
+        for (const result of results) {
+          if (result.status === 'rejected') {
+            const { error, outputPath } = result.reason.cause;
+            firstError = error;
 
-      // TODO: (assets) replacer region count must match in document or entire
-      // TODO: document will be overwritten
+            hardAssert(error, ErrorMessage.GuruMeditation());
 
-      // TODO: (assets) regenerate package.json carefully; reuse existing
+            log.error(
+              [LogTag.IF_NOT_SILENCED],
+              'Content regeneration failed for %O:\n%O',
+              outputPath,
+              error
+            );
+          }
+        }
 
-      // TODO: (assets) return paths conditioned on context (like minimal)
-
-      // TODO: (assets) README.md no license blurb if no license
-
-      // TODO: (assets)  .env.default also makes a dummy .env file with only
-      // TODO: the VAR= lines
-
-      // TODO: fix all tests and ensure everything is covered (check coverage)
+        throw firstError;
+      }
 
       // ? Typescript wants this here because of our "as const" for some reason
       return undefined;
@@ -1813,4 +1880,51 @@ function rethrowErrorIfNotStatus404(errorResponse: unknown) {
   }
 
   return undefined;
+}
+
+async function importAdditionalRawAliasMappings(
+  projectMetadata: ProjectMetadata,
+  outputFunctions: { log: ExtendedLogger; debug: ExtendedDebugger }
+) {
+  const { debug } = outputFunctions;
+  const {
+    rootPackage: { root: projectRoot }
+  } = projectMetadata;
+
+  const aliasMapPath = toPath(projectRoot, aliasMapConfigPackageBase);
+
+  debug(`aliasMapPath: %O`, aliasMapPath);
+
+  const aliasMapImport = await import(aliasMapPath).catch((error: unknown) => {
+    debug.warn('failed to import %O: %O', aliasMapPath, error);
+    return undefined;
+  });
+
+  debug(`aliasMapImport: %O`, aliasMapImport);
+
+  if (aliasMapImport) {
+    const aliasMap: ImportedAliasMap | undefined = aliasMapImport?.default;
+
+    if (aliasMap) {
+      debug('aliasMap: %O', aliasMap);
+
+      if (typeof aliasMap === 'function') {
+        debug('invoking aliases import as a function from %O', aliasMapPath);
+        return aliasMap(projectMetadata, outputFunctions);
+      } else if (Array.isArray(aliasMap)) {
+        debug('returning aliases import as an array from %O', aliasMapPath);
+        return aliasMap;
+      } else {
+        softAssert(ErrorMessage.BadMjsImport(aliasMapPath));
+      }
+    } else {
+      throw new Error(ErrorMessage.DefaultImportFalsy());
+    }
+  } else {
+    debug(
+      'skipped importing additional alias mappings: no importable alias configuration file found at project root'
+    );
+  }
+
+  return [];
 }
