@@ -264,7 +264,7 @@ export const ErrorMessage = {
     return `failed to locate a suitable tsconfig file`;
   },
   DefaultImportFalsy() {
-    return 'default import was falsy';
+    return 'a default import was unexpectedly falsy';
   },
   BadParameter(name: string) {
     return `invalid value for parameter "${name}"`;
