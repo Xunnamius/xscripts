@@ -5,6 +5,7 @@ import mergeWith from 'lodash.mergewith';
 
 import { type ExtendedDebugger } from 'multiverse+debug';
 import { type ProjectAttribute, type ProjectMetadata } from 'multiverse+project-utils';
+import { type RawAliasMapping } from 'multiverse+project-utils:alias.ts';
 
 import {
   toAbsolutePath,
@@ -24,6 +25,13 @@ import type { EmptyObject, Entry, Promisable } from 'type-fest';
 import type { RenovationPreset } from 'universe:commands/project/renovate.ts';
 
 const debug_ = createDebugLogger({ namespace: globalDebuggerNamespace });
+
+/**
+ * The Symbol represents an asset to be deleted and can be returned as the
+ * result of an {@link Asset.generate} function instead of normal string
+ * content.
+ */
+export const $delete = Symbol.for('xscripts-delete-file-at-path');
 
 /**
  * The directory containing files exporting functions that transform
@@ -48,10 +56,12 @@ export const directoryAssetTemplates = toAbsolutePath(__dirname, 'assets', 'temp
 // TODO: (use eslint esquery for this)
 
 /**
- * An asset maps an absolute output path and the function that generates content
- * to output.
+ * An _asset_ maps an absolute output path and a function that generates output.
  */
-export type Asset = { path: AbsolutePath; generate: () => Promisable<string> };
+export type Asset = {
+  path: AbsolutePath;
+  generate: () => Promisable<string | typeof $delete>;
+};
 
 /**
  * An input function that accepts a {@link TransformerContext} and returns one
@@ -140,6 +150,11 @@ export type TransformerContext = {
    * @see {@link ProjectMetadata}
    */
   projectMetadata: ProjectMetadata;
+  /**
+   * An array of {@link RawAliasMapping}s that will be included when deriving
+   * aliases during content generation.
+   */
+  additionalRawAliasMappings: RawAliasMapping[];
 
   /**
    * The markdown badge references that are standard for every xscripts-powered
