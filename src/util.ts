@@ -503,41 +503,6 @@ export function __write_file_sync(path: string, contents: string) {
   }
 }
 
-/**
- * Takes an array of `wellKnownFiles`, which can be filenames or paths (both
- * taken local to `configRoot`) and returns an absolute path to an existing
- * readable file from `wellKnownFiles` should one exist. If more than one file
- * in `wellKnownFiles` exists, this function will throw.
- */
-export async function findOneConfigurationFile(
-  wellKnownFiles: string[],
-  configRoot: AbsolutePath
-) {
-  return Promise.all(
-    wellKnownFiles.map(async (filename) => {
-      const path = toPath(configRoot, filename);
-      return [path, await isAccessible(path, { useCached: true })] as const;
-    })
-  ).then((results) => {
-    // eslint-disable-next-line unicorn/no-array-reduce
-    return results.reduce<undefined | AbsolutePath>(function (
-      firstAccessiblePath,
-      [currentPath, currentPathIsReadable]
-    ) {
-      if (firstAccessiblePath !== undefined && currentPathIsReadable) {
-        softAssert(
-          ErrorMessage.MultipleConfigsWhenExpectingOnlyOne(
-            firstAccessiblePath,
-            currentPath
-          )
-        );
-      }
-
-      return currentPathIsReadable ? currentPath : firstAccessiblePath;
-    }, undefined);
-  });
-}
-
 export function hasExitCode(error: unknown): error is object & { exitCode: number } {
   return !!(
     error &&
