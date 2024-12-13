@@ -88,6 +88,7 @@ const dummyContext: IncomingTransformerContext = {
   projectMetadata: fixtureToProjectMetadata(
     'goodHybridrepo'
   ) as TransformerContext['projectMetadata'],
+  additionalRawAliasMappings: [],
   titleName: 'title-name',
   repoName: 'repo-name',
   repoType: ProjectAttribute.Polyrepo,
