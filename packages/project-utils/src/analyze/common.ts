@@ -227,6 +227,9 @@ export type ProjectMetadata<Json extends PackageJson | XPackageJson = XPackageJs
         /**
          * A mapping of sub-root packages missing the `"name"` field in their
          * respective `package.json` files and {@link WorkspacePackage} objects.
+         *
+         * This mapping is only populated when unnamed packages are _explicitly
+         * allowed_ by the process that generated this object.
          */
         unnamed: Map<WorkspacePackageId, WorkspacePackage<PackageJson>>;
         /**
@@ -236,7 +239,10 @@ export type ProjectMetadata<Json extends PackageJson | XPackageJson = XPackageJs
         broken: AbsolutePath[];
         /**
          * An array of *all* non-broken sub-root packages both named and
-         * unnamed. Sugar for the following:
+         * unnamed\*. Unnamed packages only appear when they are _explicitly
+         * allowed_ by the process that generated this array.
+         *
+         * In effect, this property is sugar for the following:
          *
          * ```TypeScript
          * Array.from(packages.values())
@@ -327,7 +333,7 @@ export type ProjectFiles = {
      */
     atWorkspaceRoot: Map<WorkspacePackageId, AbsolutePath>;
     /**
-     * Sugar for `atProjectRoot + atWorkspaceRoot`.
+     * In effect, this property is sugar for `atProjectRoot + atWorkspaceRoot`.
      */
     atAnyRoot: AbsolutePath[];
     /**
@@ -355,7 +361,7 @@ export type ProjectFiles = {
      */
     atWorkspaceRoot: Map<WorkspacePackageId, AbsolutePath | undefined>;
     /**
-     * Sugar for `atProjectRoot + atWorkspaceRoot`.
+     * In effect, this property is sugar for `atProjectRoot + atWorkspaceRoot`.
      */
     atAnyRoot: AbsolutePath[];
   };
@@ -374,7 +380,7 @@ export type ProjectFiles = {
      */
     inWorkspace: Map<WorkspacePackageId, AbsolutePath[]>;
     /**
-     * Sugar for `inRoot + inWorkspace`.
+     * In effect, this property is sugar for `inRoot + inWorkspace`.
      */
     all: AbsolutePath[];
   };
@@ -394,7 +400,7 @@ export type ProjectFiles = {
      */
     inWorkspaceSrc: Map<WorkspacePackageId, AbsolutePath[]>;
     /**
-     * Sugar for `inRootSrc + inWorkspaceSrc`.
+     * In effect, this property is sugar for `inRootSrc + inWorkspaceSrc`.
      */
     all: AbsolutePath[];
   };
@@ -417,7 +423,7 @@ export type ProjectFiles = {
      */
     inWorkspaceTest: Map<WorkspacePackageId, AbsolutePath[]>;
     /**
-     * Sugar for `inRootTest + inWorkspaceTest`.
+     * In effect, this property is sugar for `inRootTest + inWorkspaceTest`.
      */
     all: AbsolutePath[];
   };

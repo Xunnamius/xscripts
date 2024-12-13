@@ -194,7 +194,25 @@ export const directoryTypesProjectBase = 'types';
  * The basename of the well-known changelog patcher configuration file
  * (respected by the `xscripts build changelog` command).
  */
+export const changelogPatchConfigProjectBase = 'changelog.patch.mjs';
+
+/**
+ * The basename of the well-known changelog patcher configuration file
+ * (respected by the `xscripts build changelog` command).
+ */
 export const changelogPatchConfigPackageBase = 'changelog.patch.mjs';
+
+/**
+ * The basename of the well-known configuration file containing definitions for
+ * additional aliases (respected by the `xscripts project renovate` command).
+ */
+export const aliasMapConfigPackageBase = 'aliases.config.mjs';
+
+/**
+ * The basename of the well-known script run after `npm install` (exactly as
+ * typed).
+ */
+export const postNpmInstallPackageBase = 'post-npm-install.mjs';
 
 /**
  * The basename of the well-known git-add-then-commit CLI tool configuration
