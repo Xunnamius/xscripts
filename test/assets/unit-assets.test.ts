@@ -1089,7 +1089,7 @@ async function expectAssetsToMatchSnapshots(
     expect(
       `key: ${key}\nscope: ${scope}\npreset: ${String(preset)}\n⏶⏷⏶⏷⏶\n` +
         // eslint-disable-next-line no-await-in-loop
-        (await asset())
+        String(await asset())
     ).toMatchSnapshot(key);
   }
 }
