@@ -13,6 +13,7 @@ exports[`::compileTemplate accepts a template file path and returns a compilatio
 good-hybridrepo-description
 
 <!-- xscripts-template-region-start -->
+
 </p>
 
 <hr />
@@ -46,7 +47,6 @@ good-hybridrepo-description
 
 <!-- remark-ignore-start -->
 <!-- xscripts-template-region-end -->
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -59,7 +59,6 @@ good-hybridrepo-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 <!-- xscripts-template-region-start -->
 <!-- remark-ignore-end -->
 
@@ -96,24 +95,21 @@ built by Babel for use in Node.js versions that are not end-of-life. For
 TypeScript users, this package supports both \`"Node10"\` and \`"Node16"\` module
 resolution strategies.
 
-------------✄-----------⏶-⏷-----------✄------------
+\\------------✄-----------⏶-⏷-----------✄------------
 
 This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in Node.js
 versions that are not end-of-life. For TypeScript users, this package supports
 both \`"Node10"\` and \`"Node16"\` module resolution strategies.
 
-------------✄-----------⏶-⏷-----------✄------------
+\\------------✄-----------⏶-⏷-----------✄------------
 
 This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in
 browser-like environments. For TypeScript users, this package supports both
 \`"Node10"\` and \`"Node16"\` module resolution strategies.
 
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
-
 <!-- xscripts-template-region-end -->
-
 <!-- TODO: custom details here -->
-
 <!-- xscripts-template-region-start -->
 
 <details><summary>Expand details</summary>
@@ -128,7 +124,7 @@ hazard][x-pkg-dual-package-hazard] entirely, distributables are not
 packed/bundled/uglified, a drastically less complex build process, and CJS
 consumers aren't shafted.
 
-------------✄-----------⏶-⏷-----------✄------------
+\\------------✄-----------⏶-⏷-----------✄------------
 
 That means ESM source will load this package via \`import { ... } from ...\` or
 \`await import(...)\` and CJS source will load this package via dynamic
@@ -165,7 +161,6 @@ also that [\`package.json\`][x-repo-package-json] may include the
 optimal [tree shaking][x-pkg-tree-shaking] where appropriate.
 
 <!-- xscripts-template-region-end -->
-
 <!-- TODO: custom details here -->
 
 </details>
@@ -242,10 +237,10 @@ specification. Contributions of any kind welcome!
   https://github.com/semantic-release/semantic-release
 [x-pkg-cjs-mojito]:
   https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#publish-only-a-cjs-distribution-with-property-exports
-[x-pkg-esm-wine]:
-  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#esm-source-and-distribution
 [x-pkg-dual-package-hazard]:
   https://nodejs.org/api/packages.html#dual-package-hazard
+[x-pkg-esm-wine]:
+  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#esm-source-and-distribution
 [x-pkg-exports-conditions]:
   https://webpack.js.org/guides/package-exports#reference-syntax
 [x-pkg-exports-module-key]:
@@ -447,6 +442,7 @@ At this point, you're ready to create your PR and ✨ contribute ✨!
 good-hybridrepo-description
 
 <!-- xscripts-template-region-start -->
+
 </p>
 
 <hr />
@@ -480,7 +476,6 @@ good-hybridrepo-description
 
 <!-- remark-ignore-start -->
 <!-- xscripts-template-region-end -->
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -493,7 +488,6 @@ good-hybridrepo-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 <!-- xscripts-template-region-start -->
 <!-- remark-ignore-end -->
 
@@ -530,24 +524,21 @@ built by Babel for use in Node.js versions that are not end-of-life. For
 TypeScript users, this package supports both \`"Node10"\` and \`"Node16"\` module
 resolution strategies.
 
-------------✄-----------⏶-⏷-----------✄------------
+\\------------✄-----------⏶-⏷-----------✄------------
 
 This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in Node.js
 versions that are not end-of-life. For TypeScript users, this package supports
 both \`"Node10"\` and \`"Node16"\` module resolution strategies.
 
-------------✄-----------⏶-⏷-----------✄------------
+\\------------✄-----------⏶-⏷-----------✄------------
 
 This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in
 browser-like environments. For TypeScript users, this package supports both
 \`"Node10"\` and \`"Node16"\` module resolution strategies.
 
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
-
 <!-- xscripts-template-region-end -->
-
 <!-- TODO: custom details here -->
-
 <!-- xscripts-template-region-start -->
 
 <details><summary>Expand details</summary>
@@ -562,7 +553,7 @@ hazard][x-pkg-dual-package-hazard] entirely, distributables are not
 packed/bundled/uglified, a drastically less complex build process, and CJS
 consumers aren't shafted.
 
-------------✄-----------⏶-⏷-----------✄------------
+\\------------✄-----------⏶-⏷-----------✄------------
 
 That means ESM source will load this package via \`import { ... } from ...\` or
 \`await import(...)\` and CJS source will load this package via dynamic
@@ -599,7 +590,6 @@ also that [\`package.json\`][x-repo-package-json] may include the
 optimal [tree shaking][x-pkg-tree-shaking] where appropriate.
 
 <!-- xscripts-template-region-end -->
-
 <!-- TODO: custom details here -->
 
 </details>
@@ -676,10 +666,10 @@ specification. Contributions of any kind welcome!
   https://github.com/semantic-release/semantic-release
 [x-pkg-cjs-mojito]:
   https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#publish-only-a-cjs-distribution-with-property-exports
-[x-pkg-esm-wine]:
-  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#esm-source-and-distribution
 [x-pkg-dual-package-hazard]:
   https://nodejs.org/api/packages.html#dual-package-hazard
+[x-pkg-esm-wine]:
+  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#esm-source-and-distribution
 [x-pkg-exports-conditions]:
   https://webpack.js.org/guides/package-exports#reference-syntax
 [x-pkg-exports-module-key]:
@@ -3013,6 +3003,7 @@ preset: undefined
 good-hybridrepo-description
 
 <!-- xscripts-template-region-start -->
+
 </p>
 
 <hr />
@@ -3046,7 +3037,6 @@ good-hybridrepo-description
 
 <!-- remark-ignore-start -->
 <!-- xscripts-template-region-end -->
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -3059,7 +3049,6 @@ good-hybridrepo-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
 <!-- xscripts-template-region-start -->
 <!-- remark-ignore-end -->
 
@@ -3096,24 +3085,21 @@ built by Babel for use in Node.js versions that are not end-of-life. For
 TypeScript users, this package supports both \`"Node10"\` and \`"Node16"\` module
 resolution strategies.
 
-------------✄-----------⏶-⏷-----------✄------------
+\\------------✄-----------⏶-⏷-----------✄------------
 
 This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in Node.js
 versions that are not end-of-life. For TypeScript users, this package supports
 both \`"Node10"\` and \`"Node16"\` module resolution strategies.
 
-------------✄-----------⏶-⏷-----------✄------------
+\\------------✄-----------⏶-⏷-----------✄------------
 
 This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in
 browser-like environments. For TypeScript users, this package supports both
 \`"Node10"\` and \`"Node16"\` module resolution strategies.
 
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
-
 <!-- xscripts-template-region-end -->
-
 <!-- TODO: custom details here -->
-
 <!-- xscripts-template-region-start -->
 
 <details><summary>Expand details</summary>
@@ -3128,7 +3114,7 @@ hazard][x-pkg-dual-package-hazard] entirely, distributables are not
 packed/bundled/uglified, a drastically less complex build process, and CJS
 consumers aren't shafted.
 
-------------✄-----------⏶-⏷-----------✄------------
+\\------------✄-----------⏶-⏷-----------✄------------
 
 That means ESM source will load this package via \`import { ... } from ...\` or
 \`await import(...)\` and CJS source will load this package via dynamic
@@ -3165,7 +3151,6 @@ also that [\`package.json\`][x-repo-package-json] may include the
 optimal [tree shaking][x-pkg-tree-shaking] where appropriate.
 
 <!-- xscripts-template-region-end -->
-
 <!-- TODO: custom details here -->
 
 </details>
@@ -3242,10 +3227,10 @@ specification. Contributions of any kind welcome!
   https://github.com/semantic-release/semantic-release
 [x-pkg-cjs-mojito]:
   https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#publish-only-a-cjs-distribution-with-property-exports
-[x-pkg-esm-wine]:
-  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#esm-source-and-distribution
 [x-pkg-dual-package-hazard]:
   https://nodejs.org/api/packages.html#dual-package-hazard
+[x-pkg-esm-wine]:
+  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#esm-source-and-distribution
 [x-pkg-exports-conditions]:
   https://webpack.js.org/guides/package-exports#reference-syntax
 [x-pkg-exports-module-key]:
