@@ -24,11 +24,9 @@ import {
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { type RawAliasMapping } from 'multiverse+project-utils:alias.ts';
+import { type Package } from 'multiverse+project-utils:analyze.ts';
 
 import {
-  aliasMapConfigPackageBase,
-  markdownArchitectureProjectBase,
-  markdownReadmePackageBase,
   packageJsonConfigPackageBase,
   toAbsolutePath,
   toPath,
@@ -43,6 +41,8 @@ import {
 } from 'multiverse+rejoinder';
 
 import { version as packageVersion } from 'rootverse:package.json';
+
+import { parsePackageJsonRepositoryIntoOwnerAndRepo } from 'universe:assets/transformers/_package.json.ts';
 
 import {
   $delete,
@@ -68,6 +68,7 @@ import { ErrorMessage } from 'universe:error.ts';
 import {
   determineRepoWorkingTreeDirty,
   getRelevantDotEnvFilePaths,
+  importAdditionalRawAliasMappings,
   loadDotEnv,
   runGlobalPreChecks,
   withGlobalBuilder,
@@ -78,7 +79,6 @@ import {
 import type { RestEndpointMethodTypes } from '@octokit/rest' with { 'resolution-mode': 'import' };
 import type { CamelCasedProperties, KeysOfUnion, Merge } from 'type-fest';
 import type { ProjectMetadata } from 'multiverse+project-utils';
-import type { Package, XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
 type NewRuleset = Merge<
   RestEndpointMethodTypes['repos']['createRepoRuleset']['parameters'],
@@ -770,22 +770,6 @@ async function makeOctokit({
       }
     }
   });
-}
-
-const githubUrlRegExp = /github.com\/([^/]+)\/([^/]+?)(?:\.git)?$/;
-
-function parsePackageJsonRepositoryIntoOwnerAndRepo({ repository, name }: XPackageJson) {
-  if (repository) {
-    const target = typeof repository === 'string' ? repository : repository.url;
-    const match = target.match(githubUrlRegExp);
-
-    if (match) {
-      const [, owner, repo] = match;
-      return { owner, repo };
-    }
-  }
-
-  softAssert(ErrorMessage.BadRepositoryInCwdPackageJson(name));
 }
 
 // TODO: When we settle on a unified task-runner API, these should be placed
@@ -1521,13 +1505,21 @@ Provide --assets-preset (required) to specify which assets to regenerate. The pa
 
 Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the paths to be written out. Any paths matching one of the aforesaid regular expressions will have their contents discarded instead of written out.
 
-This renovation attempts to import the \`import-aliases.mjs\` file if it exists at the root of the project. Use this file to provide additional \`RawAliasMapping[]\`s to include when regenerating files defining the project's import aliases. This file must contain an alias map (i.e. \`RawAliasMapping[]\`) as its default export. See the xscripts wiki documentation for further details.
+This renovation attempts to import the \`import-aliases.mjs\` file if it exists at the root of the project. Use this file to provide additional \`RawAliasMapping[]\`s to include when regenerating files defining the project's import aliases. See the xscripts wiki documentation for further details.
 
-When renovating a Markdown file using an template that is divided into replacer regions via the magic comments "<!-- xscripts-renovate-region-start -->", "<!-- xscripts-renovate-region-end -->", and potentially "<!-- xscripts-renovate-region-definitions -->"; and if the existing renovation target has the same number of corresponding replacer regions defined; this command will perform so-called "regional replacements," where only the content within the renovation regions (i.e. between the "start" and "end" comments) will be modified. Regional replacements can be used to allow ultimate flexibility and customization of Markdown assets while still maintaining a consistent look and feel across xscripts-powered projects. This benefit is most evident in each package's ${markdownReadmePackageBase} file, and each project's ${markdownArchitectureProjectBase} file, among others. On the other hand, when attempting to renovate a Markdown asset without replacer regions when its corresponding template does have replacer regions, the entire file will be overwritten like normal.
+When renovating Markdown files, note that non-numeric reference definitions will be deleted and recreated while numeric reference definitions are preserved.
+
+When renovating Markdown files with templates divided into replacer regions via the magic comments "<!-- xscripts-template-region-start -->" and "<!-- xscripts-template-region-end -->", and if the existing renovation target has the same number of corresponding replacer regions defined, this command will perform so-called "regional replacements" where only the content between the "start" and "end" comments will be modified.
+
+Note that only certain Markdown files/templates support regional replacements. See the xscripts wiki documentation for more details.
+
+Also note that, when attempting to renovate a Markdown file without replacer regions when its corresponding template contains and supports replacer regions, the entire file will be overwritten like normal.
 
 After invoking this renovation, you should use your IDE's diff tools to compare and contrast the latest best practices with the project's current configuration setup.
 
-This renovation should be re-run each time a package is added to, or removed from, a xscripts-compliant monorepo. See the xscripts wiki documentation for more details on this command and all available assets.
+This renovation should be re-run each time a package is added to, or removed from, a xscripts-compliant monorepo but should NEVER be run in a CI environment or anywhere logs can be viewed publicly.
+
+See the xscripts wiki documentation for more details on this command and all available assets.
 `,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
@@ -1570,8 +1562,11 @@ This renovation should be re-run each time a package is added to, or removed fro
 
       const {
         cwdPackage: { root: packageRoot },
-        rootPackage: { root: projectRoot }
+        rootPackage: { root: projectRoot, json: projectJson }
       } = projectMetadata;
+
+      const { owner: repoOwner, repo: repoName } =
+        parsePackageJsonRepositoryIntoOwnerAndRepo(projectJson);
 
       const transformerContext: IncomingTransformerContext = {
         log,
@@ -1592,30 +1587,9 @@ This renovation should be re-run each time a package is added to, or removed fro
           { log, debug }
         ),
 
-        badges: '',
-        packageName: '',
-        packageVersion: '',
-        packageDescription: '',
-        packageBuildDetailsShort: '',
-        packageBuildDetailsLong: '',
-        titleName: '',
-        repoName: '',
-        repoType: projectMetadata.type,
-        repoUrl: '',
-        repoSnykUrl: '',
-        repoReferenceDocs: '',
-        repoReferenceLicense: '',
-        repoReferenceNewIssue: '',
-        repoReferencePrCompare: '',
-        repoReferenceSelf: '',
-        repoReferenceSponsor: '',
-        repoReferenceContributing: '',
-        repoReferenceSupport: '',
-        repoReferenceAllContributors: '',
-        repoReferenceAllContributorsEmojis: '',
-        repoReferenceDefinitionsBadge: '',
-        repoReferenceDefinitionsPackage: '',
-        repoReferenceDefinitionsRepo: ''
+        repoOwner,
+        repoName,
+        year: new Date().getFullYear().toString()
       };
 
       debug('preset: %O', preset);
@@ -1880,51 +1854,4 @@ function rethrowErrorIfNotStatus404(errorResponse: unknown) {
   }
 
   return undefined;
-}
-
-async function importAdditionalRawAliasMappings(
-  projectMetadata: ProjectMetadata,
-  outputFunctions: { log: ExtendedLogger; debug: ExtendedDebugger }
-) {
-  const { debug } = outputFunctions;
-  const {
-    rootPackage: { root: projectRoot }
-  } = projectMetadata;
-
-  const aliasMapPath = toPath(projectRoot, aliasMapConfigPackageBase);
-
-  debug(`aliasMapPath: %O`, aliasMapPath);
-
-  const aliasMapImport = await import(aliasMapPath).catch((error: unknown) => {
-    debug.warn('failed to import %O: %O', aliasMapPath, error);
-    return undefined;
-  });
-
-  debug(`aliasMapImport: %O`, aliasMapImport);
-
-  if (aliasMapImport) {
-    const aliasMap: ImportedAliasMap | undefined = aliasMapImport?.default;
-
-    if (aliasMap) {
-      debug('aliasMap: %O', aliasMap);
-
-      if (typeof aliasMap === 'function') {
-        debug('invoking aliases import as a function from %O', aliasMapPath);
-        return aliasMap(projectMetadata, outputFunctions);
-      } else if (Array.isArray(aliasMap)) {
-        debug('returning aliases import as an array from %O', aliasMapPath);
-        return aliasMap;
-      } else {
-        softAssert(ErrorMessage.BadMjsImport(aliasMapPath));
-      }
-    } else {
-      throw new Error(ErrorMessage.DefaultImportFalsy());
-    }
-  } else {
-    debug(
-      'skipped importing additional alias mappings: no importable alias configuration file found at project root'
-    );
-  }
-
-  return [];
 }

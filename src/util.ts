@@ -23,18 +23,22 @@ import {
 import { LogTag } from 'multiverse+cli-utils:logging.ts';
 
 import {
+  aliasMapConfigPackageBase,
   dotEnvConfigPackageBase,
   dotEnvConfigProjectBase,
   dotEnvDefaultConfigPackageBase,
   dotEnvDefaultConfigProjectBase,
   getInitialWorkingDirectory,
-  isAccessible,
   toAbsolutePath,
   toPath,
   type AbsolutePath
 } from 'multiverse+project-utils:fs.ts';
 
-import { createDebugLogger, type ExtendedLogger } from 'multiverse+rejoinder';
+import {
+  createDebugLogger,
+  type ExtendedDebugger,
+  type ExtendedLogger
+} from 'multiverse+rejoinder';
 
 import {
   globalCliArguments,
@@ -45,7 +49,12 @@ import {
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
 
-import type { GenericProjectMetadata } from 'multiverse+project-utils:analyze/common.ts';
+import type {
+  GenericProjectMetadata,
+  ProjectMetadata
+} from 'multiverse+project-utils:analyze/common.ts';
+
+import type { ImportedAliasMap } from 'universe:commands/project/renovate.ts';
 
 const cachedDotEnvResults = new Map<string, Partial<DotenvPopulateInput> | undefined>();
 
@@ -430,6 +439,57 @@ export function loadDotEnv(
   }
 
   return environmentContainer;
+}
+
+/**
+ * Used by renovate and init project-level commands to load additional raw
+ * aliases from `aliases.config.mjs`.
+ */
+export async function importAdditionalRawAliasMappings(
+  projectMetadata: ProjectMetadata,
+  outputFunctions: { log: ExtendedLogger; debug: ExtendedDebugger }
+) {
+  const { debug } = outputFunctions;
+  const {
+    rootPackage: { root: projectRoot }
+  } = projectMetadata;
+
+  const aliasMapPath = toPath(projectRoot, aliasMapConfigPackageBase);
+
+  debug(`aliasMapPath: %O`, aliasMapPath);
+
+  const aliasMapImport = await import(aliasMapPath).catch((error: unknown) => {
+    debug.warn('failed to import %O: %O', aliasMapPath, error);
+    return undefined;
+  });
+
+  debug(`aliasMapImport: %O`, aliasMapImport);
+
+  if (aliasMapImport) {
+    const aliasMap: ImportedAliasMap | undefined = aliasMapImport?.default;
+
+    if (aliasMap) {
+      debug('aliasMap: %O', aliasMap);
+
+      if (typeof aliasMap === 'function') {
+        debug('invoking aliases import as a function from %O', aliasMapPath);
+        return aliasMap(projectMetadata, outputFunctions);
+      } else if (Array.isArray(aliasMap)) {
+        debug('returning aliases import as an array from %O', aliasMapPath);
+        return aliasMap;
+      } else {
+        softAssert(ErrorMessage.BadMjsImport(aliasMapPath));
+      }
+    } else {
+      throw new Error(ErrorMessage.DefaultImportFalsy());
+    }
+  } else {
+    debug(
+      'skipped importing additional alias mappings: no importable alias configuration file found at project root'
+    );
+  }
+
+  return [];
 }
 
 // TODO: probably prudent to make these part of cli-utils
