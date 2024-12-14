@@ -9,7 +9,7 @@ export const { transformer } = makeTransformer(async function (context) {
   return [
     {
       path: toProjectAbsolutePath(asset),
-      generate: () => compileTemplate('LICENSE' as RelativePath, context)
+      generate: () => compileTemplate('LICENSE' as RelativePath, { ...context })
     }
   ];
 });

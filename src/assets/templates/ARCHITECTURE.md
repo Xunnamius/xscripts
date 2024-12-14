@@ -1,4 +1,4 @@
-<!-- xscripts-renovate-region-start -->
+<!-- xscripts-template-region-start -->
 
 # 📐 Project Architecture
 
@@ -13,12 +13,10 @@ document.
 
 ---
 
-<!-- xscripts-renovate-region-end -->
+<!-- xscripts-template-region-end -->
 
 There are as of yet no notable deviations or additions. See the linked document
 (above) for information on the architecture of this project.
-
-<!-- xscripts-renovate-region-definitions -->
 
 [1]: https://github.com/Xunnamius/xscripts/wiki/Generic-Project-Architecture
 [2]: https://github.com/Xunnamius/xscripts

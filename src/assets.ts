@@ -1,10 +1,11 @@
 import { readdir } from 'node:fs/promises';
 
 import { CliError } from '@black-flag/core';
+import getInObject from 'lodash.get';
 import mergeWith from 'lodash.mergewith';
 
 import { type ExtendedDebugger } from 'multiverse+debug';
-import { type ProjectAttribute, type ProjectMetadata } from 'multiverse+project-utils';
+import { type ProjectMetadata } from 'multiverse+project-utils';
 import { type RawAliasMapping } from 'multiverse+project-utils:alias.ts';
 
 import {
@@ -98,8 +99,20 @@ export type TransformerContainer = {
 /**
  * A union of well-known context keys passed directly to each transformer
  * {@link Transformer}.
+ *
+ * **INSTANCES OF `TransformerContext` MUST NOT CONTAIN ANY SENSITIVE
+ * INFORMATION!**
  */
 export type TransformerContext = {
+  /**
+   * The value of the `asset` parameter passed to
+   * {@link gatherAssetsFromTransformer} and related functions.
+   *
+   * For transformers returning a single asset, this can be used to construct
+   * the asset path.
+   */
+  asset: string;
+
   /**
    * Global logging function.
    */
@@ -120,14 +133,6 @@ export type TransformerContext = {
    */
   toPackageAbsolutePath: (...pathsLike: (RelativePath | string)[]) => AbsolutePath;
 
-  /**
-   * The value of the `asset` parameter passed to
-   * {@link gatherAssetsFromTransformer} and related functions.
-   *
-   * For transformers returning a single asset, this can be used to construct
-   * the asset path.
-   */
-  asset: string;
   /**
    * Whether or not to derive aliases and inject them into the configuration.
    */
@@ -157,50 +162,11 @@ export type TransformerContext = {
   additionalRawAliasMappings: RawAliasMapping[];
 
   /**
-   * The markdown badge references that are standard for every xscripts-powered
-   * project.
+   * The owner of the repository on GitHub or other service.
    *
-   * GFM and GitHub-supported HTML is allowed.
+   * This string is always a URL-safe and valid GitHub repository owner.
    */
-  badges: string;
-  /**
-   * `package.json::name`.
-   */
-  packageName: string;
-  /**
-   * `package.json::version`.
-   */
-  packageVersion: string;
-  /**
-   * `package.json::description`.
-   */
-  packageDescription: string;
-  /**
-   * A short description of distributables.
-   *
-   * **This context variable can be defined as a string array which will offer
-   * the user several choices that they must narrow down manually.** To avoid
-   * noisy diffs during renovation, the user's choice should correspond with
-   * their choice in {@link TransformerContext.packageBuildDetailsLong}.
-   */
-  packageBuildDetailsShort: string | string[];
-  /**
-   * A technical description of distributables.
-   *
-   * **This context variable can be defined as a string array which will offer
-   * the user several choices that they must narrow down manually.** To avoid
-   * noisy diffs during renovation, the user's choice should correspond with
-   * their choice in {@link TransformerContext.packageBuildDetailsShort}.
-   */
-  packageBuildDetailsLong: string | string[];
-  /**
-   * The value of the singular H1 heading at the top of a package's `README.md`
-   * file.
-   *
-   * Do not rely on this string being a valid package name as it may contain any
-   * manner of symbol or punctuation.
-   */
-  titleName: string;
+  repoOwner: string;
   /**
    * The name of the repository on GitHub or other service.
    *
@@ -208,81 +174,9 @@ export type TransformerContext = {
    */
   repoName: string;
   /**
-   * The repository type.
-   *
-   * @see {@link ProjectAttribute}
+   * The year as shown in various generated documents like `LICENSE.md`.
    */
-  repoType:
-    | ProjectAttribute.Polyrepo
-    | ProjectAttribute.Monorepo
-    | ProjectAttribute.Hybridrepo;
-  /**
-   * The url of the repository on GitHub or other service.
-   */
-  repoUrl: string;
-  /**
-   * The url of the repository on Snyk.
-   */
-  repoSnykUrl: string;
-  /**
-   * The entry point (url) of the repository's documentation.
-   */
-  repoReferenceDocs: string;
-  /**
-   * The url of the repository's license.
-   */
-  repoReferenceLicense: string;
-  /**
-   * The url to create a new issue against the repository.
-   */
-  repoReferenceNewIssue: string;
-  /**
-   * The url to create a new PR against the repository.
-   */
-  repoReferencePrCompare: string;
-  /**
-   * The url of the repository's `README.md` file.
-   */
-  repoReferenceSelf: string;
-  /**
-   * The url of a donation/sponsorship service associated with the repository.
-   */
-  repoReferenceSponsor: string;
-  /**
-   * The url of the repository's `CONTRIBUTING.md` file.
-   */
-  repoReferenceContributing: string;
-  /**
-   * The url of the repository's `SUPPORT.md` file.
-   */
-  repoReferenceSupport: string;
-  /**
-   * The url of the all-contributors repository
-   */
-  repoReferenceAllContributors: string;
-  /**
-   * The url of the all-contributors emoji key
-   */
-  repoReferenceAllContributorsEmojis: string;
-  /**
-   * The well-known badge-specific reference definitions used in `{{badges}}`.
-   */
-  repoReferenceDefinitionsBadge: string;
-  /**
-   * The well-known package-specific reference definitions used throughout this
-   * context object.
-   *
-   * **During renovation, the string value of this context key depends on the
-   * version of
-   * {@link TransformerContext.packageBuildDetailsLong}/{@link TransformerContext.packageBuildDetailsShort}
-   * found in the existing document.**
-   */
-  repoReferenceDefinitionsPackage: string;
-  /**
-   * The well-known repo-specific reference definitions throughout this context
-   * object.
-   */
-  repoReferenceDefinitionsRepo: string;
+  year: string;
 };
 
 /**
@@ -317,6 +211,9 @@ export type GatherAssetsFromTransformerOptions = {
 /**
  * A looser version of {@link TransformerContext} used when constructing custom
  * transformer contexts.
+ *
+ * **INSTANCES OF `IncomingTransformerContext` MUST NOT CONTAIN ANY SENSITIVE
+ * INFORMATION!**
  *
  * @see {@link TransformerContext}
  */
@@ -434,22 +331,26 @@ export function makeTransformer(transform: Transform): TransformerContainer {
             path,
             async function generate() {
               debug.message('generating contents of asset: %O', path);
+              let contents = await wrappedGenerate();
 
-              let contents = (await wrappedGenerate())[
-                trimContents === 'start'
-                  ? 'trimStart'
-                  : trimContents === 'end'
-                    ? 'trimEnd'
-                    : trimContents === false
-                      ? 'toString'
-                      : 'trim'
-              ]();
+              if (typeof contents === 'string') {
+                contents =
+                  contents[
+                    trimContents === 'start'
+                      ? 'trimStart'
+                      : trimContents === 'end'
+                        ? 'trimEnd'
+                        : trimContents === false
+                          ? 'toString'
+                          : 'trim'
+                  ]();
 
-              if (
-                trimContents === 'both-then-append-newline' ||
-                trimContents === undefined
-              ) {
-                contents += '\n';
+                if (
+                  trimContents === 'both-then-append-newline' ||
+                  trimContents === undefined
+                ) {
+                  contents += '\n';
+                }
               }
 
               return contents;
@@ -466,15 +367,6 @@ export function makeTransformer(transform: Transform): TransformerContainer {
  * values; each pair represents an output path and an input path relative to the
  * template asset directory. This function returns a {@link ReifiedAssets}
  * instance with values that lazily invoke {@link compileTemplate}.
- *
- * Some template variables accept an optional `linkText` parameter which, if
- * given, will be replaced by a link of the form `[linkText](contextual-value)`;
- * e.g. `{{variableName:link text}}` will be replaced with `[link
- * text](variableName's-contextual-value)`.
- *
- * Other template variables (defined as arrays) return multiple choices that the
- * user must manually narrow, similar to a merge conflict in git. See
- * {@link TransformerContext} for which template variables are affected.
  */
 export async function compileTemplates(
   templates: Record<AbsolutePath, RelativePath>,
@@ -496,15 +388,6 @@ export async function compileTemplates(
  * template at that path with all handlebars-style template variables (e.g.
  * `{{variableName}}`) with matching keys in `TemplateContext` replaced with
  * their contextual values.
- *
- * Some template variables accept an optional `linkText` parameter which, if
- * given, will be replaced by a link of the form `[linkText](contextual-value)`;
- * e.g. `{{variableName:link text}}` will be replaced with `[link
- * text](variableName's-contextual-value)`.
- *
- * Other template variables (defined as arrays) return multiple choices that the
- * user must manually narrow, similar to a merge conflict in git. See
- * {@link TransformerContext} for which template variables are affected.
  */
 export async function compileTemplate(
   templatePath: RelativePath,
@@ -522,18 +405,16 @@ export async function compileTemplate(
 }
 
 /**
- * Takes a string and returns that string with all handlebars-style template
- * variables (e.g. `{{variableName}}`) with matching keys in `TemplateContext`
- * replaced with their contextual values.
+ * Takes a string and returns that string with all handlebars-style "template
+ * variables" (e.g. `{{variableName}}`) with matching keys in `TemplateContext`
+ * replaced with their contextual values. All such values are stringified using
+ * `String(value)`. Object-valued variables can have their properties referenced
+ * using dot notation, i.e.: `{{variableName.prop.sub-prop.length}}`.
  *
- * Some template variables accept an optional `linkText` parameter which, if
- * given, will be replaced by a link of the form `[linkText](contextual-value)`;
- * e.g. `{{variableName:link text}}` will be replaced with `[link
- * text](variableName's-contextual-value)`.
- *
- * Other template variables (defined as arrays) return multiple choices that the
- * user must manually narrow, similar to a merge conflict in git. See
- * {@link TransformerContext} for which template variables are affected.
+ * Template variables accept an optional `linkText` parameter which, if given,
+ * will be replaced by a link of the form `[linkText](contextual-value)`. The
+ * parameter is separated from the key by a colon, e.g. `{{variableName:link
+ * text}}` will be replaced with `[link text](variableName's-contextual-value)`.
  */
 export function compileTemplateInMemory(
   rawTemplate: string,
@@ -542,7 +423,7 @@ export function compileTemplateInMemory(
   const debug = debug_.extend('config-template');
 
   debug(
-    'raw template from transformer %O (~%O bytes): %O',
+    'compiling raw template from transformer %O (~%O bytes): %O',
     context.asset,
     rawTemplate.length,
     rawTemplate
@@ -550,29 +431,19 @@ export function compileTemplateInMemory(
 
   // eslint-disable-next-line unicorn/no-array-reduce
   const compiledTemplate = Object.entries(context).reduce((result, [key, value]) => {
-    if (typeof value === 'string') {
-      return result.replaceAll(
-        new RegExp(`{{${key}(?:|:|:(.+?(?=}})))}}`, 'g'),
-        (_matchText, linkText: string | undefined) => {
-          return linkText ? `[${linkText}](${value})` : value;
-        }
-      );
-    } else if (Array.isArray(value)) {
-      return result.replaceAll(
-        `{{${key}}}`,
-        `
-<!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
-
-${value.join('\n\n---✄---\n\n')}
-`.trim()
-      );
-    }
-
-    return result;
+    return result.replaceAll(
+      new RegExp(`{{${key}(\\.[^:}]+)?(?:|:|:(.+?(?=}})))}}`, 'g'),
+      (_matchText, query: string | undefined, linkText: string | undefined) => {
+        const actualValue = String(query ? getInObject(value, query.slice(1)) : value);
+        // ! `value` may be sensitive, so do not output it in logs
+        debug('found and replaced %O template variable', key + (query || ''));
+        return linkText ? `[${linkText}](${actualValue})` : actualValue;
+      }
+    );
   }, rawTemplate);
 
   debug(
-    'compiled template size for transformer %O: ~%O bytes',
+    'final compiled template size for transformer %O: ~%O bytes',
     context.asset,
     compiledTemplate.length
   );
@@ -618,7 +489,10 @@ async function invokeTransformerAndReifyAssets({
 
     debug('invoking transformer from: %O', transformerPath);
     const reifiedAssets = await transformer(
-      { ...transformerContext, asset: transformerId },
+      {
+        ...transformerContext,
+        asset: transformerId
+      },
       options
     );
 

@@ -8,10 +8,10 @@ disclosure through GitHub][5] or, if that fails, [via email][6].
 
 Thank you for your contribution!
 
-[1]: {{repoSnykUrl}}
-[2]: {{repoSnykUrl}}/badge.svg
-[3]: {{repoUrl}}/issues?q=
-[4]: {{repoUrl}}/issues/new/choose
+[1]: https://snyk.io/test/github/{{repoOwner}}/{{repoName}}
+[2]: https://snyk.io/test/github/{{repoOwner}}/{{repoName}}/badge.svg
+[3]: https://github.com/{{repoOwner}}/{{repoName}}/issues?q=
+[4]: https://github.com/{{repoOwner}}/{{repoName}}/issues/new/choose
 [5]:
   https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability
 [6]:

@@ -9,7 +9,21 @@ export const { transformer } = makeTransformer(async function (context) {
   return [
     {
       path: toProjectAbsolutePath(asset),
-      generate: () => compileTemplate('README.md' as RelativePath, context)
+      generate: () => {
+        const contents = compileTemplate('README.md' as RelativePath, context);
+
+        // TODO: replace H1 with proper string or "# <!-- TODO: --> Project Title Here"
+
+        // TODO: implement regional replacements as function (but no hoist yet)
+
+        // TODO: drop unused reference from package build explanation text
+
+        // TODO: drop license section if no license
+
+        // TODO: (should be hoisted?) preserve all numeric reference defs
+
+        return contents;
+      }
     }
   ];
 });

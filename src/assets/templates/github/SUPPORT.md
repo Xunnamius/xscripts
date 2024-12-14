@@ -51,9 +51,10 @@ you for contribution 🎉, your efforts are greatly appreciated! 🙌🏿
 [badge-issue-resolution]:
   https://isitmaintained.com/badge/resolution/Xunnamius/{{repoName}}.svg
   'Average time to resolve an issue'
-[choose-new-issue]: {{repoUrl}}/issues/new/choose
+[choose-new-issue]:
+  https://github.com/{{repoOwner}}/{{repoName}}/issues/new/choose
 [github-blog]:
   https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments
 [link-issue-resolution]:
   https://isitmaintained.com/project/Xunnamius/{{repoName}}
-[open-issues]: {{repoUrl}}/issues?q=
+[open-issues]: https://github.com/{{repoOwner}}/{{repoName}}/issues?q=

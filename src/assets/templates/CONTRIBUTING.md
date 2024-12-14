@@ -78,21 +78,23 @@ likelihood your PR passes review:
 At this point, you're ready to create your PR and ✨ contribute ✨!
 
 [atomic-commits]: https://www.codewithjason.com/atomic-commits-testing
-[choose-new-issue]: {{repoUrl}}/issues/new/choose
-[code-of-conduct]: {{repoUrl}}/.github/CODE_OF_CONDUCT.md
+[choose-new-issue]:
+  https://github.com/{{repoOwner}}/{{repoName}}/issues/new/choose
+[code-of-conduct]:
+  https://github.com/{{repoOwner}}/{{repoName}}/.github/CODE_OF_CONDUCT.md
 [codecov]: https://about.codecov.io
 [conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0#summary
 [cosmetic-commits]:
   https://github.com/rails/rails/pull/13771#issuecomment-32746700
-[fork]: {{repoUrl}}/fork
+[fork]: https://github.com/{{repoOwner}}/{{repoName}}/fork
 [github-actions]: https://github.com/features/actions
 [how-to-clone]:
   https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/cloning-a-repository
 [how-to-contribute]: https://www.dataschool.io/how-to-contribute-on-github
-[husky-cl]: {{repoUrl}}/tree/main/.husky
+[husky-cl]: https://github.com/{{repoOwner}}/{{repoName}}/tree/main/.husky
 [npm-ci]: https://docs.npmjs.com/cli/v6/commands/npm-ci
-[open-issues]: {{repoUrl}}/issues?q=
+[open-issues]: https://github.com/{{repoOwner}}/{{repoName}}/issues?q=
 [pkg-debug]: https://www.npmjs.com/package/debug
 [pkg-debug-wildcards]: https://www.npmjs.com/package/debug#wildcards
-[pr-compare]: {{repoUrl}}/compare
+[pr-compare]: https://github.com/{{repoOwner}}/{{repoName}}/compare
 [xpipeline]: https://github.com/Xunnamius/xpipeline#readme

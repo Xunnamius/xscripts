@@ -4,7 +4,7 @@ import { makeTransformer } from 'universe:assets.ts';
 
 export const { transformer } = makeTransformer(function ({
   asset,
-  packageName,
+  projectMetadata,
   toProjectAbsolutePath
 }) {
   return [
@@ -13,7 +13,7 @@ export const { transformer } = makeTransformer(function ({
       generate: () =>
         JSON.stringify(
           {
-            projectName: packageName,
+            projectName: projectMetadata.rootPackage.json.name,
             projectOwner: 'Xunnamius',
             repoType: 'github',
             repoHost: 'https://github.com',

@@ -2,8 +2,6 @@
 
 import { type Merge } from 'type-fest';
 
-import { ProjectAttribute } from 'multiverse+project-utils:analyze.ts';
-
 import {
   allContributorsConfigProjectBase,
   babelConfigProjectBase,
@@ -73,48 +71,25 @@ import { DefaultGlobalScope } from 'universe:configure.ts';
 import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
 
 const dummyContext: IncomingTransformerContext = {
+  log: createGenericLogger({ namespace: 'unit-assets-dummy-context' }),
+  debug: createDebugLogger({ namespace: 'unit-assets-dummy-context' }),
+
+  toProjectAbsolutePath: (...pathsLike) => toAbsolutePath('/dummy', ...pathsLike),
+  toPackageAbsolutePath: (...pathsLike) =>
+    toAbsolutePath('/dummy/packages/pkg', ...pathsLike),
+
+  shouldDeriveAliases: true,
+  forceOverwritePotentiallyDestructive: false,
+  scope: DefaultGlobalScope.Unlimited,
   targetAssetsPreset: undefined,
-  badges: 'badges',
-  packageName: 'package-name',
-  packageVersion: '1.2.3-fake',
-  packageDescription: 'package-description',
-  packageBuildDetailsShort: [
-    'package-build-details-short-1',
-    'package-build-details-short-2',
-    'package-build-details-short-3',
-    'package-build-details-short-4'
-  ],
-  packageBuildDetailsLong: ['package-build-details-long-1'],
   projectMetadata: fixtureToProjectMetadata(
     'goodHybridrepo'
   ) as TransformerContext['projectMetadata'],
   additionalRawAliasMappings: [],
-  titleName: 'title-name',
+
+  repoOwner: 'repo-owner',
   repoName: 'repo-name',
-  repoType: ProjectAttribute.Polyrepo,
-  repoUrl: 'repo-url',
-  repoSnykUrl: 'repo-snyk-url',
-  repoReferenceDocs: 'repo-reference-docs',
-  repoReferenceLicense: 'repo-reference-license',
-  repoReferenceNewIssue: 'repo-reference-new-issue',
-  repoReferencePrCompare: 'repo-reference-pr-compare',
-  repoReferenceSelf: 'repo-reference-self',
-  repoReferenceSponsor: 'repo-reference-sponsor',
-  repoReferenceContributing: 'repo-reference-contributing',
-  repoReferenceSupport: 'repo-reference-support',
-  repoReferenceAllContributors: 'repo-reference-all-contributors',
-  repoReferenceAllContributorsEmojis: 'repo-reference-all-contributors-emojis',
-  repoReferenceDefinitionsBadge: 'repo-reference-definitions-badge',
-  repoReferenceDefinitionsPackage: 'repo-reference-definitions-package',
-  repoReferenceDefinitionsRepo: 'repo-reference-definitions-repo',
-  shouldDeriveAliases: true,
-  log: createGenericLogger({ namespace: 'unit-assets-dummy-context' }),
-  debug: createDebugLogger({ namespace: 'unit-assets-dummy-context' }),
-  toProjectAbsolutePath: (...pathsLike) => toAbsolutePath('/dummy', ...pathsLike),
-  toPackageAbsolutePath: (...pathsLike) =>
-    toAbsolutePath('/dummy/packages/pkg', ...pathsLike),
-  forceOverwritePotentiallyDestructive: false,
-  scope: DefaultGlobalScope.Unlimited
+  year: '1776'
 };
 
 dummyContext.log.enabled = false;
@@ -257,6 +232,10 @@ describe('::gatherAssetsFromTransformer', () => {
           dummyContext.targetAssetsPreset
         );
       }
+    });
+
+    it('dotenv (merge)', async () => {
+      expect.hasAssertions();
     });
 
     it('git-attributes', async () => {
@@ -871,85 +850,99 @@ describe('::compileTemplateInMemory', () => {
     expect.hasAssertions();
 
     const templateString = `
-{{badges}}
+<!-- xscripts-template-region-start -->
 
-# {{prettyName}}
+<p align="center" width="100%">
+  <img width="300" src="./{{repoName}}.png">
+</p>
 
-{{packageDescription}}
+<p align="center" width="100%">
+<!-- xscripts-template-region-end -->
 
-npm install {{packageName}}
+{{projectMetadata.cwdPackage.json.description}}
 
-Further documentation can be found under {{repoReferenceDocs:\`docs/\`}}.
+<!-- xscripts-template-region-start -->
 
-{{packageBuildDetailsShort}}
+<div align="center">
 
-See {{repoReferenceLicense:LICENSE}}.
+[![Black Lives Matter!][x-badge-blm-image]][x-badge-blm-link]
 
-**{{repoReferenceNewIssue:New issues}} and
-{{repoReferencePrCompare:pull requests}} are always welcome and greatly
-appreciated! 🤩** Just as well, you can
-{{repoReferenceSelf:star 🌟 this project}} to let me know you found it useful!
-✊🏿 Or you could consider {{repoReferenceSponsor:buying me a beer}}. Thank you!
+</div>
 
-See {{repoReferenceContributing:CONTRIBUTING.md}} and
-{{repoReferenceSupport:SUPPORT.md}} for more information.
+# <!-- TODO: --> Project Title Here
 
-{{repoReferenceSupport}}
+<!-- xscripts-template-region-end -->
 
-Thanks goes to these wonderful people
-({{repoReferenceAllContributorsEmojis:emoji key}})
+{{projectMetadata.cwdPackage.json.description}}
 
-This project follows the {{repoReferenceAllContributors:all-contributors}}
-specification. Contributions of any kind welcome!
+To install {{repoName}}:
+
+\`\`\`shell
+npm install {{projectMetadata.cwdPackage.json.name}}
+\`\`\`
+
+[x-badge-codecov-image]:
+  https://img.shields.io/codecov/c/github/{{repoOwner}}/{{repoName}}/main?style=flat-square&token=HWRIOBAAPW&flag=package.main_root
+  'Is this package well-tested?'
+[x-badge-codecov-link]: https://codecov.io/gh/{{repoOwner}}/{{repoName}}
+[x-badge-downloads-image]:
+  https://img.shields.io/npm/dm/{{projectMetadata.cwdPackage.json.name}}?style=flat-square
+  'Number of times this package has been downloaded per month'
+[x-badge-lastcommit-image]:
+  https://img.shields.io/github/last-commit/{{repoOwner}}/{{repoName}}?style=flat-square
+  'Latest commit timestamp'
+[x-badge-license-image]:
+  https://img.shields.io/npm/l/{{projectMetadata.cwdPackage.json.name}}?style=flat-square
+  "This package's source license"
 `.trim();
 
     expect(
       compileTemplateInMemory(templateString, { ...dummyContext, asset: 'in-memory' })
     ).toMatchInlineSnapshot(`
-      "badges
+      "<!-- xscripts-template-region-start -->
 
-      # {{prettyName}}
+      <p align="center" width="100%">
+        <img width="300" src="./repo-name.png">
+      </p>
 
-      package-description
+      <p align="center" width="100%">
+      <!-- xscripts-template-region-end -->
 
-      npm install package-name
+      good-hybridrepo-description
 
-      Further documentation can be found under [\`docs/\`](repo-reference-docs).
+      <!-- xscripts-template-region-start -->
 
-      <!-- TODO: Choose one of the following and ✄ delete ✄ the others: -->
+      <div align="center">
 
-      package-build-details-short-1
+      [![Black Lives Matter!][x-badge-blm-image]][x-badge-blm-link]
 
-      ---✄---
+      </div>
 
-      package-build-details-short-2
+      # <!-- TODO: --> Project Title Here
 
-      ---✄---
+      <!-- xscripts-template-region-end -->
 
-      package-build-details-short-3
+      good-hybridrepo-description
 
-      ---✄---
+      To install repo-name:
 
-      package-build-details-short-4
+      \`\`\`shell
+      npm install good-hybridrepo
+      \`\`\`
 
-      See [LICENSE](repo-reference-license).
-
-      **[New issues](repo-reference-new-issue) and
-      [pull requests](repo-reference-pr-compare) are always welcome and greatly
-      appreciated! 🤩** Just as well, you can
-      [star 🌟 this project](repo-reference-self) to let me know you found it useful!
-      ✊🏿 Or you could consider [buying me a beer](repo-reference-sponsor). Thank you!
-
-      See [CONTRIBUTING.md](repo-reference-contributing) and
-      [SUPPORT.md](repo-reference-support) for more information.
-
-      repo-reference-support
-
-      Thanks goes to these wonderful people
-      ([emoji key](repo-reference-all-contributors-emojis))
-
-      This project follows the [all-contributors](repo-reference-all-contributors)
-      specification. Contributions of any kind welcome!"
+      [x-badge-codecov-image]:
+        https://img.shields.io/codecov/c/github/repo-owner/repo-name/main?style=flat-square&token=HWRIOBAAPW&flag=package.main_root
+        'Is this package well-tested?'
+      [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
+      [x-badge-downloads-image]:
+        https://img.shields.io/npm/dm/good-hybridrepo?style=flat-square
+        'Number of times this package has been downloaded per month'
+      [x-badge-lastcommit-image]:
+        https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
+        'Latest commit timestamp'
+      [x-badge-license-image]:
+        https://img.shields.io/npm/l/good-hybridrepo?style=flat-square
+        "This package's source license""
     `);
   });
 });

@@ -757,7 +757,12 @@ export const { transformer } = makeTransformer(function ({
         deriveAliasesForEslint(generateRawAliasMap(projectMetadata)),
         undefined,
         4
-      ).replace(/^]/m, '  }')},`
+      )
+        // ? Make it a bit prettier
+        .replaceAll(/\[\s+"/g, '["')
+        .replaceAll(/",\s+"/g, '", "')
+        .replaceAll(/"\s+\]/g, '"]')
+        .replace(/^]/m, '  ]')},`
     : 'return []';
 
   return [

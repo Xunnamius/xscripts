@@ -198,6 +198,7 @@ export const { transformer } = makeTransformer(function ({
         undefined,
         6
       )
+        // ? Make it a bit prettier
         .replaceAll(/\[\s+"/g, '["')
         .replaceAll(/"\s+\]/g, '"]')
         .replace(/^}/m, '    }')
