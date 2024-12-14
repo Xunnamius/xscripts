@@ -1,4 +1,4 @@
-import { isAbsolute, join, relative, resolve, dirname } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 
 import { type Tagged } from 'type-fest';
 
