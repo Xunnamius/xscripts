@@ -1,10 +1,23 @@
-import { makeTransformer } from 'universe:assets.ts';
+import { directorySrcPackageBase, isAccessible } from 'multiverse+project-utils:fs.ts';
 
-export const { transformer } = makeTransformer(function ({ toProjectAbsolutePath }) {
-  return [
-    {
-      path: toProjectAbsolutePath('src/index.ts'),
-      generate: () => /*js*/ `export {};`
+import { makeTransformer } from 'universe:assets.ts';
+import { generatePerPackageAssets } from 'universe:util.ts';
+
+export const { transformer } = makeTransformer(function (context) {
+  const { toProjectAbsolutePath } = context;
+
+  // * Every package gets these files except non-hybrid monorepo roots
+  return generatePerPackageAssets(context, async function ({ toPackageAbsolutePath }) {
+    const outputDir = toPackageAbsolutePath(directorySrcPackageBase);
+
+    // ? Only create this file if its parent directory does not already exist
+    if (!(await isAccessible(outputDir, { useCached: true }))) {
+      return [
+        {
+          path: toProjectAbsolutePath(outputDir, 'index.ts'),
+          generate: () => /*js*/ `export {};`
+        }
+      ];
     }
-  ];
+  });
 });

@@ -1,5 +1,8 @@
+import { gacConfigPackageBase } from 'multiverse+project-utils:fs.ts';
+
 import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
 // TODO: this function returns one of the types exported by gac package
 export function moduleExport() {
@@ -8,14 +11,15 @@ export function moduleExport() {
   };
 }
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+export const { transformer } = makeTransformer(function (context) {
+  const { asset, toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, function () {
+    return [
+      {
+        path: toProjectAbsolutePath(gacConfigPackageBase),
+        generate: () => /*js*/ `
 // @ts-check
 'use strict';
 
@@ -38,6 +42,7 @@ export default config;
 
 /*debug('exported config: %O', config);*/
 `
-    }
-  ];
+      }
+    ];
+  });
 });

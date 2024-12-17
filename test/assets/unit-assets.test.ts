@@ -2,6 +2,8 @@
 
 import { type Merge } from 'type-fest';
 
+import { type ProjectMetadata } from 'multiverse+project-utils:analyze.ts';
+
 import {
   allContributorsConfigProjectBase,
   babelConfigProjectBase,
@@ -15,6 +17,7 @@ import {
   directoryTestPackageBase,
   directoryTypesProjectBase,
   directoryVscodeProjectBase,
+  dotEnvConfigProjectBase,
   dotEnvDefaultConfigPackageBase,
   dotEnvDefaultConfigProjectBase,
   editorConfigProjectBase,
@@ -40,9 +43,11 @@ import {
   spellcheckIgnoreConfigProjectBase,
   tailwindConfigProjectBase,
   toAbsolutePath,
+  toPath,
   Tsconfig,
   tstycheConfigProjectBase,
   turboConfigProjectBase,
+  vercelConfigProjectBase,
   webpackConfigProjectBase,
   xchangelogConfigProjectBase,
   xreleaseConfigProjectBase,
@@ -60,12 +65,12 @@ import {
   gatherAssetsFromTransformer,
   makeTransformer,
   type Asset,
+  type AssetPreset,
   type IncomingTransformerContext,
   type ReifiedAssets,
   type TransformerContext
 } from 'universe:assets.ts';
 
-import { type RenovationPreset } from 'universe:commands/project/renovate.ts';
 import { DefaultGlobalScope } from 'universe:configure.ts';
 
 import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
@@ -81,7 +86,7 @@ const dummyContext: IncomingTransformerContext = {
   shouldDeriveAliases: true,
   forceOverwritePotentiallyDestructive: false,
   scope: DefaultGlobalScope.Unlimited,
-  targetAssetsPreset: undefined,
+  assetPreset: undefined,
   projectMetadata: fixtureToProjectMetadata(
     'goodHybridrepo'
   ) as TransformerContext['projectMetadata'],
@@ -150,7 +155,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -166,7 +171,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -182,7 +187,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -198,44 +203,151 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
-    it('dotenv (default)', async () => {
-      expect.hasAssertions();
+    describe('dotenv', () => {
+      test('generates expected assets for polyrepo', async () => {
+        expect.hasAssertions();
 
-      {
-        const assets = await gatherAssetsFromTransformer({
-          transformerId: dotEnvDefaultConfigProjectBase,
-          transformerContext: dummyContext,
-          options: { transformerFiletype: 'ts' }
-        });
+        const projectMetadata = fixtureToProjectMetadata(
+          'goodPolyrepo'
+        ) as TransformerContext['projectMetadata'];
 
-        await expectAssetsToMatchSnapshots(
-          assets,
-          dummyContext.scope,
-          dummyContext.targetAssetsPreset
-        );
-      }
+        {
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: dotEnvDefaultConfigProjectBase,
+            transformerContext: {
+              ...dummyContext,
+              projectMetadata,
+              ...makeDummyPathFunctions(projectMetadata)
+            },
+            options: { transformerFiletype: 'ts' }
+          });
 
-      {
-        const assets = await gatherAssetsFromTransformer({
-          transformerId: dotEnvDefaultConfigPackageBase,
-          transformerContext: dummyContext,
-          options: { transformerFiletype: 'ts' }
-        });
+          await expectAssetsToMatchSnapshots(
+            assets,
+            dummyContext.scope,
+            dummyContext.assetPreset
+          );
+        }
+      });
 
-        await expectAssetsToMatchSnapshots(
-          assets,
-          dummyContext.scope,
-          dummyContext.targetAssetsPreset
-        );
-      }
-    });
+      test('generates expected assets at non-hybrid monorepo', async () => {
+        expect.hasAssertions();
 
-    it('dotenv (merge)', async () => {
-      expect.hasAssertions();
+        const projectMetadata = fixtureToProjectMetadata(
+          'goodMonorepo'
+        ) as TransformerContext['projectMetadata'];
+
+        {
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: dotEnvDefaultConfigPackageBase,
+            transformerContext: {
+              ...dummyContext,
+              projectMetadata,
+              ...makeDummyPathFunctions(projectMetadata)
+            },
+            options: { transformerFiletype: 'ts' }
+          });
+
+          await expectAssetsToMatchSnapshots(
+            assets,
+            dummyContext.scope,
+            dummyContext.assetPreset
+          );
+        }
+      });
+
+      test('generates expected assets at hybridrepo', async () => {
+        expect.hasAssertions();
+
+        const projectMetadata = fixtureToProjectMetadata(
+          'goodHybridrepo'
+        ) as TransformerContext['projectMetadata'];
+
+        {
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: dotEnvDefaultConfigPackageBase,
+            transformerContext: {
+              ...dummyContext,
+              projectMetadata,
+              ...makeDummyPathFunctions(projectMetadata)
+            },
+            options: { transformerFiletype: 'ts' }
+          });
+
+          await expectAssetsToMatchSnapshots(
+            assets,
+            dummyContext.scope,
+            dummyContext.assetPreset
+          );
+        }
+      });
+
+      it('merges with .env if it already exists only if force is used', async () => {
+        expect.hasAssertions();
+
+        {
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodPolyrepo'
+          ) as TransformerContext['projectMetadata'];
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: dotEnvDefaultConfigProjectBase,
+            transformerContext: {
+              ...dummyContext,
+              projectMetadata,
+              ...makeDummyPathFunctions(projectMetadata)
+            },
+            options: { transformerFiletype: 'ts' }
+          });
+
+          expect(assets).not.toHaveProperty(
+            toPath(projectMetadata.rootPackage.root, dotEnvConfigProjectBase)
+          );
+        }
+
+        {
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodPolyrepo'
+          ) as TransformerContext['projectMetadata'];
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: dotEnvDefaultConfigProjectBase,
+            transformerContext: {
+              ...dummyContext,
+              projectMetadata,
+              forceOverwritePotentiallyDestructive: true,
+              ...makeDummyPathFunctions(projectMetadata)
+            },
+            options: { transformerFiletype: 'ts' }
+          });
+
+          await expect(
+            assets[toPath(projectMetadata.rootPackage.root, dotEnvConfigProjectBase)]()
+          ).resolves.toMatchInlineSnapshot(`
+            "FAKE_SECRET=fake_value
+            FAKE_SECRET_2=fake-string-thing
+            NPM_TOKEN=fake
+            # Comment
+            CODECOV_TOKEN=fake
+
+            SOMETHING=5
+            #
+
+            GITHUB_TOKEN=
+            GIT_AUTHOR_NAME=
+            GIT_COMMITTER_NAME=
+            GIT_AUTHOR_EMAIL=
+            GIT_COMMITTER_EMAIL=
+            GPG_PASSPHRASE=
+            GPG_PRIVATE_KEY=
+            "
+          `);
+        }
+      });
     });
 
     it('git-attributes', async () => {
@@ -250,7 +362,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -266,7 +378,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -282,7 +394,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -298,7 +410,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -314,23 +426,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
-      );
-    });
-
-    it('prettier', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: prettierConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -346,7 +442,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -362,7 +458,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -378,7 +474,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -394,7 +490,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -410,7 +506,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -426,7 +522,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -442,7 +538,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -458,7 +554,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -474,7 +570,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -490,7 +586,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -506,7 +602,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -522,7 +618,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -538,7 +634,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -554,7 +650,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -570,7 +666,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -586,7 +682,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -602,7 +698,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -618,7 +714,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -634,7 +730,23 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
+      );
+    });
+
+    it('prettier', async () => {
+      expect.hasAssertions();
+
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: prettierConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
+      });
+
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.assetPreset
       );
     });
 
@@ -650,7 +762,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -666,7 +778,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -682,7 +794,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -698,7 +810,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -714,7 +826,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -730,7 +842,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -746,7 +858,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -762,7 +874,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -778,7 +890,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
 
@@ -794,7 +906,23 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
+      );
+    });
+
+    it('vercel.json', async () => {
+      expect.hasAssertions();
+
+      const assets = await gatherAssetsFromTransformer({
+        transformerId: vercelConfigProjectBase,
+        transformerContext: dummyContext,
+        options: { transformerFiletype: 'ts' }
+      });
+
+      await expectAssetsToMatchSnapshots(
+        assets,
+        dummyContext.scope,
+        dummyContext.assetPreset
       );
     });
 
@@ -810,7 +938,7 @@ describe('::gatherAssetsFromTransformer', () => {
       await expectAssetsToMatchSnapshots(
         assets,
         dummyContext.scope,
-        dummyContext.targetAssetsPreset
+        dummyContext.assetPreset
       );
     });
   });
@@ -820,7 +948,7 @@ describe('::compileTemplate', () => {
   it('accepts a template file path and returns a compilation result string', async () => {
     expect.hasAssertions();
 
-    const asset = 'README.md' as RelativePath;
+    const asset = 'SECURITY.md' as RelativePath;
 
     await expect(
       compileTemplate(asset, { ...dummyContext, asset })
@@ -833,7 +961,8 @@ describe('::compileTemplates', () => {
     expect.hasAssertions();
 
     const assets = {
-      'README.md': 'README.md',
+      'root/README.md': 'README.monorepo.md',
+      'package/README.md': 'README.package.md',
       'CONTRIBUTING.md': 'CONTRIBUTING.md',
       'SECURITY.md': 'SECURITY.md',
       '.github/SUPPORT.md': 'github/SUPPORT.md'
@@ -1076,7 +1205,7 @@ describe('::deepMergeConfig', () => {
 async function expectAssetsToMatchSnapshots(
   assets: ReifiedAssets,
   scope: DefaultGlobalScope,
-  preset: RenovationPreset | undefined
+  preset: AssetPreset | undefined
 ) {
   for (const [key, asset] of Object.entries(assets)) {
     expect(
@@ -1095,4 +1224,22 @@ async function toAssetsMap(assets: ReifiedAssets | Asset[]) {
   return Object.fromEntries(
     await Promise.all(entries.map(async ([k, v]) => [k, await v()]))
   );
+}
+
+function makeDummyPathFunctions({
+  cwdPackage,
+  rootPackage: { root: packageRoot }
+}: ProjectMetadata): Pick<
+  TransformerContext,
+  'toPackageAbsolutePath' | 'toProjectAbsolutePath'
+> {
+  return {
+    toPackageAbsolutePath: (...args) =>
+      toAbsolutePath(
+        packageRoot,
+        'relativeRoot' in cwdPackage ? cwdPackage.relativeRoot : '',
+        ...args
+      ),
+    toProjectAbsolutePath: (...args) => toAbsolutePath(packageRoot, ...args)
+  };
 }

@@ -1,5 +1,8 @@
-import { makeTransformer } from 'universe:assets.ts';
+import { postcssConfigProjectBase } from 'multiverse+project-utils:fs.ts';
+
+import { makeTransformer, reactAssetPresets } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
 export function moduleExport() {
   return {
@@ -7,14 +10,19 @@ export function moduleExport() {
   };
 }
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+export const { transformer } = makeTransformer(function (context) {
+  const { asset, toProjectAbsolutePath, assetPreset: targetAssetsPreset } = context;
+
+  if (!reactAssetPresets.includes(targetAssetsPreset)) {
+    return [];
+  }
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(postcssConfigProjectBase),
+        generate: () => /*js*/ `
 // @ts-check
 'use strict';
 
@@ -33,6 +41,7 @@ export default config;
 
 /*debug('exported config: %O', config);*/
 `
-    }
-  ];
+      }
+    ];
+  });
 });

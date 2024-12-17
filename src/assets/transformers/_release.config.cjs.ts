@@ -49,7 +49,7 @@ import {
 
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
-import { determineRepoWorkingTreeDirty } from 'universe:util.ts';
+import { determineRepoWorkingTreeDirty, generateRootOnlyAssets } from 'universe:util.ts';
 
 import type {
   XchangelogConfig,
@@ -199,14 +199,15 @@ export function moduleExport({
   return finalConfig;
 }
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+export const { transformer } = makeTransformer(function (context) {
+  const { asset, toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(xreleaseConfigProjectBase),
+        generate: () => /*js*/ `
 // @ts-check
 'use strict';
 
@@ -229,8 +230,9 @@ module.exports = deepMergeConfig(
 
 /*debug('exported config: %O', module.exports);*/
 `
-    }
-  ];
+      }
+    ];
+  });
 });
 
 /**

@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prevent-abbreviations */
 import { rm } from 'node:fs/promises';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
@@ -46,7 +45,9 @@ import { parsePackageJsonRepositoryIntoOwnerAndRepo } from 'universe:assets/tran
 
 import {
   $delete,
+  assetPresets,
   gatherAssetsFromAllTransformers,
+  type AssetPreset,
   type IncomingTransformerContext
 } from 'universe:assets.ts';
 
@@ -257,89 +258,6 @@ export type RawAliasMapperFunction = (
  * {@link RawAliasMapperFunction} or an array of {@link RawAliasMapping}s.
  */
 export type ImportedAliasMap = RawAliasMapping[] | RawAliasMapperFunction;
-
-/**
- * These presets determine which assets will be returned by which transformers
- * during renovation. By specifying a preset, only the assets it represents will
- * be renovated. All others will be ignored.
- *
- * See the xscripts wiki for details.
- */
-export enum RenovationPreset {
-  /**
-   * Represents the minimum possible configuration necessary for xscripts to be
-   * at least semi-functional.
-   *
-   * This preset is only useful when working on a project that does not use
-   * xscripts, or for which xscripts has been bolted-on after the fact (such as
-   * the case with `xchangelog` and `xrelease`).
-   *
-   * See the xscripts wiki for details.
-   */
-  Minimal = 'minimal',
-  /**
-   * Represents the most basic assets necessary for xscripts to be fully
-   * functional.
-   *
-   * This preset is the basis for all others (except `RenovationPreset.Minimal`)
-   * and can be used on any xscripts-compliant project when only a subset of
-   * renovations are desired, such as when regenerating aliases.
-   *
-   * See the xscripts wiki for details.
-   */
-  Basic = 'basic',
-  /**
-   * Represents the standard assets for an xscripts-compliant command-line
-   * interface project (such as `@black-flag/core`-powered tools like `xscripts`
-   * itself).
-   *
-   * See the xscripts wiki for details.
-   */
-  Cli = 'cli',
-  /**
-   * Represents the standard assets for an xscripts-compliant library project
-   * built for both CJS and ESM consumers (such as the case with
-   * `@black-flag/core`) and potentially also browser and other consumers as
-   * well.
-   *
-   * See the xscripts wiki for details.
-   */
-  Lib = 'lib',
-  /**
-   * Represents the standard assets for an xscripts-compliant library project
-   * built exclusively for ESM and ESM-compatible consumers (such as the case
-   * with the `unified-utils` monorepo).
-   *
-   * See the xscripts wiki for details.
-   */
-  LibEsm = 'lib-esm',
-  /**
-   * Represents the standard assets for an xscripts-compliant library project
-   * built exclusively for ESM consumers operating in a browser-like runtime
-   * (such as the case with the `next-utils` monorepo).
-   *
-   * See the xscripts wiki for details.
-   */
-  LibWeb = 'lib-web',
-  /**
-   * Represents the standard assets for an xscripts-compliant React project.
-   *
-   * See the xscripts wiki for details.
-   */
-  React = 'react',
-  /**
-   * Represents the standard assets for an xscripts-compliant Next.js + React
-   * project.
-   *
-   * See the xscripts wiki for details.
-   */
-  Nextjs = 'nextjs'
-}
-
-/**
- * @see {@link RenovationPreset}
- */
-export const renovationPresets = Object.values(RenovationPreset);
 
 export type CustomCliArguments = GlobalCliArguments & {
   force: boolean;
@@ -1501,7 +1419,7 @@ By default, this command will preserve the origin repository's pre-existing conf
     longHelpDescription: `
 This renovation will regenerate one or more files in the project, each represented by an "asset". An asset is a collection mapping output paths to generated content. When writing out content to an output path, existing files are overwritten, missing files are created, and obsolete files are deleted.
 
-Provide --assets-preset (required) to specify which assets to regenerate. The parameter accepts one of the following presets: ${renovationPresets.join(', ')}. The paths of assets included in the preset will be targeted for renovation except those paths matched by --skip-asset-paths.
+Provide --assets-preset (required) to specify which assets to regenerate. The parameter accepts one of the following presets: ${assetPresets.join(', ')}. The paths of assets included in the preset will be targeted for renovation except those paths matched by --skip-asset-paths.
 
 Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the paths to be written out. Any paths matching one of the aforesaid regular expressions will have their contents discarded instead of written out.
 
@@ -1526,7 +1444,7 @@ See the xscripts wiki documentation for more details on this command and all ava
     subOptions: {
       'assets-preset': {
         alias: 'preset',
-        choices: renovationPresets,
+        choices: assetPresets,
         description: 'Select a set of assets to target for regeneration',
         subOptionOf: {
           'regenerate-assets': {
@@ -1555,7 +1473,7 @@ See the xscripts wiki documentation for more details on this command and all ava
         [$executionContext]: { projectMetadata }
       } = argv;
 
-      const preset = argv.assetsPreset as RenovationPreset;
+      const preset = argv.assetsPreset as AssetPreset;
       const skipAssetPaths = argv.skipAssetPaths as RegExp[];
 
       hardAssert(projectMetadata, ErrorMessage.GuruMeditation());
@@ -1580,7 +1498,7 @@ See the xscripts wiki documentation for more details on this command and all ava
         forceOverwritePotentiallyDestructive: force,
         shouldDeriveAliases: true,
         scope: DefaultGlobalScope.Unlimited,
-        targetAssetsPreset: preset,
+        assetPreset: preset,
         projectMetadata,
         additionalRawAliasMappings: await importAdditionalRawAliasMappings(
           projectMetadata,

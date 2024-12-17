@@ -1,13 +1,17 @@
-import { makeTransformer } from 'universe:assets.ts';
+import { changelogPatchConfigPackageBase } from 'multiverse+project-utils:fs.ts';
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
+
+export const { transformer } = makeTransformer(function (context) {
+  const { toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(changelogPatchConfigPackageBase),
+        generate: () => /*js*/ `
 // @ts-check
 
 /**
@@ -19,6 +23,7 @@ export default [
   //['--output-file', '--changelog-file'],
 ];
 `
-    }
-  ];
+      }
+    ];
+  });
 });

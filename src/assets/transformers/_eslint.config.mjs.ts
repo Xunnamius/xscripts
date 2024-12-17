@@ -29,6 +29,7 @@ import {
 import { ProjectError } from 'multiverse+project-utils:error.ts';
 
 import {
+  eslintConfigProjectBase,
   getCurrentWorkingDirectory,
   isAccessible,
   toAbsolutePath,
@@ -767,7 +768,7 @@ export const { transformer } = makeTransformer(function ({
 
   return [
     {
-      path: toProjectAbsolutePath(asset),
+      path: toProjectAbsolutePath(eslintConfigProjectBase),
       generate: () => /*js*/ `
 // @ts-check
 

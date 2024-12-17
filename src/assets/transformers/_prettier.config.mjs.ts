@@ -1,5 +1,8 @@
+import { prettierConfigProjectBase } from 'multiverse+project-utils:fs.ts';
+
 import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
 import type { Config as PrettierConfig } from 'prettier';
 
@@ -26,14 +29,15 @@ export function moduleExport() {
   } as const satisfies PrettierConfig;
 }
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+export const { transformer } = makeTransformer(function (context) {
+  const { asset, toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(prettierConfigProjectBase),
+        generate: () => /*js*/ `
 // @ts-check
 'use strict';
 
@@ -58,6 +62,7 @@ export default config;
 
 /*debug('exported config: %O', config);*/
 `
-    }
-  ];
+      }
+    ];
+  });
 });

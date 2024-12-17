@@ -22,7 +22,8 @@ import {
   directorySrcPackageBase,
   directoryTestPackageBase,
   toRelativePath,
-  Tsconfig
+  Tsconfig,
+  xchangelogConfigProjectBase
 } from 'multiverse+project-utils:fs.ts';
 
 import { createDebugLogger } from 'multiverse+rejoinder';
@@ -30,7 +31,7 @@ import { createDebugLogger } from 'multiverse+rejoinder';
 import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
-import { __read_file_sync } from 'universe:util.ts';
+import { __read_file_sync, generateRootOnlyAssets } from 'universe:util.ts';
 
 import type {
   XchangelogCommit,
@@ -297,14 +298,15 @@ export const defaultTemplates = {
 /**
  * @see {@link assertEnvironment}
  */
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+export const { transformer } = makeTransformer(function (context) {
+  const { asset, toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(xchangelogConfigProjectBase),
+        generate: () => /*js*/ `
 // @ts-check
 'use strict';
 
@@ -329,8 +331,9 @@ module.exports = moduleExport({
 
 /*debug('exported config: %O', module.exports);*/
 `
-    }
-  ];
+      }
+    ];
+  });
 });
 
 /**

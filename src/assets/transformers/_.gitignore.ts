@@ -1,13 +1,17 @@
-import { makeTransformer } from 'universe:assets.ts';
+import { gitignoreConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => `
+import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
+
+export const { transformer } = makeTransformer(function (context) {
+  const { toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(gitignoreConfigProjectBase),
+        generate: () => `
 # ! Note that any pattern with a / in the beginning OR MIDDLE (but not end) will
 # ! be consider relative to the this file ONLY. Matching subdirs will NOT match!
 # ! Otherwise, patterns will match entities in any directory or subdirectory.
@@ -116,6 +120,7 @@ $RECYCLE.BIN
 _book
 CertificateAuthorityCertificate.pem
 `
-    }
-  ];
+      }
+    ];
+  });
 });

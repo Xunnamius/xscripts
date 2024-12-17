@@ -1,268 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`::compileTemplate accepts a template file path and returns a compilation result string: README.md 1`] = `
-"<!-- xscripts-template-region-start -->
-
-<p align="center" width="100%">
-  <img width="300" src="./repo-name.png">
-</p>
-
-<p align="center" width="100%">
-<!-- xscripts-template-region-end -->
-
-good-hybridrepo-description
-
-<!-- xscripts-template-region-start -->
-
-</p>
-
-<hr />
-
-<div align="center">
-
-[![Black Lives Matter!][x-badge-blm-image]][x-badge-blm-link]
-[![Last commit timestamp][x-badge-lastcommit-image]][x-badge-repo-link]
-[![Codecov][x-badge-codecov-image]][x-badge-codecov-link]
-[![Source license][x-badge-license-image]][x-badge-license-link]
-[![Uses Semantic Release!][x-badge-semanticrelease-image]][x-badge-semanticrelease-link]
-
-[![NPM version][x-badge-npm-image]][x-badge-npm-link]
-[![Monthly Downloads][x-badge-downloads-image]][x-badge-npm-link]
-
-</div>
-
-<br />
-
-# <!-- TODO: --> Project Title Here
-
-<!-- xscripts-template-region-end -->
-
-good-hybridrepo-description
-
-<!-- xscripts-template-region-start -->
-
-<br />
-
----
-
-<!-- remark-ignore-start -->
-<!-- xscripts-template-region-end -->
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-- [Install](#install)
-- [Usage](#usage)
-- [Appendix](#appendix)
-  - [Published Package Details](#published-package-details)
-  - [License](#license)
-- [Contributing and Support](#contributing-and-support)
-  - [Contributors](#contributors)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
-<!-- remark-ignore-end -->
-
-<br />
-
-## Install
-
-<!-- xscripts-template-region-end -->
-
-To install repo-name:
-
-\`\`\`shell
-npm install good-hybridrepo
-\`\`\`
-
-## Usage
-
-<!-- TODO -->
-
-TODO
-
-<!-- xscripts-template-region-start -->
-
-## Appendix
-
-Further documentation can be found under [\`docs/\`][x-repo-docs].
-
-### Published Package Details
-
-<!-- TODO: choose one of the following and --✄--delete--✄-- the others: -->
-
-This is a [CJS2 package][x-pkg-cjs-mojito] with statically-analyzable exports
-built by Babel for use in Node.js versions that are not end-of-life. For
-TypeScript users, this package supports both \`"Node10"\` and \`"Node16"\` module
-resolution strategies.
-
-\\------------✄-----------⏶-⏷-----------✄------------
-
-This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in Node.js
-versions that are not end-of-life. For TypeScript users, this package supports
-both \`"Node10"\` and \`"Node16"\` module resolution strategies.
-
-\\------------✄-----------⏶-⏷-----------✄------------
-
-This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in
-browser-like environments. For TypeScript users, this package supports both
-\`"Node10"\` and \`"Node16"\` module resolution strategies.
-
-<!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
-<!-- xscripts-template-region-end -->
-<!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
-
-<details><summary>Expand details</summary>
-
-<!-- TODO: choose one of the following and --✄--delete--✄-- the others: -->
-
-That means both CJS2 (via \`require(...)\`) and ESM (via \`import { ... } from ...\`
-or \`await import(...)\`) source will load this package from the same entry points
-when using Node. This has several benefits, the foremost being: less code
-shipped/smaller package size, avoiding [dual package
-hazard][x-pkg-dual-package-hazard] entirely, distributables are not
-packed/bundled/uglified, a drastically less complex build process, and CJS
-consumers aren't shafted.
-
-\\------------✄-----------⏶-⏷-----------✄------------
-
-That means ESM source will load this package via \`import { ... } from ...\` or
-\`await import(...)\` and CJS source will load this package via dynamic
-\`import()\`. This has several benefits, the foremost being: less code
-shipped/smaller package size, avoiding [dual package
-hazard][x-pkg-dual-package-hazard] entirely, distributables are not
-packed/bundled/uglified, and a drastically less complex build process.
-
-The glaring downside, which may or may not be relevant, is that CJS consumers
-cannot \`require()\` this package and can only use \`import()\` in an asynchronous
-context. This means, in effect, CJS consumers may not be able to use this
-package at all.
-
-<!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
-
-Each entry point (i.e. \`ENTRY\`) in [\`package.json\`'s
-\`exports[ENTRY]\`][x-repo-package-json] object includes one or more [export
-conditions][x-pkg-exports-conditions]. These entries may or may not include: an
-[\`exports[ENTRY].types\`][x-pkg-exports-types-key] condition pointing to a type
-declaration file for TypeScript and IDEs, a
-[\`exports[ENTRY].module\`][x-pkg-exports-module-key] condition pointing to
-(usually ESM) source for Webpack/Rollup, a \`exports[ENTRY].node\` and/or
-\`exports[ENTRY].default\` condition pointing to (usually CJS2) source for Node.js
-\`require\`/\`import\` and for browsers and other environments, and [other
-conditions][x-pkg-exports-conditions] not enumerated here. Check the
-[package.json][x-repo-package-json] file to see which export conditions are
-supported.
-
-Note that, regardless of the [\`{ "type": "..." }\`][x-pkg-type] specified in
-[\`package.json\`][x-repo-package-json], any JavaScript files written in ESM
-syntax (including distributables) will always have the \`.mjs\` extension. Note
-also that [\`package.json\`][x-repo-package-json] may include the
-[\`sideEffects\`][x-pkg-side-effects-key] key, which is almost always \`false\` for
-optimal [tree shaking][x-pkg-tree-shaking] where appropriate.
-
-<!-- xscripts-template-region-end -->
-<!-- TODO: custom details here -->
-
-</details>
-
-### License
-
-See [LICENSE][x-repo-license].
-
-## Contributing and Support
-
-**[New issues][x-repo-choose-new-issue] and [pull requests][x-repo-pr-compare]
-are always welcome and greatly appreciated! 🤩** Just as well, you can [star 🌟
-this project][x-badge-repo-link] to let me know you found it useful! ✊🏿 Or [buy
-me a beer][x-repo-sponsor], I'd appreciate it. Thank you!
-
-See [CONTRIBUTING.md][x-repo-contributing] and [SUPPORT.md][x-repo-support] for
-more information.
-
-### Contributors
-
-<!-- remark-ignore-start -->
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-<!-- remark-ignore-end -->
-
-Thanks goes to these wonderful people ([emoji
-key][x-repo-all-contributors-emojis]):
-
-<!-- remark-ignore-start -->
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-
-<table></table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-<!-- remark-ignore-end -->
-
-This project follows the [all-contributors][x-repo-all-contributors]
-specification. Contributions of any kind welcome!
-
-[x-badge-blm-image]: https://xunn.at/badge-blm 'Join the movement!'
-[x-badge-blm-link]: https://xunn.at/donate-blm
-[x-badge-codecov-image]:
-  https://img.shields.io/codecov/c/github/repo-owner/repo-name/main?style=flat-square&token=HWRIOBAAPW&flag=package.main_root
-  'Is this package well-tested?'
-[x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
-[x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/good-hybridrepo?style=flat-square
-  'Number of times this package has been downloaded per month'
-[x-badge-lastcommit-image]:
-  https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
-  'Latest commit timestamp'
-[x-badge-license-image]:
-  https://img.shields.io/npm/l/good-hybridrepo?style=flat-square
-  "This package's source license"
-[x-badge-license-link]:
-  https://github.com/repo-owner/repo-name/blob/main/LICENSE
-[x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/good-hybridrepo
-  'Install this package using npm or yarn!'
-[x-badge-npm-link]:
-  https://npmtrends.com/good-hybridrepo
-[x-badge-repo-link]: https://github.com/repo-owner/repo-name
-[x-badge-semanticrelease-image]:
-  https://xunn.at/badge-semantic-release
-  'This repo practices continuous integration and deployment!'
-[x-badge-semanticrelease-link]:
-  https://github.com/semantic-release/semantic-release
-[x-pkg-cjs-mojito]:
-  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#publish-only-a-cjs-distribution-with-property-exports
-[x-pkg-dual-package-hazard]:
-  https://nodejs.org/api/packages.html#dual-package-hazard
-[x-pkg-esm-wine]:
-  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#esm-source-and-distribution
-[x-pkg-exports-conditions]:
-  https://webpack.js.org/guides/package-exports#reference-syntax
-[x-pkg-exports-module-key]:
-  https://webpack.js.org/guides/package-exports#providing-commonjs-and-esm-version-stateless
-[x-pkg-exports-types-key]:
-  https://devblogs.microsoft.com/typescript/announcing-typescript-4-5-beta#packagejson-exports-imports-and-self-referencing
-[x-pkg-side-effects-key]:
-  https://webpack.js.org/guides/tree-shaking#mark-the-file-as-side-effect-free
-[x-pkg-tree-shaking]: https://webpack.js.org/guides/tree-shaking
-[x-pkg-type]:
-  https://github.com/nodejs/node/blob/8d8e06a345043bec787e904edc9a2f5c5e9c275f/doc/api/packages.md#type
-[x-repo-all-contributors]: https://github.com/all-contributors/all-contributors
-[x-repo-all-contributors-emojis]: https://allcontributors.org/docs/en/emoji-key
-[x-repo-choose-new-issue]:
-  https://github.com/repo-owner/repo-name/issues/new/choose
-[x-repo-contributing]: /CONTRIBUTING.md
-[x-repo-docs]: docs
-[x-repo-license]: ./LICENSE
-[x-repo-package-json]: package.json
-[x-repo-pr-compare]: https://github.com/repo-owner/repo-name/compare
-[x-repo-sponsor]: https://github.com/sponsors/Xunnamius
-[x-repo-support]: /.github/SUPPORT.md
+exports[`::compileTemplate accepts a template file path and returns a compilation result string: SECURITY.md 1`] = `
+"# Security ☠️ [![Known Vulnerabilities][2]][1]
+
+If the issue is related to a public alert from OWASP/GitHub/Dependabot/CVE/etc
+and [does not already have an open issue][3], feel free to [open a new
+issue][4]. Otherwise, please report any security vulnerability or other
+security-related incident or sensitive subject to us [via private vulnerability
+disclosure through GitHub][5] or, if that fails, [via email][6].
+
+Thank you for your contribution!
+
+[1]: https://snyk.io/test/github/repo-owner/repo-name
+[2]: https://snyk.io/test/github/repo-owner/repo-name/badge.svg
+[3]: https://github.com/repo-owner/repo-name/issues?q=
+[4]: https://github.com/repo-owner/repo-name/issues/new/choose
+[5]:
+  https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability
+[6]:
+  mailto:security@ergodark.com?subject=ALERT%3A%20SECURITY%20INCIDENT%3A%20%28five%20word%20summary%29
 "
 `;
 
@@ -430,7 +186,26 @@ At this point, you're ready to create your PR and ✨ contribute ✨!
 [pr-compare]: https://github.com/repo-owner/repo-name/compare
 [xpipeline]: https://github.com/Xunnamius/xpipeline#readme
 ",
-  "README.md": "<!-- xscripts-template-region-start -->
+  "SECURITY.md": "# Security ☠️ [![Known Vulnerabilities][2]][1]
+
+If the issue is related to a public alert from OWASP/GitHub/Dependabot/CVE/etc
+and [does not already have an open issue][3], feel free to [open a new
+issue][4]. Otherwise, please report any security vulnerability or other
+security-related incident or sensitive subject to us [via private vulnerability
+disclosure through GitHub][5] or, if that fails, [via email][6].
+
+Thank you for your contribution!
+
+[1]: https://snyk.io/test/github/repo-owner/repo-name
+[2]: https://snyk.io/test/github/repo-owner/repo-name/badge.svg
+[3]: https://github.com/repo-owner/repo-name/issues?q=
+[4]: https://github.com/repo-owner/repo-name/issues/new/choose
+[5]:
+  https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability
+[6]:
+  mailto:security@ergodark.com?subject=ALERT%3A%20SECURITY%20INCIDENT%3A%20%28five%20word%20summary%29
+",
+  "package/README.md": "<!-- xscripts-template-region-start -->
 
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
@@ -693,24 +468,7 @@ specification. Contributions of any kind welcome!
 [x-repo-sponsor]: https://github.com/sponsors/Xunnamius
 [x-repo-support]: /.github/SUPPORT.md
 ",
-  "SECURITY.md": "# Security ☠️ [![Known Vulnerabilities][2]][1]
-
-If the issue is related to a public alert from OWASP/GitHub/Dependabot/CVE/etc
-and [does not already have an open issue][3], feel free to [open a new
-issue][4]. Otherwise, please report any security vulnerability or other
-security-related incident or sensitive subject to us [via private vulnerability
-disclosure through GitHub][5] or, if that fails, [via email][6].
-
-Thank you for your contribution!
-
-[1]: https://snyk.io/test/github/repo-owner/repo-name
-[2]: https://snyk.io/test/github/repo-owner/repo-name/badge.svg
-[3]: https://github.com/repo-owner/repo-name/issues?q=
-[4]: https://github.com/repo-owner/repo-name/issues/new/choose
-[5]:
-  https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability#privately-reporting-a-security-vulnerability
-[6]:
-  mailto:security@ergodark.com?subject=ALERT%3A%20SECURITY%20INCIDENT%3A%20%28five%20word%20summary%29
+  "root/README.md": "<!-- TODO: copy this file from unified-utils -->
 ",
 }
 `;
@@ -1069,7 +827,82 @@ At this point, you're ready to create your PR and ✨ contribute ✨!
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): /dummy/.env 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> dotenv generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/.env 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/.env
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+CODECOV_TOKEN=
+GITHUB_TOKEN=
+NPM_TOKEN=
+GIT_AUTHOR_NAME=
+GIT_COMMITTER_NAME=
+GIT_AUTHOR_EMAIL=
+GIT_COMMITTER_EMAIL=
+GPG_PASSPHRASE=
+GPG_PRIVATE_KEY=
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> dotenv generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/.env.default 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/.env.default
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+# shellcheck disable=all
+
+# Codecov test analysis token
+#
+# The token used during CI/CD to analyze and upload build artifact code quality
+# data to Codecov.
+CODECOV_TOKEN=
+
+# GitHub deploy token (alias GH_TOKEN)
+#
+# The token used during CI/CD to interact with GitHub's API.
+GITHUB_TOKEN=
+
+# NPM deploy token
+#
+# The token used during CD to login to NPM. Not referenced during non-CI/CD
+# (i.e. local, manual) deployments.
+NPM_TOKEN=
+
+# Git push author name
+#
+# The token used during CD to set the author name of the git push.
+GIT_AUTHOR_NAME=
+
+# Git commit committer name
+#
+# The token used during CD to set the name attached to any git commits.
+GIT_COMMITTER_NAME=
+
+# Git push author email
+#
+# The token used during CD to set the author email of the git push.
+GIT_AUTHOR_EMAIL=
+
+# Git commit committer email
+#
+# The token used during CD to set the email attached to any git commits.
+GIT_COMMITTER_EMAIL=
+
+# GPG private key passphrase
+#
+# The passphrase used to unlock GPG_PRIVATE_KEY. Not referenced during non-CI/CD
+# (i.e. local, manual) deployments.
+GPG_PASSPHRASE=
+
+# GPG private key
+#
+# The GPG key used to sign all git commits and releases. Not referenced during
+# non-CI/CD (i.e. local, manual) deployments.
+GPG_PRIVATE_KEY=
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> dotenv generates expected assets at non-hybrid monorepo: /dummy/.env 1`] = `
 "key: /dummy/.env
 scope: unlimited
 preset: undefined
@@ -1086,24 +919,7 @@ GPG_PRIVATE_KEY=
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): /dummy/.env 2`] = `
-"key: /dummy/.env
-scope: unlimited
-preset: undefined
-⏶⏷⏶⏷⏶
-CODECOV_TOKEN=
-GITHUB_TOKEN=
-NPM_TOKEN=
-GIT_AUTHOR_NAME=
-GIT_COMMITTER_NAME=
-GIT_AUTHOR_EMAIL=
-GIT_COMMITTER_EMAIL=
-GPG_PASSPHRASE=
-GPG_PRIVATE_KEY=
-"
-`;
-
-exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): /dummy/.env.default 1`] = `
+exports[`::gatherAssetsFromTransformer <config assets> dotenv generates expected assets at non-hybrid monorepo: /dummy/.env.default 1`] = `
 "key: /dummy/.env.default
 scope: unlimited
 preset: undefined
@@ -1161,8 +977,158 @@ GPG_PRIVATE_KEY=
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> dotenv (default): /dummy/.env.default 2`] = `
+exports[`::gatherAssetsFromTransformer <config assets> dotenv generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo/.env 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo/.env
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+CODECOV_TOKEN=
+GITHUB_TOKEN=
+NPM_TOKEN=
+GIT_AUTHOR_NAME=
+GIT_COMMITTER_NAME=
+GIT_AUTHOR_EMAIL=
+GIT_COMMITTER_EMAIL=
+GPG_PASSPHRASE=
+GPG_PRIVATE_KEY=
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> dotenv generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo/.env.default 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo/.env.default
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+# shellcheck disable=all
+
+# Codecov test analysis token
+#
+# The token used during CI/CD to analyze and upload build artifact code quality
+# data to Codecov.
+CODECOV_TOKEN=
+
+# GitHub deploy token (alias GH_TOKEN)
+#
+# The token used during CI/CD to interact with GitHub's API.
+GITHUB_TOKEN=
+
+# NPM deploy token
+#
+# The token used during CD to login to NPM. Not referenced during non-CI/CD
+# (i.e. local, manual) deployments.
+NPM_TOKEN=
+
+# Git push author name
+#
+# The token used during CD to set the author name of the git push.
+GIT_AUTHOR_NAME=
+
+# Git commit committer name
+#
+# The token used during CD to set the name attached to any git commits.
+GIT_COMMITTER_NAME=
+
+# Git push author email
+#
+# The token used during CD to set the author email of the git push.
+GIT_AUTHOR_EMAIL=
+
+# Git commit committer email
+#
+# The token used during CD to set the email attached to any git commits.
+GIT_COMMITTER_EMAIL=
+
+# GPG private key passphrase
+#
+# The passphrase used to unlock GPG_PRIVATE_KEY. Not referenced during non-CI/CD
+# (i.e. local, manual) deployments.
+GPG_PASSPHRASE=
+
+# GPG private key
+#
+# The GPG key used to sign all git commits and releases. Not referenced during
+# non-CI/CD (i.e. local, manual) deployments.
+GPG_PRIVATE_KEY=
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> dotenv generates expected assets for polyrepo: /dummy/.env 1`] = `
+"key: /dummy/.env
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+CODECOV_TOKEN=
+GITHUB_TOKEN=
+NPM_TOKEN=
+GIT_AUTHOR_NAME=
+GIT_COMMITTER_NAME=
+GIT_AUTHOR_EMAIL=
+GIT_COMMITTER_EMAIL=
+GPG_PASSPHRASE=
+GPG_PRIVATE_KEY=
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> dotenv generates expected assets for polyrepo: /dummy/.env.default 1`] = `
 "key: /dummy/.env.default
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+# shellcheck disable=all
+
+# Codecov test analysis token
+#
+# The token used during CI/CD to analyze and upload build artifact code quality
+# data to Codecov.
+CODECOV_TOKEN=
+
+# GitHub deploy token (alias GH_TOKEN)
+#
+# The token used during CI/CD to interact with GitHub's API.
+GITHUB_TOKEN=
+
+# NPM deploy token
+#
+# The token used during CD to login to NPM. Not referenced during non-CI/CD
+# (i.e. local, manual) deployments.
+NPM_TOKEN=
+
+# Git push author name
+#
+# The token used during CD to set the author name of the git push.
+GIT_AUTHOR_NAME=
+
+# Git commit committer name
+#
+# The token used during CD to set the name attached to any git commits.
+GIT_COMMITTER_NAME=
+
+# Git push author email
+#
+# The token used during CD to set the author email of the git push.
+GIT_AUTHOR_EMAIL=
+
+# Git commit committer email
+#
+# The token used during CD to set the email attached to any git commits.
+GIT_COMMITTER_EMAIL=
+
+# GPG private key passphrase
+#
+# The passphrase used to unlock GPG_PRIVATE_KEY. Not referenced during non-CI/CD
+# (i.e. local, manual) deployments.
+GPG_PASSPHRASE=
+
+# GPG private key
+#
+# The GPG key used to sign all git commits and releases. Not referenced during
+# non-CI/CD (i.e. local, manual) deployments.
+GPG_PRIVATE_KEY=
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> dotenv generates expected assets for polyrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo/.env.default 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo/.env.default
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -2071,8 +2037,95 @@ function getJestAliases() {
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> license (markdown): /dummy/LICENSE 1`] = `
-"key: /dummy/LICENSE
+exports[`::gatherAssetsFromTransformer <config assets> license (markdown): /dummy/packages/pkg/LICENSE 1`] = `
+"key: /dummy/packages/pkg/LICENSE
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+MIT License
+
+Copyright (c) 1776 Bernard Dickens III
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> license (markdown): /dummy/packages/pkg/packages/cli/LICENSE 1`] = `
+"key: /dummy/packages/pkg/packages/cli/LICENSE
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+MIT License
+
+Copyright (c) 1776 Bernard Dickens III
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> license (markdown): /dummy/packages/pkg/packages/private/LICENSE 1`] = `
+"key: /dummy/packages/pkg/packages/private/LICENSE
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+MIT License
+
+Copyright (c) 1776 Bernard Dickens III
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> license (markdown): /dummy/packages/pkg/packages/webpack/LICENSE 1`] = `
+"key: /dummy/packages/pkg/packages/webpack/LICENSE
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -2547,87 +2600,6 @@ module.exports = {
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> package.json: /dummy/package.json 1`] = `
-"key: /dummy/package.json
-scope: unlimited
-preset: undefined
-⏶⏷⏶⏷⏶
-{
-  "name": "good-hybridrepo",
-  "version": "1.3.2-hybridrepo",
-  "description": "good-hybridrepo-description",
-  "keywords": [],
-  "homepage": "https://github.com/owner/repo#readme",
-  "bugs": {
-    "url": "https://github.com/owner/repo/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/owner/repo.git"
-  },
-  "license": "MIT",
-  "author": "Xunnamius",
-  "sideEffects": false,
-  "type": "commonjs",
-  "exports": {
-    ".": {
-      "types": "./dist/src/index.d.ts",
-      "default": "./dist/src/index.js"
-    },
-    "./package": "./package.json",
-    "./package.json": "./package.json"
-  },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "dist/src/index.d.ts"
-      ],
-      "package": [
-        "package.json"
-      ]
-    }
-  },
-  "files": [
-    "/dist",
-    "/LICENSE",
-    "/package.json",
-    "/README.md"
-  ],
-  "scripts": {
-    "build": "npm run build:dist --",
-    "build:changelog": "NODE_NO_WARNINGS=1 xscripts build changelog",
-    "build:dist": "NODE_NO_WARNINGS=1 xscripts build distributables",
-    "build:docs": "NODE_NO_WARNINGS=1 xscripts build docs",
-    "clean": "NODE_NO_WARNINGS=1 xscripts clean",
-    "format": "NODE_NO_WARNINGS=1 xscripts format --hush",
-    "info": "NODE_NO_WARNINGS=1 xscripts project info",
-    "lint": "npm run lint:package --",
-    "lint:package": "NODE_NO_WARNINGS=1 xscripts lint",
-    "lint:packages": "NODE_NO_WARNINGS=1 xscripts lint --scope unlimited",
-    "lint:project": "NODE_NO_WARNINGS=1 xscripts project lint",
-    "list-tasks": "NODE_NO_WARNINGS=1 xscripts list-tasks",
-    "prepare": "NODE_NO_WARNINGS=1 xscripts project prepare",
-    "release": "NODE_NO_WARNINGS=1 xscripts release",
-    "renovate": "NODE_NO_WARNINGS=1 xscripts project renovate --sync-deps --github-reconfigure-repo --regenerate-assets --assets-preset basic",
-    "start": "NODE_NO_WARNINGS=1 xscripts start --",
-    "test": "npm run test:package:unit --",
-    "test:package:all": "NODE_NO_WARNINGS=1 xscripts test --coverage",
-    "test:package:e2e": "NODE_NO_WARNINGS=1 xscripts test --tests end-to-end",
-    "test:package:integration": "NODE_NO_WARNINGS=1 xscripts test --tests integration",
-    "test:package:unit": "NODE_NO_WARNINGS=1 xscripts test --tests unit",
-    "test:packages:all": "NODE_NO_WARNINGS=1 xscripts test --scope unlimited --coverage"
-  },
-  "engines": {
-    "node": "^18.20.0 || ^20.18.0 || ^22.12.0 || >=23.3.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org"
-  }
-}
-"
-`;
-
 exports[`::gatherAssetsFromTransformer <config assets> package.json: /dummy/packages/cli/package.json 1`] = `
 "key: /dummy/packages/cli/package.json
 scope: unlimited
@@ -2986,8 +2958,8 @@ fixtures
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> readme (markdown): /dummy/README.md 1`] = `
-"key: /dummy/README.md
+exports[`::gatherAssetsFromTransformer <config assets> readme (markdown): /dummy/packages/pkg/packages/cli/README.md 1`] = `
+"key: /dummy/packages/pkg/packages/cli/README.md
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3023,7 +2995,547 @@ good-hybridrepo-description
 
 <br />
 
-# <!-- TODO: --> Project Title Here
+# repo-name (good-hybridrepo)
+
+<!-- xscripts-template-region-end -->
+
+good-hybridrepo-description
+
+<!-- xscripts-template-region-start -->
+
+<br />
+
+---
+
+<!-- remark-ignore-start -->
+<!-- xscripts-template-region-end -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Install](#install)
+- [Usage](#usage)
+- [Appendix](#appendix)
+  - [Published Package Details](#published-package-details)
+  - [License](#license)
+- [Contributing and Support](#contributing-and-support)
+  - [Contributors](#contributors)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- xscripts-template-region-start -->
+<!-- remark-ignore-end -->
+
+<br />
+
+## Install
+
+<!-- xscripts-template-region-end -->
+
+To install repo-name:
+
+\`\`\`shell
+npm install good-hybridrepo
+\`\`\`
+
+## Usage
+
+<!-- TODO -->
+
+TODO
+
+<!-- xscripts-template-region-start -->
+
+## Appendix
+
+Further documentation can be found under [\`docs/\`][x-repo-docs].
+
+### Published Package Details
+
+<!-- TODO: choose one of the following and --✄--delete--✄-- the others: -->
+
+This is a [CJS2 package][x-pkg-cjs-mojito] with statically-analyzable exports
+built by Babel for use in Node.js versions that are not end-of-life. For
+TypeScript users, this package supports both \`"Node10"\` and \`"Node16"\` module
+resolution strategies.
+
+\\------------✄-----------⏶-⏷-----------✄------------
+
+This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in Node.js
+versions that are not end-of-life. For TypeScript users, this package supports
+both \`"Node10"\` and \`"Node16"\` module resolution strategies.
+
+\\------------✄-----------⏶-⏷-----------✄------------
+
+This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in
+browser-like environments. For TypeScript users, this package supports both
+\`"Node10"\` and \`"Node16"\` module resolution strategies.
+
+<!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
+<!-- xscripts-template-region-end -->
+<!-- TODO: custom details here -->
+<!-- xscripts-template-region-start -->
+
+<details><summary>Expand details</summary>
+
+<!-- TODO: choose one of the following and --✄--delete--✄-- the others: -->
+
+That means both CJS2 (via \`require(...)\`) and ESM (via \`import { ... } from ...\`
+or \`await import(...)\`) source will load this package from the same entry points
+when using Node. This has several benefits, the foremost being: less code
+shipped/smaller package size, avoiding [dual package
+hazard][x-pkg-dual-package-hazard] entirely, distributables are not
+packed/bundled/uglified, a drastically less complex build process, and CJS
+consumers aren't shafted.
+
+\\------------✄-----------⏶-⏷-----------✄------------
+
+That means ESM source will load this package via \`import { ... } from ...\` or
+\`await import(...)\` and CJS source will load this package via dynamic
+\`import()\`. This has several benefits, the foremost being: less code
+shipped/smaller package size, avoiding [dual package
+hazard][x-pkg-dual-package-hazard] entirely, distributables are not
+packed/bundled/uglified, and a drastically less complex build process.
+
+The glaring downside, which may or may not be relevant, is that CJS consumers
+cannot \`require()\` this package and can only use \`import()\` in an asynchronous
+context. This means, in effect, CJS consumers may not be able to use this
+package at all.
+
+<!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
+
+Each entry point (i.e. \`ENTRY\`) in [\`package.json\`'s
+\`exports[ENTRY]\`][x-repo-package-json] object includes one or more [export
+conditions][x-pkg-exports-conditions]. These entries may or may not include: an
+[\`exports[ENTRY].types\`][x-pkg-exports-types-key] condition pointing to a type
+declaration file for TypeScript and IDEs, a
+[\`exports[ENTRY].module\`][x-pkg-exports-module-key] condition pointing to
+(usually ESM) source for Webpack/Rollup, a \`exports[ENTRY].node\` and/or
+\`exports[ENTRY].default\` condition pointing to (usually CJS2) source for Node.js
+\`require\`/\`import\` and for browsers and other environments, and [other
+conditions][x-pkg-exports-conditions] not enumerated here. Check the
+[package.json][x-repo-package-json] file to see which export conditions are
+supported.
+
+Note that, regardless of the [\`{ "type": "..." }\`][x-pkg-type] specified in
+[\`package.json\`][x-repo-package-json], any JavaScript files written in ESM
+syntax (including distributables) will always have the \`.mjs\` extension. Note
+also that [\`package.json\`][x-repo-package-json] may include the
+[\`sideEffects\`][x-pkg-side-effects-key] key, which is almost always \`false\` for
+optimal [tree shaking][x-pkg-tree-shaking] where appropriate.
+
+<!-- xscripts-template-region-end -->
+<!-- TODO: custom details here -->
+
+</details>
+
+### License
+
+See [LICENSE][x-repo-license].
+
+## Contributing and Support
+
+**[New issues][x-repo-choose-new-issue] and [pull requests][x-repo-pr-compare]
+are always welcome and greatly appreciated! 🤩** Just as well, you can [star 🌟
+this project][x-badge-repo-link] to let me know you found it useful! ✊🏿 Or [buy
+me a beer][x-repo-sponsor], I'd appreciate it. Thank you!
+
+See [CONTRIBUTING.md][x-repo-contributing] and [SUPPORT.md][x-repo-support] for
+more information.
+
+### Contributors
+
+<!-- remark-ignore-start -->
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+<!-- remark-ignore-end -->
+
+Thanks goes to these wonderful people ([emoji
+key][x-repo-all-contributors-emojis]):
+
+<!-- remark-ignore-start -->
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<table></table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- remark-ignore-end -->
+
+This project follows the [all-contributors][x-repo-all-contributors]
+specification. Contributions of any kind welcome!
+
+[x-badge-blm-image]: https://xunn.at/badge-blm 'Join the movement!'
+[x-badge-blm-link]: https://xunn.at/donate-blm
+[x-badge-codecov-image]:
+  https://img.shields.io/codecov/c/github/repo-owner/repo-name/main?style=flat-square&token=HWRIOBAAPW&flag=package.main_root
+  'Is this package well-tested?'
+[x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
+[x-badge-downloads-image]:
+  https://img.shields.io/npm/dm/good-hybridrepo?style=flat-square
+  'Number of times this package has been downloaded per month'
+[x-badge-lastcommit-image]:
+  https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
+  'Latest commit timestamp'
+[x-badge-license-image]:
+  https://img.shields.io/npm/l/good-hybridrepo?style=flat-square
+  "This package's source license"
+[x-badge-license-link]:
+  https://github.com/repo-owner/repo-name/blob/main/LICENSE
+[x-badge-npm-image]:
+  https://xunn.at/npm-pkg-version/good-hybridrepo
+  'Install this package using npm or yarn!'
+[x-badge-npm-link]:
+  https://npmtrends.com/good-hybridrepo
+[x-badge-repo-link]: https://github.com/repo-owner/repo-name
+[x-badge-semanticrelease-image]:
+  https://xunn.at/badge-semantic-release
+  'This repo practices continuous integration and deployment!'
+[x-badge-semanticrelease-link]:
+  https://github.com/semantic-release/semantic-release
+[x-pkg-cjs-mojito]:
+  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#publish-only-a-cjs-distribution-with-property-exports
+[x-pkg-dual-package-hazard]:
+  https://nodejs.org/api/packages.html#dual-package-hazard
+[x-pkg-esm-wine]:
+  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#esm-source-and-distribution
+[x-pkg-exports-conditions]:
+  https://webpack.js.org/guides/package-exports#reference-syntax
+[x-pkg-exports-module-key]:
+  https://webpack.js.org/guides/package-exports#providing-commonjs-and-esm-version-stateless
+[x-pkg-exports-types-key]:
+  https://devblogs.microsoft.com/typescript/announcing-typescript-4-5-beta#packagejson-exports-imports-and-self-referencing
+[x-pkg-side-effects-key]:
+  https://webpack.js.org/guides/tree-shaking#mark-the-file-as-side-effect-free
+[x-pkg-tree-shaking]: https://webpack.js.org/guides/tree-shaking
+[x-pkg-type]:
+  https://github.com/nodejs/node/blob/8d8e06a345043bec787e904edc9a2f5c5e9c275f/doc/api/packages.md#type
+[x-repo-all-contributors]: https://github.com/all-contributors/all-contributors
+[x-repo-all-contributors-emojis]: https://allcontributors.org/docs/en/emoji-key
+[x-repo-choose-new-issue]:
+  https://github.com/repo-owner/repo-name/issues/new/choose
+[x-repo-contributing]: /CONTRIBUTING.md
+[x-repo-docs]: docs
+[x-repo-license]: ./LICENSE
+[x-repo-package-json]: package.json
+[x-repo-pr-compare]: https://github.com/repo-owner/repo-name/compare
+[x-repo-sponsor]: https://github.com/sponsors/Xunnamius
+[x-repo-support]: /.github/SUPPORT.md
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> readme (markdown): /dummy/packages/pkg/packages/private/README.md 1`] = `
+"key: /dummy/packages/pkg/packages/private/README.md
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+<!-- xscripts-template-region-start -->
+
+<p align="center" width="100%">
+  <img width="300" src="./repo-name.png">
+</p>
+
+<p align="center" width="100%">
+<!-- xscripts-template-region-end -->
+
+good-hybridrepo-description
+
+<!-- xscripts-template-region-start -->
+
+</p>
+
+<hr />
+
+<div align="center">
+
+[![Black Lives Matter!][x-badge-blm-image]][x-badge-blm-link]
+[![Last commit timestamp][x-badge-lastcommit-image]][x-badge-repo-link]
+[![Codecov][x-badge-codecov-image]][x-badge-codecov-link]
+[![Source license][x-badge-license-image]][x-badge-license-link]
+[![Uses Semantic Release!][x-badge-semanticrelease-image]][x-badge-semanticrelease-link]
+
+[![NPM version][x-badge-npm-image]][x-badge-npm-link]
+[![Monthly Downloads][x-badge-downloads-image]][x-badge-npm-link]
+
+</div>
+
+<br />
+
+# repo-name (good-hybridrepo)
+
+<!-- xscripts-template-region-end -->
+
+good-hybridrepo-description
+
+<!-- xscripts-template-region-start -->
+
+<br />
+
+---
+
+<!-- remark-ignore-start -->
+<!-- xscripts-template-region-end -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Install](#install)
+- [Usage](#usage)
+- [Appendix](#appendix)
+  - [Published Package Details](#published-package-details)
+  - [License](#license)
+- [Contributing and Support](#contributing-and-support)
+  - [Contributors](#contributors)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- xscripts-template-region-start -->
+<!-- remark-ignore-end -->
+
+<br />
+
+## Install
+
+<!-- xscripts-template-region-end -->
+
+To install repo-name:
+
+\`\`\`shell
+npm install good-hybridrepo
+\`\`\`
+
+## Usage
+
+<!-- TODO -->
+
+TODO
+
+<!-- xscripts-template-region-start -->
+
+## Appendix
+
+Further documentation can be found under [\`docs/\`][x-repo-docs].
+
+### Published Package Details
+
+<!-- TODO: choose one of the following and --✄--delete--✄-- the others: -->
+
+This is a [CJS2 package][x-pkg-cjs-mojito] with statically-analyzable exports
+built by Babel for use in Node.js versions that are not end-of-life. For
+TypeScript users, this package supports both \`"Node10"\` and \`"Node16"\` module
+resolution strategies.
+
+\\------------✄-----------⏶-⏷-----------✄------------
+
+This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in Node.js
+versions that are not end-of-life. For TypeScript users, this package supports
+both \`"Node10"\` and \`"Node16"\` module resolution strategies.
+
+\\------------✄-----------⏶-⏷-----------✄------------
+
+This is an [ESM-only package][x-pkg-esm-wine] built by Babel for use in
+browser-like environments. For TypeScript users, this package supports both
+\`"Node10"\` and \`"Node16"\` module resolution strategies.
+
+<!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
+<!-- xscripts-template-region-end -->
+<!-- TODO: custom details here -->
+<!-- xscripts-template-region-start -->
+
+<details><summary>Expand details</summary>
+
+<!-- TODO: choose one of the following and --✄--delete--✄-- the others: -->
+
+That means both CJS2 (via \`require(...)\`) and ESM (via \`import { ... } from ...\`
+or \`await import(...)\`) source will load this package from the same entry points
+when using Node. This has several benefits, the foremost being: less code
+shipped/smaller package size, avoiding [dual package
+hazard][x-pkg-dual-package-hazard] entirely, distributables are not
+packed/bundled/uglified, a drastically less complex build process, and CJS
+consumers aren't shafted.
+
+\\------------✄-----------⏶-⏷-----------✄------------
+
+That means ESM source will load this package via \`import { ... } from ...\` or
+\`await import(...)\` and CJS source will load this package via dynamic
+\`import()\`. This has several benefits, the foremost being: less code
+shipped/smaller package size, avoiding [dual package
+hazard][x-pkg-dual-package-hazard] entirely, distributables are not
+packed/bundled/uglified, and a drastically less complex build process.
+
+The glaring downside, which may or may not be relevant, is that CJS consumers
+cannot \`require()\` this package and can only use \`import()\` in an asynchronous
+context. This means, in effect, CJS consumers may not be able to use this
+package at all.
+
+<!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
+
+Each entry point (i.e. \`ENTRY\`) in [\`package.json\`'s
+\`exports[ENTRY]\`][x-repo-package-json] object includes one or more [export
+conditions][x-pkg-exports-conditions]. These entries may or may not include: an
+[\`exports[ENTRY].types\`][x-pkg-exports-types-key] condition pointing to a type
+declaration file for TypeScript and IDEs, a
+[\`exports[ENTRY].module\`][x-pkg-exports-module-key] condition pointing to
+(usually ESM) source for Webpack/Rollup, a \`exports[ENTRY].node\` and/or
+\`exports[ENTRY].default\` condition pointing to (usually CJS2) source for Node.js
+\`require\`/\`import\` and for browsers and other environments, and [other
+conditions][x-pkg-exports-conditions] not enumerated here. Check the
+[package.json][x-repo-package-json] file to see which export conditions are
+supported.
+
+Note that, regardless of the [\`{ "type": "..." }\`][x-pkg-type] specified in
+[\`package.json\`][x-repo-package-json], any JavaScript files written in ESM
+syntax (including distributables) will always have the \`.mjs\` extension. Note
+also that [\`package.json\`][x-repo-package-json] may include the
+[\`sideEffects\`][x-pkg-side-effects-key] key, which is almost always \`false\` for
+optimal [tree shaking][x-pkg-tree-shaking] where appropriate.
+
+<!-- xscripts-template-region-end -->
+<!-- TODO: custom details here -->
+
+</details>
+
+### License
+
+See [LICENSE][x-repo-license].
+
+## Contributing and Support
+
+**[New issues][x-repo-choose-new-issue] and [pull requests][x-repo-pr-compare]
+are always welcome and greatly appreciated! 🤩** Just as well, you can [star 🌟
+this project][x-badge-repo-link] to let me know you found it useful! ✊🏿 Or [buy
+me a beer][x-repo-sponsor], I'd appreciate it. Thank you!
+
+See [CONTRIBUTING.md][x-repo-contributing] and [SUPPORT.md][x-repo-support] for
+more information.
+
+### Contributors
+
+<!-- remark-ignore-start -->
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
+<!-- remark-ignore-end -->
+
+Thanks goes to these wonderful people ([emoji
+key][x-repo-all-contributors-emojis]):
+
+<!-- remark-ignore-start -->
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<table></table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- remark-ignore-end -->
+
+This project follows the [all-contributors][x-repo-all-contributors]
+specification. Contributions of any kind welcome!
+
+[x-badge-blm-image]: https://xunn.at/badge-blm 'Join the movement!'
+[x-badge-blm-link]: https://xunn.at/donate-blm
+[x-badge-codecov-image]:
+  https://img.shields.io/codecov/c/github/repo-owner/repo-name/main?style=flat-square&token=HWRIOBAAPW&flag=package.main_root
+  'Is this package well-tested?'
+[x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
+[x-badge-downloads-image]:
+  https://img.shields.io/npm/dm/good-hybridrepo?style=flat-square
+  'Number of times this package has been downloaded per month'
+[x-badge-lastcommit-image]:
+  https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
+  'Latest commit timestamp'
+[x-badge-license-image]:
+  https://img.shields.io/npm/l/good-hybridrepo?style=flat-square
+  "This package's source license"
+[x-badge-license-link]:
+  https://github.com/repo-owner/repo-name/blob/main/LICENSE
+[x-badge-npm-image]:
+  https://xunn.at/npm-pkg-version/good-hybridrepo
+  'Install this package using npm or yarn!'
+[x-badge-npm-link]:
+  https://npmtrends.com/good-hybridrepo
+[x-badge-repo-link]: https://github.com/repo-owner/repo-name
+[x-badge-semanticrelease-image]:
+  https://xunn.at/badge-semantic-release
+  'This repo practices continuous integration and deployment!'
+[x-badge-semanticrelease-link]:
+  https://github.com/semantic-release/semantic-release
+[x-pkg-cjs-mojito]:
+  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#publish-only-a-cjs-distribution-with-property-exports
+[x-pkg-dual-package-hazard]:
+  https://nodejs.org/api/packages.html#dual-package-hazard
+[x-pkg-esm-wine]:
+  https://dev.to/jakobjingleheimer/configuring-commonjs-es-modules-for-nodejs-12ed#esm-source-and-distribution
+[x-pkg-exports-conditions]:
+  https://webpack.js.org/guides/package-exports#reference-syntax
+[x-pkg-exports-module-key]:
+  https://webpack.js.org/guides/package-exports#providing-commonjs-and-esm-version-stateless
+[x-pkg-exports-types-key]:
+  https://devblogs.microsoft.com/typescript/announcing-typescript-4-5-beta#packagejson-exports-imports-and-self-referencing
+[x-pkg-side-effects-key]:
+  https://webpack.js.org/guides/tree-shaking#mark-the-file-as-side-effect-free
+[x-pkg-tree-shaking]: https://webpack.js.org/guides/tree-shaking
+[x-pkg-type]:
+  https://github.com/nodejs/node/blob/8d8e06a345043bec787e904edc9a2f5c5e9c275f/doc/api/packages.md#type
+[x-repo-all-contributors]: https://github.com/all-contributors/all-contributors
+[x-repo-all-contributors-emojis]: https://allcontributors.org/docs/en/emoji-key
+[x-repo-choose-new-issue]:
+  https://github.com/repo-owner/repo-name/issues/new/choose
+[x-repo-contributing]: /CONTRIBUTING.md
+[x-repo-docs]: docs
+[x-repo-license]: ./LICENSE
+[x-repo-package-json]: package.json
+[x-repo-pr-compare]: https://github.com/repo-owner/repo-name/compare
+[x-repo-sponsor]: https://github.com/sponsors/Xunnamius
+[x-repo-support]: /.github/SUPPORT.md
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> readme (markdown): /dummy/packages/pkg/packages/webpack/README.md 1`] = `
+"key: /dummy/packages/pkg/packages/webpack/README.md
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+<!-- xscripts-template-region-start -->
+
+<p align="center" width="100%">
+  <img width="300" src="./repo-name.png">
+</p>
+
+<p align="center" width="100%">
+<!-- xscripts-template-region-end -->
+
+good-hybridrepo-description
+
+<!-- xscripts-template-region-start -->
+
+</p>
+
+<hr />
+
+<div align="center">
+
+[![Black Lives Matter!][x-badge-blm-image]][x-badge-blm-link]
+[![Last commit timestamp][x-badge-lastcommit-image]][x-badge-repo-link]
+[![Codecov][x-badge-codecov-image]][x-badge-codecov-link]
+[![Source license][x-badge-license-image]][x-badge-license-link]
+[![Uses Semantic Release!][x-badge-semanticrelease-image]][x-badge-semanticrelease-link]
+
+[![NPM version][x-badge-npm-image]][x-badge-npm-link]
+[![Monthly Downloads][x-badge-downloads-image]][x-badge-npm-link]
+
+</div>
+
+<br />
+
+# repo-name (good-hybridrepo)
 
 <!-- xscripts-template-region-end -->
 
@@ -3317,8 +3829,26 @@ Thank you for your contribution!
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> src (directory): /dummy/src/index.ts 1`] = `
-"key: /dummy/src/index.ts
+exports[`::gatherAssetsFromTransformer <config assets> src (directory): /dummy/packages/pkg/packages/cli/src/index.ts 1`] = `
+"key: /dummy/packages/pkg/packages/cli/src/index.ts
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> src (directory): /dummy/packages/pkg/packages/private/src/index.ts 1`] = `
+"key: /dummy/packages/pkg/packages/private/src/index.ts
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> src (directory): /dummy/packages/pkg/packages/webpack/src/index.ts 1`] = `
+"key: /dummy/packages/pkg/packages/webpack/src/index.ts
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3351,8 +3881,8 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> test (directory): /dummy/test/index.ts 1`] = `
-"key: /dummy/test/index.ts
+exports[`::gatherAssetsFromTransformer <config assets> test (directory): /dummy/src/index.ts 1`] = `
+"key: /dummy/src/index.ts
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3365,8 +3895,24 @@ export {};
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/cli/tsc.package.docs.json 1`] = `
-"key: /dummy/packages/cli/tsc.package.docs.json
+exports[`::gatherAssetsFromTransformer <config assets> test (directory): /dummy/src/setup.ts 1`] = `
+"key: /dummy/src/setup.ts
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+/**
+ ** This file is automatically imported by Jest, and is responsible for
+ **  bootstrapping the runtime for every test file.
+ */
+
+// ? https://github.com/jest-community/jest-extended#typescript
+import 'jest-extended';
+import 'jest-extended/all';
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/pkg/packages/cli/tsc.package.docs.json 1`] = `
+"key: /dummy/packages/pkg/packages/cli/tsc.package.docs.json
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3396,8 +3942,8 @@ preset: undefined
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/cli/tsc.package.lint.json 1`] = `
-"key: /dummy/packages/cli/tsc.package.lint.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/pkg/packages/cli/tsc.package.lint.json 1`] = `
+"key: /dummy/packages/pkg/packages/cli/tsc.package.lint.json
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3427,8 +3973,8 @@ preset: undefined
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/cli/tsc.package.types.json 1`] = `
-"key: /dummy/packages/cli/tsc.package.types.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/pkg/packages/cli/tsc.package.types.json 1`] = `
+"key: /dummy/packages/pkg/packages/cli/tsc.package.types.json
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3441,35 +3987,35 @@ preset: undefined
 */
 
 {
-"$schema": "https://json.schemastore.org/tsconfig.json",
-"extends": "./tsconfig.json",
-"compilerOptions": {
-"allowJs": false,
-"checkJs": false,
-"declaration": true,
-"emitDeclarationOnly": true,
-"isolatedModules": false,
-"noEmit": false,
-"outDir": "dist",
-"rootDir": "./"
-},
-"include": ["types/**/*", "src/**/*"],
-"exclude": [
-"**/dist/**/*",
-"**/test/fixtures/**/*",
-"**/node_modules/**/*",
-"packages/**/*",
-"packages/**/.*",
-"**/*.ignore",
-"**/*.ignore.*/**/*",
-"**/ignore.*"
-]
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "isolatedModules": false,
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "./"
+  },
+  "include": ["types/**/*", "src/**/*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "packages/**/*",
+    "packages/**/.*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
 }
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/private/tsc.package.docs.json 1`] = `
-"key: /dummy/packages/private/tsc.package.docs.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/pkg/packages/private/tsc.package.docs.json 1`] = `
+"key: /dummy/packages/pkg/packages/private/tsc.package.docs.json
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3499,8 +4045,8 @@ preset: undefined
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/private/tsc.package.lint.json 1`] = `
-"key: /dummy/packages/private/tsc.package.lint.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/pkg/packages/private/tsc.package.lint.json 1`] = `
+"key: /dummy/packages/pkg/packages/private/tsc.package.lint.json
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3530,8 +4076,8 @@ preset: undefined
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/private/tsc.package.types.json 1`] = `
-"key: /dummy/packages/private/tsc.package.types.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/pkg/packages/private/tsc.package.types.json 1`] = `
+"key: /dummy/packages/pkg/packages/private/tsc.package.types.json
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3544,35 +4090,35 @@ preset: undefined
 */
 
 {
-"$schema": "https://json.schemastore.org/tsconfig.json",
-"extends": "./tsconfig.json",
-"compilerOptions": {
-"allowJs": false,
-"checkJs": false,
-"declaration": true,
-"emitDeclarationOnly": true,
-"isolatedModules": false,
-"noEmit": false,
-"outDir": "dist",
-"rootDir": "./"
-},
-"include": ["types/**/*", "src/**/*"],
-"exclude": [
-"**/dist/**/*",
-"**/test/fixtures/**/*",
-"**/node_modules/**/*",
-"packages/**/*",
-"packages/**/.*",
-"**/*.ignore",
-"**/*.ignore.*/**/*",
-"**/ignore.*"
-]
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "isolatedModules": false,
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "./"
+  },
+  "include": ["types/**/*", "src/**/*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "packages/**/*",
+    "packages/**/.*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
 }
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/webpack/tsc.package.docs.json 1`] = `
-"key: /dummy/packages/webpack/tsc.package.docs.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/pkg/packages/webpack/tsc.package.docs.json 1`] = `
+"key: /dummy/packages/pkg/packages/webpack/tsc.package.docs.json
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3602,8 +4148,8 @@ preset: undefined
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/webpack/tsc.package.lint.json 1`] = `
-"key: /dummy/packages/webpack/tsc.package.lint.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/pkg/packages/webpack/tsc.package.lint.json 1`] = `
+"key: /dummy/packages/pkg/packages/webpack/tsc.package.lint.json
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3633,8 +4179,8 @@ preset: undefined
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/webpack/tsc.package.types.json 1`] = `
-"key: /dummy/packages/webpack/tsc.package.types.json
+exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/packages/pkg/packages/webpack/tsc.package.types.json 1`] = `
+"key: /dummy/packages/pkg/packages/webpack/tsc.package.types.json
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3647,50 +4193,19 @@ preset: undefined
 */
 
 {
-"$schema": "https://json.schemastore.org/tsconfig.json",
-"extends": "./tsconfig.json",
-"compilerOptions": {
-"allowJs": false,
-"checkJs": false,
-"declaration": true,
-"emitDeclarationOnly": true,
-"isolatedModules": false,
-"noEmit": false,
-"outDir": "dist",
-"rootDir": "./"
-},
-"include": ["types/**/*", "src/**/*"],
-"exclude": [
-"**/dist/**/*",
-"**/test/fixtures/**/*",
-"**/node_modules/**/*",
-"packages/**/*",
-"packages/**/.*",
-"**/*.ignore",
-"**/*.ignore.*/**/*",
-"**/ignore.*"
-]
-}
-"
-`;
-
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/tsc.package.docs.json 1`] = `
-"key: /dummy/tsc.package.docs.json
-scope: unlimited
-preset: undefined
-⏶⏷⏶⏷⏶
-/**
- ** This file extends the project root tsconfig.json file for use with
- ** typedoc at the package level.
- **
- ** Use this file to exert some control over how typedoc generates
- ** package-specific documentation.
- */
-
-{
   "$schema": "https://json.schemastore.org/tsconfig.json",
   "extends": "./tsconfig.json",
-  "include": ["types/**/*", "src/**/*", "test/**/*"],
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "isolatedModules": false,
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "./"
+  },
+  "include": ["types/**/*", "src/**/*"],
   "exclude": [
     "**/dist/**/*",
     "**/test/fixtures/**/*",
@@ -3701,78 +4216,6 @@ preset: undefined
     "**/*.ignore.*/**/*",
     "**/ignore.*"
   ]
-}
-"
-`;
-
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/tsc.package.lint.json 1`] = `
-"key: /dummy/tsc.package.lint.json
-scope: unlimited
-preset: undefined
-⏶⏷⏶⏷⏶
-/**
- ** This file extends the project root tsconfig.json file for use with linting
- ** all files at the package level. Only tsc gets its paths from this file.
- **
- ** Use this file to exert some control over which files are considered
- ** part of the current package and which will be ignored.
- */
-
-{
-  "$schema": "https://json.schemastore.org/tsconfig.json",
-  "extends": "./tsconfig.json",
-  "include": ["**/*", "**/.*/**/*", "**/.*"],
-  "exclude": [
-    "**/dist/**/*",
-    "**/test/fixtures/**/*",
-    "**/node_modules/**/*",
-    "packages/**/*",
-    "packages/**/.*",
-    "**/*.ignore",
-    "**/*.ignore.*/**/*",
-    "**/ignore.*"
-  ]
-}
-"
-`;
-
-exports[`::gatherAssetsFromTransformer <config assets> tsconfig (all variants): /dummy/tsc.package.types.json 1`] = `
-"key: /dummy/tsc.package.types.json
-scope: unlimited
-preset: undefined
-⏶⏷⏶⏷⏶
-/**
-** This file extends the project root tsconfig.json file for use with tsc at
-** the package level.
-**
-** Use this file to exert some control over how tsc generates package-specific
-** definition files.
-*/
-
-{
-"$schema": "https://json.schemastore.org/tsconfig.json",
-"extends": "./tsconfig.json",
-"compilerOptions": {
-"allowJs": false,
-"checkJs": false,
-"declaration": true,
-"emitDeclarationOnly": true,
-"isolatedModules": false,
-"noEmit": false,
-"outDir": "dist",
-"rootDir": "./"
-},
-"include": ["types/**/*", "src/**/*"],
-"exclude": [
-"**/dist/**/*",
-"**/test/fixtures/**/*",
-"**/node_modules/**/*",
-"packages/**/*",
-"packages/**/.*",
-"**/*.ignore",
-"**/*.ignore.*/**/*",
-"**/ignore.*"
-]
 }
 "
 `;
@@ -3791,18 +4234,18 @@ preset: undefined
  ** repository at once.
  */
 
- {
- "$schema": "https://json.schemastore.org/tsconfig.json",
- "extends": "./tsconfig.json",
- "include": ["**/*", "**/.*/**/*", "**/.*"],
- "exclude": [
- "**/dist/**/*",
- "**/test/fixtures/**/*",
- "**/node_modules/**/*",
- "**/*.ignore",
- "**/*.ignore.*/**/*",
- "**/ignore.*"
- ]
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "include": ["**/*", "**/.*/**/*", "**/.*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
 }
 "
 `;
@@ -3925,8 +4368,8 @@ preset: undefined
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <config assets> types (directory): /dummy/types/example 1`] = `
-"key: /dummy/types/example
+exports[`::gatherAssetsFromTransformer <config assets> types (directory): /dummy/types/_example-d.ts 1`] = `
+"key: /dummy/types/_example-d.ts
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -3964,6 +4407,15 @@ scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
 export type {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <config assets> vercel.json: /dummy/vercel.json 1`] = `
+"key: /dummy/vercel.json
+scope: unlimited
+preset: undefined
+⏶⏷⏶⏷⏶
+{}
 "
 `;
 

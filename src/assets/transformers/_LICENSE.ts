@@ -1,15 +1,32 @@
 /* eslint-disable unicorn/filename-case */
-import { type RelativePath } from 'multiverse+project-utils:fs.ts';
 
-import { compileTemplate, makeTransformer } from 'universe:assets.ts';
+import {
+  markdownLicensePackageBase,
+  type RelativePath
+} from 'multiverse+project-utils:fs.ts';
 
-export const { transformer } = makeTransformer(async function (context) {
-  const { asset, toProjectAbsolutePath } = context;
+import { compileTemplate, libAssetPresets, makeTransformer } from 'universe:assets.ts';
+import { generatePerPackageAssets } from 'universe:util.ts';
 
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => compileTemplate('LICENSE' as RelativePath, { ...context })
-    }
-  ];
+export const { transformer } = makeTransformer(function (context) {
+  const { assetPreset: targetAssetsPreset } = context;
+
+  // * Do not generate any files when using the "wrong" preset
+  if (!libAssetPresets.includes(targetAssetsPreset)) {
+    return [];
+  }
+
+  // * Every package gets these files, including non-hybrid monorepo roots
+  return generatePerPackageAssets(
+    context,
+    async function ({ toPackageAbsolutePath }) {
+      return [
+        {
+          path: toPackageAbsolutePath(markdownLicensePackageBase),
+          generate: () => compileTemplate('LICENSE' as RelativePath, { ...context })
+        }
+      ];
+    },
+    { includeRootPackageInNonHybridMonorepo: true }
+  );
 });

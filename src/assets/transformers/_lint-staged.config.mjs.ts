@@ -1,5 +1,8 @@
+import { lintStagedConfigProjectBase } from 'multiverse+project-utils:fs.ts';
+
 import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
 // {@xscripts/notExtraneous lint-staged}
 
@@ -15,14 +18,15 @@ export function moduleExport() {
  * The scripts returned by this function are the constituent parts of the \`npm
  * run format\` xscripts command.
  */
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+export const { transformer } = makeTransformer(function (context) {
+  const { asset, toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(lintStagedConfigProjectBase),
+        generate: () => /*js*/ `
 // @ts-check
 'use strict';
 
@@ -41,6 +45,7 @@ export default config;
 
 /*debug('exported config: %O', config);*/
 `
-    }
-  ];
+      }
+    ];
+  });
 });

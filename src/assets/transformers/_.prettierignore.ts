@@ -1,13 +1,17 @@
-import { makeTransformer } from 'universe:assets.ts';
+import { prettierIgnoreConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => `
+import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
+
+export const { transformer } = makeTransformer(function (context) {
+  const { toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(prettierIgnoreConfigProjectBase),
+        generate: () => `
 # * Paths below are ignored by prettier as well as remark and doctoc when called
 # * with \`xscripts format\`.
 
@@ -60,6 +64,7 @@ fixtures
 # Ignore random nothingness in any subdir
 .DS_Store
 `
-    }
-  ];
+      }
+    ];
+  });
 });

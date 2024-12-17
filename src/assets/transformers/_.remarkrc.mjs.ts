@@ -7,11 +7,13 @@ import {
 } from 'multiverse+project-utils:analyze.ts';
 
 import { ProjectError } from 'multiverse+project-utils:error.ts';
+import { remarkConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
 import type { Options as MdastUtilToMarkdownOptions } from 'mdast-util-to-markdown' with { 'resolution-mode': 'import' };
 import type { Options as UnifiedEngineOptions } from 'unified-engine' with { 'resolution-mode': 'import' };
@@ -298,14 +300,15 @@ export async function assertEnvironment(): Promise<Parameters<typeof moduleExpor
   return { mode, shouldRenumberReferences, allowWarningComments, projectMetadata };
 }
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+export const { transformer } = makeTransformer(function (context) {
+  const { asset, toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(remarkConfigProjectBase),
+        generate: () => /*js*/ `
 // @ts-check
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
@@ -334,6 +337,7 @@ export default config;
 
 /*debug('exported config: %O', config);*/
 `
-    }
-  ];
+      }
+    ];
+  });
 });

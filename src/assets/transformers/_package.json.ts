@@ -17,9 +17,9 @@ import { packageJsonConfigPackageBase } from 'multiverse+project-utils:fs.ts';
 
 import { version as xscriptsVersion } from 'rootverse:package.json';
 
-import { makeTransformer, type Asset } from 'universe:assets.ts';
-import { DefaultGlobalScope } from 'universe:configure.ts';
+import { makeTransformer } from 'universe:assets.ts';
 import { ErrorMessage } from 'universe:error.ts';
+import { generatePerPackageAssets } from 'universe:util.ts';
 
 export type GeneratorParameters = [
   json: Package['json'] &
@@ -169,32 +169,22 @@ export function parsePackageJsonRepositoryIntoOwnerAndRepo({
 
 export const { transformer } = makeTransformer(function (context) {
   const {
-    scope,
     toProjectAbsolutePath,
-    projectMetadata: { rootPackage, cwdPackage, subRootPackages }
+    projectMetadata: {
+      rootPackage: { attributes: projectAttributes }
+    }
   } = context;
 
-  const assets: Asset[] = [];
-  const { attributes: projectAttributes } = rootPackage;
+  // * Every package gets these files except non-hybrid monorepo roots
+  return generatePerPackageAssets(context, function ({ package_ }) {
+    const { json: packageJson } = package_;
 
-  if (scope === DefaultGlobalScope.ThisPackage) {
-    addPackageAssets(cwdPackage);
-  } else {
-    const allPackages = [cwdPackage].concat(...(subRootPackages?.values() || []));
-    for (const package_ of allPackages) {
-      addPackageAssets(package_);
-    }
-  }
-
-  return assets;
-
-  function addPackageAssets({ json: packageJson, ...package_ }: Package) {
     const { owner, repo } = parsePackageJsonRepositoryIntoOwnerAndRepo(packageJson);
     const repoUrl = `https://github.com/${owner}/${repo}`;
 
     const isNonHybridMonorepo =
-      rootPackage.attributes[ProjectAttribute.Monorepo] &&
-      !rootPackage.attributes[ProjectAttribute.Hybridrepo];
+      projectAttributes[ProjectAttribute.Monorepo] &&
+      !projectAttributes[ProjectAttribute.Hybridrepo];
 
     const packageJsonSubset = {
       name: packageJson.name,
@@ -207,19 +197,21 @@ export const { transformer } = makeTransformer(function (context) {
     } satisfies Parameters<typeof generateBaseXPackageJson>[0];
 
     if (projectAttributes[ProjectAttribute.Polyrepo]) {
-      assets.push({
-        path: toProjectAbsolutePath(packageJsonConfigPackageBase),
-        generate: () =>
-          stringify(generateBasePolyrepoXPackageJson(packageJsonSubset, repoUrl))
-      });
+      return [
+        {
+          path: toProjectAbsolutePath(packageJsonConfigPackageBase),
+          generate: () =>
+            stringify(generateBasePolyrepoXPackageJson(packageJsonSubset, repoUrl))
+        }
+      ];
     } else {
       const isPackageTheRootPackage = isRootPackage(package_);
       const relativeRoot = 'relativeRoot' in package_ ? package_.relativeRoot : '';
 
       if (isPackageTheRootPackage) {
-        assets.push(
-          rootPackage.attributes[ProjectAttribute.Hybridrepo]
-            ? {
+        return projectAttributes[ProjectAttribute.Hybridrepo]
+          ? [
+              {
                 path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
                 generate: () =>
                   stringify(
@@ -229,7 +221,9 @@ export const { transformer } = makeTransformer(function (context) {
                     )
                   )
               }
-            : {
+            ]
+          : [
+              {
                 path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
                 generate: () =>
                   stringify(
@@ -239,18 +233,20 @@ export const { transformer } = makeTransformer(function (context) {
                     )
                   )
               }
-        );
+            ];
       } else {
-        assets.push({
-          path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
-          generate: () =>
-            stringify(
-              generateBaseMonorepoPackageRootXPackageJson(packageJsonSubset, repoUrl)
-            )
-        });
+        return [
+          {
+            path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
+            generate: () =>
+              stringify(
+                generateBaseMonorepoPackageRootXPackageJson(packageJsonSubset, repoUrl)
+              )
+          }
+        ];
       }
     }
-  }
+  });
 });
 
 function stringify(o: Jsonifiable) {

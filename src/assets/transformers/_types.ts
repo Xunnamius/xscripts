@@ -1,18 +1,23 @@
-// TODO: ./global.ts, example
+import { directoryTypesProjectBase } from 'multiverse+project-utils:fs.ts';
 
 import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
-export const { transformer } = makeTransformer(function ({ toProjectAbsolutePath }) {
-  return [
-    {
-      path: toProjectAbsolutePath('types/global.ts'),
-      generate: () => /*js*/ `
+export const { transformer } = makeTransformer(function (context) {
+  const { toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(directoryTypesProjectBase, 'global.ts'),
+        generate: () => /*js*/ `
 export type {};
 `
-    },
-    {
-      path: toProjectAbsolutePath('types/example'),
-      generate: () => /*js*/ `
+      },
+      {
+        path: toProjectAbsolutePath(directoryTypesProjectBase, '_example-d.ts'),
+        generate: () => /*js*/ `
 declare module 'glob-gitignore' {
   import type { GlobOptions } from 'glob';
 
@@ -38,6 +43,7 @@ declare module 'glob-gitignore' {
   export function hasMagic(patterns: string | string[], options?: GlobOptions): string;
 }
 `
-    }
-  ];
+      }
+    ];
+  });
 });

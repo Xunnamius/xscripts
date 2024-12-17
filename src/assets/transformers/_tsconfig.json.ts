@@ -3,18 +3,11 @@ import {
   generateRawAliasMap
 } from 'multiverse+project-utils:alias.ts';
 
-import {
-  isRootPackage,
-  ProjectAttribute,
-  type Package
-} from 'multiverse+project-utils:analyze.ts';
-
 import { Tsconfig } from 'multiverse+project-utils:fs.ts';
 
-import { makeTransformer, type Asset } from 'universe:assets.ts';
-import { RenovationPreset } from 'universe:commands/project/renovate.ts';
-import { DefaultGlobalScope } from 'universe:configure.ts';
+import { makeTransformer } from 'universe:assets.ts';
 import { makeGeneratedAliasesWarningComment } from 'universe:constant.ts';
+import { generatePerPackageAssets, generateRootOnlyAssets } from 'universe:util.ts';
 
 // {@xscripts/notExtraneous typescript}
 
@@ -86,18 +79,18 @@ const tsconfigFiles = {
  ** repository at once.
  */
 
- {
- "$schema": "https://json.schemastore.org/tsconfig.json",
- "extends": "./tsconfig.json",
- "include": ["**/*", "**/.*/**/*", "**/.*"],
- "exclude": [
- "**/dist/**/*",
- "**/test/fixtures/**/*",
- "**/node_modules/**/*",
- "**/*.ignore",
- "**/*.ignore.*/**/*",
- "**/ignore.*"
- ]
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "include": ["**/*", "**/.*/**/*", "**/.*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
 }`,
   [Tsconfig.PackageTypes]: `
 /**
@@ -109,29 +102,29 @@ const tsconfigFiles = {
 */
 
 {
-"$schema": "https://json.schemastore.org/tsconfig.json",
-"extends": "./tsconfig.json",
-"compilerOptions": {
-"allowJs": false,
-"checkJs": false,
-"declaration": true,
-"emitDeclarationOnly": true,
-"isolatedModules": false,
-"noEmit": false,
-"outDir": "dist",
-"rootDir": "./"
-},
-"include": ["types/**/*", "src/**/*"],
-"exclude": [
-"**/dist/**/*",
-"**/test/fixtures/**/*",
-"**/node_modules/**/*",
-"packages/**/*",
-"packages/**/.*",
-"**/*.ignore",
-"**/*.ignore.*/**/*",
-"**/ignore.*"
-]
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "isolatedModules": false,
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "./"
+  },
+  "include": ["types/**/*", "src/**/*"],
+  "exclude": [
+    "**/dist/**/*",
+    "**/test/fixtures/**/*",
+    "**/node_modules/**/*",
+    "packages/**/*",
+    "packages/**/.*",
+    "**/*.ignore",
+    "**/*.ignore.*/**/*",
+    "**/ignore.*"
+  ]
 }`,
   [Tsconfig.PackageLint]: `
 /**
@@ -183,15 +176,9 @@ const tsconfigFiles = {
 }`
 };
 
-export const { transformer } = makeTransformer(function ({
-  shouldDeriveAliases,
-  projectMetadata,
-  toProjectAbsolutePath,
-  targetAssetsPreset,
-  scope
-}) {
-  const assets: Asset[] = [];
-  const { cwdPackage, rootPackage, subRootPackages } = projectMetadata;
+export const { transformer } = makeTransformer(async function (context) {
+  const { shouldDeriveAliases, projectMetadata, toProjectAbsolutePath } = context;
+
   const derivedAliasesSourceSnippet = shouldDeriveAliases
     ? JSON.stringify(
         deriveAliasesForTypeScript(generateRawAliasMap(projectMetadata)),
@@ -204,61 +191,42 @@ export const { transformer } = makeTransformer(function ({
         .replace(/^}/m, '    }')
     : '{}';
 
-  if (scope === DefaultGlobalScope.Unlimited || isRootPackage(cwdPackage)) {
-    assets.push(
-      {
-        path: toProjectAbsolutePath(Tsconfig.ProjectBase),
-        generate: () =>
-          tsconfigFiles[Tsconfig.ProjectBase].replace(
-            '{derivedAliasesSourceSnippet}',
-            derivedAliasesSourceSnippet
-          )
-      },
-      {
-        path: toProjectAbsolutePath(Tsconfig.ProjectLint),
-        generate: () => tsconfigFiles[Tsconfig.ProjectLint]
-      }
-    );
-  }
+  return [
+    ...// * Only the root package gets these files
+    (await generateRootOnlyAssets(context, function () {
+      return [
+        {
+          path: toProjectAbsolutePath(Tsconfig.ProjectBase),
+          generate: () =>
+            tsconfigFiles[Tsconfig.ProjectBase].replace(
+              '{derivedAliasesSourceSnippet}',
+              derivedAliasesSourceSnippet
+            )
+        },
+        {
+          path: toProjectAbsolutePath(Tsconfig.ProjectLint),
+          generate: () => tsconfigFiles[Tsconfig.ProjectLint]
+        }
+      ];
+    })),
 
-  if (scope === DefaultGlobalScope.ThisPackage) {
-    addPackageAssets(cwdPackage);
-  } else {
-    const allPackages = [cwdPackage].concat(...(subRootPackages?.values() || []));
-    for (const package_ of allPackages) {
-      addPackageAssets(package_);
-    }
-  }
-
-  return assets;
-
-  function addPackageAssets(package_: Package) {
-    const isPackageTheRootPackage = isRootPackage(package_);
-    const isInHybridrepoOrPolyrepo =
-      rootPackage.attributes[ProjectAttribute.Hybridrepo] ||
-      rootPackage.attributes[ProjectAttribute.Polyrepo];
-
-    if (!isPackageTheRootPackage || isInHybridrepoOrPolyrepo) {
-      const relativeRoot = 'relativeRoot' in package_ ? package_.relativeRoot : '';
-
-      assets.push({
-        path: toProjectAbsolutePath(relativeRoot, Tsconfig.PackageTypes),
-        generate: () => tsconfigFiles[Tsconfig.PackageTypes]
-      });
-
-      if (targetAssetsPreset !== RenovationPreset.Minimal) {
-        // TODO: don't these need to be tweaked more for monorepo packages?
-        assets.push(
-          {
-            path: toProjectAbsolutePath(relativeRoot, Tsconfig.PackageLint),
-            generate: () => tsconfigFiles[Tsconfig.PackageLint]
-          },
-          {
-            path: toProjectAbsolutePath(relativeRoot, Tsconfig.PackageDocumentation),
-            generate: () => tsconfigFiles[Tsconfig.PackageDocumentation]
-          }
-        );
-      }
-    }
-  }
+    ...// * Every package gets these files except non-hybrid monorepo roots
+    (await generatePerPackageAssets(context, async function ({ toPackageAbsolutePath }) {
+      // TODO: don't these need to be tweaked more for monorepo packages?
+      return [
+        {
+          path: toPackageAbsolutePath(Tsconfig.PackageTypes),
+          generate: () => tsconfigFiles[Tsconfig.PackageTypes]
+        },
+        {
+          path: toPackageAbsolutePath(Tsconfig.PackageLint),
+          generate: () => tsconfigFiles[Tsconfig.PackageLint]
+        },
+        {
+          path: toPackageAbsolutePath(Tsconfig.PackageDocumentation),
+          generate: () => tsconfigFiles[Tsconfig.PackageDocumentation]
+        }
+      ];
+    }))
+  ];
 });

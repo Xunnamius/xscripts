@@ -7,48 +7,49 @@ import {
 } from 'multiverse+project-utils:fs.ts';
 
 import { makeTransformer, type Asset } from 'universe:assets.ts';
-import { readFile } from 'universe:util.ts';
+import { generateRootOnlyAssets, readFile } from 'universe:util.ts';
 
 // {@xscripts/notExtraneous dotenv-cli}
 
 const startsWithAlphaNumeric = /^[a-z0-9]/i;
 
-export const { transformer } = makeTransformer(async function ({
-  toProjectAbsolutePath,
-  forceOverwritePotentiallyDestructive,
-  log,
-  debug
-}) {
-  const secretsFilePath = toProjectAbsolutePath(dotEnvConfigPackageBase);
-  const doesSecretsFileAlreadyExist = await isAccessible(secretsFilePath, {
-    useCached: true
-  });
+export const { transformer } = makeTransformer(function (context) {
+  const { toProjectAbsolutePath, forceOverwritePotentiallyDestructive, log, debug } =
+    context;
 
-  const shouldOverwriteSecretsFile =
-    forceOverwritePotentiallyDestructive || !doesSecretsFileAlreadyExist;
-
-  const assets: Asset[] = [
-    {
-      path: toProjectAbsolutePath(dotEnvDefaultConfigPackageBase),
-      generate
-    }
-  ];
-
-  if (shouldOverwriteSecretsFile) {
-    if (doesSecretsFileAlreadyExist) {
-      log.warn(
-        'Regenerating sensitive file (current secrets preserved): %O',
-        toRelativePath(toProjectAbsolutePath(), secretsFilePath)
-      );
-    }
-
-    assets.push({
-      path: secretsFilePath,
-      generate: () => generateDummyDotEnv({ merge: secretsFilePath })
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    const secretsFilePath = toProjectAbsolutePath(dotEnvConfigPackageBase);
+    const doesSecretsFileAlreadyExist = await isAccessible(secretsFilePath, {
+      useCached: true
     });
-  }
 
-  return assets;
+    const shouldOverwriteSecretsFile =
+      forceOverwritePotentiallyDestructive || !doesSecretsFileAlreadyExist;
+
+    const assets: Asset[] = [
+      {
+        path: toProjectAbsolutePath(dotEnvDefaultConfigPackageBase),
+        generate
+      }
+    ];
+
+    if (shouldOverwriteSecretsFile) {
+      if (doesSecretsFileAlreadyExist) {
+        log.warn(
+          'Potentially appending new secrets to sensitive file (current secrets preserved): %O',
+          toRelativePath(toProjectAbsolutePath(), secretsFilePath)
+        );
+      }
+
+      assets.push({
+        path: secretsFilePath,
+        generate: () => generateDummyDotEnv({ merge: secretsFilePath })
+      });
+    }
+
+    return assets;
+  });
 
   // ! NEVER log the return value of this function
   async function generateDummyDotEnv({ merge }: { merge: AbsolutePath }) {
@@ -87,7 +88,7 @@ export const { transformer } = makeTransformer(async function ({
         debug('variablesToAppend: %O', variablesToAppend);
 
         // ? We NEVER overwrite the current secrets file, we only append to it
-        __SENSITIVE__outputFileContents = [__SENSITIVE__currentDotEnv, '\n']
+        __SENSITIVE__outputFileContents = [__SENSITIVE__currentDotEnv]
           .concat(variablesToAppend)
           .join('\n');
       }

@@ -1,13 +1,17 @@
-import { makeTransformer } from 'universe:assets.ts';
+import { editorConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => `
+import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
+
+export const { transformer } = makeTransformer(function (context) {
+  const { toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(editorConfigProjectBase),
+        generate: () => `
 root = true
 
 [*]
@@ -18,6 +22,7 @@ charset = utf-8
 indent_style = space
 indent_size = 2
 `
-    }
-  ];
+      }
+    ];
+  });
 });

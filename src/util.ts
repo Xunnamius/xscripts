@@ -11,7 +11,7 @@ import {
   type DotenvPopulateInput
 } from 'dotenv';
 
-import { type Merge } from 'type-fest';
+import { type Merge, type Promisable } from 'type-fest';
 
 import { softAssert } from 'multiverse+cli-utils:error.ts';
 
@@ -21,6 +21,14 @@ import {
 } from 'multiverse+cli-utils:extensions.ts';
 
 import { LogTag } from 'multiverse+cli-utils:logging.ts';
+
+import {
+  isRootPackage,
+  ProjectAttribute,
+  type GenericProjectMetadata,
+  type Package,
+  type ProjectMetadata
+} from 'multiverse+project-utils:analyze/common.ts';
 
 import {
   aliasMapConfigPackageBase,
@@ -40,7 +48,10 @@ import {
   type ExtendedLogger
 } from 'multiverse+rejoinder';
 
+import { type Asset, type TransformerContext } from 'universe:assets.ts';
+
 import {
+  DefaultGlobalScope,
   globalCliArguments,
   type GlobalCliArguments,
   type GlobalExecutionContext
@@ -48,11 +59,6 @@ import {
 
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
-
-import type {
-  GenericProjectMetadata,
-  ProjectMetadata
-} from 'multiverse+project-utils:analyze/common.ts';
 
 import type { ImportedAliasMap } from 'universe:commands/project/renovate.ts';
 
@@ -238,6 +244,95 @@ export function getRelevantDotEnvFilePaths(
   })('dotenv paths (in ascending order of precedence): %O', paths);
 
   return paths;
+}
+
+/**
+ * Takes a {@link TransformerContext} and an adder function and returns an array
+ * of {@link Asset}s generated per each package in {@link ProjectMetadata},
+ * including the root package in hybridrepos and polyrepos (but not in
+ * non-hybrid monorepos).
+ */
+export async function generatePerPackageAssets(
+  transformerContext: TransformerContext,
+  adder: (helpers: {
+    package_: Package;
+    toPackageAbsolutePath: TransformerContext['toPackageAbsolutePath'];
+  }) => Promisable<Asset[] | undefined>,
+  {
+    includeRootPackageInNonHybridMonorepo = false
+  }: {
+    /**
+     * If `true`, the root workspace package will be included among the
+     * {@link Package}s passed to `adder` even when the {@link ProjectMetadata}
+     * indicates that this monorepo does not actually have a publishable root
+     * package containing source code or tests.
+     *
+     * @default false
+     */
+    includeRootPackageInNonHybridMonorepo?: boolean;
+  } = {}
+): Promise<Asset[]> {
+  const {
+    scope,
+    toPackageAbsolutePath,
+    projectMetadata: { cwdPackage, rootPackage, subRootPackages, type }
+  } = transformerContext;
+
+  if (scope === DefaultGlobalScope.ThisPackage) {
+    return Promise.resolve(
+      adder({
+        package_: cwdPackage,
+        toPackageAbsolutePath: toSpecificPackageAbsolutePath(cwdPackage)
+      })
+    ).then((result) => result || []);
+  } else {
+    const allPackages = [...(subRootPackages?.values() || [])] as Package[];
+
+    if (
+      includeRootPackageInNonHybridMonorepo ||
+      (type !== ProjectAttribute.Monorepo &&
+        rootPackage.attributes[ProjectAttribute.Hybridrepo])
+    ) {
+      allPackages.unshift(rootPackage);
+    }
+
+    const allPackagesAssets = await Promise.all(
+      allPackages.map((package_) =>
+        adder({
+          package_: package_,
+          toPackageAbsolutePath: toSpecificPackageAbsolutePath(package_)
+        })
+      )
+    );
+
+    return allPackagesAssets.flat().filter((asset) => !!asset);
+  }
+
+  function toSpecificPackageAbsolutePath(package_: Package) {
+    return function (...args) {
+      const relativeRoot = 'relativeRoot' in package_ ? package_.relativeRoot : '';
+      return toPackageAbsolutePath(relativeRoot, ...args);
+    } as TransformerContext['toPackageAbsolutePath'];
+  }
+}
+
+/**
+ * Takes a {@link TransformerContext} and an adder function and returns an array
+ * of {@link Asset}s when the current package is a {@link RootPackage} or scope
+ * is set to {@link DefaultGlobalScope.Unlimited}.
+ */
+export async function generateRootOnlyAssets(
+  transformerContext: TransformerContext,
+  adder: (helpers: { package_: Package }) => Promisable<Asset[] | undefined>
+): Promise<Asset[]> {
+  const {
+    scope,
+    projectMetadata: { cwdPackage, rootPackage }
+  } = transformerContext;
+
+  return scope === DefaultGlobalScope.Unlimited || isRootPackage(cwdPackage)
+    ? Promise.resolve(adder({ package_: rootPackage })).then((result) => result || [])
+    : [];
 }
 
 // TODO: transmute this and related functions into @-xun/env

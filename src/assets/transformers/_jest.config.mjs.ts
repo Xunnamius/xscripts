@@ -8,6 +8,7 @@ import {
 } from 'multiverse+project-utils:alias.ts';
 
 import { ProjectError } from 'multiverse+project-utils:error.ts';
+import { jestConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { makeTransformer } from 'universe:assets.ts';
@@ -18,6 +19,7 @@ import {
 } from 'universe:constant.ts';
 
 import { ErrorMessage } from 'universe:error.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
 const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:jest`
@@ -126,12 +128,9 @@ export function moduleExport({
   return config;
 }
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  shouldDeriveAliases,
-  projectMetadata,
-  toProjectAbsolutePath
-}) {
+export const { transformer } = makeTransformer(function (context) {
+  const { asset, shouldDeriveAliases, projectMetadata, toProjectAbsolutePath } = context;
+
   const derivedAliasesSourceSnippet = shouldDeriveAliases
     ? `return ${JSON.stringify(
         deriveAliasesForJest(generateRawAliasMap(projectMetadata)),
@@ -140,10 +139,12 @@ export const { transformer } = makeTransformer(function ({
       ).replace(/^}/m, '  }')},`
     : 'return {}';
 
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, function () {
+    return [
+      {
+        path: toProjectAbsolutePath(jestConfigProjectBase),
+        generate: () => /*js*/ `
 // @ts-check
 'use strict';
 
@@ -178,8 +179,9 @@ ${makeGeneratedAliasesWarningComment(2)}
   ${derivedAliasesSourceSnippet}
 }
 `
-    }
-  ];
+      }
+    ];
+  });
 });
 
 /**

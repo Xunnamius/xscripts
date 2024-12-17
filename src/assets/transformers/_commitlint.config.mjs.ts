@@ -1,6 +1,9 @@
+import { commitlintConfigProjectBase } from 'multiverse+project-utils:fs.ts';
+
 import { wellKnownCommitTypes } from 'universe:assets/transformers/_conventional.config.cjs.ts';
 import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
 // {@xscripts/notExtraneous @commitlint/cli @commitlint/config-conventional}
 
@@ -39,14 +42,15 @@ export function moduleExport() {
   } as const;
 }
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+export const { transformer } = makeTransformer(function (context) {
+  const { asset, toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(commitlintConfigProjectBase),
+        generate: () => /*js*/ `
 // @ts-check
 'use strict';
 
@@ -65,6 +69,7 @@ export default config;
 
 /*debug('exported config: %O', config);*/
 `
-    }
-  ];
+      }
+    ];
+  });
 });

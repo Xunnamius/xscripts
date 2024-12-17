@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prevent-abbreviations */
 import { readdir } from 'node:fs/promises';
 
 import { CliError } from '@black-flag/core';
@@ -23,7 +24,6 @@ import { ErrorMessage } from 'universe:error.ts';
 import { readFile } from 'universe:util.ts';
 
 import type { EmptyObject, Entry, Promisable } from 'type-fest';
-import type { RenovationPreset } from 'universe:commands/project/renovate.ts';
 
 const debug_ = createDebugLogger({ namespace: globalDebuggerNamespace });
 
@@ -55,6 +55,98 @@ export const directoryAssetTemplates = toAbsolutePath(__dirname, 'assets', 'temp
 
 // TODO: ensure no usage of hardAssert, softAssert, or CliError in src/assets/*
 // TODO: (use eslint esquery for this)
+
+/**
+ * These presets determine which assets will be returned by which transformers
+ * when they're invoked. By specifying a preset, only the assets it represents
+ * will be generated. All others will be ignored.
+ *
+ * See the xscripts wiki for details.
+ */
+export enum AssetPreset {
+  /**
+   * Represents the most basic assets necessary for xscripts to be fully
+   * functional.
+   *
+   * This preset is the basis for all others and can be used on any
+   * xscripts-compliant project when returning only a subset of files are
+   * desired.
+   *
+   * See the xscripts wiki for details.
+   */
+  Basic = 'basic',
+  /**
+   * Represents the standard assets for an xscripts-compliant command-line
+   * interface project (such as `@black-flag/core`-powered tools like `xscripts`
+   * itself).
+   *
+   * See the xscripts wiki for details.
+   */
+  Cli = 'cli',
+  /**
+   * Represents the standard assets for an xscripts-compliant library project
+   * built for both CJS and ESM consumers (such as the case with
+   * `@black-flag/core`) and potentially also browser and other consumers as
+   * well.
+   *
+   * See the xscripts wiki for details.
+   */
+  Lib = 'lib',
+  /**
+   * Represents the standard assets for an xscripts-compliant library project
+   * built exclusively for ESM and ESM-compatible consumers (such as the case
+   * with the `unified-utils` monorepo).
+   *
+   * See the xscripts wiki for details.
+   */
+  LibEsm = 'lib-esm',
+  /**
+   * Represents the standard assets for an xscripts-compliant library project
+   * built exclusively for ESM consumers operating in a browser-like runtime
+   * (such as the case with the `next-utils` monorepo).
+   *
+   * See the xscripts wiki for details.
+   */
+  LibWeb = 'lib-web',
+  /**
+   * Represents the standard assets for an xscripts-compliant React project.
+   *
+   * See the xscripts wiki for details.
+   */
+  React = 'react',
+  /**
+   * Represents the standard assets for an xscripts-compliant Next.js + React
+   * project.
+   *
+   * See the xscripts wiki for details.
+   */
+  Nextjs = 'nextjs'
+}
+
+/**
+ * @see {@link AssetPreset}
+ */
+export const assetPresets = Object.values(AssetPreset);
+
+/**
+ * The presets for libraries and library-like projects (such as
+ * {@link AssetPreset.Cli}). Also includes `undefined`, signifying a lack of
+ * preset.
+ */
+export const libAssetPresets = [
+  undefined,
+  AssetPreset.Cli,
+  AssetPreset.Lib,
+  AssetPreset.LibEsm,
+  AssetPreset.LibWeb
+];
+
+/**
+ * The presets for react and react-based projects (such as
+ * {@link AssetPreset.Cli}). Also includes `undefined`, signifying a lack of
+ * preset.
+ */
+export const reactAssetPresets = [undefined, AssetPreset.React, AssetPreset.Nextjs];
 
 /**
  * An _asset_ maps an absolute output path and a function that generates output.
@@ -147,10 +239,10 @@ export type TransformerContext = {
    */
   forceOverwritePotentiallyDestructive: boolean;
   /**
-   * A relevant {@link RenovationPreset} or `undefined` when generic versions of
+   * A relevant {@link AssetPreset} or `undefined` when generic versions of
    * assets should be generated.
    */
-  targetAssetsPreset: RenovationPreset | undefined;
+  assetPreset: AssetPreset | undefined;
   /**
    * @see {@link ProjectMetadata}
    */
@@ -316,9 +408,7 @@ export async function gatherAssetsFromAllTransformers({
  * {@link TransformerContainer} containing a single {@link Transformer}.
  *
  * {@link Transformer}s are responsible for returning only relevant asset paths
- * (and their lazily-generated contents) conditioned on the current context;
- * e.g.: when running `npx xscripts project renovate --regenerate-assets
- * --assets-preset=lib`.
+ * (and their lazily-generated contents) conditioned on the current context.
  */
 export function makeTransformer(transform: Transform): TransformerContainer {
   return {

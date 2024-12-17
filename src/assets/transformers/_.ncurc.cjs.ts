@@ -1,16 +1,20 @@
+import { ncuConfigProjectBase } from 'multiverse+project-utils:fs.ts';
+
 import { makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
 // {@xscripts/notExtraneous npm-check-updates}
 
-export const { transformer } = makeTransformer(function ({
-  asset,
-  toProjectAbsolutePath
-}) {
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+export const { transformer } = makeTransformer(function (context) {
+  const { toProjectAbsolutePath } = context;
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(ncuConfigProjectBase),
+        generate: () => /*js*/ `
 // @ts-check
 'use strict';
 
@@ -30,6 +34,7 @@ module.exports = {
 
 /*debug('exported config: %O', module.exports);*/
 `
-    }
-  ];
+      }
+    ];
+  });
 });

@@ -18,6 +18,7 @@ import {
 import { ProjectError } from 'multiverse+project-utils:error.ts';
 
 import {
+  babelConfigProjectBase,
   getCurrentWorkingDirectory,
   readXPackageJsonAtRoot,
   toAbsolutePath,
@@ -43,6 +44,7 @@ import {
 } from 'universe:constant.ts';
 
 import { ErrorMessage } from 'universe:error.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
 import type { TransformOptions as BabelConfig } from '@babel/core';
 import type { Options as BabelPresetEnvConfig } from '@babel/preset-env';
@@ -329,12 +331,8 @@ export function moduleExport({
 /**
  * @see {@link assertEnvironment}
  */
-export const { transformer } = makeTransformer(function ({
-  asset,
-  shouldDeriveAliases,
-  projectMetadata,
-  toProjectAbsolutePath
-}) {
+export const { transformer } = makeTransformer(function (context) {
+  const { asset, shouldDeriveAliases, projectMetadata, toProjectAbsolutePath } = context;
   const derivedAliasesSourceSnippet = shouldDeriveAliases
     ? `return ${JSON.stringify(
         deriveAliasesForBabel(generateRawAliasMap(projectMetadata)),
@@ -343,10 +341,12 @@ export const { transformer } = makeTransformer(function ({
       ).replace(/^}/m, '  }')},`
     : 'return {}';
 
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => /*js*/ `
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(babelConfigProjectBase),
+        generate: () => /*js*/ `
 // @ts-check
 'use strict';
 
@@ -382,8 +382,9 @@ ${makeGeneratedAliasesWarningComment(2)}
   ${derivedAliasesSourceSnippet}
 }
 `
-    }
-  ];
+      }
+    ];
+  });
 });
 
 /**

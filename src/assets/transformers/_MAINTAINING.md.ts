@@ -1,15 +1,27 @@
 /* eslint-disable unicorn/filename-case */
-import { type RelativePath } from 'multiverse+project-utils:fs.ts';
+import {
+  markdownMaintainingProjectBase,
+  type RelativePath
+} from 'multiverse+project-utils:fs.ts';
 
-import { compileTemplate, makeTransformer } from 'universe:assets.ts';
+import { compileTemplate, libAssetPresets, makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets } from 'universe:util.ts';
 
-export const { transformer } = makeTransformer(async function (context) {
-  const { asset, toProjectAbsolutePath } = context;
+export const { transformer } = makeTransformer(function (context) {
+  const { toProjectAbsolutePath, assetPreset: targetAssetsPreset } = context;
 
-  return [
-    {
-      path: toProjectAbsolutePath(asset),
-      generate: () => compileTemplate('MAINTAINING.md' as RelativePath, context)
-    }
-  ];
+  // * Do not generate any files when using the "wrong" preset
+  if (!libAssetPresets.includes(targetAssetsPreset)) {
+    return [];
+  }
+
+  // * Only the root package gets these files
+  return generateRootOnlyAssets(context, async function () {
+    return [
+      {
+        path: toProjectAbsolutePath(markdownMaintainingProjectBase),
+        generate: () => compileTemplate('MAINTAINING.md' as RelativePath, context)
+      }
+    ];
+  });
 });
