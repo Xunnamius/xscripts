@@ -175,78 +175,89 @@ export const { transformer } = makeTransformer(function (context) {
     }
   } = context;
 
-  // * Every package gets these files except non-hybrid monorepo roots
-  return generatePerPackageAssets(context, function ({ package_ }) {
-    const { json: packageJson } = package_;
+  // * Every package gets these files, including non-hybrid monorepo roots
+  return generatePerPackageAssets(
+    context,
+    function ({ package_ }) {
+      const { json: packageJson } = package_;
 
-    const { owner, repo } = parsePackageJsonRepositoryIntoOwnerAndRepo(packageJson);
-    const repoUrl = `https://github.com/${owner}/${repo}`;
+      const { owner, repo } = parsePackageJsonRepositoryIntoOwnerAndRepo(packageJson);
+      const repoUrl = `https://github.com/${owner}/${repo}`;
 
-    const isNonHybridMonorepo =
-      projectAttributes[ProjectAttribute.Monorepo] &&
-      !projectAttributes[ProjectAttribute.Hybridrepo];
+      const isNonHybridMonorepo =
+        projectAttributes[ProjectAttribute.Monorepo] &&
+        !projectAttributes[ProjectAttribute.Hybridrepo];
 
-    const packageJsonSubset = {
-      name: packageJson.name,
-      version: packageJson.version ?? (isNonHybridMonorepo ? '0.0.0-monorepo' : '1.0.0'),
-      description:
-        packageJson.description ??
-        (isNonHybridMonorepo
-          ? 'Monorepo for the {{repoName}} project'
-          : 'TODO: project description here')
-    } satisfies Parameters<typeof generateBaseXPackageJson>[0];
+      const packageJsonSubset = {
+        name: packageJson.name,
+        version:
+          packageJson.version ?? (isNonHybridMonorepo ? '0.0.0-monorepo' : '1.0.0'),
+        description:
+          packageJson.description ??
+          (isNonHybridMonorepo
+            ? 'Monorepo for the {{repoName}} project'
+            : 'TODO: project description here')
+      } satisfies Parameters<typeof generateBaseXPackageJson>[0];
 
-    if (projectAttributes[ProjectAttribute.Polyrepo]) {
-      return [
-        {
-          path: toProjectAbsolutePath(packageJsonConfigPackageBase),
-          generate: () =>
-            stringify(generateBasePolyrepoXPackageJson(packageJsonSubset, repoUrl))
-        }
-      ];
-    } else {
-      const isPackageTheRootPackage = isRootPackage(package_);
-      const relativeRoot = 'relativeRoot' in package_ ? package_.relativeRoot : '';
-
-      if (isPackageTheRootPackage) {
-        return projectAttributes[ProjectAttribute.Hybridrepo]
-          ? [
-              {
-                path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
-                generate: () =>
-                  stringify(
-                    generateBaseHybridrepoProjectRootXPackageJson(
-                      packageJsonSubset,
-                      repoUrl
-                    )
-                  )
-              }
-            ]
-          : [
-              {
-                path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
-                generate: () =>
-                  stringify(
-                    generateBaseMonorepoProjectRootXPackageJson(
-                      packageJsonSubset,
-                      repoUrl
-                    )
-                  )
-              }
-            ];
-      } else {
+      if (projectAttributes[ProjectAttribute.Polyrepo]) {
         return [
           {
-            path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
+            path: toProjectAbsolutePath(packageJsonConfigPackageBase),
             generate: () =>
-              stringify(
-                generateBaseMonorepoPackageRootXPackageJson(packageJsonSubset, repoUrl)
-              )
+              stringify(generateBasePolyrepoXPackageJson(packageJsonSubset, repoUrl))
           }
         ];
+      } else {
+        const isPackageTheRootPackage = isRootPackage(package_);
+        const relativeRoot = 'relativeRoot' in package_ ? package_.relativeRoot : '';
+
+        if (isPackageTheRootPackage) {
+          return projectAttributes[ProjectAttribute.Hybridrepo]
+            ? [
+                {
+                  path: toProjectAbsolutePath(
+                    relativeRoot,
+                    packageJsonConfigPackageBase
+                  ),
+                  generate: () =>
+                    stringify(
+                      generateBaseHybridrepoProjectRootXPackageJson(
+                        packageJsonSubset,
+                        repoUrl
+                      )
+                    )
+                }
+              ]
+            : [
+                {
+                  path: toProjectAbsolutePath(
+                    relativeRoot,
+                    packageJsonConfigPackageBase
+                  ),
+                  generate: () =>
+                    stringify(
+                      generateBaseMonorepoProjectRootXPackageJson(
+                        packageJsonSubset,
+                        repoUrl
+                      )
+                    )
+                }
+              ];
+        } else {
+          return [
+            {
+              path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
+              generate: () =>
+                stringify(
+                  generateBaseMonorepoPackageRootXPackageJson(packageJsonSubset, repoUrl)
+                )
+            }
+          ];
+        }
       }
-    }
-  });
+    },
+    { includeRootPackageInNonHybridMonorepo: true }
+  );
 });
 
 function stringify(o: Jsonifiable) {
