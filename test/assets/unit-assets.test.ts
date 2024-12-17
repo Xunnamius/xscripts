@@ -1,56 +1,17 @@
 // * These tests ensure universe assets exports function as expected
 
+import { readdirSync } from 'node:fs';
+
 import { type Merge } from 'type-fest';
 
 import { type ProjectMetadata } from 'multiverse+project-utils:analyze.ts';
 
 import {
   allContributorsConfigProjectBase,
-  babelConfigProjectBase,
-  browserslistrcConfigProjectBase,
-  changelogPatchConfigPackageBase,
-  codecovConfigProjectBase,
-  commitlintConfigProjectBase,
-  directoryGithubConfigProjectBase,
-  directoryHuskyProjectBase,
-  directorySrcPackageBase,
-  directoryTestPackageBase,
-  directoryTypesProjectBase,
-  directoryVscodeProjectBase,
   dotEnvConfigProjectBase,
-  dotEnvDefaultConfigPackageBase,
   dotEnvDefaultConfigProjectBase,
-  editorConfigProjectBase,
-  eslintConfigProjectBase,
-  gacConfigPackageBase,
-  gitattributesConfigProjectBase,
-  gitignoreConfigProjectBase,
-  jestConfigProjectBase,
-  lintStagedConfigProjectBase,
-  markdownArchitectureProjectBase,
-  markdownContributingProjectBase,
-  markdownLicensePackageBase,
-  markdownMaintainingProjectBase,
-  markdownReadmePackageBase,
-  markdownSecurityProjectBase,
-  ncuConfigProjectBase,
-  nextjsConfigProjectBase,
-  packageJsonConfigPackageBase,
-  postcssConfigProjectBase,
-  prettierConfigProjectBase,
-  prettierIgnoreConfigProjectBase,
-  remarkConfigProjectBase,
-  spellcheckIgnoreConfigProjectBase,
-  tailwindConfigProjectBase,
   toAbsolutePath,
   toPath,
-  Tsconfig,
-  tstycheConfigProjectBase,
-  turboConfigProjectBase,
-  vercelConfigProjectBase,
-  webpackConfigProjectBase,
-  xchangelogConfigProjectBase,
-  xreleaseConfigProjectBase,
   type AbsolutePath,
   type RelativePath
 } from 'multiverse+project-utils:fs.ts';
@@ -62,6 +23,7 @@ import {
   compileTemplateInMemory,
   compileTemplates,
   deepMergeConfig,
+  directoryAssetTransformers,
   gatherAssetsFromTransformer,
   makeTransformer,
   type Asset,
@@ -142,150 +104,96 @@ describe('::gatherAssetsFromTransformer', () => {
     });
   });
 
-  describe('<config assets>', () => {
-    it('all-contributors', async () => {
-      expect.hasAssertions();
+  describe('<generated asset content snapshots>', () => {
+    for (const transformerBasename of readdirSync(directoryAssetTransformers)) {
+      const transformerId = transformerBasename.slice(1, -3);
 
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: allContributorsConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
+      // eslint-disable-next-line jest/valid-title
+      describe(transformerId, () => {
+        test('generates expected assets for polyrepo', async () => {
+          expect.hasAssertions();
+
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodPolyrepoNoSrc',
+            'self'
+          ) as TransformerContext['projectMetadata'];
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId,
+            transformerContext: {
+              ...dummyContext,
+              projectMetadata,
+              ...makeDummyPathFunctions(projectMetadata)
+            },
+            options: { transformerFiletype: 'ts' }
+          });
+
+          await expectAssetsToMatchSnapshots(
+            assets,
+            dummyContext.scope,
+            dummyContext.assetPreset
+          );
+        });
+
+        test('generates expected assets at non-hybrid monorepo', async () => {
+          expect.hasAssertions();
+
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodMonorepoNoSrc',
+            'pkg-1'
+          ) as TransformerContext['projectMetadata'];
+
+          {
+            const assets = await gatherAssetsFromTransformer({
+              transformerId,
+              transformerContext: {
+                ...dummyContext,
+                projectMetadata,
+                ...makeDummyPathFunctions(projectMetadata)
+              },
+              options: { transformerFiletype: 'ts' }
+            });
+
+            await expectAssetsToMatchSnapshots(
+              assets,
+              dummyContext.scope,
+              dummyContext.assetPreset
+            );
+          }
+        });
+
+        test('generates expected assets at hybridrepo', async () => {
+          expect.hasAssertions();
+
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodHybridrepo',
+            'self'
+          ) as TransformerContext['projectMetadata'];
+
+          {
+            const assets = await gatherAssetsFromTransformer({
+              transformerId,
+              transformerContext: {
+                ...dummyContext,
+                projectMetadata,
+                ...makeDummyPathFunctions(projectMetadata)
+              },
+              options: { transformerFiletype: 'ts' }
+            });
+
+            await expectAssetsToMatchSnapshots(
+              assets,
+              dummyContext.scope,
+              dummyContext.assetPreset
+            );
+          }
+        });
       });
+    }
+  });
 
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('browserslist', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: browserslistrcConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('codecov', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: codecovConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('editor-config', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: editorConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
+  describe('<additional asset content tests>', () => {
     describe('dotenv', () => {
-      test('generates expected assets for polyrepo', async () => {
-        expect.hasAssertions();
-
-        const projectMetadata = fixtureToProjectMetadata(
-          'goodPolyrepo'
-        ) as TransformerContext['projectMetadata'];
-
-        {
-          const assets = await gatherAssetsFromTransformer({
-            transformerId: dotEnvDefaultConfigProjectBase,
-            transformerContext: {
-              ...dummyContext,
-              projectMetadata,
-              ...makeDummyPathFunctions(projectMetadata)
-            },
-            options: { transformerFiletype: 'ts' }
-          });
-
-          await expectAssetsToMatchSnapshots(
-            assets,
-            dummyContext.scope,
-            dummyContext.assetPreset
-          );
-        }
-      });
-
-      test('generates expected assets at non-hybrid monorepo', async () => {
-        expect.hasAssertions();
-
-        const projectMetadata = fixtureToProjectMetadata(
-          'goodMonorepo'
-        ) as TransformerContext['projectMetadata'];
-
-        {
-          const assets = await gatherAssetsFromTransformer({
-            transformerId: dotEnvDefaultConfigPackageBase,
-            transformerContext: {
-              ...dummyContext,
-              projectMetadata,
-              ...makeDummyPathFunctions(projectMetadata)
-            },
-            options: { transformerFiletype: 'ts' }
-          });
-
-          await expectAssetsToMatchSnapshots(
-            assets,
-            dummyContext.scope,
-            dummyContext.assetPreset
-          );
-        }
-      });
-
-      test('generates expected assets at hybridrepo', async () => {
-        expect.hasAssertions();
-
-        const projectMetadata = fixtureToProjectMetadata(
-          'goodHybridrepo'
-        ) as TransformerContext['projectMetadata'];
-
-        {
-          const assets = await gatherAssetsFromTransformer({
-            transformerId: dotEnvDefaultConfigPackageBase,
-            transformerContext: {
-              ...dummyContext,
-              projectMetadata,
-              ...makeDummyPathFunctions(projectMetadata)
-            },
-            options: { transformerFiletype: 'ts' }
-          });
-
-          await expectAssetsToMatchSnapshots(
-            assets,
-            dummyContext.scope,
-            dummyContext.assetPreset
-          );
-        }
-      });
-
       it('merges with .env if it already exists only if force is used', async () => {
         expect.hasAssertions();
 
@@ -348,598 +256,6 @@ describe('::gatherAssetsFromTransformer', () => {
           `);
         }
       });
-    });
-
-    it('git-attributes', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: gitattributesConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('github (directory)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: directoryGithubConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('git-ignore', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: gitignoreConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('husky (directory)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: directoryHuskyProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('npm-check-updates', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: ncuConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('prettier-ignore', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: prettierIgnoreConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('remark', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: remarkConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('commit-spell', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: spellcheckIgnoreConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('vscode (directory)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: directoryVscodeProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('architecture (markdown)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: markdownArchitectureProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('babel', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: babelConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('changelog.patch.mjs', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: changelogPatchConfigPackageBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('commitlint.config.mjs', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: commitlintConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('contributing (markdown)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: markdownContributingProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('xchangelog', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: xchangelogConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('eslint', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: eslintConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('git-add-then-commit', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: gacConfigPackageBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('jest', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: jestConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('license (markdown)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: markdownLicensePackageBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('lint-staged', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: lintStagedConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('maintaining (markdown)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: markdownMaintainingProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('next.js', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: nextjsConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('package.json', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: packageJsonConfigPackageBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('postcss', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: postcssConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('prettier', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: prettierConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('readme (markdown)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: markdownReadmePackageBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('xrelease', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: xreleaseConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('security (markdown)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: markdownSecurityProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('src (directory)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: directorySrcPackageBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('tailwind', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: tailwindConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('test (directory)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: directoryTestPackageBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('tsconfig (all variants)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: Tsconfig.ProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('tstyche.config.json', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: tstycheConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('turbo.json', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: turboConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('types (directory)', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: directoryTypesProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('vercel.json', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: vercelConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
-    });
-
-    it('webpack', async () => {
-      expect.hasAssertions();
-
-      const assets = await gatherAssetsFromTransformer({
-        transformerId: webpackConfigProjectBase,
-        transformerContext: dummyContext,
-        options: { transformerFiletype: 'ts' }
-      });
-
-      await expectAssetsToMatchSnapshots(
-        assets,
-        dummyContext.scope,
-        dummyContext.assetPreset
-      );
     });
   });
 });
