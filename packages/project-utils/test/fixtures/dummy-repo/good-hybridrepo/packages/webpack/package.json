@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/owner/repo.git"
+    "url": "git+https://github.com/hybridrepo-owner/repo-name.git"
   },
   "dependencies": {
     "@namespaced/pkg": "^1.0.0"

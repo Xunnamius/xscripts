@@ -1,6 +1,6 @@
 import { basename } from 'node:path';
 
-import { type PackageJson } from 'type-fest';
+import { type LiteralUnion, type PackageJson } from 'type-fest';
 
 import * as fs from 'rootverse+project-utils:src/fs.ts';
 
@@ -16,6 +16,7 @@ import type {
   GenericProjectMetadata,
   GenericRootPackage,
   GenericWorkspacePackage,
+  WorkspacePackageName,
   XPackageJson
 } from 'rootverse+project-utils:src/analyze/common.ts';
 
@@ -113,7 +114,6 @@ export type FixtureName =
   | 'goodHybridrepo'
   | 'goodHybridrepoMultiversal'
   | 'goodMonorepo'
-  | 'badMonorepoDuplicateIdNamed'
   | 'goodMonorepoNegatedPaths'
   | 'goodMonorepoNextjsProject'
   | 'goodMonorepoSimplePaths'
@@ -123,8 +123,11 @@ export type FixtureName =
   | 'goodMonorepoWeirdSameNames'
   | 'goodMonorepoWeirdYarn'
   | 'goodMonorepoWindows'
+  | 'goodMonorepoNoSrc'
+  | 'badMonorepoDuplicateIdNamed'
   | 'goodPolyrepo'
   | 'goodPolyrepoNextjsProject'
+  | 'goodPolyrepoNoSrc'
   | 'repoThatDoesNotExist';
 
 /**
@@ -404,6 +407,29 @@ createFixture({
 });
 
 createFixture({
+  fixtureName: 'goodMonorepoNoSrc',
+  prototypeRoot: 'good-monorepo-no-src',
+  attributes: { cjs: true, monorepo: true },
+  namedPackageMapData: [
+    { name: 'pkg-1', root: 'packages/pkg-1', attributes: { cjs: true, cli: true } },
+    {
+      name: '@namespaced/pkg',
+      root: 'packages/pkg-2',
+      attributes: { cjs: true, cli: true }
+    },
+    {
+      name: '@namespaced/importer',
+      root: 'packages/pkg-import',
+      attributes: { cjs: true }
+    }
+  ],
+  unnamedPackageMapData: [
+    { name: 'unnamed-pkg-1', root: 'packages/unnamed-pkg-1', attributes: { cjs: true } },
+    { name: 'unnamed-pkg-2', root: 'packages/unnamed-pkg-2', attributes: { cjs: true } }
+  ]
+});
+
+createFixture({
   fixtureName: 'goodMonorepoNegatedPaths',
   prototypeRoot: 'good-monorepo-negated-paths',
   attributes: { cjs: true, monorepo: true },
@@ -518,6 +544,12 @@ createFixture({
 });
 
 createFixture({
+  fixtureName: 'goodPolyrepoNoSrc',
+  prototypeRoot: 'good-polyrepo-no-src',
+  attributes: { cjs: true, polyrepo: true, vercel: true }
+});
+
+createFixture({
   fixtureName: 'goodPolyrepoNextjsProject',
   prototypeRoot: 'good-polyrepo-nextjs-project',
   attributes: { esm: true, polyrepo: true, next: true }
@@ -589,7 +621,7 @@ function createFixture({
 
 export function fixtureToProjectMetadata(
   fixtureName: FixtureName,
-  cwdPackage_?: Omit<WorkspacePackage, 'projectMetadata'>
+  cwdPackageName?: LiteralUnion<'self', WorkspacePackageName>
 ) {
   const rootPackage = {
     root: fixtures[fixtureName].root,
@@ -600,7 +632,11 @@ export function fixtureToProjectMetadata(
   } satisfies Omit<RootPackage, 'projectMetadata'> as GenericRootPackage;
 
   // ? the "projectMetadata" property is properly initialized below
-  const cwdPackage = (cwdPackage_ ?? rootPackage) as GenericPackage;
+  const cwdPackage = ((cwdPackageName
+    ? fixtures[fixtureName].namedPackageMapData
+        .find(([, entry]) => entry.json.name === cwdPackageName)
+        ?.at(1)
+    : undefined) || rootPackage) as GenericPackage;
 
   const mockProjectMetadata: GenericProjectMetadata = {
     type: fixtures[fixtureName].attributes[ProjectAttribute.Polyrepo]

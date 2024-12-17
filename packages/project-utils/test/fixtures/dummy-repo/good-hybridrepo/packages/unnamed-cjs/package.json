@@ -5,10 +5,6 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/owner/repo.git"
-  },
   "scripts": {
     "test": "echo 'it works!'"
   }
