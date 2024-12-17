@@ -5,7 +5,7 @@
     "build:dist": {
       "outputs": ["dist/**", "!dist/types/**"]
     },
-    // TODO: update this whole file for xscripts et al
+    // TODO: update this whole file for xscripts etc
     // "build:types": {
     //   "outputs": ["dist/types/**"]
     // }

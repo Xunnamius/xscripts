@@ -30,6 +30,8 @@ export default function changelogPatcher(changelog, patcher) {
   return patcher(changelog, [
     // ? From the before-fore
     [/^- \*\*packages\/[a-z0-9-]+:\*\* .*$\n/gm, ''],
-    [/^- \*\*project-utils:\*\* .*$\n/gm, '']
+    [/^- \*\*project-utils:\*\* .*$\n/gm, ''],
+    // ? Oops
+    ['et al', 'etc']
   ]);
 }

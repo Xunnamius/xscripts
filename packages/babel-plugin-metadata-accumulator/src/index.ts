@@ -32,7 +32,7 @@ export type AccumulatedMetadata = {
 export type PluginAndAccumulator = {
   /**
    * The actual metadata accumulator plugin itself. This should be passed into
-   * Babel when calling `babel.transform` et al.
+   * Babel when calling `babel.transform` etc.
    */
   plugin: PluginObj<State>;
   /**

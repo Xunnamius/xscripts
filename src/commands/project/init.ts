@@ -69,7 +69,7 @@ export default function command({
       // TODO: (launch and task examples in vscode are materialized)
       // TODO: (can init new monorepo packages with proper setup including tsconfig files and what not)
       // TODO: (needs to delete the remark-link ignore comment from all Markdown files coming from src/assets/templates)
-      // TODO ("xscripts project init --from-template next" et al)
+      // TODO ("xscripts project init --from-template next" etc)
       // TODO ("xscripts project init --with-lib newLibA" which regenerates aliases)
       // TODO ("xscripts project init --with-package newMonorepoPackage" which has the ability to turn a polyrepo into a monorepo if it isn't already (also regenerates aliases))
       // TODO (enable private vulnerability reporting and secret scanning for GitHub repositories)

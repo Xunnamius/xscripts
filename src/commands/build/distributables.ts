@@ -1264,7 +1264,7 @@ distrib root: ${absoluteOutputDirPath}
                       if (
                         (isTypescriptDefinitionFile &&
                           // ? tsc likes .d.ts files w/ extensionless imports,
-                          // ? and, to it, .js et al and .d.ts are synonymous
+                          // ? and, to it, .js etc and .d.ts are synonymous
                           (
                             await glob(
                               absoluteSpecifier.replace(/\.js$/, '') +

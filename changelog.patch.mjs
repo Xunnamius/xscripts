@@ -7,6 +7,7 @@ export default [
   [/ --file /g, ' --files '],
   ['`import-section-file`', '`--import-section-file`'],
   ['--output-file', '--changelog-file'],
+  ['et al', 'etc'],
   // ? Shoulda been a refactor
   [/^.+commit initial version of "test" command.+$\n/im, ''],
   // ? Too late to fixup/merge

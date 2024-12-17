@@ -64,7 +64,7 @@ export default function command({
       // TODO (bring in lint code from the old projector project (plugin-lint I think it was called... see the old "lost" commits for project-utils))
       // TODO (add depcheck package (maybe), browserslist (update caniuse first), attw, and others into the mix)
       // TODO (test dir cannot appear under src)
-      // TODO (latest versions of all files being used, including lint-staged et al)
+      // TODO (latest versions of all files being used, including lint-staged etc)
       // TODO (ensure all imported packages in ./dist/ are in deps; all other package imports are in dev deps; no extraneous entries in deps or dev deps; warn if source deps are different than ./dist/ deps; error if any ./dist/ deps are unresolvable)
       // TODO (lint project structure like no more lib/external-scripts and src/assets becomes packages/assets and src/components becomes packages/components)
       // TODO (lint engines.node with browserslist 'maintained node versions, current node' with flag for allowing lower bound drop off (i.e. allow lower versions than given to be missing))
