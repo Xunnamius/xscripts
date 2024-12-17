@@ -274,7 +274,7 @@ export async function generatePerPackageAssets(
 ): Promise<Asset[]> {
   const {
     scope,
-    toPackageAbsolutePath,
+    toProjectAbsolutePath,
     projectMetadata: { cwdPackage, rootPackage, subRootPackages, type }
   } = transformerContext;
 
@@ -290,8 +290,8 @@ export async function generatePerPackageAssets(
 
     if (
       includeRootPackageInNonHybridMonorepo ||
-      (type !== ProjectAttribute.Monorepo &&
-        rootPackage.attributes[ProjectAttribute.Hybridrepo])
+      type !== ProjectAttribute.Monorepo ||
+      rootPackage.attributes[ProjectAttribute.Hybridrepo]
     ) {
       allPackages.unshift(rootPackage);
     }
@@ -311,7 +311,7 @@ export async function generatePerPackageAssets(
   function toSpecificPackageAbsolutePath(package_: Package) {
     return function (...args) {
       const relativeRoot = 'relativeRoot' in package_ ? package_.relativeRoot : '';
-      return toPackageAbsolutePath(relativeRoot, ...args);
+      return toProjectAbsolutePath(relativeRoot, ...args);
     } as TransformerContext['toPackageAbsolutePath'];
   }
 }
