@@ -1798,6 +1798,7 @@ describe('::gatherPackageFiles', () => {
         ],
         docs: [],
         other: [
+          `${root}/.env`,
           `${root}/.prettierignore`,
           `${root}/.vercel/package.json`,
           `${root}/.vercel/project.json`,
@@ -1923,6 +1924,7 @@ describe('::gatherPackageFiles', () => {
           ],
           docs: [],
           other: [
+            `${root}/.env`,
             `${root}/.prettierignore`,
             `${root}/package.json`,
             `${root}/README.md`,
@@ -2139,6 +2141,7 @@ describe('::gatherPackageFiles', () => {
         ],
         docs: [],
         other: [
+          `${root}/.env`,
           `${root}/.prettierignore`,
           `${root}/.vercel/package.json`,
           `${root}/.vercel/project.json`,
@@ -2266,6 +2269,7 @@ describe('::gatherPackageFiles', () => {
           ],
           docs: [],
           other: [
+            `${root}/.env`,
             `${root}/.prettierignore`,
             `${root}/package.json`,
             `${root}/README.md`,
