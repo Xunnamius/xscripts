@@ -31,7 +31,7 @@ this project adheres to [Semantic Versioning][2].
 - **gitignore:** upgrade to more robust .gitignore ([43da882][17])
 - **husky:** add husky pre-push protective hook ([33af2bc][18])
 - **jest:** ensure .transpiled directory is ignored ([c1ac811][19])
-- **jest:** ensure .transpiled directory is ignored by jest-haste-map et al ([901d853][20])
+- **jest:** ensure .transpiled directory is ignored by jest-haste-map etc ([901d853][20])
 - **jest:** ensure jest and jest-haste-map ignore ignored packages ([86fca58][21])
 - **jest:** ignore type-only tests ([1fb8568][22])
 - Add missing dependencies (to be pared down later) ([b3e2560][23])

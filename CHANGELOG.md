@@ -234,7 +234,7 @@ this project adheres to [Semantic Versioning][2].
 - **gitignore:** upgrade to more robust .gitignore ([43da882][96])
 - **husky:** add husky pre-push protective hook ([33af2bc][97])
 - **jest:** ensure .transpiled directory is ignored ([c1ac811][98])
-- **jest:** ensure .transpiled directory is ignored by jest-haste-map et al ([901d853][99])
+- **jest:** ensure .transpiled directory is ignored by jest-haste-map etc ([901d853][99])
 - **jest:** ignore type-only tests ([1fb8568][100])
 - **package:** correct typo in bug.url ([3373208][101])
 - **packages/run:** narrow scope of the list-tasks npm script ([8cbc4e4][102])
@@ -504,7 +504,7 @@ this project adheres to [Semantic Versioning][2].
 
 - **eslint.config:** update to eslint flat config (eslint.config.mjs) ([609fca8][219])
 - **husky:** update husky scripts ([e55a88e][220])
-- **package:** add semver; force install alpha versions of typescript-eslint et al ([b56fd66][221])
+- **package:** add semver; force install alpha versions of typescript-eslint etc ([b56fd66][221])
 - **package:** update exports, dependencies, and scripts ([323579d][222])
 - **tsconfig:** ensure files from root dot folders are picked up by linters ([8609db7][223])
 - Update to eslint\@9; begin transition to eslint.config.js flat ([52763c5][224])
