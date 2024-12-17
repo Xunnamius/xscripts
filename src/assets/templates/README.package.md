@@ -7,7 +7,7 @@
 <p align="center" width="100%">
 <!-- xscripts-template-region-end -->
 
-{{projectMetadata.cwdPackage.json.description}}
+{{projectMetadata.cwdPackage.json.description|<!-- TODO -->}}
 
 <!-- xscripts-template-region-start -->
 
@@ -34,7 +34,7 @@
 
 <!-- xscripts-template-region-end -->
 
-{{projectMetadata.cwdPackage.json.description}}
+{{projectMetadata.cwdPackage.json.description|<!-- TODO -->}}
 
 <!-- xscripts-template-region-start -->
 
