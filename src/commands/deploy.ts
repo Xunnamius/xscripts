@@ -47,7 +47,6 @@ export const deployScopes = Object.values(DeployScope);
 
 export type CustomCliArguments = GlobalCliArguments<DeployScope> & {
   target: DeployTarget;
-  bumpVersion?: boolean;
 } & (
     | {
         target: DeployTarget.Vercel;
@@ -202,13 +201,6 @@ export default function command({
           }
         ]
       }
-    },
-
-    // TODO: replace this option with "xscripts release"
-    'bump-version': {
-      boolean: true,
-      description:
-        'Bump the patch version in package.json after the deployment completes'
     }
   });
 
@@ -222,7 +214,7 @@ When using --target=ssh, it is assumed the key pair necessary to authenticate wi
     ),
     handler: withGlobalHandler(async function (argv) {
       // ? It's down here instead of in the fn signature for typescript reasons
-      const { $0: scriptFullName, scope, target, bumpVersion } = argv;
+      const { $0: scriptFullName, scope, target } = argv;
       const genericLogger = log.extend(scriptBasename(scriptFullName));
       const debug = debug_.extend('handler');
 
@@ -296,23 +288,6 @@ When using --target=ssh, it is assumed the key pair necessary to authenticate wi
 
           break;
         }
-      }
-
-      if (bumpVersion) {
-        const oldVersion: string = JSON.parse(
-          (await run('npm', ['pkg', 'get', 'version'])).stdout
-        );
-
-        await run('npm', ['--no-git-tag-version', 'version', 'patch']);
-
-        const updatedVersion: string = JSON.parse(
-          (await run('npm', ['pkg', 'get', 'version'])).stdout
-        );
-
-        genericLogger(
-          [LogTag.IF_NOT_QUIETED],
-          `Bumped package minor version from ${oldVersion} to ${updatedVersion}`
-        );
       }
 
       genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
