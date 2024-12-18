@@ -44,7 +44,7 @@ export default function command({
 
   return {
     builder,
-    description: 'Create a brand new project from one of several templates',
+    description: 'Create a brand new project from one of several presets',
     usage: withGlobalUsage(),
     handler: withGlobalHandler(async function ({ $0: scriptFullName, scope }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));
