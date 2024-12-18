@@ -55,7 +55,8 @@ export default function command({
     builder,
     description: 'List all tasks (typically NPM scripts) supported by this project',
     usage: withGlobalUsage(' [task-name-1, task-name-2, ...]\n\n$1', {
-      prependNewlines: false
+      prependNewlines: false,
+      trim: false
     }),
     handler: withGlobalHandler(async function ({
       _: allowList,
