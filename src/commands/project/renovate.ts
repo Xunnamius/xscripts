@@ -209,7 +209,7 @@ export type RenovationTask = Omit<
    */
   shortHelpDescription: string;
   /**
-   * If `true`, `--force` must be given on the command line alongside this task.
+   * If `true`, --force must be given on the command line alongside this task.
    */
   requiresForce: boolean;
   /**
@@ -314,15 +314,15 @@ export default function command(
 
 ${printRenovationTasks()}
 
-This command must be invoked with at least one task flag. Tasks are run concurrently unless --no-parallel is given, and are all run to completion even if one of the tasks fails unless \`--run-to-completion=false\` is given.
+This command must be invoked with at least one task flag. Tasks are run concurrently unless --no-parallel is given, and are all run to completion even if one of the tasks fails unless --run-to-completion=false is given.
 
 Environment variables are loaded into process.env from the following file(s), if they exist and depending on scope, with the variables in latter files overwriting those in the former:
 
 ${SHORT_TAB}- ${getRelevantDotEnvFilePaths(projectMetadata_).join(`\n${SHORT_TAB}- `)}
 
-When \`--scope=${ProjectRenovateScope.Unlimited}\`, package-specific .env and .env.default files are ignored.
+When --scope=${ProjectRenovateScope.Unlimited}, package-specific .env and .env.default files are ignored.
 
-Renovations are performed on the entire project by default, and typically involve overwriting/deleting obsolete versions of certain configuration files, but several renovation tasks can be limited to the current package via \`--scope=${ProjectRenovateScope.ThisPackage}\`.
+Renovations are performed on the entire project by default, and typically involve overwriting/deleting obsolete versions of certain configuration files, but several renovation tasks can be limited to the current package via --scope=${ProjectRenovateScope.ThisPackage}.
 
 If this command is invoked in a repository with an unclean working directory, it will fail unless --force is given. Similarly, tasks with potentially destructive or permanent consequences must be manually authorized via --force. That said, all renovation tasks are idempotent: running the same renovations back-to-back on an otherwise-unchanged project/package is essentially a no-op.
 
@@ -1291,7 +1291,7 @@ By default, this command will preserve the origin repository's pre-existing conf
     taskAliases: [],
     actionDescription: 'Permanently deleting all origin repository releases',
     shortHelpDescription: 'Delete all releases associated with the origin repository',
-    longHelpDescription: `This renovation will delete from the origin repository all releases associated with the current package (if \`--scope=${ProjectRenovateScope.ThisPackage}\`) or every possible release in existence (if \`--scope=${ProjectRenovateScope.Unlimited}\`).\n\n⚠️🚧 This is an INCREDIBLY DANGEROUS command that should ONLY be used to clear out unrelated releases after forking a repository.`,
+    longHelpDescription: `This renovation will delete from the origin repository all releases associated with the current package (if --scope=${ProjectRenovateScope.ThisPackage}) or every possible release in existence (if --scope=${ProjectRenovateScope.Unlimited}).\n\n⚠️🚧 This is an INCREDIBLY DANGEROUS command that should ONLY be used to clear out unrelated releases after forking a repository.`,
     requiresForce: true,
     supportedScopes: projectRenovateScopes,
     subOptions: {},
@@ -1425,7 +1425,7 @@ Provide --assets-preset (required) to specify which assets to regenerate. The pa
 
 Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the paths to be written out. Any paths matching one of the aforesaid regular expressions will have their contents discarded instead of written out.
 
-This renovation attempts to import the \`import-aliases.mjs\` file if it exists at the root of the project. Use this file to provide additional \`RawAliasMapping[]\`s to include when regenerating files defining the project's import aliases. See the xscripts wiki documentation for further details.
+This renovation attempts to import the "import-aliases.mjs" file if it exists at the root of the project. Use this file to provide additional \`RawAliasMapping[]\`s to include when regenerating files defining the project's import aliases. See the xscripts wiki documentation for further details.
 
 
 

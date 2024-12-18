@@ -275,21 +275,21 @@ export default function command({
 
 $1.
 
-Currently, "type" (\`--tests=type\`) tests are executed by the Tstyche test runner while all others are executed by the Jest test runner. Therefore, all test files should be appropriately named (e.g. "\${type}-\${name}.test.ts") and exist under a package's ./test directory.
+Currently, --tests=type tests are executed by the Tstyche test runner while all others are executed by the Jest test runner. Therefore, all test files should be appropriately named (e.g. "\${type}-\${name}.test.ts") and exist under a package's ./test directory.
 
 Any unrecognized flags/arguments provided after the --tester-options flag are always passed through directly to each tester. For Jest, they are inserted after computed arguments but before test path patterns, e.g. \`--reporters=... --testPathIgnorePatterns=... <your extra args> -- testPathPattern1 testPathPattern2\`. For Tstyche, they are inserted after all other arguments, e.g. \`--computed-arg-1=... computed-arg-2 <your extra args>\`.
 
-By default, this command constructs an execution plan (i.e. the computed arguments and path patterns passed to each tester's CLI) based on project metadata and provided options, namely --scope and --tests. When \`--scope=${TesterScope.ThisPackage}\` (the default), tests will be run from the current package and any packages it imports files from. Passing \`--scope=${TesterScope.Unlimited}\` will execute all runnable tests in the project. Both options are conditioned on --tests.
+By default, this command constructs an execution plan (i.e. the computed arguments and path patterns passed to each tester's CLI) based on project metadata and provided options, namely --scope and --tests. When --scope=${TesterScope.ThisPackage} (the default), tests will be run from the current package and any packages it imports files from. Passing --scope=${TesterScope.Unlimited} will execute all runnable tests in the project. Both options are conditioned on --tests.
 
 Alternatively, you can provide --baseline when you want to construct your own custom execution plan but still wish to make use of the runtime environment provided by this tool. When --baseline is provided, only one tester can be run at a time.
 
 Also by default (if the CI environment variable is not defined), this command prevents the value of the DEBUG environment variable, if given, from propagating down into tests since this can cause strange output-related problems. Provide --propagate-debug-env to allow the value of DEBUG to be seen by test files and the rest of the test environment, including tests.
 
-Provide --collect-coverage to instruct Jest to collect coverage information. --collect-coverage is false by default unless \`--scope=${TesterScope.Unlimited}\` and \`--tests=${Test.All}\`, in which case it will be true by default. Note that Tstyche never provides coverage information; this flag only affects Jest.
+Provide --collect-coverage to instruct Jest to collect coverage information. --collect-coverage is false by default unless --scope=${TesterScope.Unlimited} and --tests=${Test.All}, in which case it will be true by default. Note that Tstyche never provides coverage information; this flag only affects Jest.
 
 For detecting flakiness in tests, which is almost always a sign of deep developer error, provide --repeat; e.g. \`--repeat 100\`. Note that this flag cannot be used when running Tstyche "type" tests.
 
-For running "intermediate" test files transpiled by \`xscripts build\`, provide \`--scope=${TesterScope.ThisPackageIntermediates}\` to set the XSCRIPTS_TEST_JEST_TRANSPILED environment variable in the testing environment. This will be picked up by Jest and other relevant tooling causing them to reconfigure themselves to run any transpiled tests under the ./.transpiled directory.
+For running "intermediate" test files transpiled by \`xscripts build\`, provide --scope=${TesterScope.ThisPackageIntermediates} to set the XSCRIPTS_TEST_JEST_TRANSPILED environment variable in the testing environment. This will be picked up by Jest and other relevant tooling causing them to reconfigure themselves to run any transpiled tests under the ./.transpiled directory.
 
 Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS environment variable in the testing environment. This will activate the \`reconfigureJestGlobalsToSkipTestsInThisFileIfRequested\` function of the @-xun/jest library, which will force Jest to skip by default all tests within files where said function was invoked. Providing --skip-slow-tests twice (or -xx) has the same effect, with the addition that test files that have "-slow." in their name are skipped entirely (not even looked at by Jest or executed by Node). This can be used in those rare instances where even the mere execution of a test file is too slow, such as a test file with hundreds or even thousands of generated tests that must be skipped. Note, however, that --skip-slow-tests has no bearing on the Tstyche runtime.`,
     handler: withGlobalHandler(async function ({

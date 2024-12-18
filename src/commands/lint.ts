@@ -190,7 +190,7 @@ export default async function command({
 
 Any unrecognized flags/arguments provided after the --linter-options flag are always passed through directly to each linter. They are inserted after all other arguments, e.g. \`--computed-arg-1=... computed-arg-2 <your extra args>\`.
 
-By default, this command constructs an execution plan (i.e. the computed arguments and path patterns passed to each linter's CLI) based on project metadata and provided options, namely --scope and --linters. Passing \`--scope=${LinterScope.ThisPackage}\` (the default) will lint all source files in this package and any lintable files imported by them, even if they belong to another package; all of this package's Markdown files are also linted. Passing \`--scope=${LinterScope.Unlimited}\` will lint all lintable files in the project.
+By default, this command constructs an execution plan (i.e. the computed arguments and path patterns passed to each linter's CLI) based on project metadata and provided options, namely --scope and --linters. Passing --scope=${LinterScope.ThisPackage} (the default) will lint all source files in this package and any lintable files imported by them, even if they belong to another package; all of this package's Markdown files are also linted. Passing --scope=${LinterScope.Unlimited} will lint all lintable files in the project.
 
 Alternatively, you can provide --baseline when you want to construct your own custom execution plan but still wish to make use of the runtime environment provided by this tool. When --baseline is provided, only one linter can be run at a time.
 

@@ -49,7 +49,7 @@ export default function command({
     usage: withGlobalUsage(
       `$1.
 
-If this command is run with \`--scope=unlimited\` (the default) in a monorepo, and the package at the current working directory is not CLI-enabled nor a Next.js project, this command will search the project for the first available CLI starting from the root package.`
+If this command is run with --scope=unlimited (the default) in a monorepo, and the package at the current working directory is not CLI-enabled nor a Next.js project, this command will search the project for the first available CLI starting from the root package.`
     ),
     handler: withGlobalHandler(async function ({ $0: scriptFullName, scope, _: args_ }) {
       const genericLogger = log.extend(scriptBasename(scriptFullName));

@@ -83,7 +83,7 @@ export default function command({
     usage: withGlobalUsage(
       `$1.
 
-You must pass \`--force\` for any deletions to actually take place.
+You must pass --force for any deletions to actually take place.
 
 Note that the regular expressions provided via --exclude-paths are computed with the "i" and "u" flags. If you want to pass an empty array to --exclude-paths (overwriting the defaults), use \`--exclude-paths ''\`
 

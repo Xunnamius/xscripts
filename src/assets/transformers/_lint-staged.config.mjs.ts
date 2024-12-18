@@ -14,8 +14,8 @@ export function moduleExport() {
 }
 
 /**
- * The scripts returned by this function are the constituent parts of the \`npm
- * run format\` xscripts command.
+ * The scripts returned by this function are the constituent parts of the `npm
+ * run format` xscripts command.
  */
 export const { transformer } = makeTransformer(function (context) {
   const { asset, toProjectAbsolutePath } = context;
