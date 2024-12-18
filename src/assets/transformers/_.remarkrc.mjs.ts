@@ -10,10 +10,9 @@ import { ProjectError } from 'multiverse+project-utils:error.ts';
 import { remarkConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
-import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
 
 import type { Options as MdastUtilToMarkdownOptions } from 'mdast-util-to-markdown' with { 'resolution-mode': 'import' };
 import type { Options as UnifiedEngineOptions } from 'unified-engine' with { 'resolution-mode': 'import' };

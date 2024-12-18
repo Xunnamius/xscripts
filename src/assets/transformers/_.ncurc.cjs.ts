@@ -1,8 +1,7 @@
 import { ncuConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 
-import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
 
 // {@xscripts/notExtraneous npm-check-updates}
 

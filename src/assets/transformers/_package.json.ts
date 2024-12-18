@@ -17,9 +17,8 @@ import { packageJsonConfigPackageBase } from 'multiverse+project-utils:fs.ts';
 
 import { version as xscriptsVersion } from 'rootverse:package.json';
 
-import { makeTransformer } from 'universe:assets.ts';
+import { generatePerPackageAssets, makeTransformer } from 'universe:assets.ts';
 import { ErrorMessage } from 'universe:error.ts';
-import { generatePerPackageAssets } from 'universe:util.ts';
 
 export type GeneratorParameters = [
   json: Package['json'] &
@@ -164,7 +163,7 @@ export function parsePackageJsonRepositoryIntoOwnerAndRepo({
     }
   }
 
-  throw new ProjectError(ErrorMessage.BadRepositoryInCwdPackageJson(name));
+  throw new ProjectError(ErrorMessage.BadRepositoryInPackageJson(name));
 }
 
 export const { transformer } = makeTransformer(function (context) {

@@ -36,7 +36,7 @@ import {
 
 import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
-import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 
 import {
   globalDebuggerNamespace,
@@ -44,7 +44,6 @@ import {
 } from 'universe:constant.ts';
 
 import { ErrorMessage } from 'universe:error.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
 
 import type { TransformOptions as BabelConfig } from '@babel/core';
 import type { Options as BabelPresetEnvConfig } from '@babel/preset-env';

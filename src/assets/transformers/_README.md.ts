@@ -9,39 +9,14 @@ import {
 
 import {
   compileTemplate,
+  generatePerPackageAssets,
+  generateRootOnlyAssets,
+  libAssetPresets,
   makeTransformer,
   type TransformerContext
 } from 'universe:assets.ts';
 
-import { generatePerPackageAssets, generateRootOnlyAssets } from 'universe:util.ts';
-
-function replaceStandardStrings(
-  content: string,
-  {
-    repoName,
-    projectMetadata: {
-      cwdPackage: {
-        json: { name: packageName }
-      }
-    }
-  }: TransformerContext
-) {
-  // TODO: drop unused reference from package build explanation text
-
-  // TODO: drop license section if no license
-
-  // TODO: (should be hoisted?) preserve all numeric reference defs
-  return content.replace(
-    // ? Replace H1 with proper string
-    /^# <!-- .+$/m,
-    `# ${repoName} (${packageName})`
-  );
-}
-
-function replaceRegionsRespectively(content: string, context: TransformerContext) {
-  // TODO: implement regional replacements as function (count must match)
-  return content;
-}
+import { replaceRegionsRespectively } from 'universe:util.ts';
 
 export const { transformer } = makeTransformer(async function (context) {
   const {
@@ -62,17 +37,20 @@ export const { transformer } = makeTransformer(async function (context) {
         return [];
       }
 
+      const path = toProjectAbsolutePath(markdownReadmePackageBase);
+
       return [
         {
-          path: toProjectAbsolutePath(markdownReadmePackageBase),
+          path,
           generate: async () => {
-            return replaceRegionsRespectively(
-              replaceStandardStrings(
+            return replaceRegionsRespectively({
+              outputPath: path,
+              rawIncomingContent: replaceStandardStrings(
                 await compileTemplate(toRelativePath('README.monorepo.md'), context),
                 context
               ),
               context
-            );
+            });
           }
         }
       ];
@@ -80,20 +58,52 @@ export const { transformer } = makeTransformer(async function (context) {
 
     ...// * Every package gets these files except non-hybrid monorepo roots
     (await generatePerPackageAssets(context, async function ({ toPackageAbsolutePath }) {
+      const path = toPackageAbsolutePath(markdownReadmePackageBase);
+
       return [
         {
-          path: toPackageAbsolutePath(markdownReadmePackageBase),
+          path,
           generate: async () => {
-            return replaceRegionsRespectively(
-              replaceStandardStrings(
+            return replaceRegionsRespectively({
+              outputPath: path,
+              rawIncomingContent: replaceStandardStrings(
                 await compileTemplate('README.package.md' as RelativePath, context),
                 context
               ),
               context
-            );
+            });
           }
         }
       ];
     }))
   ];
 });
+
+function replaceStandardStrings(
+  content: string,
+  {
+    repoName,
+    assetPreset,
+    projectMetadata: {
+      cwdPackage: {
+        json: { name: packageName }
+      }
+    }
+  }: TransformerContext
+) {
+  const willHaveGeneratedLicense = libAssetPresets.includes(assetPreset);
+
+  const returnValue = content.replace(
+    // ? Replace H1 with proper string
+    /^# <!-- .+$/m,
+    `# ${repoName} (${packageName})`
+  );
+
+  return willHaveGeneratedLicense
+    ? returnValue
+    : // ? Drop license section if no license
+      returnValue.replace(
+        'See [LICENSE][x-repo-license].',
+        'This project is not licensed for public use. All rights are reserved.'
+      );
+}

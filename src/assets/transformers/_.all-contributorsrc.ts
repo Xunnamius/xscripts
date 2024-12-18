@@ -1,19 +1,22 @@
 import { allContributorsConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 
-import { libAssetPresets, makeTransformer } from 'universe:assets.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
+import {
+  generateRootOnlyAssets,
+  libAssetPresets,
+  makeTransformer
+} from 'universe:assets.ts';
 
 // {@xscripts/notExtraneous all-contributors-cli}
 
 export const { transformer } = makeTransformer(function (context) {
   const {
     toProjectAbsolutePath,
-    assetPreset: targetAssetsPreset,
+    assetPreset,
     projectMetadata: { rootPackage }
   } = context;
 
   // * Do not generate any files when using the "wrong" preset
-  if (!libAssetPresets.includes(targetAssetsPreset)) {
+  if (!libAssetPresets.includes(assetPreset)) {
     return [];
   }
 

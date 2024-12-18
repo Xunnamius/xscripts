@@ -1,17 +1,18 @@
 import { browserslistrcConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 
-import { AssetPreset, makeTransformer } from 'universe:assets.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
+import {
+  AssetPreset,
+  generateRootOnlyAssets,
+  makeTransformer
+} from 'universe:assets.ts';
 
 export const { transformer } = makeTransformer(function (context) {
-  const { toProjectAbsolutePath, assetPreset: targetAssetsPreset } = context;
+  const { toProjectAbsolutePath, assetPreset } = context;
 
   // * Do not generate any files when using the "wrong" preset
   if (
-    targetAssetsPreset &&
-    [AssetPreset.LibWeb, AssetPreset.React, AssetPreset.Nextjs].includes(
-      targetAssetsPreset
-    )
+    assetPreset &&
+    [AssetPreset.LibWeb, AssetPreset.React, AssetPreset.Nextjs].includes(assetPreset)
   ) {
     return [];
   }

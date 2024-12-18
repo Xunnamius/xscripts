@@ -1,7 +1,6 @@
 import { tstycheConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 
-import { makeTransformer } from 'universe:assets.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
+import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 
 export const { transformer } = makeTransformer(function (context) {
   const { toProjectAbsolutePath } = context;

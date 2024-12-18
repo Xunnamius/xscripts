@@ -32,7 +32,7 @@ import {
   noSpecialInitialCommitIndicator
 } from 'universe:assets/transformers/_conventional.config.cjs.ts';
 
-import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 
 import {
   default as buildChangelog,
@@ -49,7 +49,7 @@ import {
 
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
-import { determineRepoWorkingTreeDirty, generateRootOnlyAssets } from 'universe:util.ts';
+import { determineRepoWorkingTreeDirty } from 'universe:util.ts';
 
 import type {
   XchangelogConfig,

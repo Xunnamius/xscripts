@@ -1,8 +1,12 @@
 import { webpackConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 
-import { AssetPreset, makeTransformer } from 'universe:assets.ts';
+import {
+  AssetPreset,
+  generateRootOnlyAssets,
+  makeTransformer
+} from 'universe:assets.ts';
+
 import { globalDebuggerNamespace } from 'universe:constant.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
 
 export function moduleExport() {
   return {
@@ -11,9 +15,9 @@ export function moduleExport() {
 }
 
 export const { transformer } = makeTransformer(function (context) {
-  const { asset, toProjectAbsolutePath, assetPreset: targetAssetsPreset } = context;
+  const { asset, toProjectAbsolutePath, assetPreset } = context;
 
-  if (targetAssetsPreset && targetAssetsPreset !== AssetPreset.Nextjs) {
+  if (assetPreset && assetPreset !== AssetPreset.Nextjs) {
     return [];
   }
 

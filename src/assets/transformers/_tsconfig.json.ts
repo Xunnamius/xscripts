@@ -5,9 +5,13 @@ import {
 
 import { Tsconfig } from 'multiverse+project-utils:fs.ts';
 
-import { makeTransformer } from 'universe:assets.ts';
+import {
+  generatePerPackageAssets,
+  generateRootOnlyAssets,
+  makeTransformer
+} from 'universe:assets.ts';
+
 import { makeGeneratedAliasesWarningComment } from 'universe:constant.ts';
-import { generatePerPackageAssets, generateRootOnlyAssets } from 'universe:util.ts';
 
 // {@xscripts/notExtraneous typescript}
 

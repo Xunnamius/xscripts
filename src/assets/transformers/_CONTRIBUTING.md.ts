@@ -4,14 +4,18 @@ import {
   type RelativePath
 } from 'multiverse+project-utils:fs.ts';
 
-import { compileTemplate, libAssetPresets, makeTransformer } from 'universe:assets.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
+import {
+  compileTemplate,
+  generateRootOnlyAssets,
+  libAssetPresets,
+  makeTransformer
+} from 'universe:assets.ts';
 
 export const { transformer } = makeTransformer(function (context) {
-  const { toProjectAbsolutePath, assetPreset: targetAssetsPreset } = context;
+  const { toProjectAbsolutePath, assetPreset } = context;
 
   // * Do not generate any files when using the "wrong" preset
-  if (!libAssetPresets.includes(targetAssetsPreset)) {
+  if (!libAssetPresets.includes(assetPreset)) {
     return [];
   }
 

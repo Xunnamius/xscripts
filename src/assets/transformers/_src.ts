@@ -1,7 +1,6 @@
 import { directorySrcPackageBase, isAccessible } from 'multiverse+project-utils:fs.ts';
 
-import { makeTransformer } from 'universe:assets.ts';
-import { generatePerPackageAssets } from 'universe:util.ts';
+import { generatePerPackageAssets, makeTransformer } from 'universe:assets.ts';
 
 export const { transformer } = makeTransformer(function (context) {
   const { toProjectAbsolutePath } = context;

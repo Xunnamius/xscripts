@@ -28,10 +28,10 @@ import {
 
 import { createDebugLogger } from 'multiverse+rejoinder';
 
-import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
-import { __read_file_sync, generateRootOnlyAssets } from 'universe:util.ts';
+import { __read_file_sync } from 'universe:util.ts';
 
 import type {
   XchangelogCommit,

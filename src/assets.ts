@@ -6,7 +6,14 @@ import getInObject from 'lodash.get';
 import mergeWith from 'lodash.mergewith';
 
 import { type ExtendedDebugger } from 'multiverse+debug';
-import { type ProjectMetadata } from 'multiverse+project-utils';
+
+import {
+  isRootPackage,
+  ProjectAttribute,
+  type Package,
+  type ProjectMetadata
+} from 'multiverse+project-utils';
+
 import { type RawAliasMapping } from 'multiverse+project-utils:alias.ts';
 
 import {
@@ -18,7 +25,7 @@ import {
 
 import { createDebugLogger, type ExtendedLogger } from 'multiverse+rejoinder';
 
-import { type DefaultGlobalScope } from 'universe:configure.ts';
+import { DefaultGlobalScope } from 'universe:configure.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
 import { readFile } from 'universe:util.ts';
@@ -234,8 +241,8 @@ export type TransformerContext = {
    */
   scope: DefaultGlobalScope;
   /**
-   * Whether or not to overwrite certain files (such as .env) in a potentially
-   * destructive way.
+   * Whether or not to overwrite certain files (such as .env files, and .md
+   * files with replacer regions) in a potentially destructive way.
    */
   forceOverwritePotentiallyDestructive: boolean;
   /**
@@ -606,4 +613,93 @@ async function invokeTransformerAndReifyAssets({
       cause: error
     });
   }
+}
+
+/**
+ * Takes a {@link TransformerContext} and an adder function and returns an array
+ * of {@link Asset}s generated per each package in {@link ProjectMetadata},
+ * including the root package in hybridrepos and polyrepos (but not in
+ * non-hybrid monorepos).
+ */
+export async function generatePerPackageAssets(
+  transformerContext: TransformerContext,
+  adder: (helpers: {
+    package_: Package;
+    toPackageAbsolutePath: TransformerContext['toPackageAbsolutePath'];
+  }) => Promisable<Asset[] | undefined>,
+  {
+    includeRootPackageInNonHybridMonorepo = false
+  }: {
+    /**
+     * If `true`, the root workspace package will be included among the
+     * {@link Package}s passed to `adder` even when the {@link ProjectMetadata}
+     * indicates that this monorepo does not actually have a publishable root
+     * package containing source code or tests.
+     *
+     * @default false
+     */
+    includeRootPackageInNonHybridMonorepo?: boolean;
+  } = {}
+): Promise<Asset[]> {
+  const {
+    scope,
+    toProjectAbsolutePath,
+    projectMetadata: { cwdPackage, rootPackage, subRootPackages, type }
+  } = transformerContext;
+
+  if (scope === DefaultGlobalScope.ThisPackage) {
+    return Promise.resolve(
+      adder({
+        package_: cwdPackage,
+        toPackageAbsolutePath: toSpecificPackageAbsolutePath(cwdPackage)
+      })
+    ).then((result) => result || []);
+  } else {
+    const allPackages = [...(subRootPackages?.values() || [])] as Package[];
+
+    if (
+      includeRootPackageInNonHybridMonorepo ||
+      type !== ProjectAttribute.Monorepo ||
+      rootPackage.attributes[ProjectAttribute.Hybridrepo]
+    ) {
+      allPackages.unshift(rootPackage);
+    }
+
+    const allPackagesAssets = await Promise.all(
+      allPackages.map((package_) =>
+        adder({
+          package_: package_,
+          toPackageAbsolutePath: toSpecificPackageAbsolutePath(package_)
+        })
+      )
+    );
+
+    return allPackagesAssets.flat().filter((asset) => !!asset);
+  }
+
+  function toSpecificPackageAbsolutePath(package_: Package) {
+    return function (...args) {
+      const relativeRoot = 'relativeRoot' in package_ ? package_.relativeRoot : '';
+      return toProjectAbsolutePath(relativeRoot, ...args);
+    } as TransformerContext['toPackageAbsolutePath'];
+  }
+}
+
+/**
+ * Takes a {@link TransformerContext} and an adder function and returns an array
+ * of {@link Asset}s when the current package is a {@link RootPackage} or scope
+ * is set to {@link DefaultGlobalScope.Unlimited}.
+ */
+export async function generateRootOnlyAssets(
+  transformerContext: TransformerContext,
+  adder: (helpers: { package_: Package }) => Promisable<Asset[] | undefined>
+): Promise<Asset[]> {
+  const {
+    scope,
+    projectMetadata: { cwdPackage, rootPackage }
+  } = transformerContext;
+
+  return scope === DefaultGlobalScope.Unlimited || isRootPackage(cwdPackage)
+    ? Promise.resolve(adder({ package_: rootPackage })).then((result) => result || [])
+    : [];
 }

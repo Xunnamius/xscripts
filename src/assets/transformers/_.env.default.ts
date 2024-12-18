@@ -6,8 +6,8 @@ import {
   type AbsolutePath
 } from 'multiverse+project-utils:fs.ts';
 
-import { makeTransformer, type Asset } from 'universe:assets.ts';
-import { generateRootOnlyAssets, readFile } from 'universe:util.ts';
+import { generateRootOnlyAssets, makeTransformer, type Asset } from 'universe:assets.ts';
+import { readFile } from 'universe:util.ts';
 
 // {@xscripts/notExtraneous dotenv-cli}
 

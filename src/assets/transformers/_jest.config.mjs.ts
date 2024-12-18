@@ -11,7 +11,7 @@ import { ProjectError } from 'multiverse+project-utils:error.ts';
 import { jestConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
-import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 
 import {
   globalDebuggerNamespace,
@@ -19,7 +19,6 @@ import {
 } from 'universe:constant.ts';
 
 import { ErrorMessage } from 'universe:error.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
 
 const debug = createDebugLogger({
   namespace: `${globalDebuggerNamespace}:asset:jest`

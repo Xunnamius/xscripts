@@ -1,9 +1,8 @@
 import { commitlintConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 
 import { wellKnownCommitTypes } from 'universe:assets/transformers/_conventional.config.cjs.ts';
-import { makeTransformer } from 'universe:assets.ts';
+import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
 
 // {@xscripts/notExtraneous @commitlint/cli @commitlint/config-conventional}
 

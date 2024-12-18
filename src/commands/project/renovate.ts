@@ -71,6 +71,8 @@ import {
   getRelevantDotEnvFilePaths,
   importAdditionalRawAliasMappings,
   loadDotEnv,
+  magicStringReplacerRegionEnd,
+  magicStringReplacerRegionStart,
   runGlobalPreChecks,
   withGlobalBuilder,
   withGlobalUsage,
@@ -1425,13 +1427,13 @@ Use --skip-asset-paths to further narrow which files are regenerated. The parame
 
 This renovation attempts to import the \`import-aliases.mjs\` file if it exists at the root of the project. Use this file to provide additional \`RawAliasMapping[]\`s to include when regenerating files defining the project's import aliases. See the xscripts wiki documentation for further details.
 
-When renovating Markdown files, note that non-numeric reference definitions will be deleted and recreated while numeric reference definitions are preserved.
 
-When renovating Markdown files with templates divided into replacer regions via the magic comments "<!-- xscripts-template-region-start -->" and "<!-- xscripts-template-region-end -->", and if the existing renovation target has the same number of corresponding replacer regions defined, this command will perform so-called "regional replacements" where only the content between the "start" and "end" comments will be modified.
 
-Note that only certain Markdown files/templates support regional replacements. See the xscripts wiki documentation for more details.
+When renovating Markdown files with templates divided into replacer regions via the magic comments "${magicStringReplacerRegionStart}" and "${magicStringReplacerRegionEnd}", this command will perform so-called "regional replacements" where only the content between the "start" and "end" comments will be modified. Regions without matching ids are ignored.
 
-Also note that, when attempting to renovate a Markdown file without replacer regions when its corresponding template contains and supports replacer regions, the entire file will be overwritten like normal.
+When regional replacements are performed, matching non-numeric reference definitions will be overwritten respectively, and new definitions will be appended. However, when attempting to renovate a Markdown file and either (1) it does not have replacer regions when its corresponding template contains replacer regions or (2) --force is used, the entire file will be overwritten instead.
+
+Note that only certain Markdown files support regional replacements. See the xscripts wiki documentation for more details.
 
 After invoking this renovation, you should use your IDE's diff tools to compare and contrast the latest best practices with the project's current configuration setup.
 

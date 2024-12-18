@@ -1,12 +1,15 @@
 import { vercelConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 
-import { AssetPreset, makeTransformer } from 'universe:assets.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
+import {
+  AssetPreset,
+  generateRootOnlyAssets,
+  makeTransformer
+} from 'universe:assets.ts';
 
 export const { transformer } = makeTransformer(function (context) {
-  const { toProjectAbsolutePath, assetPreset: targetAssetsPreset } = context;
+  const { toProjectAbsolutePath, assetPreset } = context;
 
-  if (targetAssetsPreset && targetAssetsPreset !== AssetPreset.Nextjs) {
+  if (assetPreset && assetPreset !== AssetPreset.Nextjs) {
     return [];
   }
 

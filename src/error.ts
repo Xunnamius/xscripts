@@ -151,7 +151,7 @@ export const ErrorMessage = {
   BadExportsInDistributablePackageJson() {
     return `the distributable package.json file does not contain a valid "exports" field`;
   },
-  BadRepositoryInCwdPackageJson(packageName: string) {
+  BadRepositoryInPackageJson(packageName: string) {
     return `the "${packageName}" package's package.json file does not contain a valid "repository" field (only GitHub FQDN repository URLs are supported)`;
   },
   BadEnginesNodeInPackageJson(path: string) {

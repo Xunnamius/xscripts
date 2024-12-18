@@ -4,8 +4,11 @@ import {
   type RelativePath
 } from 'multiverse+project-utils:fs.ts';
 
-import { compileTemplate, makeTransformer } from 'universe:assets.ts';
-import { generateRootOnlyAssets } from 'universe:util.ts';
+import {
+  compileTemplate,
+  generateRootOnlyAssets,
+  makeTransformer
+} from 'universe:assets.ts';
 
 export const { transformer } = makeTransformer(function (context) {
   const { toProjectAbsolutePath } = context;
