@@ -251,7 +251,7 @@ createFixture({
 createFixture({
   fixtureName: 'badMonorepoNextjsProject',
   prototypeRoot: 'bad-monorepo-nextjs-project',
-  attributes: { cjs: true, monorepo: true, next: true },
+  attributes: { cjs: true, monorepo: true, nextjs: true },
   unnamedPackageMapData: [
     { name: 'empty', root: 'packages/empty', attributes: { cjs: true } }
   ]
@@ -300,7 +300,7 @@ createFixture({
 createFixture({
   fixtureName: 'badPolyrepoNextjsProject',
   prototypeRoot: 'bad-polyrepo-nextjs-project',
-  attributes: { cjs: true, polyrepo: true, next: true }
+  attributes: { cjs: true, polyrepo: true, nextjs: true }
 });
 
 createFixture({
@@ -442,7 +442,7 @@ createFixture({
 createFixture({
   fixtureName: 'goodMonorepoNextjsProject',
   prototypeRoot: 'good-monorepo-nextjs-project',
-  attributes: { cjs: true, monorepo: true, next: true },
+  attributes: { cjs: true, monorepo: true, nextjs: true },
   namedPackageMapData: [
     { name: 'pkg-1', root: 'packages/pkg-1', attributes: { cjs: true } },
     { name: '@namespaced/pkg', root: 'packages/pkg-2', attributes: { cjs: true } },
@@ -552,7 +552,7 @@ createFixture({
 createFixture({
   fixtureName: 'goodPolyrepoNextjsProject',
   prototypeRoot: 'good-polyrepo-nextjs-project',
-  attributes: { esm: true, polyrepo: true, next: true }
+  attributes: { esm: true, polyrepo: true, nextjs: true }
 });
 
 /**

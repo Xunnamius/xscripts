@@ -116,7 +116,7 @@ export enum ProjectAttribute {
   /**
    * A {@link nextjsConfigProjectBase} file exists at the project root.
    */
-  Next = 'next',
+  Next = 'nextjs',
   /**
    * The root `package.json` file has a `bin` key.
    */
