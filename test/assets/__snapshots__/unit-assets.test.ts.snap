@@ -205,7 +205,7 @@ Thank you for your contribution!
 [6]:
   mailto:security@ergodark.com?subject=ALERT%3A%20SECURITY%20INCIDENT%3A%20%28five%20word%20summary%29
 ",
-  "package/README.md": "<!-- xscripts-template-region-start -->
+  "package/README.md": "<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
@@ -216,7 +216,7 @@ Thank you for your contribution!
 
 good-hybridrepo-description
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 </p>
 
@@ -243,7 +243,7 @@ good-hybridrepo-description
 
 good-hybridrepo-description
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
@@ -263,7 +263,7 @@ good-hybridrepo-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
@@ -284,7 +284,7 @@ npm install good-hybridrepo
 
 TODO
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 5 -->
 
 ## Appendix
 
@@ -314,7 +314,7 @@ browser-like environments. For TypeScript users, this package supports both
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- xscripts-template-region-end -->
 <!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
@@ -3869,7 +3869,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> ARCHI
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 # 📐 Project Architecture
 
@@ -3899,7 +3899,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> ARCHI
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 # 📐 Project Architecture
 
@@ -3929,7 +3929,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> ARCHI
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 # 📐 Project Architecture
 
@@ -5657,7 +5657,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> READM
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
@@ -5668,7 +5668,7 @@ preset: undefined
 
 good-hybridrepo-description
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 </p>
 
@@ -5695,7 +5695,7 @@ good-hybridrepo-description
 
 good-hybridrepo-description
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
@@ -5715,7 +5715,7 @@ good-hybridrepo-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
@@ -5736,7 +5736,7 @@ npm install good-hybridrepo
 
 TODO
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 5 -->
 
 ## Appendix
 
@@ -5766,7 +5766,7 @@ browser-like environments. For TypeScript users, this package supports both
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- xscripts-template-region-end -->
 <!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
@@ -5927,7 +5927,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> READM
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
@@ -5938,7 +5938,7 @@ preset: undefined
 
 good-hybridrepo-description
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 </p>
 
@@ -5965,7 +5965,7 @@ good-hybridrepo-description
 
 good-hybridrepo-description
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
@@ -5985,7 +5985,7 @@ good-hybridrepo-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
@@ -6006,7 +6006,7 @@ npm install good-hybridrepo
 
 TODO
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 5 -->
 
 ## Appendix
 
@@ -6036,7 +6036,7 @@ browser-like environments. For TypeScript users, this package supports both
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- xscripts-template-region-end -->
 <!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
@@ -6197,7 +6197,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> READM
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
@@ -6208,7 +6208,7 @@ preset: undefined
 
 good-hybridrepo-description
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 </p>
 
@@ -6235,7 +6235,7 @@ good-hybridrepo-description
 
 good-hybridrepo-description
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
@@ -6255,7 +6255,7 @@ good-hybridrepo-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
@@ -6276,7 +6276,7 @@ npm install good-hybridrepo
 
 TODO
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 5 -->
 
 ## Appendix
 
@@ -6306,7 +6306,7 @@ browser-like environments. For TypeScript users, this package supports both
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- xscripts-template-region-end -->
 <!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
@@ -6467,7 +6467,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> READM
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
@@ -6478,7 +6478,7 @@ preset: undefined
 
 good-hybridrepo-description
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 </p>
 
@@ -6505,7 +6505,7 @@ good-hybridrepo-description
 
 good-hybridrepo-description
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
@@ -6525,7 +6525,7 @@ good-hybridrepo-description
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
@@ -6546,7 +6546,7 @@ npm install good-hybridrepo
 
 TODO
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 5 -->
 
 ## Appendix
 
@@ -6576,7 +6576,7 @@ browser-like environments. For TypeScript users, this package supports both
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- xscripts-template-region-end -->
 <!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
@@ -6746,7 +6746,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> READM
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
@@ -6757,7 +6757,7 @@ preset: undefined
 
 <!-- TODO -->
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 </p>
 
@@ -6784,7 +6784,7 @@ preset: undefined
 
 <!-- TODO -->
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
@@ -6804,7 +6804,7 @@ preset: undefined
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
@@ -6825,7 +6825,7 @@ npm install pkg-1
 
 TODO
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 5 -->
 
 ## Appendix
 
@@ -6855,7 +6855,7 @@ browser-like environments. For TypeScript users, this package supports both
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- xscripts-template-region-end -->
 <!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
@@ -7016,7 +7016,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> READM
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
@@ -7027,7 +7027,7 @@ preset: undefined
 
 <!-- TODO -->
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 </p>
 
@@ -7054,7 +7054,7 @@ preset: undefined
 
 <!-- TODO -->
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
@@ -7074,7 +7074,7 @@ preset: undefined
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
@@ -7095,7 +7095,7 @@ npm install pkg-1
 
 TODO
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 5 -->
 
 ## Appendix
 
@@ -7125,7 +7125,7 @@ browser-like environments. For TypeScript users, this package supports both
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- xscripts-template-region-end -->
 <!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
@@ -7286,7 +7286,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> READM
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
@@ -7297,7 +7297,7 @@ preset: undefined
 
 <!-- TODO -->
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 </p>
 
@@ -7324,7 +7324,7 @@ preset: undefined
 
 <!-- TODO -->
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
@@ -7344,7 +7344,7 @@ preset: undefined
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
@@ -7365,7 +7365,7 @@ npm install pkg-1
 
 TODO
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 5 -->
 
 ## Appendix
 
@@ -7395,7 +7395,7 @@ browser-like environments. For TypeScript users, this package supports both
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- xscripts-template-region-end -->
 <!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
@@ -7556,7 +7556,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> READM
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./repo-name.png">
@@ -7567,7 +7567,7 @@ preset: undefined
 
 <!-- TODO -->
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 </p>
 
@@ -7594,7 +7594,7 @@ preset: undefined
 
 <!-- TODO -->
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
@@ -7614,7 +7614,7 @@ preset: undefined
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
@@ -7635,7 +7635,7 @@ npm install good-polyrepo-no-src
 
 TODO
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 5 -->
 
 ## Appendix
 
@@ -7665,7 +7665,7 @@ browser-like environments. For TypeScript users, this package supports both
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- xscripts-template-region-end -->
 <!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
