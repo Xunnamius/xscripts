@@ -31,6 +31,7 @@ import {
 } from 'multiverse+project-utils:analyze.ts';
 
 import {
+  codecovConfigProjectBase,
   directoryCoveragePackageBase,
   fsConstants,
   isAccessible,
@@ -167,6 +168,7 @@ export type ReleaseTask =
       type: 'pre' | 'post';
       id: number;
       skippable: boolean;
+      allowMissingNpmScripts: boolean;
       npmScripts: StringKeyOf<
         OmitIndexSignature<NonNullable<XPackageJson['scripts']>>
       >[];
@@ -180,6 +182,7 @@ export type ReleaseTask =
       type: 'release';
       id: number;
       skippable: false;
+      allowMissingNpmScripts: boolean;
       npmScripts: never[];
       actionDescription?: string;
       helpDescription: string;
@@ -193,6 +196,13 @@ export interface BaseProtoTask {
    * Whether the task can be skipped by the user or not.
    */
   skippable: boolean;
+  /**
+   * Whether the task will automatically fail if none of the scripts given in
+   * `npmScripts` exist in the package's `package.json`.
+   *
+   * @default false
+   */
+  allowMissingNpmScripts?: boolean;
   /**
    * Run only the first NPM script in `npmScripts` that is found in the
    * package's `package.json`.
@@ -536,6 +546,7 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
               const {
                 run: taskRunner,
                 npmScripts,
+                allowMissingNpmScripts,
                 id: id_,
                 actionDescription,
                 type,
@@ -621,12 +632,12 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
                   dbg('skipped runner function (does not exist)');
 
                   if (!ranNpmScript) {
-                    taskLogger.error(
+                    taskLogger[allowMissingNpmScripts ? 'warn' : 'error'](
                       [LogTag.IF_NOT_HUSHED],
                       '👹 Task is not runnable and called no existing NPM scripts'
                     );
 
-                    if (skipTaskMissingScripts) {
+                    if (skipTaskMissingScripts || allowMissingNpmScripts) {
                       return;
                     }
 
@@ -761,6 +772,7 @@ function marshalTasks(executionContext: ExecutionContextWithProjectMetadata) {
               io: 'pipe',
               ...task,
               skippable: false,
+              allowMissingNpmScripts: false,
               type,
               id: ++count,
               npmScripts: [],
@@ -769,6 +781,7 @@ function marshalTasks(executionContext: ExecutionContextWithProjectMetadata) {
           : {
               io: 'pipe',
               skippable: false,
+              allowMissingNpmScripts: false,
               npmScripts: [],
               ...task,
               type,
@@ -1034,175 +1047,203 @@ const protoPostreleaseTasks: ProtoPostreleaseTask[][] = [
   [
     {
       skippable: true,
-      emoji: '🔺',
+      emoji: '📡',
       actionDescription: 'Uploading test coverage data to Codecov',
-      helpDescription: 'Upload test coverage data to Codecov',
+      helpDescription: 'Upload test coverage data to Codecov (if appropriate)',
       async run(
-        { projectMetadata: { cwdPackage } },
+        {
+          projectMetadata: {
+            cwdPackage,
+            rootPackage: { root: projectRoot }
+          }
+        },
         { dryRun, force, quiet: isQuieted, silent: isSilenced },
         { log, debug }
       ) {
         const { root: packageRoot } = cwdPackage;
-        const { exitCode } = await runNoRejectOnBadExit('codecov', ['--help']);
 
-        const isMissingCodecov = exitCode !== 0;
-        const codecovDownloadDir = toPath(tmpdir(), 'xscripts-codecov-tmp');
-        const codecovDownloadedFile = toPath(codecovDownloadDir, 'codecov');
+        const codecovConfigPath = toPath(projectRoot, codecovConfigProjectBase);
+        debug('codecovConfigPath: %O', codecovConfigPath);
 
-        const codecovCommand = isMissingCodecov ? codecovDownloadedFile : 'codecov';
-
-        debug('isMissingCodecov: %O', isMissingCodecov);
-        debug('codecovDownloadUrl: %O', codecovDownloadUrl);
-        debug('codecovDownloadDir: %O', codecovDownloadDir);
-        debug('codecovDownloadedFile: %O', codecovDownloadedFile);
-        debug('codecovCommand: %O', codecovCommand);
-
-        if (isMissingCodecov) {
-          log.message([LogTag.IF_NOT_HUSHED], 'No "codecov" executable detected!');
-
-          softAssert(
-            process.platform === 'linux',
-            ErrorMessage.CodecovDownloaderOnlySupportsLinux()
+        if (!(await isAccessible(codecovConfigPath, { useCached: true }))) {
+          log.message(
+            [LogTag.IF_NOT_SILENCED],
+            '✖️ Task execution skipped: no codecov configuration file found at %O',
+            codecovConfigPath
           );
+        } else {
+          const { exitCode } = await runNoRejectOnBadExit('codecov', ['--help']);
 
-          if (
-            await isAccessible(codecovDownloadedFile, {
-              useCached: false,
-              fsConstant: fsConstants.X_OK
-            })
-          ) {
-            log(
-              [LogTag.IF_NOT_HUSHED],
-              'Reusing "codecov" executable from a previous installation at %O',
-              codecovDownloadedFile
+          const isMissingCodecov = exitCode !== 0;
+          const codecovDownloadDir = toPath(tmpdir(), 'xscripts-codecov-tmp');
+          const codecovDownloadedFile = toPath(codecovDownloadDir, 'codecov');
+
+          const codecovCommand = isMissingCodecov ? codecovDownloadedFile : 'codecov';
+
+          debug('isMissingCodecov: %O', isMissingCodecov);
+          debug('codecovDownloadUrl: %O', codecovDownloadUrl);
+          debug('codecovDownloadDir: %O', codecovDownloadDir);
+          debug('codecovDownloadedFile: %O', codecovDownloadedFile);
+          debug('codecovCommand: %O', codecovCommand);
+
+          if (isMissingCodecov) {
+            log.message([LogTag.IF_NOT_HUSHED], 'No "codecov" executable detected!');
+
+            softAssert(
+              process.platform === 'linux',
+              ErrorMessage.CodecovDownloaderOnlySupportsLinux()
             );
-          } else {
-            log(
-              [LogTag.IF_NOT_HUSHED],
-              'Downloading %O ==> %O',
-              codecovDownloadUrl,
-              codecovDownloadedFile
-            );
 
-            let res: Response | undefined;
-
-            try {
-              debug('making codecov download directory at %O:', codecovDownloadDir);
-              await mkdir(codecovDownloadDir, { recursive: true });
-
-              for (let attempt = 1; attempt <= maxCodecovDownloadRetries; attempt++) {
-                try {
-                  debug(
-                    '(attempt %O) fetching codecov binary from %O',
-                    attempt,
-                    codecovDownloadUrl
-                  );
-
-                  const abortController = new AbortController();
-
-                  void delay(codecovDownloadTimeoutSeconds * 1000, undefined, {
-                    ref: true
-                  }).then(() => {
-                    debug('attempt %O timed out', attempt);
-                    abortController.abort();
-                  });
-
-                  // eslint-disable-next-line no-await-in-loop
-                  res = await fetch(codecovDownloadUrl, {
-                    signal: abortController.signal
-                  });
-
-                  debug.message('attempt %O succeeded!');
-                } catch (error) {
-                  debug.warn(
-                    'fetch attempt %O/%O failed: %O',
-                    attempt,
-                    maxCodecovDownloadRetries,
-                    error
-                  );
-
-                  if (attempt === maxCodecovDownloadRetries) {
-                    log.error(
-                      [LogTag.IF_NOT_SILENCED],
-                      `Download attempt %O/%O timed out after ${codecovDownloadTimeoutSeconds} seconds`,
-                      attempt,
-                      maxCodecovDownloadRetries
-                    );
-                  } else {
-                    debug.message('waiting 1000ms before trying again');
-                    // eslint-disable-next-line no-await-in-loop
-                    await delay(1000);
-                  }
-
-                  res = undefined;
-                }
-              }
-
-              softAssert(
-                res?.ok && res.body,
-                ErrorMessage.CodecovRetrievalFailed(codecovDownloadUrl)
+            if (
+              await isAccessible(codecovDownloadedFile, {
+                useCached: false,
+                fsConstant: fsConstants.X_OK
+              })
+            ) {
+              log(
+                [LogTag.IF_NOT_HUSHED],
+                'Reusing "codecov" executable from a previous installation at %O',
+                codecovDownloadedFile
+              );
+            } else {
+              log(
+                [LogTag.IF_NOT_HUSHED],
+                'Downloading %O ==> %O',
+                codecovDownloadUrl,
+                codecovDownloadedFile
               );
 
-              debug('writing out resultant binary to %O', codecovDownloadedFile);
-              await writeFile(
-                codecovDownloadedFile,
-                res.body as ReadableStream<Uint8Array>
-              ).then(() => chmod(codecovDownloadedFile, 0o775));
+              let res: Response | undefined;
 
-              debug('ran chmod on binary (+x)');
-            } catch (error) {
-              debug.error(error);
-              throw new CliError(ErrorMessage.FailedToInstallCodecov(), {
-                cause: error
-              });
+              try {
+                debug('making codecov download directory at %O:', codecovDownloadDir);
+                await mkdir(codecovDownloadDir, { recursive: true });
+
+                for (let attempt = 1; attempt <= maxCodecovDownloadRetries; attempt++) {
+                  try {
+                    debug(
+                      '(attempt %O) fetching codecov binary from %O',
+                      attempt,
+                      codecovDownloadUrl
+                    );
+
+                    const abortController = new AbortController();
+
+                    void delay(codecovDownloadTimeoutSeconds * 1000, undefined, {
+                      ref: true
+                    }).then(() => {
+                      debug('attempt %O timed out', attempt);
+                      abortController.abort();
+                    });
+
+                    // eslint-disable-next-line no-await-in-loop
+                    res = await fetch(codecovDownloadUrl, {
+                      signal: abortController.signal
+                    });
+
+                    debug.message('attempt %O succeeded!');
+                  } catch (error) {
+                    debug.warn(
+                      'fetch attempt %O/%O failed: %O',
+                      attempt,
+                      maxCodecovDownloadRetries,
+                      error
+                    );
+
+                    if (attempt === maxCodecovDownloadRetries) {
+                      log.error(
+                        [LogTag.IF_NOT_SILENCED],
+                        `Download attempt %O/%O timed out after ${codecovDownloadTimeoutSeconds} seconds`,
+                        attempt,
+                        maxCodecovDownloadRetries
+                      );
+                    } else {
+                      debug.message('waiting 1000ms before trying again');
+                      // eslint-disable-next-line no-await-in-loop
+                      await delay(1000);
+                    }
+
+                    res = undefined;
+                  }
+                }
+
+                softAssert(
+                  res?.ok && res.body,
+                  ErrorMessage.CodecovRetrievalFailed(codecovDownloadUrl)
+                );
+
+                debug('writing out resultant binary to %O', codecovDownloadedFile);
+                await writeFile(
+                  codecovDownloadedFile,
+                  res.body as ReadableStream<Uint8Array>
+                ).then(() => chmod(codecovDownloadedFile, 0o775));
+
+                debug('ran chmod on binary (+x)');
+              } catch (error) {
+                debug.error(error);
+                throw new CliError(ErrorMessage.FailedToInstallCodecov(), {
+                  cause: error
+                });
+              }
             }
           }
+
+          const { exitCode: codecovCheckExitCode } = await runNoRejectOnBadExit(
+            codecovCommand,
+            ['--help']
+          );
+
+          softAssert(codecovCheckExitCode === 0, ErrorMessage.FailedToInstallCodecov());
+
+          const { stdout: currentBranch } = await run('git', [
+            'branch',
+            '--show-current'
+          ]);
+
+          debug('currentBranch: %O', currentBranch);
+          softAssert(currentBranch, ErrorMessage.ReleaseRepositoryNoCurrentBranch());
+
+          // TODO: a new project-wide coverage tag; probably not so useful here:
+          // TODO: project.${currentBranch}
+
+          const flag = `package.${currentBranch}_${isRootPackage(cwdPackage) ? 'root' : cwdPackage.id}`;
+
+          debug(`computed flag (before ${maxFlagSize}-character truncation): %O`, flag);
+
+          log([LogTag.IF_NOT_HUSHED], 'Running codecov executable...');
+
+          await attemptToRunCommand(
+            codecovCommand,
+            [
+              'upload-process',
+              '--fail-on-error',
+              '--flag',
+              flag,
+              '--branch',
+              currentBranch,
+              '--coverage-files-search-root-folder',
+              toPath(packageRoot, directoryCoveragePackageBase),
+              ...(dryRun ? ['--dry-run'] : []),
+              ...(force ? ['--handle-no-reports-found'] : [])
+            ],
+            {
+              logger: log,
+              scriptName: 'codecov',
+              stdout: isQuieted ? 'ignore' : 'inherit',
+              stderr: isSilenced ? 'ignore' : 'inherit',
+              reject: true
+            }
+          );
         }
-
-        const { exitCode: codecovCheckExitCode } = await runNoRejectOnBadExit(
-          codecovCommand,
-          ['--help']
-        );
-
-        softAssert(codecovCheckExitCode === 0, ErrorMessage.FailedToInstallCodecov());
-
-        const { stdout: currentBranch } = await run('git', ['branch', '--show-current']);
-
-        debug('currentBranch: %O', currentBranch);
-        softAssert(currentBranch, ErrorMessage.ReleaseRepositoryNoCurrentBranch());
-
-        // TODO: a new project-wide coverage tag; probably not so useful here:
-        // TODO: project.${currentBranch}
-
-        const flag = `package.${currentBranch}_${isRootPackage(cwdPackage) ? 'root' : cwdPackage.id}`;
-
-        debug(`computed flag (before ${maxFlagSize}-character truncation): %O`, flag);
-
-        log([LogTag.IF_NOT_HUSHED], 'Running codecov executable...');
-
-        await attemptToRunCommand(
-          codecovCommand,
-          [
-            'upload-process',
-            '--fail-on-error',
-            '--flag',
-            flag,
-            '--branch',
-            currentBranch,
-            '--coverage-files-search-root-folder',
-            toPath(packageRoot, directoryCoveragePackageBase),
-            ...(dryRun ? ['--dry-run'] : []),
-            ...(force ? ['--handle-no-reports-found'] : [])
-          ],
-          {
-            logger: log,
-            scriptName: 'codecov',
-            stdout: isQuieted ? 'ignore' : 'inherit',
-            stderr: isSilenced ? 'ignore' : 'inherit',
-            reject: true
-          }
-        );
       }
+    },
+    {
+      skippable: true,
+      emoji: '✈️',
+      actionDescription: 'Deploying distributables to appropriate remote system',
+      helpDescription: 'Deploy to remote systems (if appropriate)',
+      npmScripts: ['deploy'],
+      allowMissingNpmScripts: true
     }
   ]
 ];

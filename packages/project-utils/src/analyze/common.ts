@@ -544,6 +544,13 @@ export type XPackageJsonScripts = {
    */
   clean?: string;
   /**
+   * Run by users, xscripts, and related tooling when deploying built
+   * distributables to the appropriate remote system(s).
+   *
+   * @example `NODE_NO_WARNINGS=1 xscripts deploy --target ssh --host prod.x.y.com --to-path /prod/some/path`
+   */
+  deploy?: string;
+  /**
    * Run by users, xscripts, and related tooling when formatting the project
    * or package.
    *
