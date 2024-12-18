@@ -11,7 +11,7 @@ import {
   type ExecutionContext
 } from '@black-flag/core/util';
 
-// TODO: switch to es-toolkit over lodash
+// TODO: switch to es-toolkit over lodash?
 import isEqual from 'lodash.isequal';
 import deepMerge from 'lodash.merge';
 
@@ -5343,13 +5343,13 @@ describe('::withBuilderExtensions', () => {
 describe('::withUsageExtensions', () => {
   it('outputs consistent usage string template when called without parameters', async () => {
     expect.hasAssertions();
-    expect(withUsageExtensions()).toBe('Usage: $000\n\n$1.');
+    expect(withUsageExtensions()).toBe('Usage: $000 [...options]\n\n$1.');
   });
 
   it('appends passed parameter to consistent usage string template', async () => {
     expect.hasAssertions();
     expect(withUsageExtensions('new description')).toBe(
-      'Usage: $000\n\nnew description.'
+      'Usage: $000 [...options]\n\nnew description.'
     );
   });
 
@@ -5361,11 +5361,11 @@ new description
 `;
 
     expect(withUsageExtensions(expected, { trim: true })).toBe(
-      `Usage: $000\n\n${expected.trim()}.`
+      `Usage: $000 [...options]\n\n${expected.trim()}.`
     );
 
     expect(withUsageExtensions(expected, { trim: false })).toBe(
-      `Usage: $000\n\n${expected}.`
+      `Usage: $000 [...options]\n\n${expected}.`
     );
   });
 
@@ -5377,15 +5377,15 @@ new description
 `;
 
     expect(withUsageExtensions(expected, { appendPeriod: true })).toBe(
-      `Usage: $000\n\n${expected.trim()}.`
+      `Usage: $000 [...options]\n\n${expected.trim()}.`
     );
 
     expect(withUsageExtensions(expected, { appendPeriod: false })).toBe(
-      `Usage: $000\n\n${expected.trim()}`
+      `Usage: $000 [...options]\n\n${expected.trim()}`
     );
   });
 
-  it('respects "prependNewlines" option', async () => {
+  it('respects "prependNewlines" option (and uses it as default for "includeOptions")', async () => {
     expect.hasAssertions();
 
     const expected = `
@@ -5393,7 +5393,7 @@ new description
 `;
 
     expect(withUsageExtensions(expected, { prependNewlines: true })).toBe(
-      `Usage: $000\n\n${expected.trim()}.`
+      `Usage: $000 [...options]\n\n${expected.trim()}.`
     );
 
     expect(withUsageExtensions(expected, { prependNewlines: false })).toBe(
@@ -5405,13 +5405,33 @@ new description
     );
   });
 
+  it('respects "includeOptions" option', async () => {
+    expect.hasAssertions();
+
+    const expected = `
+new description
+`;
+
+    expect(
+      withUsageExtensions(expected, { includeOptions: true, prependNewlines: false })
+    ).toBe(`Usage: $000 [...options]${expected.trim()}.`);
+
+    expect(withUsageExtensions(expected, { includeOptions: false })).toBe(
+      `Usage: $000\n\n${expected.trim()}.`
+    );
+
+    expect(
+      withUsageExtensions(expected, { includeOptions: false, prependNewlines: true })
+    ).toBe(`Usage: $000\n\n${expected.trim()}.`);
+  });
+
   test('[readme #1] example functions as expected', async () => {
     expect.hasAssertions();
 
     const str =
       "$1.\n\nAdditional description text that only appears in this command's help text.";
 
-    expect(withUsageExtensions(str)).toBe(`Usage: $000\n\n${str}`);
+    expect(withUsageExtensions(str)).toBe(`Usage: $000 [...options]\n\n${str}`);
   });
 });
 
