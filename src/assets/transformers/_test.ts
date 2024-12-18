@@ -1,4 +1,4 @@
-import { directorySrcPackageBase } from 'multiverse+project-utils:fs.ts';
+import { directoryTestPackageBase } from 'multiverse+project-utils:fs.ts';
 
 import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 
@@ -9,7 +9,7 @@ export const { transformer } = makeTransformer(function (context) {
   return generateRootOnlyAssets(context, function () {
     return [
       {
-        path: toProjectAbsolutePath(directorySrcPackageBase, 'index.ts'),
+        path: toProjectAbsolutePath(directoryTestPackageBase, 'index.ts'),
         generate: () => /*js*/ `
 /**
  ** This file exports test utilities specific to this project and beyond what is
@@ -20,7 +20,7 @@ export {};
 `
       },
       {
-        path: toProjectAbsolutePath(directorySrcPackageBase, 'setup.ts'),
+        path: toProjectAbsolutePath(directoryTestPackageBase, 'setup.ts'),
         generate: () => /*js*/ `
 /**
  ** This file is automatically imported by Jest, and is responsible for
