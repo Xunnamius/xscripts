@@ -279,31 +279,31 @@ describe('::gatherAssetsFromTransformer', () => {
 
   describe('<preset tests>', () => {
     describe('basic', () => {
-      it('it returns the expected asset paths', async () => {
+      it('returns the expected asset paths', async () => {
         expect.hasAssertions();
       });
     });
 
     describe('lib/lib-esm/cli', () => {
-      it('it returns the expected asset paths', async () => {
+      it('returns the expected asset paths', async () => {
         expect.hasAssertions();
       });
     });
 
     describe('lib-web', () => {
-      it('it returns the expected asset paths', async () => {
+      it('returns the expected asset paths', async () => {
         expect.hasAssertions();
       });
     });
 
     describe('react', () => {
-      it('it returns the expected asset paths', async () => {
+      it('returns the expected asset paths', async () => {
         expect.hasAssertions();
       });
     });
 
     describe('nextjs', () => {
-      it('it returns the expected asset paths', async () => {
+      it('returns the expected asset paths', async () => {
         expect.hasAssertions();
       });
     });
