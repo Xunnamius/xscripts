@@ -1,5 +1,5 @@
 {
-  "name": "good-monorepo",
+  "name": "good-monorepo-no-src",
   "version": "0.0.0-monorepo",
   "type": "commonjs",
   "repository": {

@@ -195,7 +195,7 @@ export const { transformer } = makeTransformer(function (context) {
           packageJson.description ??
           (isNonHybridMonorepo
             ? 'Monorepo for the {{repoName}} project'
-            : 'TODO: project description here')
+            : 'TODO: project or package description here')
       } satisfies Parameters<typeof generateBaseXPackageJson>[0];
 
       if (projectAttributes[ProjectAttribute.Polyrepo]) {
