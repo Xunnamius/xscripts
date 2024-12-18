@@ -1264,7 +1264,12 @@ export function withBuilderExtensions<
  */
 export function withUsageExtensions(
   altDescription = '$1.',
-  options?: {
+  {
+    trim = true,
+    appendPeriod = true,
+    prependNewlines = true,
+    includeOptions = prependNewlines
+  }: {
     /**
      * Whether `altDescription` will be `trim()`'d or not.
      *
@@ -1284,12 +1289,18 @@ export function withUsageExtensions(
      * @default true
      */
     prependNewlines?: boolean;
-  }
+    /**
+     * Whether the string `' [...options]'` will be appended to the first line of usage text
+     *
+     * @default options.prependNewlines
+     */
+    includeOptions?: boolean;
+  } = {}
 ) {
-  return `Usage: $000${
-    options?.prependNewlines !== false ? '\n\n' : ''
-  }${altDescription[options?.trim !== false ? 'trim' : 'toString']()}${
-    options?.appendPeriod !== false && !altDescription.endsWith('.') ? '.' : ''
+  return `Usage: $000${includeOptions ? ' [...options]' : ''}${
+    prependNewlines ? '\n\n' : ''
+  }${altDescription[trim ? 'trim' : 'toString']()}${
+    appendPeriod && !altDescription.endsWith('.') ? '.' : ''
   }`;
 }
 
