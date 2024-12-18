@@ -194,7 +194,7 @@ describe('::gatherAssetsFromTransformer', () => {
 
   describe('<additional asset content tests>', () => {
     describe('dotenv', () => {
-      it('merges with .env if it already exists only if force is used', async () => {
+      it('appends to current .env only if force is used', async () => {
         expect.hasAssertions();
 
         {
@@ -255,6 +255,56 @@ describe('::gatherAssetsFromTransformer', () => {
             "
           `);
         }
+      });
+    });
+
+    describe('package.json', () => {
+      it('replaces "repository" field when relevant', async () => {
+        expect.hasAssertions();
+      });
+
+      it('maintains all existing dependency types except where relevant', async () => {
+        expect.hasAssertions();
+      });
+
+      it('maintains existing irrelevant keys unless --force is used', async () => {
+        expect.hasAssertions();
+      });
+
+      it('maintains existing irrelevant scripts unless --force is used', async () => {
+        expect.hasAssertions();
+      });
+    });
+  });
+
+  describe('<preset tests>', () => {
+    describe('basic', () => {
+      it('it returns the expected asset paths', async () => {
+        expect.hasAssertions();
+      });
+    });
+
+    describe('lib/lib-esm/cli', () => {
+      it('it returns the expected asset paths', async () => {
+        expect.hasAssertions();
+      });
+    });
+
+    describe('lib-web', () => {
+      it('it returns the expected asset paths', async () => {
+        expect.hasAssertions();
+      });
+    });
+
+    describe('react', () => {
+      it('it returns the expected asset paths', async () => {
+        expect.hasAssertions();
+      });
+    });
+
+    describe('nextjs', () => {
+      it('it returns the expected asset paths', async () => {
+        expect.hasAssertions();
       });
     });
   });
