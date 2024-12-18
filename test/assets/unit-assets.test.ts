@@ -345,7 +345,7 @@ describe('::compileTemplateInMemory', () => {
     expect.hasAssertions();
 
     const templateString = `
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./{{repoName}}.png">
@@ -356,7 +356,7 @@ describe('::compileTemplateInMemory', () => {
 
 {{projectMetadata.cwdPackage.json.description}}
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 <div align="center">
 
@@ -394,7 +394,7 @@ npm install {{projectMetadata.cwdPackage.json.name}}
     expect(
       compileTemplateInMemory(templateString, { ...dummyContext, asset: 'in-memory' })
     ).toMatchInlineSnapshot(`
-      "<!-- xscripts-template-region-start -->
+      "<!-- xscripts-template-region-start 1 -->
 
       <p align="center" width="100%">
         <img width="300" src="./repo-name.png">
@@ -405,7 +405,7 @@ npm install {{projectMetadata.cwdPackage.json.name}}
 
       good-hybridrepo-description
 
-      <!-- xscripts-template-region-start -->
+      <!-- xscripts-template-region-start 2 -->
 
       <div align="center">
 

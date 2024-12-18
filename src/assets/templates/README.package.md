@@ -1,4 +1,4 @@
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 1 -->
 
 <p align="center" width="100%">
   <img width="300" src="./{{repoName}}.png">
@@ -9,7 +9,7 @@
 
 {{projectMetadata.cwdPackage.json.description|<!-- TODO -->}}
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 2 -->
 
 </p>
 
@@ -36,7 +36,7 @@
 
 {{projectMetadata.cwdPackage.json.description|<!-- TODO -->}}
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
@@ -56,7 +56,7 @@
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
@@ -77,7 +77,7 @@ npm install {{projectMetadata.cwdPackage.json.name}}
 
 TODO
 
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 5 -->
 
 ## Appendix
 
@@ -107,7 +107,7 @@ browser-like environments. For TypeScript users, this package supports both
 <!-- TODO: choose one of the above and --✄--delete--✄-- the others! -->
 <!-- xscripts-template-region-end -->
 <!-- TODO: custom details here -->
-<!-- xscripts-template-region-start -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
