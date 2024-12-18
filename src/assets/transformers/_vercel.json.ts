@@ -19,7 +19,7 @@ export const { transformer } = makeTransformer(function (context) {
       {
         // TODO:
         path: toProjectAbsolutePath(vercelConfigProjectBase),
-        generate: () => JSON.stringify({})
+        generate: () => JSON.stringify({}, undefined, 2)
       }
     ];
   });

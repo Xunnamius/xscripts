@@ -10,7 +10,7 @@ export const { transformer } = makeTransformer(function (context) {
     return [
       {
         path: toProjectAbsolutePath(turboConfigProjectBase),
-        generate: () => JSON.stringify({})
+        generate: () => JSON.stringify({}, undefined, 2)
       }
     ];
   });

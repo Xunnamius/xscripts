@@ -11,10 +11,14 @@ export const { transformer } = makeTransformer(function (context) {
       {
         path: toProjectAbsolutePath(tstycheConfigProjectBase),
         generate: () =>
-          JSON.stringify({
-            $schema: 'https://tstyche.org/schemas/config.json',
-            testFileMatch: ['**/type-*.test.ts', '**/type-*.test.tsx']
-          })
+          JSON.stringify(
+            {
+              $schema: 'https://tstyche.org/schemas/config.json',
+              testFileMatch: ['**/type-*.test.ts', '**/type-*.test.tsx']
+            },
+            undefined,
+            2
+          )
       }
     ];
   });

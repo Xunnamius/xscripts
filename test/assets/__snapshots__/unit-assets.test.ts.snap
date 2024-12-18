@@ -10105,8 +10105,8 @@ export default config;
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/src/index.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/src/index.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/index.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/index.ts
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -10119,8 +10119,8 @@ export {};
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/src/setup.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/src/setup.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/setup.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/setup.ts
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -10135,8 +10135,8 @@ import 'jest-extended/all';
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/src/index.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/src/index.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/test/index.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/test/index.ts
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -10149,8 +10149,8 @@ export {};
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/src/setup.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/src/setup.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/test/setup.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/test/setup.ts
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -10165,8 +10165,8 @@ import 'jest-extended/all';
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/src/index.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/src/index.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/index.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/index.ts
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -10179,8 +10179,8 @@ export {};
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/src/setup.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/src/setup.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/setup.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/setup.ts
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
@@ -11394,7 +11394,13 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> tstyc
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-{"$schema":"https://tstyche.org/schemas/config.json","testFileMatch":["**/type-*.test.ts","**/type-*.test.tsx"]}
+{
+  "$schema": "https://tstyche.org/schemas/config.json",
+  "testFileMatch": [
+    "**/type-*.test.ts",
+    "**/type-*.test.tsx"
+  ]
+}
 "
 `;
 
@@ -11403,7 +11409,13 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> tstyc
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-{"$schema":"https://tstyche.org/schemas/config.json","testFileMatch":["**/type-*.test.ts","**/type-*.test.tsx"]}
+{
+  "$schema": "https://tstyche.org/schemas/config.json",
+  "testFileMatch": [
+    "**/type-*.test.ts",
+    "**/type-*.test.tsx"
+  ]
+}
 "
 `;
 
@@ -11412,7 +11424,13 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> tstyc
 scope: unlimited
 preset: undefined
 ⏶⏷⏶⏷⏶
-{"$schema":"https://tstyche.org/schemas/config.json","testFileMatch":["**/type-*.test.ts","**/type-*.test.tsx"]}
+{
+  "$schema": "https://tstyche.org/schemas/config.json",
+  "testFileMatch": [
+    "**/type-*.test.ts",
+    "**/type-*.test.tsx"
+  ]
+}
 "
 `;
 
