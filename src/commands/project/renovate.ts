@@ -1331,7 +1331,7 @@ By default, this command will preserve the origin repository's pre-existing conf
     taskAliases: [],
     actionDescription: 'Renaming default branch to "main" and finishing off "master"',
     shortHelpDescription:
-      'Rename and remove all references to any legacy "master" branch(es)',
+      'Rename and remove all references to any legacy "master" ref(s)',
     longHelpDescription: `This renovation will kill any and all references to any "master" ref throughout the repository. This includes renaming the "master" branch to "main," deleting the "master" branch on the origin repository, and setting the default branch to "main" both locally and remotely if it is not the case already.`,
     requiresForce: false,
     supportedScopes: [ProjectRenovateScope.Unlimited],
@@ -1426,8 +1426,6 @@ Provide --assets-preset (required) to specify which assets to regenerate. The pa
 Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the paths to be written out. Any paths matching one of the aforesaid regular expressions will have their contents discarded instead of written out.
 
 This renovation attempts to import the "import-aliases.mjs" file if it exists at the root of the project. Use this file to provide additional \`RawAliasMapping[]\`s to include when regenerating files defining the project's import aliases. See the xscripts wiki documentation for further details.
-
-
 
 When renovating Markdown files with templates divided into replacer regions via the magic comments "${magicStringReplacerRegionStart}" and "${magicStringReplacerRegionEnd}", this command will perform so-called "regional replacements" where only the content between the "start" and "end" comments will be modified. Regions without matching ids are ignored.
 
