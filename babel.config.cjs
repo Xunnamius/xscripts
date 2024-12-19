@@ -200,7 +200,8 @@ module.exports = {
       plugins: [
         // ? Jest handles transforming specifiers on its own
         //babelPluginTransformRewriteImportsSourceModuleResolver
-        // TODO: investigate why this is causing a strange error with coverage
+        // TODO: explicit-exports-references need to be updated to work with
+        // TODO: latest babel mode (need to rename usage, rather than exports)
         // ? Only active when testing, the plugin solves the following problem:
         // ? https://stackoverflow.com/q/40771520/1367414
         // {@xscripts/notExtraneous babel-plugin-explicit-exports-references}
