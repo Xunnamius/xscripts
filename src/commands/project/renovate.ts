@@ -22,7 +22,6 @@ import {
 } from 'multiverse+cli-utils:logging.ts';
 
 import { scriptBasename } from 'multiverse+cli-utils:util.ts';
-import { type RawAliasMapping } from 'multiverse+project-utils:alias.ts';
 import { type Package } from 'multiverse+project-utils:analyze.ts';
 
 import {
@@ -81,7 +80,6 @@ import {
 
 import type { RestEndpointMethodTypes } from '@octokit/rest' with { 'resolution-mode': 'import' };
 import type { CamelCasedProperties, KeysOfUnion, Merge } from 'type-fest';
-import type { ProjectMetadata } from 'multiverse+project-utils';
 
 type NewRuleset = Merge<
   RestEndpointMethodTypes['repos']['createRepoRuleset']['parameters'],
@@ -241,25 +239,6 @@ export type RenovationTask = Omit<
    */
   run: (argv: unknown, taskContextPartial: RenovationTaskContext) => Promise<void>;
 };
-
-/**
- * A function that receives the current {@link ProjectMetadata} and must return
- * an array of {@link RawAliasMapping}s.
- *
- * `aliases.config.mjs` can export via default either `RawAliasMapperFunction`
- * or an array of {@link RawAliasMapping}s.
- */
-export type RawAliasMapperFunction = (
-  projectMetadata: ProjectMetadata,
-  outputFunctions: { log: ExtendedLogger; debug: ExtendedDebugger }
-) => RawAliasMapping[];
-
-/**
- * Represents the result of importing an `aliases.config.mjs` file.
- * `aliases.config.mjs` can export via default either
- * {@link RawAliasMapperFunction} or an array of {@link RawAliasMapping}s.
- */
-export type ImportedAliasMap = RawAliasMapping[] | RawAliasMapperFunction;
 
 export type CustomCliArguments = GlobalCliArguments & {
   force: boolean;

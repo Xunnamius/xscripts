@@ -45,7 +45,7 @@ export const { transformer } = makeTransformer(async function (context) {
           generate: async () => {
             return replaceRegionsRespectively({
               outputPath: path,
-              rawIncomingContent: replaceStandardStrings(
+              templateContent: replaceStandardStrings(
                 await compileTemplate(toRelativePath('README.monorepo.md'), context),
                 context
               ),
@@ -66,7 +66,7 @@ export const { transformer } = makeTransformer(async function (context) {
           generate: async () => {
             return replaceRegionsRespectively({
               outputPath: path,
-              rawIncomingContent: replaceStandardStrings(
+              templateContent: replaceStandardStrings(
                 await compileTemplate('README.package.md' as RelativePath, context),
                 context
               ),
