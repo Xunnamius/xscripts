@@ -13,6 +13,7 @@ import { scriptBasename } from 'multiverse+cli-utils:util.ts';
 import { isRootPackage } from 'multiverse+project-utils:analyze.ts';
 
 import {
+  isAccessible,
   postNpmInstallPackageBase,
   toAbsolutePath
 } from 'multiverse+project-utils:fs.ts';
@@ -107,6 +108,7 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
 
       logStartTime({ log, startTime });
       genericLogger([LogTag.IF_NOT_QUIETED], 'Preparing project...');
+      genericLogger.newline([LogTag.IF_NOT_QUIETED]);
 
       debug('scope (unused): %O', scope);
       debug('force: %O', force);
@@ -142,10 +144,29 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
       if (force || (!isInCiEnvironment && isInDevelopmentEnvironment)) {
         const errors: [identifier: string, error: unknown][] = [];
 
-        const tasks: Promise<unknown>[] = [
-          runWithInheritedIo('npx', ['husky'], { cwd: projectRoot }).catch(
-            (error: unknown) => errors.push(['husky executable', error])
-          )
+        const tasks: ((shouldLogSuccess: boolean) => Promise<unknown>)[] = [
+          async (shouldLogSuccess) => {
+            try {
+              genericLogger(
+                [LogTag.IF_NOT_HUSHED],
+                'Executing %O initialization task',
+                'husky'
+              );
+
+              await runWithInheritedIo('npx', ['husky'], { cwd: projectRoot });
+              debug('husky initialization was successful');
+
+              // TODO: replace this horror with centralized task logging
+              if (shouldLogSuccess) {
+                genericLogger.message(
+                  [LogTag.IF_NOT_QUIETED],
+                  'Task execution succeeded'
+                );
+              }
+            } catch (error) {
+              errors.push(['husky executable', error]);
+            }
+          }
         ];
 
         if (force || isRunningNpmInstallCommand) {
@@ -158,29 +179,52 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
             const postNpmInstallPath = toAbsolutePath(root, postNpmInstallPackageBase);
             debug('postNpmInstallPath: %O', postNpmInstallPath);
 
-            genericLogger(
-              [LogTag.IF_NOT_HUSHED],
-              'Executing post-npm-install script at: %O',
-              postNpmInstallPath
-            );
+            tasks.push((shouldLogSuccess) =>
+              isAccessible(postNpmInstallPath, { useCached: true }).then(
+                async (isPathAccessible) => {
+                  if (isPathAccessible) {
+                    genericLogger(
+                      [LogTag.IF_NOT_HUSHED],
+                      'Executing post-npm-install script at: %O',
+                      postNpmInstallPath
+                    );
 
-            tasks.push(
-              import(postNpmInstallPath)
-                .then(() => {
-                  debug(
-                    'post-install script execution successful: %O',
-                    postNpmInstallPath
-                  );
-                })
-                .catch((error: unknown) => {
-                  debug.error('execution attempt failed catastrophically: %O', error);
-                  errors.push([postNpmInstallPath, error]);
+                    try {
+                      await import(postNpmInstallPath);
 
-                  throw new CliError(
-                    ErrorMessage.BadPostNpmInstallScript(postNpmInstallPath),
-                    { cause: error }
-                  );
-                })
+                      debug(
+                        'post-install script execution successful: %O',
+                        postNpmInstallPath
+                      );
+
+                      // TODO: replace this horror with centralized task logging
+                      if (shouldLogSuccess) {
+                        genericLogger.message(
+                          [LogTag.IF_NOT_QUIETED],
+                          'Task execution succeeded'
+                        );
+                      }
+                    } catch (error) {
+                      debug.error(
+                        'execution attempt failed catastrophically: %O',
+                        error
+                      );
+
+                      errors.push([postNpmInstallPath, error]);
+
+                      throw new CliError(
+                        ErrorMessage.BadPostNpmInstallScript(postNpmInstallPath),
+                        { cause: error }
+                      );
+                    }
+                  } else {
+                    debug.message(
+                      'no post-install script found at: %O',
+                      postNpmInstallPath
+                    );
+                  }
+                }
+              )
             );
           }
         }
@@ -188,12 +232,13 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
         // TODO: use this in eventual task-runner API factorization along with
         // TODO: what's in renovate, release, etc
 
+        // TODO: redesign to have centralized logging in these blocks
         if (parallel) {
           debug.message('running tasks in parallel...');
           await Promise.all(
             tasks.map(async (task) => {
               try {
-                await task;
+                await task(false);
               } catch (error) {
                 if (!runToCompletion) {
                   throw error;
@@ -203,13 +248,16 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
           );
         } else {
           debug.message('running tasks serially...');
+
           for (const task of tasks) {
             try {
               // ? Order matters
               // eslint-disable-next-line no-await-in-loop
-              await task;
+              await task(true);
             } catch (error) {
-              if (!runToCompletion) {
+              if (runToCompletion) {
+                genericLogger.error([LogTag.IF_NOT_QUIETED], 'Task execution failed!');
+              } else {
                 throw error;
               }
             }
@@ -220,7 +268,7 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
           genericLogger.newline([LogTag.IF_NOT_SILENCED], 'alternate');
 
           for (const [description, error] of errors) {
-            log.error(
+            genericLogger.error(
               [LogTag.IF_NOT_SILENCED],
               'Preparation task %O experienced a fatal execution error:\n%O',
               description,
@@ -231,6 +279,7 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
           throw new CliError(ErrorMessage.PreparationRunnerExecutionFailed());
         }
 
+        genericLogger.newline([LogTag.IF_NOT_QUIETED]);
         genericLogger([LogTag.IF_NOT_QUIETED], standardSuccessMessage);
       } else {
         genericLogger([LogTag.IF_NOT_QUIETED], 'Skipped project preparation');
