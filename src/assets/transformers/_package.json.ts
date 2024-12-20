@@ -17,7 +17,13 @@ import { packageJsonConfigPackageBase } from 'multiverse+project-utils:fs.ts';
 
 import { version as xscriptsVersion } from 'rootverse:package.json';
 
-import { generatePerPackageAssets, makeTransformer } from 'universe:assets.ts';
+import {
+  compileTemplateInMemory,
+  generatePerPackageAssets,
+  makeTransformer,
+  type TransformerContext
+} from 'universe:assets.ts';
+
 import { ErrorMessage } from 'universe:error.ts';
 
 export type GeneratorParameters = [
@@ -29,13 +35,15 @@ export type GeneratorParameters = [
 // ! Can never use the global (g) flag
 export const githubUrlRegExp = /github.com\/([^/]+)\/([^/]+?)(?:\.git)?$/;
 
-export function generateBaseXPackageJson(...[json, repoUrl]: GeneratorParameters) {
+export function generateBaseXPackageJson(
+  ...[incomingPackageJson, repoUrl]: GeneratorParameters
+) {
   return {
-    ...json,
-    name: json.name,
-    version: json.version,
-    description: json.description,
-    keywords: json.keywords || [],
+    ...incomingPackageJson,
+    name: incomingPackageJson.name,
+    version: incomingPackageJson.version,
+    description: incomingPackageJson.description,
+    keywords: incomingPackageJson.keywords || [],
     homepage: `${repoUrl}#readme`,
     bugs: {
       url: `${repoUrl}/issues`
@@ -44,11 +52,11 @@ export function generateBaseXPackageJson(...[json, repoUrl]: GeneratorParameters
       type: 'git',
       url: `git+${repoUrl}.git`
     },
-    license: json.license ?? 'MIT',
-    author: json.author ?? 'Xunnamius',
-    sideEffects: json.sideEffects ?? false,
-    type: json.type ?? 'commonjs',
-    exports: json.exports ?? {
+    license: incomingPackageJson.license ?? 'MIT',
+    author: incomingPackageJson.author ?? 'Xunnamius',
+    sideEffects: incomingPackageJson.sideEffects ?? false,
+    type: incomingPackageJson.type ?? 'commonjs',
+    exports: incomingPackageJson.exports ?? {
       '.': {
         types: './dist/src/index.d.ts',
         default: './dist/src/index.js'
@@ -56,14 +64,20 @@ export function generateBaseXPackageJson(...[json, repoUrl]: GeneratorParameters
       './package': './package.json',
       './package.json': './package.json'
     },
-    typesVersions: json.typesVersions ?? {
+    typesVersions: incomingPackageJson.typesVersions ?? {
       '*': {
         index: ['dist/src/index.d.ts'],
         package: ['package.json']
       }
     },
-    files: json.files ?? ['/dist', '/LICENSE', '/package.json', '/README.md'],
+    files: incomingPackageJson.files ?? [
+      '/dist',
+      '/LICENSE',
+      '/package.json',
+      '/README.md'
+    ],
     scripts: {
+      ...incomingPackageJson.scripts,
       build: 'npm run build:dist --',
       'build:changelog': 'NODE_NO_WARNINGS=1 xscripts build changelog',
       'build:dist': 'NODE_NO_WARNINGS=1 xscripts build distributables',
@@ -79,7 +93,7 @@ export function generateBaseXPackageJson(...[json, repoUrl]: GeneratorParameters
       prepare: 'NODE_NO_WARNINGS=1 xscripts project prepare',
       release: 'NODE_NO_WARNINGS=1 xscripts release',
       renovate:
-        'NODE_NO_WARNINGS=1 xscripts project renovate --sync-deps --github-reconfigure-repo --regenerate-assets --assets-preset basic',
+        'NODE_NO_WARNINGS=1 xscripts project renovate --github-reconfigure-repo --regenerate-assets --assets-preset basic',
       start: 'NODE_NO_WARNINGS=1 xscripts start --',
       test: 'npm run test:package:unit --',
       'test:package:all': 'NODE_NO_WARNINGS=1 xscripts test --coverage',
@@ -89,59 +103,61 @@ export function generateBaseXPackageJson(...[json, repoUrl]: GeneratorParameters
       'test:packages:all':
         'NODE_NO_WARNINGS=1 xscripts test --scope unlimited --coverage'
     },
-    engines: json.engines ?? {
+    engines: incomingPackageJson.engines ?? {
       node: generatePackageJsonEngineMaintainedNodeVersions({ format: 'engines' })
     },
     publishConfig: {
       access: 'public',
       registry: 'https://registry.npmjs.org',
-      ...json.publishConfig
+      ...incomingPackageJson.publishConfig
     }
   } as const satisfies XPackageJson;
 }
 
 export function generateBasePolyrepoXPackageJson(
-  ...[json, repoUrl]: GeneratorParameters
+  ...[incomingPackageJson, repoUrl]: GeneratorParameters
 ) {
   return {
-    ...generateBaseXPackageJson(json, repoUrl),
-    dependencies: json.dependencies ?? {},
-    devDependencies: json.devDependencies ?? {
+    ...generateBaseXPackageJson(incomingPackageJson, repoUrl),
+    dependencies: incomingPackageJson.dependencies ?? {},
+    devDependencies: incomingPackageJson.devDependencies ?? {
       '@-xun/scripts': `^${xscriptsVersion}`
     }
   } as const satisfies XPackageJsonPolyrepoRoot;
 }
 
 export function generateBaseMonorepoProjectRootXPackageJson(
-  ...[json, repoUrl]: GeneratorParameters
+  ...[incomingPackageJson, repoUrl]: GeneratorParameters
 ) {
   return {
-    ...generateBaseXPackageJson(json, repoUrl),
-    name: json.name.endsWith('-monorepo') ? json.name : `${json.name}-monorepo`,
-    version: json.version.endsWith('-monorepo')
-      ? json.version
-      : `${json.version}-monorepo`,
+    ...generateBaseXPackageJson(incomingPackageJson, repoUrl),
+    name: incomingPackageJson.name.endsWith('-monorepo')
+      ? incomingPackageJson.name
+      : `${incomingPackageJson.name}-monorepo`,
+    version: incomingPackageJson.version.endsWith('-monorepo')
+      ? incomingPackageJson.version
+      : `${incomingPackageJson.version}-monorepo`,
     private: true,
-    devDependencies: json.devDependencies ?? {},
-    workspaces: json.workspaces ?? ['packages/*', '!packages/*.ignore*']
+    devDependencies: incomingPackageJson.devDependencies ?? {},
+    workspaces: incomingPackageJson.workspaces ?? ['packages/*', '!packages/*.ignore*']
   } as const satisfies XPackageJsonMonorepoProjectRoot;
 }
 
 export function generateBaseHybridrepoProjectRootXPackageJson(
-  ...[json, repoUrl]: GeneratorParameters
+  ...[incomingPackageJson, repoUrl]: GeneratorParameters
 ) {
   return {
-    ...generateBaseMonorepoProjectRootXPackageJson(json, repoUrl),
+    ...generateBaseMonorepoProjectRootXPackageJson(incomingPackageJson, repoUrl),
     private: false,
-    ...generateBasePolyrepoXPackageJson(json, repoUrl)
+    ...generateBasePolyrepoXPackageJson(incomingPackageJson, repoUrl)
   } as const satisfies XPackageJsonHybridrepoProjectRoot;
 }
 
 export function generateBaseMonorepoPackageRootXPackageJson(
-  ...[json, repoUrl]: GeneratorParameters
+  ...[incomingPackageJson, repoUrl]: GeneratorParameters
 ) {
   return {
-    ...generateBaseXPackageJson(json, repoUrl)
+    ...generateBaseXPackageJson(incomingPackageJson, repoUrl)
   } as const satisfies XPackageJsonMonorepoPackageRoot;
 }
 
@@ -169,6 +185,7 @@ export function parsePackageJsonRepositoryIntoOwnerAndRepo({
 export const { transformer } = makeTransformer(function (context) {
   const {
     toProjectAbsolutePath,
+    forceOverwritePotentiallyDestructive,
     projectMetadata: {
       rootPackage: { attributes: projectAttributes }
     }
@@ -187,7 +204,8 @@ export const { transformer } = makeTransformer(function (context) {
         projectAttributes[ProjectAttribute.Monorepo] &&
         !projectAttributes[ProjectAttribute.Hybridrepo];
 
-      const packageJsonSubset = {
+      const finalPackageJson = {
+        ...(forceOverwritePotentiallyDestructive ? {} : packageJson),
         name: packageJson.name,
         version:
           packageJson.version ?? (isNonHybridMonorepo ? '0.0.0-monorepo' : '1.0.0'),
@@ -203,7 +221,10 @@ export const { transformer } = makeTransformer(function (context) {
           {
             path: toProjectAbsolutePath(packageJsonConfigPackageBase),
             generate: () =>
-              stringify(generateBasePolyrepoXPackageJson(packageJsonSubset, repoUrl))
+              stringify(
+                generateBasePolyrepoXPackageJson(finalPackageJson, repoUrl),
+                context
+              )
           }
         ];
       } else {
@@ -221,9 +242,10 @@ export const { transformer } = makeTransformer(function (context) {
                   generate: () =>
                     stringify(
                       generateBaseHybridrepoProjectRootXPackageJson(
-                        packageJsonSubset,
+                        finalPackageJson,
                         repoUrl
-                      )
+                      ),
+                      context
                     )
                 }
               ]
@@ -236,9 +258,10 @@ export const { transformer } = makeTransformer(function (context) {
                   generate: () =>
                     stringify(
                       generateBaseMonorepoProjectRootXPackageJson(
-                        packageJsonSubset,
+                        finalPackageJson,
                         repoUrl
-                      )
+                      ),
+                      context
                     )
                 }
               ];
@@ -248,7 +271,8 @@ export const { transformer } = makeTransformer(function (context) {
               path: toProjectAbsolutePath(relativeRoot, packageJsonConfigPackageBase),
               generate: () =>
                 stringify(
-                  generateBaseMonorepoPackageRootXPackageJson(packageJsonSubset, repoUrl)
+                  generateBaseMonorepoPackageRootXPackageJson(finalPackageJson, repoUrl),
+                  context
                 )
             }
           ];
@@ -259,6 +283,6 @@ export const { transformer } = makeTransformer(function (context) {
   );
 });
 
-function stringify(o: Jsonifiable) {
-  return JSON.stringify(o, undefined, 2);
+function stringify(o: Jsonifiable, context: TransformerContext) {
+  return compileTemplateInMemory(JSON.stringify(o, undefined, 2), context);
 }

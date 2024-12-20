@@ -37,6 +37,8 @@
       "skipFiles": [
         "<node_internals>/**",
         "**/node_modules/**"
+
+        //"!**/node_modules/*jest*/**"
         //"!**/node_modules/@-xun/**"
       ]
     },
@@ -70,6 +72,8 @@
       "skipFiles": [
         "<node_internals>/**",
         "**/node_modules/**"
+
+        //"!**/node_modules/*jest*/**"
         //"!**/node_modules/@-xun/**"
       ]
     },
@@ -105,6 +109,8 @@
       "skipFiles": [
         "<node_internals>/**",
         "**/node_modules/**"
+
+        //"!**/node_modules/*jest*/**"
         //"!**/node_modules/@-xun/**"
       ]
     }

@@ -632,11 +632,23 @@ export function fixtureToProjectMetadata(
   } satisfies Omit<RootPackage, 'projectMetadata'> as GenericRootPackage;
 
   // ? the "projectMetadata" property is properly initialized below
-  const cwdPackage = ((cwdPackageName
-    ? fixtures[fixtureName].namedPackageMapData
+  const cwdPackage = (() => {
+    if (cwdPackageName && cwdPackageName !== 'self') {
+      const foundPackage = fixtures[fixtureName].namedPackageMapData
         .find(([, entry]) => entry.json.name === cwdPackageName)
-        ?.at(1)
-    : undefined) || rootPackage) as GenericPackage;
+        ?.at(1);
+
+      if (foundPackage) {
+        return foundPackage as GenericPackage;
+      }
+
+      throw new Error(
+        `"${cwdPackageName}" is not a valid package in fixture "${fixtureName}"`
+      );
+    }
+
+    return rootPackage as GenericPackage;
+  })();
 
   const mockProjectMetadata: GenericProjectMetadata = {
     type: fixtures[fixtureName].attributes[ProjectAttribute.Polyrepo]

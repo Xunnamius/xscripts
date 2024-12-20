@@ -10,6 +10,7 @@ import {
   allContributorsConfigProjectBase,
   dotEnvConfigProjectBase,
   dotEnvDefaultConfigProjectBase,
+  packageJsonConfigPackageBase,
   toAbsolutePath,
   toPath,
   type AbsolutePath,
@@ -18,13 +19,19 @@ import {
 
 import { createDebugLogger, createGenericLogger } from 'multiverse+rejoinder';
 
+import { parsePackageJsonRepositoryIntoOwnerAndRepo } from 'universe:assets/transformers/_package.json.ts';
+
 import {
+  assetPresets,
   compileTemplate,
   compileTemplateInMemory,
   compileTemplates,
   deepMergeConfig,
   directoryAssetTransformers,
+  gatherAssetsFromAllTransformers,
   gatherAssetsFromTransformer,
+  generatePerPackageAssets,
+  generateRootOnlyAssets,
   makeTransformer,
   type Asset,
   type AssetPreset,
@@ -34,6 +41,7 @@ import {
 } from 'universe:assets.ts';
 
 import { DefaultGlobalScope } from 'universe:configure.ts';
+import { ErrorMessage } from 'universe:error.ts';
 
 import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
 
@@ -60,17 +68,17 @@ const dummyContext: IncomingTransformerContext = {
 };
 
 dummyContext.log.enabled = false;
+dummyContext.log.warn.enabled = false;
+dummyContext.log.error.enabled = false;
 dummyContext.debug.enabled = false;
+dummyContext.debug.warn.enabled = false;
+dummyContext.debug.error.enabled = false;
 
 describe('::gatherAssetsFromTransformer', () => {
   it('invoke a transformer via its filename', async () => {
     expect.hasAssertions();
 
-    const transformerContext = {
-      ...dummyContext,
-      packageName: 'pkg-name',
-      shouldDeriveAliases: false
-    } as IncomingTransformerContext;
+    const transformerContext = dummyContext;
 
     const assets = await gatherAssetsFromTransformer({
       transformerId: allContributorsConfigProjectBase,
@@ -128,11 +136,51 @@ describe('::gatherAssetsFromTransformer', () => {
             options: { transformerFiletype: 'ts' }
           });
 
-          await expectAssetsToMatchSnapshots(
-            assets,
-            dummyContext.scope,
-            dummyContext.assetPreset
-          );
+          await expectAssetsToMatchSnapshots(assets, dummyContext.scope);
+        });
+
+        test('generates expected assets for polyrepo (scope=this-package)', async () => {
+          expect.hasAssertions();
+
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodPolyrepoNoSrc',
+            'self'
+          ) as TransformerContext['projectMetadata'];
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId,
+            transformerContext: {
+              ...dummyContext,
+              projectMetadata,
+              ...makeDummyPathFunctions(projectMetadata),
+              scope: DefaultGlobalScope.ThisPackage
+            },
+            options: { transformerFiletype: 'ts' }
+          });
+
+          await expectAssetsToMatchSnapshots(assets, dummyContext.scope);
+        });
+
+        test('generates expected assets for polyrepo (with force)', async () => {
+          expect.hasAssertions();
+
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodPolyrepoNoSrc',
+            'self'
+          ) as TransformerContext['projectMetadata'];
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId,
+            transformerContext: {
+              ...dummyContext,
+              projectMetadata,
+              ...makeDummyPathFunctions(projectMetadata),
+              forceOverwritePotentiallyDestructive: true
+            },
+            options: { transformerFiletype: 'ts' }
+          });
+
+          await expectAssetsToMatchSnapshots(assets, DefaultGlobalScope.ThisPackage);
         });
 
         test('generates expected assets at non-hybrid monorepo', async () => {
@@ -154,11 +202,55 @@ describe('::gatherAssetsFromTransformer', () => {
               options: { transformerFiletype: 'ts' }
             });
 
-            await expectAssetsToMatchSnapshots(
-              assets,
-              dummyContext.scope,
-              dummyContext.assetPreset
-            );
+            await expectAssetsToMatchSnapshots(assets, dummyContext.scope);
+          }
+        });
+
+        test('generates expected assets at non-hybrid monorepo (scope=this-package)', async () => {
+          expect.hasAssertions();
+
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodMonorepoNoSrc',
+            'pkg-1'
+          ) as TransformerContext['projectMetadata'];
+
+          {
+            const assets = await gatherAssetsFromTransformer({
+              transformerId,
+              transformerContext: {
+                ...dummyContext,
+                projectMetadata,
+                ...makeDummyPathFunctions(projectMetadata),
+                scope: DefaultGlobalScope.ThisPackage
+              },
+              options: { transformerFiletype: 'ts' }
+            });
+
+            await expectAssetsToMatchSnapshots(assets, DefaultGlobalScope.ThisPackage);
+          }
+        });
+
+        test('generates expected assets at non-hybrid monorepo (with force)', async () => {
+          expect.hasAssertions();
+
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodMonorepoNoSrc',
+            'pkg-1'
+          ) as TransformerContext['projectMetadata'];
+
+          {
+            const assets = await gatherAssetsFromTransformer({
+              transformerId,
+              transformerContext: {
+                ...dummyContext,
+                projectMetadata,
+                ...makeDummyPathFunctions(projectMetadata),
+                forceOverwritePotentiallyDestructive: true
+              },
+              options: { transformerFiletype: 'ts' }
+            });
+
+            await expectAssetsToMatchSnapshots(assets, dummyContext.scope);
           }
         });
 
@@ -181,11 +273,55 @@ describe('::gatherAssetsFromTransformer', () => {
               options: { transformerFiletype: 'ts' }
             });
 
-            await expectAssetsToMatchSnapshots(
-              assets,
-              dummyContext.scope,
-              dummyContext.assetPreset
-            );
+            await expectAssetsToMatchSnapshots(assets, dummyContext.scope);
+          }
+        });
+
+        test('generates expected assets at hybridrepo (scope=this-package)', async () => {
+          expect.hasAssertions();
+
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodHybridrepo',
+            'self'
+          ) as TransformerContext['projectMetadata'];
+
+          {
+            const assets = await gatherAssetsFromTransformer({
+              transformerId,
+              transformerContext: {
+                ...dummyContext,
+                projectMetadata,
+                ...makeDummyPathFunctions(projectMetadata),
+                scope: DefaultGlobalScope.ThisPackage
+              },
+              options: { transformerFiletype: 'ts' }
+            });
+
+            await expectAssetsToMatchSnapshots(assets, DefaultGlobalScope.ThisPackage);
+          }
+        });
+
+        test('generates expected assets at hybridrepo (with force)', async () => {
+          expect.hasAssertions();
+
+          const projectMetadata = fixtureToProjectMetadata(
+            'goodHybridrepo',
+            'self'
+          ) as TransformerContext['projectMetadata'];
+
+          {
+            const assets = await gatherAssetsFromTransformer({
+              transformerId,
+              transformerContext: {
+                ...dummyContext,
+                projectMetadata,
+                ...makeDummyPathFunctions(projectMetadata),
+                forceOverwritePotentiallyDestructive: true
+              },
+              options: { transformerFiletype: 'ts' }
+            });
+
+            await expectAssetsToMatchSnapshots(assets, dummyContext.scope);
           }
         });
       });
@@ -259,55 +395,335 @@ describe('::gatherAssetsFromTransformer', () => {
     });
 
     describe('package.json', () => {
+      describe('::parsePackageJsonRepositoryIntoOwnerAndRepo', () => {
+        it('parses package.json "repository" field into owner and repo', async () => {
+          expect.hasAssertions();
+
+          expect(
+            parsePackageJsonRepositoryIntoOwnerAndRepo({
+              repository: 'https://github.com/user/repo',
+              name: 'dummy'
+            })
+          ).toStrictEqual({
+            owner: 'user',
+            repo: 'repo'
+          });
+
+          expect(
+            parsePackageJsonRepositoryIntoOwnerAndRepo({
+              repository: 'https://github.com/user/repo.git',
+              name: 'dummy'
+            })
+          ).toStrictEqual({
+            owner: 'user',
+            repo: 'repo'
+          });
+
+          expect(
+            parsePackageJsonRepositoryIntoOwnerAndRepo({
+              repository: { type: 'git', url: 'https://github.com/user/repo' },
+              name: 'dummy'
+            })
+          ).toStrictEqual({
+            owner: 'user',
+            repo: 'repo'
+          });
+
+          expect(
+            parsePackageJsonRepositoryIntoOwnerAndRepo({
+              repository: { type: 'git', url: 'https://github.com/user/repo.git' },
+              name: 'dummy'
+            })
+          ).toStrictEqual({
+            owner: 'user',
+            repo: 'repo'
+          });
+        });
+
+        it('throws on bad "repository" field', async () => {
+          expect.hasAssertions();
+
+          expect(() =>
+            parsePackageJsonRepositoryIntoOwnerAndRepo({
+              repository: '5',
+              name: 'dummy'
+            })
+          ).toThrow(ErrorMessage.BadRepositoryInPackageJson('dummy'));
+        });
+      });
+
       it('replaces "repository" field when relevant', async () => {
         expect.hasAssertions();
+
+        {
+          const transformerContext = {
+            ...dummyContext,
+            projectMetadata: fixtureToProjectMetadata('goodPolyrepo')
+          } as IncomingTransformerContext;
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: packageJsonConfigPackageBase,
+            transformerContext,
+            options: { transformerFiletype: 'ts' }
+          });
+
+          const dummyAbsolutePath = dummyContext.toProjectAbsolutePath(
+            packageJsonConfigPackageBase
+          );
+
+          expect(
+            JSON.parse((await assets[dummyAbsolutePath]()) as string)
+          ).toStrictEqual(
+            expect.objectContaining({
+              repository: {
+                type: 'git',
+                url: 'git+https://github.com/polyrepo-owner/repo-name.git'
+              }
+            })
+          );
+        }
+
+        {
+          const transformerContext = {
+            ...dummyContext,
+            projectMetadata: fixtureToProjectMetadata('goodHybridrepo')
+          } as IncomingTransformerContext;
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: packageJsonConfigPackageBase,
+            transformerContext,
+            options: { transformerFiletype: 'ts' }
+          });
+
+          const dummyAbsolutePath = dummyContext.toProjectAbsolutePath(
+            packageJsonConfigPackageBase
+          );
+
+          expect(
+            JSON.parse((await assets[dummyAbsolutePath]()) as string)
+          ).toStrictEqual(
+            expect.objectContaining({
+              repository: {
+                type: 'git',
+                url: 'git+https://github.com/hybridrepo-owner/repo-name.git'
+              }
+            })
+          );
+        }
       });
 
-      it('maintains all existing dependency types except where relevant', async () => {
+      it('maintains existing "irrelevant" fields unless --force is used', async () => {
         expect.hasAssertions();
+
+        const projectMetadata = fixtureToProjectMetadata('goodPolyrepo');
+
+        const dependencies = {
+          dependencies: { a: '1' },
+          devDependencies: { b: '2' },
+          peerDependencies: { c: '3' },
+          bundledDependencies: ['d'],
+          optionalDependencies: { e: '5' }
+        };
+
+        projectMetadata.rootPackage.json = {
+          ...projectMetadata.rootPackage.json,
+          ...dependencies
+        } as typeof projectMetadata.rootPackage.json;
+
+        {
+          const transformerContext = {
+            ...dummyContext,
+            projectMetadata
+          } as IncomingTransformerContext;
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: packageJsonConfigPackageBase,
+            transformerContext,
+            options: { transformerFiletype: 'ts' }
+          });
+
+          const dummyAbsolutePath = dummyContext.toProjectAbsolutePath(
+            packageJsonConfigPackageBase
+          );
+
+          expect(
+            JSON.parse((await assets[dummyAbsolutePath]()) as string)
+          ).toMatchObject(dependencies);
+        }
+
+        {
+          const transformerContext = {
+            ...dummyContext,
+            forceOverwritePotentiallyDestructive: true,
+            projectMetadata
+          } as IncomingTransformerContext;
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: packageJsonConfigPackageBase,
+            transformerContext,
+            options: { transformerFiletype: 'ts' }
+          });
+
+          const dummyAbsolutePath = dummyContext.toProjectAbsolutePath(
+            packageJsonConfigPackageBase
+          );
+
+          expect(
+            JSON.parse((await assets[dummyAbsolutePath]()) as string)
+          ).not.toMatchObject(dependencies);
+        }
       });
 
-      it('maintains existing irrelevant keys unless --force is used', async () => {
+      it('maintains existing "irrelevant" scripts unless --force is used', async () => {
         expect.hasAssertions();
-      });
 
-      it('maintains existing irrelevant scripts unless --force is used', async () => {
-        expect.hasAssertions();
+        const projectMetadata = fixtureToProjectMetadata('goodPolyrepo');
+
+        const scripts = {
+          some: 'script',
+          'some-other': 'script'
+        };
+
+        projectMetadata.rootPackage.json = {
+          ...projectMetadata.rootPackage.json,
+          scripts
+        } as typeof projectMetadata.rootPackage.json;
+
+        {
+          const transformerContext = {
+            ...dummyContext,
+            projectMetadata
+          } as IncomingTransformerContext;
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: packageJsonConfigPackageBase,
+            transformerContext,
+            options: { transformerFiletype: 'ts' }
+          });
+
+          const dummyAbsolutePath = dummyContext.toProjectAbsolutePath(
+            packageJsonConfigPackageBase
+          );
+
+          expect(
+            JSON.parse((await assets[dummyAbsolutePath]()) as string)
+          ).toMatchObject({ scripts });
+        }
+
+        {
+          const transformerContext = {
+            ...dummyContext,
+            forceOverwritePotentiallyDestructive: true,
+            projectMetadata
+          } as IncomingTransformerContext;
+
+          const assets = await gatherAssetsFromTransformer({
+            transformerId: packageJsonConfigPackageBase,
+            transformerContext,
+            options: { transformerFiletype: 'ts' }
+          });
+
+          const dummyAbsolutePath = dummyContext.toProjectAbsolutePath(
+            packageJsonConfigPackageBase
+          );
+
+          expect(
+            JSON.parse((await assets[dummyAbsolutePath]()) as string)
+          ).not.toMatchObject({ scripts });
+        }
       });
     });
   });
+});
 
-  describe('<preset tests>', () => {
-    describe('basic', () => {
-      it('returns the expected asset paths', async () => {
-        expect.hasAssertions();
-      });
-    });
+describe('::gatherAssetsFromAllTransformers', () => {
+  const presetsUnderTest: (AssetPreset | undefined)[] = [undefined, ...assetPresets];
 
-    describe('lib/lib-esm/cli', () => {
-      it('returns the expected asset paths', async () => {
-        expect.hasAssertions();
-      });
-    });
+  for (const presetUnderTest of presetsUnderTest) {
+    describe(
+      // eslint-disable-next-line jest/valid-describe-callback
+      `preset: ${
+        presetUnderTest === undefined ? 'default (no preset)' : presetUnderTest
+      }`,
+      createTests
+    );
 
-    describe('lib-web', () => {
-      it('returns the expected asset paths', async () => {
+    // ? We're checking for the correct paths here (by eye), whereas the
+    // ? gatherAssetsFromTransformer tests are concerned with generated content
+    function createTests() {
+      test('generates expected assets for polyrepo', async () => {
         expect.hasAssertions();
-      });
-    });
 
-    describe('react', () => {
-      it('returns the expected asset paths', async () => {
-        expect.hasAssertions();
-      });
-    });
+        const projectMetadata = fixtureToProjectMetadata(
+          'goodPolyrepoNoSrc',
+          'self'
+        ) as TransformerContext['projectMetadata'];
 
-    describe('nextjs', () => {
-      it('returns the expected asset paths', async () => {
-        expect.hasAssertions();
+        const assets = await gatherAssetsFromAllTransformers({
+          transformerContext: {
+            ...dummyContext,
+            projectMetadata,
+            ...makeDummyPathFunctions(projectMetadata),
+            ...(presetUnderTest ? { assetPreset: presetUnderTest } : {})
+          }
+        });
+
+        expect(
+          Object.keys(assets).map((k) =>
+            k.slice(projectMetadata.rootPackage.root.length + 1)
+          )
+        ).toMatchSnapshot();
       });
-    });
-  });
+
+      test('generates expected assets at non-hybrid monorepo', async () => {
+        expect.hasAssertions();
+
+        const projectMetadata = fixtureToProjectMetadata(
+          'goodMonorepoNoSrc',
+          'pkg-1'
+        ) as TransformerContext['projectMetadata'];
+
+        const assets = await gatherAssetsFromAllTransformers({
+          transformerContext: {
+            ...dummyContext,
+            projectMetadata,
+            ...makeDummyPathFunctions(projectMetadata),
+            ...(presetUnderTest ? { assetPreset: presetUnderTest } : {})
+          }
+        });
+
+        expect(
+          Object.keys(assets).map((k) =>
+            k.slice(projectMetadata.rootPackage.root.length + 1)
+          )
+        ).toMatchSnapshot();
+      });
+
+      test('generates expected assets at hybridrepo', async () => {
+        expect.hasAssertions();
+
+        const projectMetadata = fixtureToProjectMetadata(
+          'goodHybridrepo',
+          'self'
+        ) as TransformerContext['projectMetadata'];
+
+        const assets = await gatherAssetsFromAllTransformers({
+          transformerContext: {
+            ...dummyContext,
+            projectMetadata,
+            ...makeDummyPathFunctions(projectMetadata),
+            ...(presetUnderTest ? { assetPreset: presetUnderTest } : {})
+          }
+        });
+
+        expect(
+          Object.keys(assets).map((k) =>
+            k.slice(projectMetadata.rootPackage.root.length + 1)
+          )
+        ).toMatchSnapshot();
+      });
+    }
+  }
 });
 
 describe('::compileTemplate', () => {
@@ -568,14 +984,389 @@ describe('::deepMergeConfig', () => {
   });
 });
 
+describe('::generatePerPackageAssets', () => {
+  it('calls adder function on each package except non-hybrid monorepo root when scope=unlimited', async () => {
+    expect.hasAssertions();
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodPolyrepo'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generatePerPackageAssets(
+        { ...dummyContext, projectMetadata: dummyProjectMetadata, asset: 'dummy' },
+        adder
+      );
+
+      expect(adder.mock.calls).toStrictEqual([
+        [
+          {
+            package_: expect.objectContaining({
+              root: dummyProjectMetadata.rootPackage.root
+            }),
+            toPackageAbsolutePath: expect.any(Function)
+          }
+        ]
+      ]);
+    }
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodHybridrepo'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generatePerPackageAssets(
+        { ...dummyContext, projectMetadata: dummyProjectMetadata, asset: 'dummy' },
+        adder
+      );
+
+      expect(adder.mock.calls).toStrictEqual(
+        [
+          dummyProjectMetadata.rootPackage,
+          ...(dummyProjectMetadata.subRootPackages?.values() || [])
+        ].map(({ root }) => [
+          {
+            package_: expect.objectContaining({ root }),
+            toPackageAbsolutePath: expect.any(Function)
+          }
+        ])
+      );
+    }
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodMonorepo'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generatePerPackageAssets(
+        { ...dummyContext, projectMetadata: dummyProjectMetadata, asset: 'dummy' },
+        adder
+      );
+
+      expect(adder.mock.calls).toStrictEqual(
+        (dummyProjectMetadata.subRootPackages?.values().toArray() || []).map(
+          ({ root }) => [
+            {
+              package_: expect.objectContaining({ root }),
+              toPackageAbsolutePath: expect.any(Function)
+            }
+          ]
+        )
+      );
+    }
+  });
+
+  it('calls adder function on all possible packages when includeRootPackageInNonHybridMonorepo=true and scope=unlimited', async () => {
+    expect.hasAssertions();
+
+    const dummyProjectMetadata = fixtureToProjectMetadata(
+      'goodMonorepo'
+    ) as TransformerContext['projectMetadata'];
+
+    const adder = jest.fn();
+
+    await generatePerPackageAssets(
+      { ...dummyContext, projectMetadata: dummyProjectMetadata, asset: 'dummy' },
+      adder,
+      { includeRootPackageInNonHybridMonorepo: true }
+    );
+
+    expect(adder.mock.calls).toStrictEqual(
+      [
+        dummyProjectMetadata.rootPackage,
+        ...(dummyProjectMetadata.subRootPackages?.values() || [])
+      ].map(({ root }) => [
+        {
+          package_: expect.objectContaining({ root }),
+          toPackageAbsolutePath: expect.any(Function)
+        }
+      ])
+    );
+  });
+
+  it('calls adder function on cwdPackage only when scope=this-package', async () => {
+    expect.hasAssertions();
+
+    const dummyProjectMetadata = fixtureToProjectMetadata(
+      'goodMonorepo',
+      'pkg-1'
+    ) as TransformerContext['projectMetadata'];
+
+    const adder = jest.fn();
+
+    await generatePerPackageAssets(
+      {
+        ...dummyContext,
+        projectMetadata: dummyProjectMetadata,
+        asset: 'dummy',
+        scope: DefaultGlobalScope.ThisPackage
+      },
+      adder,
+      { includeRootPackageInNonHybridMonorepo: true }
+    );
+
+    expect(adder.mock.calls).toStrictEqual([
+      [
+        {
+          package_: expect.objectContaining({
+            root: dummyProjectMetadata.subRootPackages!.get('pkg-1')!.root
+          }),
+          toPackageAbsolutePath: expect.any(Function)
+        }
+      ]
+    ]);
+  });
+
+  it('returns empty array when adder function returns void', async () => {
+    expect.hasAssertions();
+
+    await expect(
+      generatePerPackageAssets(
+        {
+          ...dummyContext,
+          asset: 'dummy'
+        },
+        () => undefined
+      )
+    ).resolves.toBeEmpty();
+  });
+});
+
+describe('::generateRootOnlyAssets', () => {
+  it('calls adder function only when scope=unlimited or cwdPackage is the root package', async () => {
+    expect.hasAssertions();
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodPolyrepo'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generateRootOnlyAssets(
+        { ...dummyContext, projectMetadata: dummyProjectMetadata, asset: 'dummy' },
+        adder
+      );
+
+      expect(adder.mock.calls).toStrictEqual([
+        [
+          {
+            package_: expect.objectContaining({
+              root: dummyProjectMetadata.rootPackage.root
+            })
+          }
+        ]
+      ]);
+    }
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodPolyrepo'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generateRootOnlyAssets(
+        {
+          ...dummyContext,
+          projectMetadata: dummyProjectMetadata,
+          asset: 'dummy',
+          scope: DefaultGlobalScope.ThisPackage
+        },
+        adder
+      );
+
+      expect(adder.mock.calls).toStrictEqual([
+        [
+          {
+            package_: expect.objectContaining({
+              root: dummyProjectMetadata.rootPackage.root
+            })
+          }
+        ]
+      ]);
+    }
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodHybridrepo'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generateRootOnlyAssets(
+        { ...dummyContext, projectMetadata: dummyProjectMetadata, asset: 'dummy' },
+        adder
+      );
+
+      expect(adder.mock.calls).toStrictEqual([
+        [
+          {
+            package_: expect.objectContaining({
+              root: dummyProjectMetadata.rootPackage.root
+            })
+          }
+        ]
+      ]);
+    }
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodHybridrepo'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generateRootOnlyAssets(
+        {
+          ...dummyContext,
+          projectMetadata: dummyProjectMetadata,
+          asset: 'dummy',
+          scope: DefaultGlobalScope.ThisPackage
+        },
+        adder
+      );
+
+      expect(adder.mock.calls).toStrictEqual([
+        [
+          {
+            package_: expect.objectContaining({
+              root: dummyProjectMetadata.rootPackage.root
+            })
+          }
+        ]
+      ]);
+    }
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodHybridrepo',
+        'private'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generateRootOnlyAssets(
+        {
+          ...dummyContext,
+          projectMetadata: dummyProjectMetadata,
+          asset: 'dummy',
+          scope: DefaultGlobalScope.ThisPackage
+        },
+        adder
+      );
+
+      expect(adder).not.toHaveBeenCalled();
+    }
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodMonorepo'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generateRootOnlyAssets(
+        { ...dummyContext, projectMetadata: dummyProjectMetadata, asset: 'dummy' },
+        adder
+      );
+
+      expect(adder.mock.calls).toStrictEqual([
+        [
+          {
+            package_: expect.objectContaining({
+              root: dummyProjectMetadata.rootPackage.root
+            })
+          }
+        ]
+      ]);
+    }
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodMonorepo'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generateRootOnlyAssets(
+        {
+          ...dummyContext,
+          projectMetadata: dummyProjectMetadata,
+          asset: 'dummy',
+          scope: DefaultGlobalScope.ThisPackage
+        },
+        adder
+      );
+
+      expect(adder.mock.calls).toStrictEqual([
+        [
+          {
+            package_: expect.objectContaining({
+              root: dummyProjectMetadata.rootPackage.root
+            })
+          }
+        ]
+      ]);
+    }
+
+    {
+      const dummyProjectMetadata = fixtureToProjectMetadata(
+        'goodMonorepo',
+        'pkg-1'
+      ) as TransformerContext['projectMetadata'];
+
+      const adder = jest.fn();
+
+      await generateRootOnlyAssets(
+        {
+          ...dummyContext,
+          projectMetadata: dummyProjectMetadata,
+          asset: 'dummy',
+          scope: DefaultGlobalScope.ThisPackage
+        },
+        adder
+      );
+
+      expect(adder).not.toHaveBeenCalled();
+    }
+  });
+
+  it('returns empty array when adder function returns void', async () => {
+    expect.hasAssertions();
+
+    await expect(
+      generateRootOnlyAssets(
+        {
+          ...dummyContext,
+          asset: 'dummy'
+        },
+        () => undefined
+      )
+    ).resolves.toBeEmpty();
+  });
+});
+
 async function expectAssetsToMatchSnapshots(
   assets: ReifiedAssets,
-  scope: DefaultGlobalScope,
-  preset: AssetPreset | undefined
+  scope: DefaultGlobalScope
 ) {
-  for (const [key, asset] of Object.entries(assets)) {
+  const entries = Object.entries(assets);
+
+  if (scope === DefaultGlobalScope.ThisPackage && !entries.length) {
+    // ? Allow empty entries to satisfy expect.hasAssertions
+    expect(true).toBeTrue();
+  }
+
+  for (const [key, asset] of entries) {
     expect(
-      `key: ${key}\nscope: ${scope}\npreset: ${String(preset)}\n⏶⏷⏶⏷⏶\n` +
+      `key: ${key}\nscope: ${scope}\n⏶⏷⏶⏷⏶\n` +
         // eslint-disable-next-line no-await-in-loop
         String(await asset())
     ).toMatchSnapshot(key);

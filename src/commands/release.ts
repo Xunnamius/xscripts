@@ -421,7 +421,7 @@ Provide --ci (--continuous-integration) to enable useful functionality for CI ex
 
 Task #${findTaskByDescription(/@-xun\/changelog/).id} sets the XSCRIPTS_RELEASE_REBUILD_CHANGELOG environment variable in the current execution environment. This will be picked up by xrelease, causing it to rebuild the changelog using \`xscripts build changelog\`.
 
-Task #${findTaskByDescription(/sync-deps/).id} runs the equivalent of \`xscripts project renovate --scope this-package --synchronize-interdependencies\` as a pre-release task.
+Task #${findTaskByDescription(/sync-deps/).id} runs the equivalent of \`xscripts project renovate --scope=this-package --synchronize-interdependencies\` as a pre-release task.
 
 Task #${findTaskByDescription(/codecov/i).id}, a postrelease task that uploads test coverage data to Codecov, is only performed if (1) coverage data already exists (see task #${findTaskByDescription(/xscripts test/).id}) and (2) a ${codecovConfigProjectBase} configuration file exists at the project root. An error will be thrown if no coverage data exists unless --force is provided. The task will be skipped if no configuration file exists. When uploading coverage data, the package's name and current branch are used to derive one or more flags (https://docs.codecov.com/docs/flags). Codecov uses flags to map reports to specific packages in its UI and coverage badges. See the xscripts wiki for details on flag semantics and usage.
 

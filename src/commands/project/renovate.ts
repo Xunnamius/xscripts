@@ -723,6 +723,14 @@ Due to the current limitations of GitHub's REST API, the following renovations a
 
 By default, this command will preserve the origin repository's pre-existing configuration. Run this command with --force to overwrite any pre-existing configuration EXCEPT the origin repository's description and homepage, which can never be overwritten by this renovation.`,
     requiresForce: false,
+    conflicts: [
+      'deprecate',
+      'undeprecate',
+      'github-rename-repo',
+      'github-pause-rulesets',
+      'github-kill-master',
+      'generate-scoped-tags'
+    ],
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {},
     async run(argv_, { debug, log }) {
@@ -1419,6 +1427,8 @@ This renovation should be re-run each time a package is added to, or removed fro
 See the xscripts wiki documentation for more details on this command and all available assets.
 `,
     requiresForce: false,
+    // ? These renovations modify the filesystem, so only one can run at once
+    conflicts: ['synchronize-interdependencies', 'update-dependencies'],
     supportedScopes: [ProjectRenovateScope.Unlimited],
     subOptions: {
       'assets-preset': {
@@ -1447,11 +1457,10 @@ See the xscripts wiki documentation for more details on this command and all ava
     },
     async run(argv_, { debug, log }) {
       const argv = argv_ as RenovationTaskArgv;
-      const {
-        force,
-        [$executionContext]: { projectMetadata }
-      } = argv;
 
+      const { force, [$executionContext]: globalExecutionContext } = argv;
+
+      const { projectMetadata } = globalExecutionContext;
       const preset = argv.assetsPreset as AssetPreset;
       const skipAssetPaths = argv.skipAssetPaths as RegExp[];
 
@@ -1543,26 +1552,64 @@ See the xscripts wiki documentation for more details on this command and all ava
         results.length
       );
 
-      if (errorCount > 0) {
-        let firstError = new Error(ErrorMessage.GuruMeditation());
+      const formatHandler = await getInvocableExtendedHandler<
+        FormatCliArguments,
+        GlobalExecutionContext
+      >(format, globalExecutionContext);
 
-        for (const result of results) {
-          if (result.status === 'rejected') {
-            const { error, outputPath } = result.reason.cause;
-            firstError = error;
+      const promisedFormatter = formatHandler({
+        ...argv,
+        $0: 'format',
+        _: [],
+        scope: DefaultGlobalScope.Unlimited,
+        silent: true,
+        quiet: true,
+        hush: true,
+        renumberReferences: false,
+        skipIgnored: true,
+        skipUnknown: false,
+        onlyPackageJson: false,
+        onlyMarkdown: false,
+        onlyPrettier: false
+      });
 
-            hardAssert(error, ErrorMessage.GuruMeditation());
+      try {
+        if (errorCount > 0) {
+          let firstError = new Error(ErrorMessage.GuruMeditation());
 
-            log.error(
+          for (const result of results) {
+            if (result.status === 'rejected') {
+              const { error, outputPath } = result.reason.cause;
+              firstError = error;
+
+              hardAssert(error, ErrorMessage.GuruMeditation());
+
+              log.error(
+                [LogTag.IF_NOT_SILENCED],
+                'Content regeneration failed for %O:\n%O',
+                outputPath,
+                error
+              );
+            }
+          }
+
+          throw firstError;
+        }
+      } finally {
+        log([LogTag.IF_NOT_HUSHED], 'Waiting for formatter sub-command to complete...');
+
+        await promisedFormatter.then(
+          () =>
+            log([LogTag.IF_NOT_HUSHED], 'Formatter sub-command completed successfully'),
+          (error: unknown) => {
+            debug.error(error);
+            log.warn(
               [LogTag.IF_NOT_SILENCED],
-              'Content regeneration failed for %O:\n%O',
-              outputPath,
-              error
+              'Formatter sub-command failed: %O',
+              String(error)
             );
           }
-        }
-
-        throw firstError;
+        );
       }
 
       // ? Typescript wants this here because of our "as const" for some reason
@@ -1577,6 +1624,7 @@ See the xscripts wiki documentation for more details on this command and all ava
     longHelpDescription:
       'This renovation allows the user to interactively select and update dependencies in package.json files belong to packages across the entire project (depending on --scope). Each updated dependency will generate either a chore-type commit (for package.json::devDependency updates) or a build-type commit (for any other kind of dependency in package.json) with a short simple commit message tailored to the dependency being updated.',
     requiresForce: false,
+    // ? This renovation can only be run when no other tasks given
     supportedScopes: projectRenovateScopes,
     subOptions: {},
     async run(argv_, { log }) {

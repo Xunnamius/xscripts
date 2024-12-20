@@ -1,3 +1,5 @@
+import { LogTag } from 'multiverse+cli-utils:logging.ts';
+
 import {
   dotEnvConfigPackageBase,
   dotEnvDefaultConfigPackageBase,
@@ -37,6 +39,7 @@ export const { transformer } = makeTransformer(function (context) {
     if (shouldOverwriteSecretsFile) {
       if (doesSecretsFileAlreadyExist) {
         log.warn(
+          [LogTag.IF_NOT_QUIETED],
           'Potentially appending new secrets to sensitive file (current secrets preserved): %O',
           toRelativePath(toProjectAbsolutePath(), secretsFilePath)
         );

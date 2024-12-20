@@ -636,6 +636,10 @@ export async function generatePerPackageAssets(
      * indicates that this monorepo does not actually have a publishable root
      * package containing source code or tests.
      *
+     * Note that, if `cwdPackage` in {@link TransformerContext.projectMetadata}
+     * is the non-hybrid monorepo root and scope is `"this-package"`, the
+     * package will be included regardless of this option.
+     *
      * @default false
      */
     includeRootPackageInNonHybridMonorepo?: boolean;
