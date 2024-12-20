@@ -309,7 +309,7 @@ export const ErrorMessage = {
     ) {
       return `⚠️🚧 Babel is configured to use core-js@${coreJsLibraryVersion} ("${
         CORE_JS_LIBRARY_VERSION
-      }"), but an attempt to resolve "version" from "core-js/package.json" failed`;
+      }"), but an attempt to resolve the "version" field from file "core-js/package.json" failed`;
     },
     BabelCorejsDependencyMissing(
       coreJsLibraryVersion: string,
@@ -330,7 +330,7 @@ export const ErrorMessage = {
       originalSpecifier: string,
       inputFilepath: string
     ) {
-      return `\n🚨 WARNING 🚨: importing "${originalSpecifier}" from "${inputFilepath}" will cause additional package.json files to be included in build output. This may SIGNIFICANTLY increase the size of distributables!\n`;
+      return `\n🚨 WARNING 🚨: importing specifier "${originalSpecifier}" from file "${inputFilepath}" will cause additional package.json files to be included in build output. This may SIGNIFICANTLY increase the size of distributables!\n`;
     },
     BuildOutputIntermediates() {
       return '⚠️🚧 Build output consists of intermediate files NOT SUITABLE FOR DISTRIBUTION OR PRODUCTION';
@@ -345,7 +345,8 @@ export const ErrorMessage = {
       return (
         '💀 Bad package.json::exports configuration: one or more entry points targets inaccessible or non-existent files:' +
         subpaths.reduce(
-          (result, [subpath, target]) => result + `\n  - ${subpath} =!=> ${target}`,
+          (result, [subpath, target]) =>
+            result + `\n  - entry point "${subpath}" ==!=> file ${target}`,
           ''
         )
       );
@@ -355,7 +356,7 @@ export const ErrorMessage = {
         '👹 Bad distributables specifiers: invalid import of inaccessible or non-existent files:' +
         specifiers.reduce(
           (result, [filepath, specifier]) =>
-            result + `\n  - "${specifier}" found in file ${filepath}`,
+            result + `\n  - specifier "${specifier}" found in file ${filepath}`,
           ''
         )
       );
@@ -365,7 +366,7 @@ export const ErrorMessage = {
         '😈 Bad distributables specifiers: invalid import of files located outside distributables directory:' +
         specifiers.reduce(
           (result, [filepath, specifier]) =>
-            result + `\n  - "${specifier}" found in file ${filepath}`,
+            result + `\n  - specifier "${specifier}" found in file ${filepath}`,
           ''
         )
       );
@@ -378,7 +379,7 @@ export const ErrorMessage = {
         packageSpecifiers.reduce(
           (result, [filepath, specifier, packageName]) =>
             result +
-            `\n  - package "${packageName}" from "${specifier}" found in file ${filepath}`,
+            `\n  - package "${packageName}" (full specifier: "${specifier}") found in file ${filepath}`,
           ''
         )
       );
@@ -401,7 +402,7 @@ export const ErrorMessage = {
         packageSpecifiers.reduce(
           (result, [filepath, specifier, packageName]) =>
             result +
-            `\n  - package "${packageName}" from "${specifier}" found in file ${filepath}`,
+            `\n  - package "${packageName}" (full specifier: "${specifier}") found in file ${filepath}`,
           ''
         )
       );
