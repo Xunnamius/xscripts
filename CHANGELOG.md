@@ -504,7 +504,7 @@ this project adheres to [Semantic Versioning][2].
 
 - **eslint.config:** update to eslint flat config (eslint.config.mjs) ([609fca8][219])
 - **husky:** update husky scripts ([e55a88e][220])
-- **package:** add semver; force install alpha versions of typescript-eslint etc ([b56fd66][221])
+- **package:** add semver; force install alpha versions of typescript-eslint et al ([b56fd66][221])
 - **package:** update exports, dependencies, and scripts ([323579d][222])
 - **tsconfig:** ensure files from root dot folders are picked up by linters ([8609db7][223])
 - Update to eslint\@9; begin transition to eslint.config.js flat ([52763c5][224])
