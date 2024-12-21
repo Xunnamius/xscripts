@@ -371,11 +371,11 @@ At the beginning of the build process, a build manifest is generated. It lists m
 
 Alias and npm package import metadata is output with additional information in the form of the following "prefix tags":
 
-- ${prefixAssetImport} - an import occurred in an asset file under the source directory (which is weird)
-- ${prefixExternalImport} - an import of this resource occurred in an internal source file
-- ${prefixInternalImport} - an import of this resource occurred in an external source file
-- ${prefixNormalImport} - an import of this resource occurred in a normal and/or internal source file
-- ${prefixTypeOnlyImport} - an import of this resource occurred in a type-only source file
+- ${prefixAssetImport} => an import occurred in an asset file under the source directory (which is weird)
+- ${prefixExternalImport}    => an import of this resource occurred in an internal source file
+- ${prefixInternalImport}    => an import of this resource occurred in an external source file
+- ${prefixNormalImport}    => an import of this resource occurred in a normal and/or internal source file
+- ${prefixTypeOnlyImport}    => an import of this resource occurred in a type-only source file
 
 Note that an alias or package can be imported multiple times and hence have multiple tags.
 
