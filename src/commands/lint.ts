@@ -225,7 +225,11 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
       logStartTime({ log, startTime });
       genericLogger(
         [LogTag.IF_NOT_QUIETED],
-        `Linting ${scope === LinterScope.ThisPackage ? 'this package and its dependencies' : 'the entire project'}...`
+        `Linting ${
+          scope === LinterScope.ThisPackage
+            ? 'this package and its dependencies'
+            : 'the entire project'
+        }...`
       );
 
       debug('scope: %O', scope);
