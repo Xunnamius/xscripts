@@ -1058,7 +1058,7 @@ async function runConventionalChangelog(
 ) {
   const { default: makeChangelogSectionStream } = await import('@-xun/changelog');
   const { options, parserOpts, writerOpts, context, gitRawCommitsOpts } = config;
-  // * Note that options.outputUnreleased is used to determine config.writerOps.doFlush
+  // * Note that options.outputUnreleased determines config.writerOps.doFlush
   const result = (
     await makeChangelogSectionStream(
       { config, ...options, ...optionsOverrides },

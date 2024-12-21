@@ -1089,8 +1089,10 @@ function safeDeepClone<T>(o: T): T {
  * @internal
  */
 function patchProxy() {
+  const dbg = debug.extend('patchProxy');
+
   if (cubby.previousProxy) {
-    debug('global Proxy class was already patched in this runtime');
+    dbg('global Proxy class was already patched in this runtime');
     return;
   }
 
@@ -1111,7 +1113,7 @@ function patchProxy() {
     }
   } as typeof Proxy;
 
-  debug('patched globalThis.Proxy');
+  dbg('patched globalThis.Proxy');
 }
 
 /**
@@ -1121,8 +1123,10 @@ function patchProxy() {
  * @internal
  */
 function patchSpawnChild() {
+  const dbg = debug.extend('patchSpawnChild');
+
   if (cubby.previousSpawnChild) {
-    debug('global spawn function was already patched in this runtime');
+    dbg('global spawn function was already patched in this runtime');
     return;
   }
 
@@ -1150,5 +1154,5 @@ function patchSpawnChild() {
     return spawn(...args);
   } as typeof spawn;
 
-  debug('patched child_process.spawn');
+  dbg('patched child_process.spawn');
 }
