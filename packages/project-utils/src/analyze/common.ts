@@ -1,5 +1,6 @@
 import { createDebugLogger } from 'multiverse+rejoinder';
 
+import { type MetadataImportsPrefix } from 'rootverse+project-utils:src/analyze.ts';
 import { globalDebuggerNamespace } from 'rootverse+project-utils:src/constant.ts';
 
 import {
@@ -287,7 +288,10 @@ export type PackageBuildTargets = {
      *
      * Unlike `targets.internal`, this property contains two sets of
      * {@link RelativePath}s: type-only imports and normal imports. Do note that
-     * specifiers can exist in both sets simultaneously.
+     * (1) specifiers will _never_ exist in both sets simultaneously and (2) all
+     * imports of type-only imports will also be classified as type-only imports
+     * regardless of their "import kind" _unless_ they are also imported by a
+     * normal import.
      */
     external: { normal: Set<RelativePath>; typeOnly: Set<RelativePath> };
   };
@@ -299,23 +303,25 @@ export type PackageBuildTargets = {
        * A mapping between well-known import aliases within the project and the
        * number of times they are imported by the build target files.
        *
-       * Imports from non-TS JS files under `${packageRoot}/src` (so: assets)
-       * will be prefixed with `<❗ASSET> `. Internal imports will be prefixed
-       * with `<intr>`. External imports will be prefixed with `<extr>`.
-       * Type-only imports will be prefixed with `<type>`.
+       * Imports also have tags in the form of "prefixes". See
+       * `gatherPackageBuildTargets` for details.
        */
-      aliasCounts: Record<string, number>;
+      aliasCounts: Record<
+        string,
+        { count: number; prefixes: Set<MetadataImportsPrefix> }
+      >;
       /**
        * A mapping between packages imported from outside the project, such as
        * builtins (e.g. from Node) and dependencies (e.g. node_modules), and the
        * number of times those packages are imported by the build target files.
        *
-       * Imports from non-TS JS files under `${packageRoot}/src` (so: assets)
-       * will be prefixed with `<❗ASSET> `. Internal imports will be prefixed
-       * with `<intr>`. External imports will be prefixed with `<extr>`.
-       * Type-only imports will be prefixed with `<type>`.
+       * Imports also have tags in the form of "prefixes". See
+       * `gatherPackageBuildTargets` for details.
        */
-      dependencyCounts: Record<string, number>;
+      dependencyCounts: Record<
+        string,
+        { count: number; prefixes: Set<MetadataImportsPrefix> }
+      >;
     };
   };
 };

@@ -24,6 +24,10 @@ import {
   generatePackageJsonEngineMaintainedNodeVersions,
   packageRootToId,
   prefixAssetImport,
+  prefixExternalImport,
+  prefixInternalImport,
+  prefixNormalImport,
+  prefixTypeOnlyImport,
   ProjectAttribute,
   PseudodecoratorTag,
   type PackageBuildTargets,
@@ -2421,7 +2425,7 @@ describe('::gatherPackageBuildTargets', () => {
         targets: {
           external: {
             normal: new Set(['types/global.ts'] as RelativePath[]),
-            typeOnly: new Set(['types/global.ts'] as RelativePath[])
+            typeOnly: new Set([] as RelativePath[])
           },
           internal: new Set([
             'src/1.ts',
@@ -2435,9 +2439,18 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '<intr> <type> typeverse': 1,
-              '<intr> universe': 1,
-              '<intr> typeverse': 1
+              typeverse: {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              universe: {
+                count: 4,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             },
             dependencyCounts: {}
           }
@@ -2466,33 +2479,131 @@ describe('::gatherPackageBuildTargets', () => {
               'packages/private/src/lib/library2.ts',
               'packages/webpack/src/webpack-lib2.ts'
             ] as RelativePath[]),
-            typeOnly: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[])
+            typeOnly: new Set([
+              'src/index.ts',
+              'src/others.ts',
+              'types/global.ts',
+              'types/others.ts'
+            ] as RelativePath[])
           },
           internal: new Set(['src/index.ts', 'src/others.ts'] as RelativePath[])
         },
         metadata: {
           imports: {
             aliasCounts: {
-              '<extr> <type> typeverse': 1,
-              '<extr> multiverse+private': 1,
-              '<extr> rootverse+private': 1,
-              '<extr> rootverse+webpack': 1,
-              '<intr> <type> universe': 1,
-              '<intr> multiverse+cli': 1,
-              '<intr> multiverse+private': 1,
-              '<intr> rootverse+private': 1,
-              '<intr> rootverse+webpack': 1,
-              '<intr> universe': 1
+              'multiverse+cli': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'multiverse+private': {
+                count: 6,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'rootverse+private': {
+                count: 4,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'rootverse+webpack': {
+                count: 6,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              typeverse: {
+                count: 3,
+                prefixes: new Set([
+                  prefixTypeOnlyImport,
+                  prefixNormalImport,
+                  prefixExternalImport
+                ])
+              },
+              universe: {
+                count: 4,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixTypeOnlyImport
+                ])
+              }
             },
             dependencyCounts: {
-              '<extr> <type> type-fest': 2,
-              '<extr> @black-flag/core': 1,
-              '<extr> another-package': 1,
-              '<extr> some-package': 1,
-              '<extr> webpack': 1,
-              '<extr> webpack~2': 1,
-              '<intr> @babel/core': 1,
-              '<intr> node:path': 1
+              '@babel/core': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              '@black-flag/core': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'another-package': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'node:path': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'some-package': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'type-fest': {
+                count: 2,
+                prefixes: new Set([prefixTypeOnlyImport, prefixExternalImport])
+              },
+              webpack: {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'webpack~2': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              }
             }
           }
         }
@@ -2525,17 +2636,48 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '<extr> <type> typeverse': 1,
-              '<extr> rootverse+private': 1,
-              '<intr> multiverse+private': 1,
-              '<intr> rootverse+webpack': 1
+              'multiverse+private': {
+                count: 2,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'rootverse+private': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              },
+              'rootverse+webpack': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              typeverse: {
+                count: 2,
+                prefixes: new Set([
+                  prefixTypeOnlyImport,
+                  prefixNormalImport,
+                  prefixExternalImport
+                ])
+              }
             },
             dependencyCounts: {
-              '<extr> <type> type-fest': 2,
-              '<extr> another-package': 1,
-              '<extr> some-package': 1,
-              '<extr> webpack': 1,
-              '<intr> @black-flag/core': 1
+              '@black-flag/core': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'another-package': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              },
+              'some-package': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              },
+              'type-fest': {
+                count: 2,
+                prefixes: new Set([prefixTypeOnlyImport, prefixExternalImport])
+              },
+              webpack: {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              }
             }
           }
         }
@@ -2575,14 +2717,33 @@ describe('::gatherPackageBuildTargets', () => {
           metadata: {
             imports: {
               aliasCounts: {
-                '<extr> <type> typeverse': 1,
-                '<intr> <type> typeverse': 1,
-                '<intr> rootverse+private': 1
+                'rootverse+private': {
+                  count: 1,
+                  prefixes: new Set([prefixNormalImport, prefixInternalImport])
+                },
+                typeverse: {
+                  count: 2,
+                  prefixes: new Set([
+                    prefixTypeOnlyImport,
+                    prefixNormalImport,
+                    prefixInternalImport,
+                    prefixExternalImport
+                  ])
+                }
               },
               dependencyCounts: {
-                '<extr> <type> type-fest': 2,
-                '<intr> another-package': 1,
-                '<intr> some-package': 1
+                'another-package': {
+                  count: 1,
+                  prefixes: new Set([prefixNormalImport, prefixInternalImport])
+                },
+                'some-package': {
+                  count: 1,
+                  prefixes: new Set([prefixNormalImport, prefixInternalImport])
+                },
+                'type-fest': {
+                  count: 2,
+                  prefixes: new Set([prefixTypeOnlyImport, prefixExternalImport])
+                }
               }
             }
           }
@@ -2616,10 +2777,16 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '<intr> rootverse+pkg-1': 1
+              'rootverse+pkg-1': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             },
             dependencyCounts: {
-              '<intr> @black-flag/core': 1
+              '@black-flag/core': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             }
           }
         }
@@ -2711,12 +2878,24 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '<extr> rootverse+private': 1
+              'rootverse+private': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              }
             },
             dependencyCounts: {
-              '<extr> some-package': 1,
-              '<intr> webpack': 1,
-              '<intr> webpack~2': 1
+              'some-package': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              },
+              webpack: {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'webpack~2': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             }
           }
         }
@@ -2744,12 +2923,24 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '<extr> rootverse+private': 1
+              'rootverse+private': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              }
             },
             dependencyCounts: {
-              '<extr> some-package': 1,
-              '<intr> webpack': 1,
-              '<intr> webpack~2': 1
+              'some-package': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              },
+              webpack: {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'webpack~2': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             }
           }
         }
@@ -2785,7 +2976,10 @@ describe('::gatherPackageBuildTargets', () => {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              '<intr> webpack~2': 1
+              'webpack~2': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             }
           }
         }
@@ -2839,15 +3033,21 @@ describe('::gatherPackageBuildTargets', () => {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              '<extr> webpack~2': 1,
-              '<intr> webpack': 1
+              webpack: {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'webpack~2': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              }
             }
           }
         }
       } satisfies PackageBuildTargets);
     });
 
-    it('tags but does not perform well-formedness checks on specifiers from assets', () => {
+    it('prefixes but does not perform well-formedness checks on specifiers from assets', () => {
       expect.hasAssertions();
 
       const { subRootPackages = toss(new Error('assertion failed')) } =
@@ -2876,13 +3076,54 @@ describe('::gatherPackageBuildTargets', () => {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              '<intr> webpack': 1,
-              '<intr> webpack~2': 1,
-              [`${prefixAssetImport} <extr> ./package.json`]: 1,
-              [`${prefixAssetImport} <extr> ./package2.json`]: 1,
-              [`${prefixAssetImport} <extr> ../webpack/src/webpack-lib2.js`]: 1,
-              [`${prefixAssetImport} <extr> webpack~3`]: 1,
-              [`${prefixAssetImport} <extr> @some/namespaced`]: 1
+              '../webpack/src/webpack-lib2.js': {
+                count: 1,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixAssetImport
+                ])
+              },
+              './package.json': {
+                count: 1,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixAssetImport
+                ])
+              },
+              './package2.json': {
+                count: 1,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixAssetImport
+                ])
+              },
+              '@some/namespaced': {
+                count: 1,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixAssetImport
+                ])
+              },
+              webpack: {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'webpack~2': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'webpack~3': {
+                count: 1,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixAssetImport
+                ])
+              }
             }
           }
         }
@@ -2913,7 +3154,7 @@ describe('::gatherPackageBuildTargets', () => {
         targets: {
           external: {
             normal: new Set(['types/global.ts'] as RelativePath[]),
-            typeOnly: new Set(['types/global.ts'] as RelativePath[])
+            typeOnly: new Set([] as RelativePath[])
           },
           internal: new Set([
             'src/1.ts',
@@ -2927,9 +3168,18 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '<intr> <type> typeverse': 1,
-              '<intr> universe': 1,
-              '<intr> typeverse': 1
+              typeverse: {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              universe: {
+                count: 4,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             },
             dependencyCounts: {}
           }
@@ -2958,33 +3208,131 @@ describe('::gatherPackageBuildTargets', () => {
               'packages/private/src/lib/library2.ts',
               'packages/webpack/src/webpack-lib2.ts'
             ] as RelativePath[]),
-            typeOnly: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[])
+            typeOnly: new Set([
+              'src/index.ts',
+              'src/others.ts',
+              'types/global.ts',
+              'types/others.ts'
+            ] as RelativePath[])
           },
           internal: new Set(['src/index.ts', 'src/others.ts'] as RelativePath[])
         },
         metadata: {
           imports: {
             aliasCounts: {
-              '<extr> <type> typeverse': 1,
-              '<extr> multiverse+private': 1,
-              '<extr> rootverse+private': 1,
-              '<extr> rootverse+webpack': 1,
-              '<intr> <type> universe': 1,
-              '<intr> multiverse+cli': 1,
-              '<intr> multiverse+private': 1,
-              '<intr> rootverse+private': 1,
-              '<intr> rootverse+webpack': 1,
-              '<intr> universe': 1
+              'multiverse+cli': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'multiverse+private': {
+                count: 6,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'rootverse+private': {
+                count: 4,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'rootverse+webpack': {
+                count: 6,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              typeverse: {
+                count: 3,
+                prefixes: new Set([
+                  prefixTypeOnlyImport,
+                  prefixNormalImport,
+                  prefixExternalImport
+                ])
+              },
+              universe: {
+                count: 4,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixTypeOnlyImport
+                ])
+              }
             },
             dependencyCounts: {
-              '<extr> <type> type-fest': 2,
-              '<extr> @black-flag/core': 1,
-              '<extr> another-package': 1,
-              '<extr> some-package': 1,
-              '<extr> webpack': 1,
-              '<extr> webpack~2': 1,
-              '<intr> @babel/core': 1,
-              '<intr> node:path': 1
+              '@babel/core': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              '@black-flag/core': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'another-package': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'node:path': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixInternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'some-package': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'type-fest': {
+                count: 2,
+                prefixes: new Set([prefixTypeOnlyImport, prefixExternalImport])
+              },
+              webpack: {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              },
+              'webpack~2': {
+                count: 2,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixTypeOnlyImport
+                ])
+              }
             }
           }
         }
@@ -3017,17 +3365,48 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '<extr> <type> typeverse': 1,
-              '<extr> rootverse+private': 1,
-              '<intr> multiverse+private': 1,
-              '<intr> rootverse+webpack': 1
+              'multiverse+private': {
+                count: 2,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'rootverse+private': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              },
+              'rootverse+webpack': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              typeverse: {
+                count: 2,
+                prefixes: new Set([
+                  prefixTypeOnlyImport,
+                  prefixNormalImport,
+                  prefixExternalImport
+                ])
+              }
             },
             dependencyCounts: {
-              '<extr> <type> type-fest': 2,
-              '<extr> another-package': 1,
-              '<extr> some-package': 1,
-              '<extr> webpack': 1,
-              '<intr> @black-flag/core': 1
+              '@black-flag/core': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'another-package': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              },
+              'some-package': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              },
+              'type-fest': {
+                count: 2,
+                prefixes: new Set([prefixTypeOnlyImport, prefixExternalImport])
+              },
+              webpack: {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              }
             }
           }
         }
@@ -3067,14 +3446,33 @@ describe('::gatherPackageBuildTargets', () => {
           metadata: {
             imports: {
               aliasCounts: {
-                '<extr> <type> typeverse': 1,
-                '<intr> <type> typeverse': 1,
-                '<intr> rootverse+private': 1
+                'rootverse+private': {
+                  count: 1,
+                  prefixes: new Set([prefixNormalImport, prefixInternalImport])
+                },
+                typeverse: {
+                  count: 2,
+                  prefixes: new Set([
+                    prefixTypeOnlyImport,
+                    prefixNormalImport,
+                    prefixInternalImport,
+                    prefixExternalImport
+                  ])
+                }
               },
               dependencyCounts: {
-                '<extr> <type> type-fest': 2,
-                '<intr> another-package': 1,
-                '<intr> some-package': 1
+                'another-package': {
+                  count: 1,
+                  prefixes: new Set([prefixNormalImport, prefixInternalImport])
+                },
+                'some-package': {
+                  count: 1,
+                  prefixes: new Set([prefixNormalImport, prefixInternalImport])
+                },
+                'type-fest': {
+                  count: 2,
+                  prefixes: new Set([prefixTypeOnlyImport, prefixExternalImport])
+                }
               }
             }
           }
@@ -3108,10 +3506,16 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '<intr> rootverse+pkg-1': 1
+              'rootverse+pkg-1': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             },
             dependencyCounts: {
-              '<intr> @black-flag/core': 1
+              '@black-flag/core': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             }
           }
         }
@@ -3203,12 +3607,24 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '<extr> rootverse+private': 1
+              'rootverse+private': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              }
             },
             dependencyCounts: {
-              '<extr> some-package': 1,
-              '<intr> webpack': 1,
-              '<intr> webpack~2': 1
+              'some-package': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              },
+              webpack: {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'webpack~2': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             }
           }
         }
@@ -3236,12 +3652,24 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              '<extr> rootverse+private': 1
+              'rootverse+private': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              }
             },
             dependencyCounts: {
-              '<extr> some-package': 1,
-              '<intr> webpack': 1,
-              '<intr> webpack~2': 1
+              'some-package': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              },
+              webpack: {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'webpack~2': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             }
           }
         }
@@ -3277,7 +3705,10 @@ describe('::gatherPackageBuildTargets', () => {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              '<intr> webpack~2': 1
+              'webpack~2': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              }
             }
           }
         }
@@ -3331,15 +3762,21 @@ describe('::gatherPackageBuildTargets', () => {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              '<extr> webpack~2': 1,
-              '<intr> webpack': 1
+              webpack: {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'webpack~2': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixExternalImport])
+              }
             }
           }
         }
       } satisfies PackageBuildTargets);
     });
 
-    it('tags but does not perform well-formedness checks on specifiers from assets', async () => {
+    it('prefixes but does not perform well-formedness checks on specifiers from assets', async () => {
       expect.hasAssertions();
 
       const { subRootPackages = toss(new Error('assertion failed')) } =
@@ -3368,13 +3805,54 @@ describe('::gatherPackageBuildTargets', () => {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              '<intr> webpack': 1,
-              '<intr> webpack~2': 1,
-              [`${prefixAssetImport} <extr> ./package.json`]: 1,
-              [`${prefixAssetImport} <extr> ./package2.json`]: 1,
-              [`${prefixAssetImport} <extr> ../webpack/src/webpack-lib2.js`]: 1,
-              [`${prefixAssetImport} <extr> webpack~3`]: 1,
-              [`${prefixAssetImport} <extr> @some/namespaced`]: 1
+              '../webpack/src/webpack-lib2.js': {
+                count: 1,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixAssetImport
+                ])
+              },
+              './package.json': {
+                count: 1,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixAssetImport
+                ])
+              },
+              './package2.json': {
+                count: 1,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixAssetImport
+                ])
+              },
+              '@some/namespaced': {
+                count: 1,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixAssetImport
+                ])
+              },
+              webpack: {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'webpack~2': {
+                count: 1,
+                prefixes: new Set([prefixNormalImport, prefixInternalImport])
+              },
+              'webpack~3': {
+                count: 1,
+                prefixes: new Set([
+                  prefixNormalImport,
+                  prefixExternalImport,
+                  prefixAssetImport
+                ])
+              }
             }
           }
         }

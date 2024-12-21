@@ -48,24 +48,40 @@ import type { Entries, Promisable, SetFieldType } from 'type-fest';
 const debug = debug_.extend('gatherPackageBuildTargets');
 
 /**
- * Prefixed to specifiers coming from non-source files.
+ * Prefixed to specifiers used in non-source files.
  */
 export const prefixAssetImport = '<❗ASSET>';
 
 /**
- * Prefixed to specifiers coming from internal files.
+ * Prefixed to specifiers used in internal files.
  */
 export const prefixInternalImport = '<intr>';
 
 /**
- * Prefixed to specifiers coming from external files.
+ * Prefixed to specifiers used in external files.
  */
 export const prefixExternalImport = '<extr>';
 
 /**
- * Prefixed to type-only specifiers.
+ * Prefixed to specifiers used in at least one normally imported file.
+ */
+export const prefixNormalImport = '<norm>';
+
+/**
+ * Prefixed to specifiers used in at least one type-only imported file.
  */
 export const prefixTypeOnlyImport = '<type>';
+
+/**
+ * A prefix potentially added to specifier metadata in
+ * {@link PackageBuildTargets}.
+ */
+export type MetadataImportsPrefix =
+  | typeof prefixAssetImport
+  | typeof prefixInternalImport
+  | typeof prefixExternalImport
+  | typeof prefixNormalImport
+  | typeof prefixTypeOnlyImport;
 
 /**
  * @see {@link gatherPackageBuildTargets}
@@ -169,9 +185,11 @@ function gatherPackageBuildTargets_(
     ]);
 
     // * Note that targets.internal is relative to the **PROJECT ROOT**
-    let seenImportPaths = new Set(packageSrcPaths);
+    let seenNormalImportPaths = new Set(packageSrcPaths);
+    let seenTypeOnlyImportPaths = new Set<AbsolutePath>();
+
     // * Note that packageSrcPaths contains normal and type-only imports
-    targets.internal = absolutePathsSetToRelative(seenImportPaths, projectRoot);
+    targets.internal = absolutePathsSetToRelative(seenNormalImportPaths, projectRoot);
 
     // * Note that targets.external is relative to the **PROJECT ROOT**
     targets.external.normal = absolutePathsSetToRelative(
@@ -180,36 +198,58 @@ function gatherPackageBuildTargets_(
     );
 
     for (
-      let previousDiff = new Set<AbsolutePath>(
-        packageSrcPaths.concat(additionalExternalPaths)
-      );
-      previousDiff.size !== 0;
+      let previousNormalDiff = new Set(packageSrcPaths.concat(additionalExternalPaths)),
+        // * Note that this can include any import kind, not just type-only
+        previousTypeOnlyDiff = new Set<AbsolutePath>();
+      previousNormalDiff.size !== 0 || previousTypeOnlyDiff.size !== 0;
 
     ) {
-      seenImportPaths = seenImportPaths.union(previousDiff);
+      seenNormalImportPaths = seenNormalImportPaths.union(previousNormalDiff);
+      seenTypeOnlyImportPaths = seenTypeOnlyImportPaths.union(previousTypeOnlyDiff);
 
-      const { normal: normalPaths_, typeOnly: typeOnlyPaths_ } =
-        rawSpecifiersToTargetPaths(
-          targets.internal,
-          // eslint-disable-next-line no-await-in-loop
-          await gatherImportEntriesFromFiles(Array.from(previousDiff.values()), {
-            useCached
-          })
-        );
+      const [
+        { normal: normalNormalPaths_, typeOnly: normalTypeOnlyPaths_ },
+        { normal: typeOnlyNormalPaths_, typeOnly: typeOnlyTypeOnlyPaths_ }
+        // ? Await is necessary here because of the loop's condition check
+        // eslint-disable-next-line no-await-in-loop
+      ] = await Promise.all([
+        gatherImportEntriesFromFiles(Array.from(previousNormalDiff.values()), {
+          useCached
+        }).then((entries) => rawSpecifiersToTargetPaths(entries)),
+        gatherImportEntriesFromFiles(Array.from(previousTypeOnlyDiff.values()), {
+          useCached
+        }).then((entries) => rawSpecifiersToTargetPaths(entries))
+      ]);
 
       // * Note that these are relative to the **PROJECT ROOT**
-      const normalPaths = normalPaths_.difference(seenImportPaths);
-      const typeOnlyPaths = typeOnlyPaths_.difference(seenImportPaths);
+      const normalNormalPaths = normalNormalPaths_.difference(seenNormalImportPaths);
+      const normalTypeOnlyPaths = normalTypeOnlyPaths_.difference(
+        seenTypeOnlyImportPaths
+      );
+      const typeOnlyNormalPaths = typeOnlyNormalPaths_.difference(
+        seenTypeOnlyImportPaths
+      );
+      const typeOnlyTypeOnlyPaths = typeOnlyTypeOnlyPaths_.difference(
+        seenTypeOnlyImportPaths
+      );
 
       targets.external.normal = targets.external.normal.union(
-        absolutePathsSetToRelative(normalPaths, projectRoot)
+        absolutePathsSetToRelative(normalNormalPaths, projectRoot)
       );
 
+      // ? Any import kind originating from a type-only import is also type-only
       targets.external.typeOnly = targets.external.typeOnly.union(
-        absolutePathsSetToRelative(typeOnlyPaths, projectRoot)
+        absolutePathsSetToRelative(normalTypeOnlyPaths, projectRoot).union(
+          absolutePathsSetToRelative(typeOnlyNormalPaths, projectRoot).union(
+            absolutePathsSetToRelative(typeOnlyTypeOnlyPaths, projectRoot)
+          )
+        )
       );
 
-      previousDiff = normalPaths.union(typeOnlyPaths);
+      previousNormalDiff = normalNormalPaths;
+      previousTypeOnlyDiff = normalTypeOnlyPaths.union(
+        typeOnlyNormalPaths.union(typeOnlyTypeOnlyPaths)
+      );
     }
 
     finalize();
@@ -230,9 +270,11 @@ function gatherPackageBuildTargets_(
     ];
 
     // * Note that targets.internal is relative to the **PROJECT ROOT**
-    let seenImportPaths = new Set(packageSrcPaths);
+    let seenNormalImportPaths = new Set(packageSrcPaths);
+    let seenTypeOnlyImportPaths = new Set<AbsolutePath>();
+
     // * Note that packageSrcPaths contains normal and type-only imports
-    targets.internal = absolutePathsSetToRelative(seenImportPaths, projectRoot);
+    targets.internal = absolutePathsSetToRelative(seenNormalImportPaths, projectRoot);
 
     // * Note that targets.external is relative to the **PROJECT ROOT**
     targets.external.normal = absolutePathsSetToRelative(
@@ -241,41 +283,71 @@ function gatherPackageBuildTargets_(
     );
 
     for (
-      let previousDiff = new Set<AbsolutePath>(
-        packageSrcPaths.concat(additionalExternalPaths)
-      );
-      previousDiff.size !== 0;
+      let previousNormalDiff = new Set(packageSrcPaths.concat(additionalExternalPaths)),
+        // * Note that this can include any import kind, not just type-only
+        previousTypeOnlyDiff = new Set<AbsolutePath>();
+      previousNormalDiff.size !== 0 || previousTypeOnlyDiff.size !== 0;
 
     ) {
-      seenImportPaths = seenImportPaths.union(previousDiff);
+      seenNormalImportPaths = seenNormalImportPaths.union(previousNormalDiff);
+      seenTypeOnlyImportPaths = seenTypeOnlyImportPaths.union(previousTypeOnlyDiff);
 
-      const { normal: normalPaths_, typeOnly: typeOnlyPaths_ } =
+      const [
+        { normal: normalNormalPaths_, typeOnly: normalTypeOnlyPaths_ },
+        { normal: typeOnlyNormalPaths_, typeOnly: typeOnlyTypeOnlyPaths_ }
+      ] = [
         rawSpecifiersToTargetPaths(
-          targets.internal,
-          gatherImportEntriesFromFiles.sync(Array.from(previousDiff.values()), {
+          gatherImportEntriesFromFiles.sync(Array.from(previousNormalDiff.values()), {
             useCached
           })
-        );
+        ),
+        rawSpecifiersToTargetPaths(
+          gatherImportEntriesFromFiles.sync(Array.from(previousTypeOnlyDiff.values()), {
+            useCached
+          })
+        )
+      ];
 
       // * Note that these are relative to the **PROJECT ROOT**
-      const normalPaths = normalPaths_.difference(seenImportPaths);
-      const typeOnlyPaths = typeOnlyPaths_.difference(seenImportPaths);
+      const normalNormalPaths = normalNormalPaths_.difference(seenNormalImportPaths);
+      const normalTypeOnlyPaths = normalTypeOnlyPaths_.difference(
+        seenTypeOnlyImportPaths
+      );
+      const typeOnlyNormalPaths = typeOnlyNormalPaths_.difference(
+        seenTypeOnlyImportPaths
+      );
+      const typeOnlyTypeOnlyPaths = typeOnlyTypeOnlyPaths_.difference(
+        seenTypeOnlyImportPaths
+      );
 
       targets.external.normal = targets.external.normal.union(
-        absolutePathsSetToRelative(normalPaths, projectRoot)
+        absolutePathsSetToRelative(normalNormalPaths, projectRoot)
       );
 
+      // ? Any import kind originating from a type-only import is also type-only
       targets.external.typeOnly = targets.external.typeOnly.union(
-        absolutePathsSetToRelative(typeOnlyPaths, projectRoot)
+        absolutePathsSetToRelative(normalTypeOnlyPaths, projectRoot).union(
+          absolutePathsSetToRelative(typeOnlyNormalPaths, projectRoot).union(
+            absolutePathsSetToRelative(typeOnlyTypeOnlyPaths, projectRoot)
+          )
+        )
       );
 
-      previousDiff = normalPaths.union(typeOnlyPaths);
+      previousNormalDiff = normalNormalPaths;
+      previousTypeOnlyDiff = normalTypeOnlyPaths.union(
+        typeOnlyNormalPaths.union(typeOnlyTypeOnlyPaths)
+      );
     }
 
     finalize();
   }
 
   function finalize() {
+    packageBuildTargets.targets.external.typeOnly =
+      packageBuildTargets.targets.external.typeOnly.difference(
+        packageBuildTargets.targets.external.normal
+      );
+
     debug('package build targets: %O', packageBuildTargets);
 
     cache.set(
@@ -301,43 +373,48 @@ function gatherPackageBuildTargets_(
    * @see {@link PackageBuildTargets}
    */
   function rawSpecifiersToTargetPaths(
-    internalPaths: Set<RelativePath>,
     entries: ImportSpecifiersEntry[]
   ): SetFieldType<ImportSpecifiersEntry[1], 'normal' | 'typeOnly', Set<AbsolutePath>> {
-    const targets: Parameters<typeof rawSpecifiersToTargetPaths_>[0] = {
+    const targetPaths: Parameters<typeof rawSpecifiersToTargetPaths_>[0] = {
       normal: [],
       typeOnly: []
     };
 
-    for (const [path, specifiers] of entries) {
-      const specifierPackage = pathToPackage(path, projectMetadata);
+    for (const [specifiersPath, specifiers] of entries) {
+      const specifiersPackage = pathToPackage(specifiersPath, projectMetadata);
+      const relativeSpecifiersPath = toRelativePath(projectRoot, specifiersPath);
+
       rawSpecifiersToTargetPaths_(
-        targets,
-        path,
+        targetPaths,
+        specifiersPath,
         specifiers,
-        specifierPackage,
-        internalPaths.has(toRelativePath(projectRoot, path))
+        specifiersPackage,
+        targets.internal.has(relativeSpecifiersPath),
+        targets.external.typeOnly.has(relativeSpecifiersPath),
+        targets.external.normal.has(relativeSpecifiersPath)
       );
     }
 
     return {
-      normal: new Set(relativePathsArrayToAbsolute(targets.normal, projectRoot)),
-      typeOnly: new Set(relativePathsArrayToAbsolute(targets.typeOnly, projectRoot))
+      normal: new Set(relativePathsArrayToAbsolute(targetPaths.normal, projectRoot)),
+      typeOnly: new Set(relativePathsArrayToAbsolute(targetPaths.typeOnly, projectRoot))
     };
   }
 
   function rawSpecifiersToTargetPaths_(
-    targets: { normal: RelativePath[]; typeOnly: RelativePath[] },
-    path: AbsolutePath,
+    targetPaths: { normal: RelativePath[]; typeOnly: RelativePath[] },
+    specifiersPath: AbsolutePath,
     specifierSets: ImportSpecifiersEntry[1],
-    specifierPackage: GenericPackage,
-    isInternal: boolean
+    specifiersPackage: GenericPackage,
+    isInternal: boolean,
+    isTypeOnly: boolean,
+    isNormal: boolean
   ) {
     // TODO: consider optionally allowing files other than typescript to have
     // TODO: their raw specifiers checked
-    const comesFromTypescriptFile = hasTypescriptExtension(path);
-    const specifierPackageId = isWorkspacePackage(specifierPackage)
-      ? specifierPackage.id
+    const comesFromTypescriptFile = hasTypescriptExtension(specifiersPath);
+    const specifierPackageId = isWorkspacePackage(specifiersPackage)
+      ? specifiersPackage.id
       : undefined;
 
     for (const [importKind, specifiers] of Object.entries(specifierSets) as Entries<
@@ -347,8 +424,29 @@ function gatherPackageBuildTargets_(
         if (comesFromTypescriptFile) {
           ensureRawSpecifierOk(wellKnownAliases, specifier, {
             packageId: specifierPackageId,
-            path
+            path: specifiersPath
           });
+        }
+
+        const prefixes: MetadataImportsPrefix[] = [];
+
+        if (isNormal) {
+          prefixes.push(prefixNormalImport);
+        }
+
+        if (isTypeOnly || importKind === 'typeOnly') {
+          prefixes.push(prefixTypeOnlyImport);
+        }
+
+        if (isInternal) {
+          // ? All internals are always considered "normal" imports
+          prefixes.push(prefixNormalImport, prefixInternalImport);
+        } else {
+          prefixes.push(prefixExternalImport);
+        }
+
+        if (!comesFromTypescriptFile) {
+          prefixes.push(prefixAssetImport);
         }
 
         const rawAliasMapping = mapRawSpecifierToRawAliasMapping(
@@ -359,10 +457,8 @@ function gatherPackageBuildTargets_(
         if (rawAliasMapping) {
           const [{ group, alias }] = rawAliasMapping;
 
-          const aliasKey = withPrefixes(alias);
-
           // ? Looks like one of ours. Noting it...
-          aliasCounts[aliasKey] = (aliasCounts[alias] || 0) + 1;
+          addToCounterMetadata(aliasCounts, alias, prefixes);
 
           if (comesFromTypescriptFile) {
             const isUniversal = group === WellKnownImportAlias.Universe;
@@ -378,7 +474,7 @@ function gatherPackageBuildTargets_(
             assert(specifierResolvedPath, ErrorMessage.GuruMeditation());
 
             if (isMultiversal || isUniversal) {
-              targets[importKind].push(specifierResolvedPath);
+              targetPaths[importKind].push(specifierResolvedPath);
             }
 
             if (isMultiversal) {
@@ -401,32 +497,18 @@ function gatherPackageBuildTargets_(
               );
 
               throw new ProjectError(
-                ErrorMessage.SpecifierNotOkVerseNotAllowed(group, specifier, path)
+                ErrorMessage.SpecifierNotOkVerseNotAllowed(
+                  group,
+                  specifier,
+                  specifiersPath
+                )
               );
             }
           }
         } else {
-          const key = withPrefixes(specifierToPackageName(specifier));
+          const key = specifierToPackageName(specifier);
           // ? Looks like a normal non-aliased import. Noting it...
-          dependencyCounts[key] = (dependencyCounts[key] || 0) + 1;
-        }
-
-        function withPrefixes(aliasKey: string) {
-          if (importKind === 'typeOnly') {
-            aliasKey = `${prefixTypeOnlyImport} ${aliasKey}`;
-          }
-
-          aliasKey = isInternal
-            ? `${prefixInternalImport} ${aliasKey}`
-            : `${prefixExternalImport} ${aliasKey}`;
-
-          // ! prefixAssetImport must always be the LAST to be prefixed (i.e.
-          // ! the whole line should start with prefixAssetImport)
-          if (!comesFromTypescriptFile) {
-            aliasKey = `${prefixAssetImport} ${aliasKey}`;
-          }
-
-          return aliasKey;
+          addToCounterMetadata(dependencyCounts, key, prefixes);
         }
       }
     }
@@ -506,4 +588,18 @@ function relativePathsArrayToAbsolute(
 
 function absolutePathsSetToRelative(set: Set<AbsolutePath>, root: AbsolutePath) {
   return new Set(Array.from(set).map((path) => toRelativePath(root, path)));
+}
+
+function addToCounterMetadata(
+  counterObject: Partial<PackageBuildTargets['metadata']['imports']['aliasCounts']>,
+  aliasKey: string,
+  prefixesToAdd: MetadataImportsPrefix[]
+) {
+  if (!counterObject[aliasKey]) {
+    counterObject[aliasKey] = { count: 0, prefixes: new Set() };
+  }
+
+  const obj = counterObject[aliasKey];
+  obj.count += 1;
+  obj.prefixes = obj.prefixes.union(new Set(prefixesToAdd));
 }
