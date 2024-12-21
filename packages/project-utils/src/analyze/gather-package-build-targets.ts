@@ -43,14 +43,29 @@ import {
   type SyncVersionOf
 } from 'rootverse+project-utils:src/util.ts';
 
-import type { Promisable } from 'type-fest';
+import type { Entries, Promisable, SetFieldType } from 'type-fest';
 
 const debug = debug_.extend('gatherPackageBuildTargets');
 
 /**
  * Prefixed to specifiers coming from non-source files.
  */
-export const assetPrefix = '<❗FROM-ASSET>';
+export const prefixAssetImport = '<❗ASSET>';
+
+/**
+ * Prefixed to specifiers coming from internal files.
+ */
+export const prefixInternalImport = '<intr>';
+
+/**
+ * Prefixed to specifiers coming from external files.
+ */
+export const prefixExternalImport = '<extr>';
+
+/**
+ * Prefixed to type-only specifiers.
+ */
+export const prefixTypeOnlyImport = '<type>';
 
 /**
  * @see {@link gatherPackageBuildTargets}
@@ -117,7 +132,10 @@ function gatherPackageBuildTargets_(
   }
 
   const packageBuildTargets: PackageBuildTargets = {
-    targets: { external: new Set(), internal: new Set() },
+    targets: {
+      external: { normal: new Set(), typeOnly: new Set() },
+      internal: new Set()
+    },
     metadata: { imports: { aliasCounts: {}, dependencyCounts: {} } }
   };
 
@@ -152,10 +170,11 @@ function gatherPackageBuildTargets_(
 
     // * Note that targets.internal is relative to the **PROJECT ROOT**
     let seenImportPaths = new Set(packageSrcPaths);
+    // * Note that packageSrcPaths contains normal and type-only imports
     targets.internal = absolutePathsSetToRelative(seenImportPaths, projectRoot);
 
     // * Note that targets.external is relative to the **PROJECT ROOT**
-    targets.external = absolutePathsSetToRelative(
+    targets.external.normal = absolutePathsSetToRelative(
       new Set(additionalExternalPaths),
       projectRoot
     );
@@ -169,21 +188,28 @@ function gatherPackageBuildTargets_(
     ) {
       seenImportPaths = seenImportPaths.union(previousDiff);
 
-      const externalPaths = rawSpecifiersToExternalTargetPaths(
-        // eslint-disable-next-line no-await-in-loop
-        await gatherImportEntriesFromFiles(Array.from(previousDiff.values()), {
-          // ? Ensure specifierOk checks are also performed on type-only imports
-          excludeTypeImports: false,
-          useCached
-        })
-      ).difference(seenImportPaths);
+      const { normal: normalPaths_, typeOnly: typeOnlyPaths_ } =
+        rawSpecifiersToTargetPaths(
+          targets.internal,
+          // eslint-disable-next-line no-await-in-loop
+          await gatherImportEntriesFromFiles(Array.from(previousDiff.values()), {
+            useCached
+          })
+        );
 
-      // * Note that targets.external is relative to the **PROJECT ROOT**
-      targets.external = targets.external.union(
-        absolutePathsSetToRelative(externalPaths, projectRoot)
+      // * Note that these are relative to the **PROJECT ROOT**
+      const normalPaths = normalPaths_.difference(seenImportPaths);
+      const typeOnlyPaths = typeOnlyPaths_.difference(seenImportPaths);
+
+      targets.external.normal = targets.external.normal.union(
+        absolutePathsSetToRelative(normalPaths, projectRoot)
       );
 
-      previousDiff = externalPaths;
+      targets.external.typeOnly = targets.external.typeOnly.union(
+        absolutePathsSetToRelative(typeOnlyPaths, projectRoot)
+      );
+
+      previousDiff = normalPaths.union(typeOnlyPaths);
     }
 
     finalize();
@@ -205,10 +231,11 @@ function gatherPackageBuildTargets_(
 
     // * Note that targets.internal is relative to the **PROJECT ROOT**
     let seenImportPaths = new Set(packageSrcPaths);
+    // * Note that packageSrcPaths contains normal and type-only imports
     targets.internal = absolutePathsSetToRelative(seenImportPaths, projectRoot);
 
     // * Note that targets.external is relative to the **PROJECT ROOT**
-    targets.external = absolutePathsSetToRelative(
+    targets.external.normal = absolutePathsSetToRelative(
       new Set(additionalExternalPaths),
       projectRoot
     );
@@ -222,20 +249,27 @@ function gatherPackageBuildTargets_(
     ) {
       seenImportPaths = seenImportPaths.union(previousDiff);
 
-      const externalPaths = rawSpecifiersToExternalTargetPaths(
-        gatherImportEntriesFromFiles.sync(Array.from(previousDiff.values()), {
-          // ? Ensure specifierOk checks are also performed on type-only imports
-          excludeTypeImports: false,
-          useCached
-        })
-      ).difference(seenImportPaths);
+      const { normal: normalPaths_, typeOnly: typeOnlyPaths_ } =
+        rawSpecifiersToTargetPaths(
+          targets.internal,
+          gatherImportEntriesFromFiles.sync(Array.from(previousDiff.values()), {
+            useCached
+          })
+        );
 
-      // * Note that targets.external is relative to the **PROJECT ROOT**
-      targets.external = targets.external.union(
-        absolutePathsSetToRelative(externalPaths, projectRoot)
+      // * Note that these are relative to the **PROJECT ROOT**
+      const normalPaths = normalPaths_.difference(seenImportPaths);
+      const typeOnlyPaths = typeOnlyPaths_.difference(seenImportPaths);
+
+      targets.external.normal = targets.external.normal.union(
+        absolutePathsSetToRelative(normalPaths, projectRoot)
       );
 
-      previousDiff = externalPaths;
+      targets.external.typeOnly = targets.external.typeOnly.union(
+        absolutePathsSetToRelative(typeOnlyPaths, projectRoot)
+      );
+
+      previousDiff = normalPaths.union(typeOnlyPaths);
     }
 
     finalize();
@@ -260,32 +294,44 @@ function gatherPackageBuildTargets_(
    * noted in the metadata and, unless they do NOT come from a TypeScript file,
    * their syntax is still validated.
    *
+   * **Note that this function returns external and, potentially, internal paths
+   * mixed together** since rootverse imports are technically external but can
+   * still refer to internal paths.
+   *
    * @see {@link PackageBuildTargets}
    */
-  function rawSpecifiersToExternalTargetPaths(
+  function rawSpecifiersToTargetPaths(
+    internalPaths: Set<RelativePath>,
     entries: ImportSpecifiersEntry[]
-  ): Set<AbsolutePath> {
-    const externalTargets: RelativePath[] = [];
+  ): SetFieldType<ImportSpecifiersEntry[1], 'normal' | 'typeOnly', Set<AbsolutePath>> {
+    const targets: Parameters<typeof rawSpecifiersToTargetPaths_>[0] = {
+      normal: [],
+      typeOnly: []
+    };
 
     for (const [path, specifiers] of entries) {
       const specifierPackage = pathToPackage(path, projectMetadata);
-
-      rawSpecifiersToExternalTargetPaths_(
-        externalTargets,
+      rawSpecifiersToTargetPaths_(
+        targets,
         path,
         specifiers,
-        specifierPackage
+        specifierPackage,
+        internalPaths.has(toRelativePath(projectRoot, path))
       );
     }
 
-    return new Set(relativePathsArrayToAbsolute(externalTargets, projectRoot));
+    return {
+      normal: new Set(relativePathsArrayToAbsolute(targets.normal, projectRoot)),
+      typeOnly: new Set(relativePathsArrayToAbsolute(targets.typeOnly, projectRoot))
+    };
   }
 
-  function rawSpecifiersToExternalTargetPaths_(
-    externalTargets: RelativePath[],
+  function rawSpecifiersToTargetPaths_(
+    targets: { normal: RelativePath[]; typeOnly: RelativePath[] },
     path: AbsolutePath,
-    specifiers: Set<string>,
-    specifierPackage: GenericPackage
+    specifierSets: ImportSpecifiersEntry[1],
+    specifierPackage: GenericPackage,
+    isInternal: boolean
   ) {
     // TODO: consider optionally allowing files other than typescript to have
     // TODO: their raw specifiers checked
@@ -294,74 +340,94 @@ function gatherPackageBuildTargets_(
       ? specifierPackage.id
       : undefined;
 
-    for (const specifier of specifiers.values()) {
-      if (comesFromTypescriptFile) {
-        ensureRawSpecifierOk(wellKnownAliases, specifier, {
-          packageId: specifierPackageId,
-          path
-        });
-      }
-
-      const rawAliasMapping = mapRawSpecifierToRawAliasMapping(
-        wellKnownAliases,
-        specifier
-      );
-
-      if (rawAliasMapping) {
-        const [{ group, alias }] = rawAliasMapping;
-        const aliasKey = comesFromTypescriptFile ? alias : `${assetPrefix} ${alias}`;
-
-        // ? Looks like one of ours. Noting it...
-        aliasCounts[aliasKey] = (aliasCounts[alias] || 0) + 1;
-
+    for (const [importKind, specifiers] of Object.entries(specifierSets) as Entries<
+      typeof specifierSets
+    >) {
+      for (const specifier of specifiers.values()) {
         if (comesFromTypescriptFile) {
-          const isUniversal = group === WellKnownImportAlias.Universe;
-          const isMultiversal =
-            group === WellKnownImportAlias.Multiverse ||
-            group === WellKnownImportAlias.Rootverse ||
-            group === WellKnownImportAlias.Typeverse;
-
-          const specifierResolvedPath = mapRawSpecifierToPath(
-            rawAliasMapping,
-            specifier
-          );
-          assert(specifierResolvedPath, ErrorMessage.GuruMeditation());
-
-          if (isMultiversal || isUniversal) {
-            externalTargets.push(specifierResolvedPath);
-          }
-
-          if (isMultiversal) {
-            debug(
-              'multiversal external target added: %O => %O',
-              specifier,
-              specifierResolvedPath
-            );
-          } else if (isUniversal) {
-            debug(
-              'universal external target added: %O => %O',
-              specifier,
-              specifierResolvedPath
-            );
-          } else {
-            debug.error(
-              `${group} external target rejected: %O => %O`,
-              specifier,
-              specifierResolvedPath
-            );
-
-            throw new ProjectError(
-              ErrorMessage.SpecifierNotOkVerseNotAllowed(group, specifier, path)
-            );
-          }
+          ensureRawSpecifierOk(wellKnownAliases, specifier, {
+            packageId: specifierPackageId,
+            path
+          });
         }
-      } else {
-        const key =
-          (comesFromTypescriptFile ? '' : `${assetPrefix} `) +
-          specifierToPackageName(specifier);
 
-        // ? Looks like a normal non-aliased import. Noting it...
-        dependencyCounts[key] = (dependencyCounts[key] || 0) + 1;
+        const rawAliasMapping = mapRawSpecifierToRawAliasMapping(
+          wellKnownAliases,
+          specifier
+        );
+
+        if (rawAliasMapping) {
+          const [{ group, alias }] = rawAliasMapping;
+
+          const aliasKey = withPrefixes(alias);
+
+          // ? Looks like one of ours. Noting it...
+          aliasCounts[aliasKey] = (aliasCounts[alias] || 0) + 1;
+
+          if (comesFromTypescriptFile) {
+            const isUniversal = group === WellKnownImportAlias.Universe;
+            const isMultiversal =
+              group === WellKnownImportAlias.Multiverse ||
+              group === WellKnownImportAlias.Rootverse ||
+              group === WellKnownImportAlias.Typeverse;
+
+            const specifierResolvedPath = mapRawSpecifierToPath(
+              rawAliasMapping,
+              specifier
+            );
+            assert(specifierResolvedPath, ErrorMessage.GuruMeditation());
+
+            if (isMultiversal || isUniversal) {
+              targets[importKind].push(specifierResolvedPath);
+            }
+
+            if (isMultiversal) {
+              debug(
+                'multiversal target added: %O => %O',
+                specifier,
+                specifierResolvedPath
+              );
+            } else if (isUniversal) {
+              debug(
+                'universal target added: %O => %O',
+                specifier,
+                specifierResolvedPath
+              );
+            } else {
+              debug.error(
+                `${group} target rejected: %O => %O`,
+                specifier,
+                specifierResolvedPath
+              );
+
+              throw new ProjectError(
+                ErrorMessage.SpecifierNotOkVerseNotAllowed(group, specifier, path)
+              );
+            }
+          }
+        } else {
+          const key = withPrefixes(specifierToPackageName(specifier));
+          // ? Looks like a normal non-aliased import. Noting it...
+          dependencyCounts[key] = (dependencyCounts[key] || 0) + 1;
+        }
+
+        function withPrefixes(aliasKey: string) {
+          if (importKind === 'typeOnly') {
+            aliasKey = `${prefixTypeOnlyImport} ${aliasKey}`;
+          }
+
+          aliasKey = isInternal
+            ? `${prefixInternalImport} ${aliasKey}`
+            : `${prefixExternalImport} ${aliasKey}`;
+
+          // ! prefixAssetImport must always be the LAST to be prefixed (i.e.
+          // ! the whole line should start with prefixAssetImport)
+          if (!comesFromTypescriptFile) {
+            aliasKey = `${prefixAssetImport} ${aliasKey}`;
+          }
+
+          return aliasKey;
+        }
       }
     }
   }

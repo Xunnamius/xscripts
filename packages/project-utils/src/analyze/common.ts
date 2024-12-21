@@ -284,8 +284,12 @@ export type PackageBuildTargets = {
      * be any file type.
      *
      * These paths will always be **relative to the _project root_**.
+     *
+     * Unlike `targets.internal`, this property contains two sets of
+     * {@link RelativePath}s: type-only imports and normal imports. Do note that
+     * specifiers can exist in both sets simultaneously.
      */
-    external: Set<RelativePath>;
+    external: { normal: Set<RelativePath>; typeOnly: Set<RelativePath> };
   };
   // TODO: probably prudent to split this off into its own thing, perhaps even
   // TODO: its own function (or gated behind a parameter or something)
@@ -296,7 +300,9 @@ export type PackageBuildTargets = {
        * number of times they are imported by the build target files.
        *
        * Imports from non-TS JS files under `${packageRoot}/src` (so: assets)
-       * will be prefixed with `<❗FROM-ASSET> `.
+       * will be prefixed with `<❗ASSET> `. Internal imports will be prefixed
+       * with `<intr>`. External imports will be prefixed with `<extr>`.
+       * Type-only imports will be prefixed with `<type>`.
        */
       aliasCounts: Record<string, number>;
       /**
@@ -305,7 +311,9 @@ export type PackageBuildTargets = {
        * number of times those packages are imported by the build target files.
        *
        * Imports from non-TS JS files under `${packageRoot}/src` (so: assets)
-       * will be prefixed with `<❗FROM-ASSET> `.
+       * will be prefixed with `<❗ASSET> `. Internal imports will be prefixed
+       * with `<intr>`. External imports will be prefixed with `<extr>`.
+       * Type-only imports will be prefixed with `<type>`.
        */
       dependencyCounts: Record<string, number>;
     };

@@ -24,18 +24,22 @@ import type { Promisable } from 'type-fest';
 const debug = debug_.extend('gatherImportEntriesFromFiles');
 
 /**
- * An entry mapping an absolute file path to a single import/require
- * specifier present in said file.
+ * An entry mapping an absolute file path to a single import/require specifier
+ * present in said file. This specifier may or may not form part of a type-only
+ * import.
  */
 export type ImportSpecifier = [filepath: AbsolutePath, specifier: string];
 
 /**
- * An entry mapping an absolute file path to an array of import/require
- * specifiers present in said file.
+ * An entry mapping an absolute file path to two sets of import/require
+ * specifiers present in said file: "normal" imports and "type-only" imports.
  *
  * @see {@link gatherImportEntriesFromFiles}
  */
-export type ImportSpecifiersEntry = [filepath: AbsolutePath, specifiers: Set<string>];
+export type ImportSpecifiersEntry = [
+  filepath: AbsolutePath,
+  specifiers: { normal: Set<string>; typeOnly: Set<string> }
+];
 
 /**
  * @see {@link gatherImportEntriesFromFiles}
@@ -111,7 +115,8 @@ function gatherImportEntriesFromFiles_(
         const { imports } = accumulator.get(path) || {};
         assert(imports, ErrorMessage.GuruMeditation());
 
-        dbg('imports seen (%O): %O', imports.size, imports);
+        dbg('normal imports seen (%O): %O', imports.normal.size, imports.normal);
+        dbg('type-only imports seen (%O): %O', imports.typeOnly.size, imports.typeOnly);
 
         const entry: ImportSpecifiersEntry = [path, imports];
 
@@ -124,7 +129,10 @@ function gatherImportEntriesFromFiles_(
         return entry;
       } else {
         dbg('skipped using babel to evaluate asset');
-        return [path, new Set()] satisfies ImportSpecifiersEntry;
+        return [
+          path,
+          { normal: new Set(), typeOnly: new Set() }
+        ] satisfies ImportSpecifiersEntry;
       }
     });
 
@@ -170,7 +178,12 @@ function gatherImportEntriesFromFiles_(
             const { imports } = accumulator.get(path) || {};
             assert(imports, ErrorMessage.GuruMeditation());
 
-            dbg('imports seen (%O): %O', imports.size, imports);
+            dbg('normal imports seen (%O): %O', imports.normal.size, imports.normal);
+            dbg(
+              'type-only imports seen (%O): %O',
+              imports.typeOnly.size,
+              imports.typeOnly
+            );
 
             const entry: ImportSpecifiersEntry = [path, imports];
 
@@ -183,7 +196,10 @@ function gatherImportEntriesFromFiles_(
             return entry;
           } else {
             dbg('skipped using babel to evaluate asset');
-            return [path, new Set()] satisfies ImportSpecifiersEntry;
+            return [
+              path,
+              { normal: new Set(), typeOnly: new Set() }
+            ] satisfies ImportSpecifiersEntry;
           }
         })
       );

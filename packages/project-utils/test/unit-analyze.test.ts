@@ -16,7 +16,6 @@ import {
 
 import {
   analyzeProjectStructure,
-  assetPrefix,
   gatherImportEntriesFromFiles,
   gatherPackageBuildTargets,
   gatherPackageFiles,
@@ -24,6 +23,7 @@ import {
   gatherPseudodecoratorEntriesFromFiles,
   generatePackageJsonEngineMaintainedNodeVersions,
   packageRootToId,
+  prefixAssetImport,
   ProjectAttribute,
   PseudodecoratorTag,
   type PackageBuildTargets,
@@ -1230,26 +1230,35 @@ describe('::gatherImportEntriesFromFiles', () => {
       const fileThree = `${__dirname}/fixtures/dummy-imports/3.cts` as AbsolutePath;
       const fileFour = `${__dirname}/fixtures/dummy-imports/4.tsx` as AbsolutePath;
 
-      const fileOneResult = new Set([
-        'react',
-        './some-utils.js',
-        'side-effects.js',
-        './styles.css',
-        'some-lib',
-        'package.json',
-        'my-neat-lib',
-        './source.js',
-        './another-source.js',
-        'my-neat-lib-2',
-        'dynamic',
-        'package.json'
-      ]);
+      const fileOneResult = {
+        normal: new Set([
+          'react',
+          './some-utils.js',
+          'side-effects.js',
+          './styles.css',
+          'some-lib',
+          'package.json',
+          'my-neat-lib',
+          './source.js',
+          './another-source.js',
+          'my-neat-lib-2',
+          'dynamic',
+          'package.json'
+        ]),
+        typeOnly: new Set([
+          'type-fest-1',
+          'type-fest-2',
+          './type-fest-3.js',
+          '@type/fest4',
+          'this-is-a-typeof-import',
+          'this-is-a-type-import'
+        ])
+      };
 
-      const fileTwoResult = new Set([
-        './tool.js',
-        '../path/to/import.js',
-        'string-literal'
-      ]);
+      const fileTwoResult = {
+        normal: new Set(['./tool.js', '../path/to/import.js', 'string-literal']),
+        typeOnly: new Set([])
+      };
 
       const fileThreeResult = fileTwoResult;
       const fileFourResult = fileOneResult;
@@ -1284,48 +1293,6 @@ describe('::gatherImportEntriesFromFiles', () => {
       ]);
     });
 
-    it('includes type imports when excludeTypeImports is false', () => {
-      expect.hasAssertions();
-
-      const fileOne = `${__dirname}/fixtures/dummy-imports/1.ts` as AbsolutePath;
-      const fileFour = `${__dirname}/fixtures/dummy-imports/4.tsx` as AbsolutePath;
-
-      const fileOneResult = new Set([
-        'react',
-        './some-utils.js',
-        'side-effects.js',
-        './styles.css',
-        'some-lib',
-        'package.json',
-        'type-fest-1',
-        'type-fest-2',
-        'my-neat-lib',
-        './source.js',
-        './another-source.js',
-        './type-fest-3.js',
-        '@type/fest4',
-        'my-neat-lib-2',
-        'dynamic',
-        'package.json',
-        'this-is-a-typeof-import',
-        'this-is-a-type-import'
-      ]);
-
-      expect(
-        gatherImportEntriesFromFiles.sync([fileOne], {
-          excludeTypeImports: false,
-          useCached: true
-        })
-      ).toStrictEqual([[fileOne, fileOneResult]]);
-
-      expect(
-        gatherImportEntriesFromFiles.sync([fileFour], {
-          excludeTypeImports: false,
-          useCached: true
-        })
-      ).toStrictEqual([[fileFour, fileOneResult]]);
-    });
-
     it('returns an array of import specifier entries from cjs-style require calls without type imports', () => {
       expect.hasAssertions();
 
@@ -1334,18 +1301,21 @@ describe('::gatherImportEntriesFromFiles', () => {
       const fileThree = `${__dirname}/fixtures/dummy-imports/7.cjs` as AbsolutePath;
       const fileFour = `${__dirname}/fixtures/dummy-imports/8.jsx` as AbsolutePath;
 
-      const fileResult = new Set([
-        'react',
-        './some-utils.js',
-        'side-effects.js',
-        './styles.css',
-        'some-lib',
-        './source.js',
-        './another-source.js',
-        './tool.js',
-        '../path/to/import.js',
-        'string-literal'
-      ]);
+      const fileResult = {
+        normal: new Set([
+          'react',
+          './some-utils.js',
+          'side-effects.js',
+          './styles.css',
+          'some-lib',
+          './source.js',
+          './another-source.js',
+          './tool.js',
+          '../path/to/import.js',
+          'string-literal'
+        ]),
+        typeOnly: new Set([])
+      };
 
       expect(
         gatherImportEntriesFromFiles.sync([fileOne], { useCached: true })
@@ -1384,16 +1354,16 @@ describe('::gatherImportEntriesFromFiles', () => {
 
       expect(
         gatherImportEntriesFromFiles.sync([fileOne], { useCached: true })
-      ).toStrictEqual([[fileOne, new Set()]]);
+      ).toStrictEqual([[fileOne, { normal: new Set(), typeOnly: new Set() }]]);
 
       expect(
         gatherImportEntriesFromFiles.sync([fileOne, fileOne, fileOne], {
           useCached: true
         })
       ).toStrictEqual([
-        [fileOne, new Set()],
-        [fileOne, new Set()],
-        [fileOne, new Set()]
+        [fileOne, { normal: new Set(), typeOnly: new Set() }],
+        [fileOne, { normal: new Set(), typeOnly: new Set() }],
+        [fileOne, { normal: new Set(), typeOnly: new Set() }]
       ]);
     });
 
@@ -1468,26 +1438,35 @@ describe('::gatherImportEntriesFromFiles', () => {
       const fileThree = `${__dirname}/fixtures/dummy-imports/3.cts` as AbsolutePath;
       const fileFour = `${__dirname}/fixtures/dummy-imports/4.tsx` as AbsolutePath;
 
-      const fileOneResult = new Set([
-        'react',
-        './some-utils.js',
-        'side-effects.js',
-        './styles.css',
-        'some-lib',
-        'package.json',
-        'my-neat-lib',
-        './source.js',
-        './another-source.js',
-        'my-neat-lib-2',
-        'dynamic',
-        'package.json'
-      ]);
+      const fileOneResult = {
+        normal: new Set([
+          'react',
+          './some-utils.js',
+          'side-effects.js',
+          './styles.css',
+          'some-lib',
+          'package.json',
+          'my-neat-lib',
+          './source.js',
+          './another-source.js',
+          'my-neat-lib-2',
+          'dynamic',
+          'package.json'
+        ]),
+        typeOnly: new Set([
+          'type-fest-1',
+          'type-fest-2',
+          './type-fest-3.js',
+          '@type/fest4',
+          'this-is-a-typeof-import',
+          'this-is-a-type-import'
+        ])
+      };
 
-      const fileTwoResult = new Set([
-        './tool.js',
-        '../path/to/import.js',
-        'string-literal'
-      ]);
+      const fileTwoResult = {
+        normal: new Set(['./tool.js', '../path/to/import.js', 'string-literal']),
+        typeOnly: new Set([])
+      };
 
       const fileThreeResult = fileTwoResult;
       const fileFourResult = fileOneResult;
@@ -1521,48 +1500,6 @@ describe('::gatherImportEntriesFromFiles', () => {
       ]);
     });
 
-    it('includes type imports when excludeTypeImports is false', async () => {
-      expect.hasAssertions();
-
-      const fileOne = `${__dirname}/fixtures/dummy-imports/1.ts` as AbsolutePath;
-      const fileFour = `${__dirname}/fixtures/dummy-imports/4.tsx` as AbsolutePath;
-
-      const fileOneResult = new Set([
-        'react',
-        './some-utils.js',
-        'side-effects.js',
-        './styles.css',
-        'some-lib',
-        'package.json',
-        'type-fest-1',
-        'type-fest-2',
-        'my-neat-lib',
-        './source.js',
-        './another-source.js',
-        './type-fest-3.js',
-        '@type/fest4',
-        'my-neat-lib-2',
-        'dynamic',
-        'package.json',
-        'this-is-a-typeof-import',
-        'this-is-a-type-import'
-      ]);
-
-      await expect(
-        gatherImportEntriesFromFiles([fileOne], {
-          excludeTypeImports: false,
-          useCached: true
-        })
-      ).resolves.toStrictEqual([[fileOne, fileOneResult]]);
-
-      await expect(
-        gatherImportEntriesFromFiles([fileFour], {
-          excludeTypeImports: false,
-          useCached: true
-        })
-      ).resolves.toStrictEqual([[fileFour, fileOneResult]]);
-    });
-
     it('returns an array of import specifier entries from cjs-style require calls without type imports', async () => {
       expect.hasAssertions();
 
@@ -1571,18 +1508,21 @@ describe('::gatherImportEntriesFromFiles', () => {
       const fileThree = `${__dirname}/fixtures/dummy-imports/7.cjs` as AbsolutePath;
       const fileFour = `${__dirname}/fixtures/dummy-imports/8.jsx` as AbsolutePath;
 
-      const fileResult = new Set([
-        'react',
-        './some-utils.js',
-        'side-effects.js',
-        './styles.css',
-        'some-lib',
-        './source.js',
-        './another-source.js',
-        './tool.js',
-        '../path/to/import.js',
-        'string-literal'
-      ]);
+      const fileResult = {
+        normal: new Set([
+          'react',
+          './some-utils.js',
+          'side-effects.js',
+          './styles.css',
+          'some-lib',
+          './source.js',
+          './another-source.js',
+          './tool.js',
+          '../path/to/import.js',
+          'string-literal'
+        ]),
+        typeOnly: new Set([])
+      };
 
       await expect(
         gatherImportEntriesFromFiles([fileOne], { useCached: true })
@@ -1620,14 +1560,14 @@ describe('::gatherImportEntriesFromFiles', () => {
 
       await expect(
         gatherImportEntriesFromFiles([fileOne], { useCached: true })
-      ).resolves.toStrictEqual([[fileOne, new Set()]]);
+      ).resolves.toStrictEqual([[fileOne, { normal: new Set(), typeOnly: new Set() }]]);
 
       await expect(
         gatherImportEntriesFromFiles([fileOne, fileOne, fileOne], { useCached: true })
       ).resolves.toStrictEqual([
-        [fileOne, new Set()],
-        [fileOne, new Set()],
-        [fileOne, new Set()]
+        [fileOne, { normal: new Set(), typeOnly: new Set() }],
+        [fileOne, { normal: new Set(), typeOnly: new Set() }],
+        [fileOne, { normal: new Set(), typeOnly: new Set() }]
       ]);
     });
 
@@ -2479,7 +2419,10 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         targets: {
-          external: new Set(['types/global.ts'] as RelativePath[]),
+          external: {
+            normal: new Set(['types/global.ts'] as RelativePath[]),
+            typeOnly: new Set(['types/global.ts'] as RelativePath[])
+          },
           internal: new Set([
             'src/1.ts',
             'src/2.mts',
@@ -2491,7 +2434,11 @@ describe('::gatherPackageBuildTargets', () => {
         },
         metadata: {
           imports: {
-            aliasCounts: { universe: 4, typeverse: 1 },
+            aliasCounts: {
+              '<intr> <type> typeverse': 1,
+              '<intr> universe': 1,
+              '<intr> typeverse': 1
+            },
             dependencyCounts: {}
           }
         }
@@ -2508,39 +2455,44 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         targets: {
-          external: new Set([
-            'packages/cli/src/index.ts',
-            'packages/private/src/index.ts',
-            'packages/private/package.json',
-            'packages/webpack/webpack.config.ts',
-            'packages/private/src/lib/library.ts',
-            'packages/webpack/src/webpack-lib.ts',
-            'packages/private/src/lib/library2.ts',
-            'packages/webpack/src/webpack-lib2.ts',
-            'types/global.ts',
-            'types/others.ts'
-          ] as RelativePath[]),
+          external: {
+            normal: new Set([
+              'packages/cli/src/index.ts',
+              'packages/private/src/index.ts',
+              'packages/private/package.json',
+              'packages/webpack/webpack.config.ts',
+              'packages/private/src/lib/library.ts',
+              'packages/webpack/src/webpack-lib.ts',
+              'packages/private/src/lib/library2.ts',
+              'packages/webpack/src/webpack-lib2.ts'
+            ] as RelativePath[]),
+            typeOnly: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[])
+          },
           internal: new Set(['src/index.ts', 'src/others.ts'] as RelativePath[])
         },
         metadata: {
           imports: {
             aliasCounts: {
-              'rootverse+private': 2,
-              'rootverse+webpack': 3,
-              'multiverse+cli': 1,
-              'multiverse+private': 3,
-              typeverse: 2,
-              universe: 2
+              '<extr> <type> typeverse': 1,
+              '<extr> multiverse+private': 1,
+              '<extr> rootverse+private': 1,
+              '<extr> rootverse+webpack': 1,
+              '<intr> <type> universe': 1,
+              '<intr> multiverse+cli': 1,
+              '<intr> multiverse+private': 1,
+              '<intr> rootverse+private': 1,
+              '<intr> rootverse+webpack': 1,
+              '<intr> universe': 1
             },
             dependencyCounts: {
-              '@babel/core': 1,
-              '@black-flag/core': 1,
-              'node:path': 1,
-              'some-package': 1,
-              'another-package': 1,
-              'type-fest': 2,
-              webpack: 1,
-              'webpack~2': 1
+              '<extr> <type> type-fest': 2,
+              '<extr> @black-flag/core': 1,
+              '<extr> another-package': 1,
+              '<extr> some-package': 1,
+              '<extr> webpack': 1,
+              '<extr> webpack~2': 1,
+              '<intr> @babel/core': 1,
+              '<intr> node:path': 1
             }
           }
         }
@@ -2559,30 +2511,31 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         targets: {
-          external: new Set([
-            'packages/private/src/index.ts',
-            'packages/private/src/lib/library.ts',
-            'packages/webpack/src/webpack-lib.ts',
-            'packages/private/src/lib/library2.ts',
-            'types/global.ts',
-            'types/others.ts'
-          ] as RelativePath[]),
+          external: {
+            normal: new Set([
+              'packages/private/src/index.ts',
+              'packages/private/src/lib/library.ts',
+              'packages/webpack/src/webpack-lib.ts',
+              'packages/private/src/lib/library2.ts'
+            ] as RelativePath[]),
+            typeOnly: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[])
+          },
           internal: new Set(['packages/cli/src/index.ts'] as RelativePath[])
         },
         metadata: {
           imports: {
             aliasCounts: {
-              'rootverse+private': 1,
-              'rootverse+webpack': 1,
-              'multiverse+private': 2,
-              typeverse: 2
+              '<extr> <type> typeverse': 1,
+              '<extr> rootverse+private': 1,
+              '<intr> multiverse+private': 1,
+              '<intr> rootverse+webpack': 1
             },
             dependencyCounts: {
-              '@black-flag/core': 1,
-              webpack: 1,
-              'another-package': 1,
-              'type-fest': 2,
-              'some-package': 1
+              '<extr> <type> type-fest': 2,
+              '<extr> another-package': 1,
+              '<extr> some-package': 1,
+              '<extr> webpack': 1,
+              '<intr> @black-flag/core': 1
             }
           }
         }
@@ -2606,7 +2559,10 @@ describe('::gatherPackageBuildTargets', () => {
           )
         ).toStrictEqual({
           targets: {
-            external: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[]),
+            external: {
+              normal: new Set([] as RelativePath[]),
+              typeOnly: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[])
+            },
             internal: new Set([
               'packages/private/src/index.ts',
               'packages/private/src/lib/library.ts',
@@ -2619,13 +2575,14 @@ describe('::gatherPackageBuildTargets', () => {
           metadata: {
             imports: {
               aliasCounts: {
-                'rootverse+private': 1,
-                typeverse: 2
+                '<extr> <type> typeverse': 1,
+                '<intr> <type> typeverse': 1,
+                '<intr> rootverse+private': 1
               },
               dependencyCounts: {
-                'another-package': 1,
-                'some-package': 1,
-                'type-fest': 2
+                '<extr> <type> type-fest': 2,
+                '<intr> another-package': 1,
+                '<intr> some-package': 1
               }
             }
           }
@@ -2647,7 +2604,10 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         targets: {
-          external: new Set([] as RelativePath[]),
+          external: {
+            normal: new Set([] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set([
             'packages/pkg-1/src/index.ts',
             'packages/pkg-1/src/lib.ts'
@@ -2656,10 +2616,10 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              'rootverse+pkg-1': 1
+              '<intr> rootverse+pkg-1': 1
             },
             dependencyCounts: {
-              '@black-flag/core': 1
+              '<intr> @black-flag/core': 1
             }
           }
         }
@@ -2736,10 +2696,13 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         targets: {
-          external: new Set([
-            'packages/private/src/index.ts',
-            'packages/private/src/lib/library2.ts'
-          ] as RelativePath[]),
+          external: {
+            normal: new Set([
+              'packages/private/src/index.ts',
+              'packages/private/src/lib/library2.ts'
+            ] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set([
             'packages/webpack/src/webpack-lib.ts',
             'packages/webpack/src/webpack-lib2.ts'
@@ -2748,12 +2711,12 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              'rootverse+private': 1
+              '<extr> rootverse+private': 1
             },
             dependencyCounts: {
-              'some-package': 1,
-              webpack: 1,
-              'webpack~2': 1
+              '<extr> some-package': 1,
+              '<intr> webpack': 1,
+              '<intr> webpack~2': 1
             }
           }
         }
@@ -2766,10 +2729,13 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         targets: {
-          external: new Set([
-            'packages/private/src/index.ts',
-            'packages/private/src/lib/library2.ts'
-          ] as RelativePath[]),
+          external: {
+            normal: new Set([
+              'packages/private/src/index.ts',
+              'packages/private/src/lib/library2.ts'
+            ] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set([
             'packages/webpack/src/webpack-lib.ts',
             'packages/webpack/src/webpack-lib2.ts'
@@ -2778,12 +2744,12 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              'rootverse+private': 1
+              '<extr> rootverse+private': 1
             },
             dependencyCounts: {
-              'some-package': 1,
-              webpack: 1,
-              'webpack~2': 1
+              '<extr> some-package': 1,
+              '<intr> webpack': 1,
+              '<intr> webpack~2': 1
             }
           }
         }
@@ -2809,14 +2775,17 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         targets: {
-          external: new Set([] as RelativePath[]),
+          external: {
+            normal: new Set([] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set(['packages/webpack/src/webpack-lib2.ts'] as RelativePath[])
         },
         metadata: {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              'webpack~2': 1
+              '<intr> webpack~2': 1
             }
           }
         }
@@ -2836,7 +2805,10 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         metadata: { imports: { aliasCounts: {}, dependencyCounts: {} } },
-        targets: { external: new Set(), internal: new Set() }
+        targets: {
+          external: { normal: new Set(), typeOnly: new Set([] as RelativePath[]) },
+          internal: new Set()
+        }
       });
     });
 
@@ -2857,15 +2829,18 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         targets: {
-          external: new Set(['packages/webpack/src/webpack-lib2.ts'] as RelativePath[]),
+          external: {
+            normal: new Set(['packages/webpack/src/webpack-lib2.ts'] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set(['packages/webpack/src/webpack-lib.ts'] as RelativePath[])
         },
         metadata: {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              webpack: 1,
-              'webpack~2': 1
+              '<extr> webpack~2': 1,
+              '<intr> webpack': 1
             }
           }
         }
@@ -2888,7 +2863,10 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).toStrictEqual({
         targets: {
-          external: new Set(['packages/webpack/webpack.config.mjs'] as RelativePath[]),
+          external: {
+            normal: new Set(['packages/webpack/webpack.config.mjs'] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set([
             'packages/webpack/src/webpack-lib.ts',
             'packages/webpack/src/webpack-lib2.ts'
@@ -2898,13 +2876,13 @@ describe('::gatherPackageBuildTargets', () => {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              webpack: 1,
-              'webpack~2': 1,
-              [`${assetPrefix} ./package.json`]: 1,
-              [`${assetPrefix} ./package2.json`]: 1,
-              [`${assetPrefix} ../webpack/src/webpack-lib2.js`]: 1,
-              [`${assetPrefix} webpack~3`]: 1,
-              [`${assetPrefix} @some/namespaced`]: 1
+              '<intr> webpack': 1,
+              '<intr> webpack~2': 1,
+              [`${prefixAssetImport} <extr> ./package.json`]: 1,
+              [`${prefixAssetImport} <extr> ./package2.json`]: 1,
+              [`${prefixAssetImport} <extr> ../webpack/src/webpack-lib2.js`]: 1,
+              [`${prefixAssetImport} <extr> webpack~3`]: 1,
+              [`${prefixAssetImport} <extr> @some/namespaced`]: 1
             }
           }
         }
@@ -2933,7 +2911,10 @@ describe('::gatherPackageBuildTargets', () => {
         })
       ).resolves.toStrictEqual({
         targets: {
-          external: new Set(['types/global.ts'] as RelativePath[]),
+          external: {
+            normal: new Set(['types/global.ts'] as RelativePath[]),
+            typeOnly: new Set(['types/global.ts'] as RelativePath[])
+          },
           internal: new Set([
             'src/1.ts',
             'src/2.mts',
@@ -2945,7 +2926,11 @@ describe('::gatherPackageBuildTargets', () => {
         },
         metadata: {
           imports: {
-            aliasCounts: { universe: 4, typeverse: 1 },
+            aliasCounts: {
+              '<intr> <type> typeverse': 1,
+              '<intr> universe': 1,
+              '<intr> typeverse': 1
+            },
             dependencyCounts: {}
           }
         }
@@ -2962,39 +2947,44 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).resolves.toStrictEqual({
         targets: {
-          external: new Set([
-            'packages/cli/src/index.ts',
-            'packages/private/src/index.ts',
-            'packages/private/package.json',
-            'packages/webpack/webpack.config.ts',
-            'packages/private/src/lib/library.ts',
-            'packages/webpack/src/webpack-lib.ts',
-            'packages/private/src/lib/library2.ts',
-            'packages/webpack/src/webpack-lib2.ts',
-            'types/global.ts',
-            'types/others.ts'
-          ] as RelativePath[]),
+          external: {
+            normal: new Set([
+              'packages/cli/src/index.ts',
+              'packages/private/src/index.ts',
+              'packages/private/package.json',
+              'packages/webpack/webpack.config.ts',
+              'packages/private/src/lib/library.ts',
+              'packages/webpack/src/webpack-lib.ts',
+              'packages/private/src/lib/library2.ts',
+              'packages/webpack/src/webpack-lib2.ts'
+            ] as RelativePath[]),
+            typeOnly: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[])
+          },
           internal: new Set(['src/index.ts', 'src/others.ts'] as RelativePath[])
         },
         metadata: {
           imports: {
             aliasCounts: {
-              'rootverse+private': 2,
-              'rootverse+webpack': 3,
-              'multiverse+cli': 1,
-              'multiverse+private': 3,
-              typeverse: 2,
-              universe: 2
+              '<extr> <type> typeverse': 1,
+              '<extr> multiverse+private': 1,
+              '<extr> rootverse+private': 1,
+              '<extr> rootverse+webpack': 1,
+              '<intr> <type> universe': 1,
+              '<intr> multiverse+cli': 1,
+              '<intr> multiverse+private': 1,
+              '<intr> rootverse+private': 1,
+              '<intr> rootverse+webpack': 1,
+              '<intr> universe': 1
             },
             dependencyCounts: {
-              '@babel/core': 1,
-              '@black-flag/core': 1,
-              'node:path': 1,
-              'some-package': 1,
-              'another-package': 1,
-              'type-fest': 2,
-              webpack: 1,
-              'webpack~2': 1
+              '<extr> <type> type-fest': 2,
+              '<extr> @black-flag/core': 1,
+              '<extr> another-package': 1,
+              '<extr> some-package': 1,
+              '<extr> webpack': 1,
+              '<extr> webpack~2': 1,
+              '<intr> @babel/core': 1,
+              '<intr> node:path': 1
             }
           }
         }
@@ -3013,30 +3003,31 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).resolves.toStrictEqual({
         targets: {
-          external: new Set([
-            'packages/private/src/index.ts',
-            'packages/private/src/lib/library.ts',
-            'packages/webpack/src/webpack-lib.ts',
-            'packages/private/src/lib/library2.ts',
-            'types/global.ts',
-            'types/others.ts'
-          ] as RelativePath[]),
+          external: {
+            normal: new Set([
+              'packages/private/src/index.ts',
+              'packages/private/src/lib/library.ts',
+              'packages/webpack/src/webpack-lib.ts',
+              'packages/private/src/lib/library2.ts'
+            ] as RelativePath[]),
+            typeOnly: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[])
+          },
           internal: new Set(['packages/cli/src/index.ts'] as RelativePath[])
         },
         metadata: {
           imports: {
             aliasCounts: {
-              'rootverse+private': 1,
-              'rootverse+webpack': 1,
-              'multiverse+private': 2,
-              typeverse: 2
+              '<extr> <type> typeverse': 1,
+              '<extr> rootverse+private': 1,
+              '<intr> multiverse+private': 1,
+              '<intr> rootverse+webpack': 1
             },
             dependencyCounts: {
-              '@black-flag/core': 1,
-              webpack: 1,
-              'another-package': 1,
-              'type-fest': 2,
-              'some-package': 1
+              '<extr> <type> type-fest': 2,
+              '<extr> another-package': 1,
+              '<extr> some-package': 1,
+              '<extr> webpack': 1,
+              '<intr> @black-flag/core': 1
             }
           }
         }
@@ -3060,7 +3051,10 @@ describe('::gatherPackageBuildTargets', () => {
           )
         ).resolves.toStrictEqual({
           targets: {
-            external: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[]),
+            external: {
+              normal: new Set([] as RelativePath[]),
+              typeOnly: new Set(['types/global.ts', 'types/others.ts'] as RelativePath[])
+            },
             internal: new Set([
               'packages/private/src/index.ts',
               'packages/private/src/lib/library.ts',
@@ -3073,13 +3067,14 @@ describe('::gatherPackageBuildTargets', () => {
           metadata: {
             imports: {
               aliasCounts: {
-                'rootverse+private': 1,
-                typeverse: 2
+                '<extr> <type> typeverse': 1,
+                '<intr> <type> typeverse': 1,
+                '<intr> rootverse+private': 1
               },
               dependencyCounts: {
-                'another-package': 1,
-                'some-package': 1,
-                'type-fest': 2
+                '<extr> <type> type-fest': 2,
+                '<intr> another-package': 1,
+                '<intr> some-package': 1
               }
             }
           }
@@ -3101,7 +3096,10 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).resolves.toStrictEqual({
         targets: {
-          external: new Set([] as RelativePath[]),
+          external: {
+            normal: new Set([] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set([
             'packages/pkg-1/src/index.ts',
             'packages/pkg-1/src/lib.ts'
@@ -3110,10 +3108,10 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              'rootverse+pkg-1': 1
+              '<intr> rootverse+pkg-1': 1
             },
             dependencyCounts: {
-              '@black-flag/core': 1
+              '<intr> @black-flag/core': 1
             }
           }
         }
@@ -3190,10 +3188,13 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).resolves.toStrictEqual({
         targets: {
-          external: new Set([
-            'packages/private/src/index.ts',
-            'packages/private/src/lib/library2.ts'
-          ] as RelativePath[]),
+          external: {
+            normal: new Set([
+              'packages/private/src/index.ts',
+              'packages/private/src/lib/library2.ts'
+            ] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set([
             'packages/webpack/src/webpack-lib.ts',
             'packages/webpack/src/webpack-lib2.ts'
@@ -3202,12 +3203,12 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              'rootverse+private': 1
+              '<extr> rootverse+private': 1
             },
             dependencyCounts: {
-              'some-package': 1,
-              webpack: 1,
-              'webpack~2': 1
+              '<extr> some-package': 1,
+              '<intr> webpack': 1,
+              '<intr> webpack~2': 1
             }
           }
         }
@@ -3220,10 +3221,13 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).resolves.toStrictEqual({
         targets: {
-          external: new Set([
-            'packages/private/src/index.ts',
-            'packages/private/src/lib/library2.ts'
-          ] as RelativePath[]),
+          external: {
+            normal: new Set([
+              'packages/private/src/index.ts',
+              'packages/private/src/lib/library2.ts'
+            ] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set([
             'packages/webpack/src/webpack-lib.ts',
             'packages/webpack/src/webpack-lib2.ts'
@@ -3232,12 +3236,12 @@ describe('::gatherPackageBuildTargets', () => {
         metadata: {
           imports: {
             aliasCounts: {
-              'rootverse+private': 1
+              '<extr> rootverse+private': 1
             },
             dependencyCounts: {
-              'some-package': 1,
-              webpack: 1,
-              'webpack~2': 1
+              '<extr> some-package': 1,
+              '<intr> webpack': 1,
+              '<intr> webpack~2': 1
             }
           }
         }
@@ -3263,14 +3267,17 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).resolves.toStrictEqual({
         targets: {
-          external: new Set([] as RelativePath[]),
+          external: {
+            normal: new Set([] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set(['packages/webpack/src/webpack-lib2.ts'] as RelativePath[])
         },
         metadata: {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              'webpack~2': 1
+              '<intr> webpack~2': 1
             }
           }
         }
@@ -3290,7 +3297,10 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).resolves.toStrictEqual({
         metadata: { imports: { aliasCounts: {}, dependencyCounts: {} } },
-        targets: { external: new Set(), internal: new Set() }
+        targets: {
+          external: { normal: new Set(), typeOnly: new Set([] as RelativePath[]) },
+          internal: new Set()
+        }
       });
     });
 
@@ -3311,15 +3321,18 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).resolves.toStrictEqual({
         targets: {
-          external: new Set(['packages/webpack/src/webpack-lib2.ts'] as RelativePath[]),
+          external: {
+            normal: new Set(['packages/webpack/src/webpack-lib2.ts'] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set(['packages/webpack/src/webpack-lib.ts'] as RelativePath[])
         },
         metadata: {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              webpack: 1,
-              'webpack~2': 1
+              '<extr> webpack~2': 1,
+              '<intr> webpack': 1
             }
           }
         }
@@ -3342,7 +3355,10 @@ describe('::gatherPackageBuildTargets', () => {
         )
       ).resolves.toStrictEqual({
         targets: {
-          external: new Set(['packages/webpack/webpack.config.mjs'] as RelativePath[]),
+          external: {
+            normal: new Set(['packages/webpack/webpack.config.mjs'] as RelativePath[]),
+            typeOnly: new Set([] as RelativePath[])
+          },
           internal: new Set([
             'packages/webpack/src/webpack-lib.ts',
             'packages/webpack/src/webpack-lib2.ts'
@@ -3352,13 +3368,13 @@ describe('::gatherPackageBuildTargets', () => {
           imports: {
             aliasCounts: {},
             dependencyCounts: {
-              webpack: 1,
-              'webpack~2': 1,
-              [`${assetPrefix} ./package.json`]: 1,
-              [`${assetPrefix} ./package2.json`]: 1,
-              [`${assetPrefix} ../webpack/src/webpack-lib2.js`]: 1,
-              [`${assetPrefix} webpack~3`]: 1,
-              [`${assetPrefix} @some/namespaced`]: 1
+              '<intr> webpack': 1,
+              '<intr> webpack~2': 1,
+              [`${prefixAssetImport} <extr> ./package.json`]: 1,
+              [`${prefixAssetImport} <extr> ./package2.json`]: 1,
+              [`${prefixAssetImport} <extr> ../webpack/src/webpack-lib2.js`]: 1,
+              [`${prefixAssetImport} <extr> webpack~3`]: 1,
+              [`${prefixAssetImport} <extr> @some/namespaced`]: 1
             }
           }
         }
