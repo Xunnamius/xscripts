@@ -248,7 +248,6 @@
     "typedoc": "^0.27.5",
     "typedoc-plugin-markdown": "^4.3.3",
     "typescript": "^5.7.2",
-    "typescript-eslint": "8.18.0",
     "unified-engine": "^11.2.2",
     "unique-filename": "^4.0.0",
     "validate-npm-package-name": "^6.0.0"

@@ -489,7 +489,7 @@ export function moduleExport({
   cwdTsconfigFile: AbsolutePath;
   shouldAllowWarningComments: boolean;
   derivedAliases: ReturnType<typeof deriveAliasesForEslint>;
-}) {
+}): EslintConfig[] {
   debug('cwdTsconfigFile: %O', cwdTsconfigFile);
   debug('packageJsonEnginesNode: %O', packageJsonEnginesNode);
   debug('shouldAllowWarningComments: %O', shouldAllowWarningComments);
@@ -884,7 +884,7 @@ export function overwriteProperty<T extends keyof EslintConfig>(
   configs: EslintConfig | EslintConfig[],
   property: T,
   value: EslintConfig[T]
-) {
+): EslintConfig[] {
   return [configs].flat().map((config) => {
     config[property] = value;
     return config;
