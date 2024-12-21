@@ -986,6 +986,8 @@ export function getExclusionaryPathspecs({
 export async function getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix(
   tagPrefix: string
 ) {
+  const dbg = debug.extend('find-init-commit');
+
   const [{ stdout: xpipelineReference }, { stdout: initTagReference }] =
     await Promise.all([
       runNoRejectOnBadExit('git', [
@@ -1003,8 +1005,8 @@ export async function getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix(
       ])
     ]);
 
-  debug('xpipelineReference: %O', xpipelineReference);
-  debug('initTagReference: %O', initTagReference);
+  dbg('xpipelineReference: %O', xpipelineReference);
+  dbg('initTagReference: %O', initTagReference);
 
   let reference: string;
 
@@ -1020,7 +1022,7 @@ export async function getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix(
       ]
     );
 
-    debug('isXpipelineReferenceMoreRecent: %O', isXpipelineReferenceMoreRecent);
+    dbg('isXpipelineReferenceMoreRecent: %O', isXpipelineReferenceMoreRecent);
 
     reference = isXpipelineReferenceMoreRecent ? xpipelineReference : initTagReference;
   } else {
@@ -1028,7 +1030,7 @@ export async function getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix(
       xpipelineReference || initTagReference || noSpecialInitialCommitIndicator;
   }
 
-  debug(
+  dbg(
     'latest commit with either Xpipeline init command or version tag init suffix: %O',
     reference
   );
