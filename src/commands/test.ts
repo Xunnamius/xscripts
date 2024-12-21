@@ -416,9 +416,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
             targets: { external: externalBuildTargets_ }
           } = await gatherPackageBuildTargets(cwdPackage, { useCached: true });
 
-          const externalBuildTargets = externalBuildTargets_.normal.union(
-            externalBuildTargets_.typeOnly
-          );
+          const externalBuildTargets = externalBuildTargets_.normal;
 
           if (collectCoverage) {
             npxJestArguments.push(
