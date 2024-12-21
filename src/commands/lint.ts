@@ -323,7 +323,8 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
             ]);
 
             npxEslintArguments.push(
-              ...externalBuildTargets,
+              ...externalBuildTargets.normal,
+              ...externalBuildTargets.typeOnly,
               ...cwdPackageOtherFiles.map((path) => toRelativePath(projectRoot, path)),
               toPath(packageRoot, directorySrcPackageBase),
               toPath(packageRoot, directoryTestPackageBase)

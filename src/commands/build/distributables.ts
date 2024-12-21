@@ -50,8 +50,8 @@ import {
 } from 'multiverse+project-utils:alias.ts';
 
 import {
-  assetPrefix,
   gatherPackageBuildTargets,
+  prefixAssetImport,
   specifierToPackageName
 } from 'multiverse+project-utils:analyze/gather-package-build-targets.ts';
 
@@ -362,6 +362,8 @@ All source and asset files are further classified as either "internal" or "exter
 
 --include-external-files accepts one or more pattern strings that are interpreted according to normal glob rules, while --exclude-internal-files accepts one or more pattern strings that are interpreted according to gitignore glob rules. Both are relative to the project (NOT package!) root. For --exclude-internal-files specifically, this all means that seemingly absolute pattern strings like "/home/me/project/src/something.ts" are actually relative to the project (NOT filesystem!) root, and seemingly relative pattern strings like "*.mjs" may exclude files at any depth below the project root. See \`man gitignore\` for more details.
 
+At the beginning of the build process, a build manifest is generated. It lists metadata about the package being built, including its name, if it's production-ready, several important paths, and information about the build targets: (1) how many are classified as internal vs external, (2) how many are classified as asset vs source, (3) the number of project-wide import aliases used (including per-alias file counts), and (4) the number of npm package imports used (including per-package file counts).
+
 After targets are built, CLI projects will have their entry points chmod-ed to be executable, shebangs added if they do not already exist, and "bin" entries soft-linked into the node_modules/.bin directory.
 
 The only available scope is "${DistributablesBuilderScope.ThisPackage}"; hence, when invoking this command, only the package at the current working directory will be built. Use Npm's workspace features, or Turbo's, if your goal is to build distributables from multiple packages.
@@ -535,14 +537,14 @@ Finally, note that, when attempting to build a Next.js package, this command wil
           // TODO: this needs to be split off into xscripts project lint along
           // TODO: with the other half of the bijection checks below. For now,
           // TODO: we'll keep them here in this command:
-          await lintAllTypescriptFilesForSpecifierOk();
+          await lintNonSourceTypescriptFilesForSpecifierOk();
 
           debug('initial build targets: %O', buildTargets);
           debug('build metadata: %O', buildMetadata);
 
           // * Note that this has not been filtered by partialFilters yet
           const _allBuildTargets = Array.from(buildTargets.internal).concat(
-            Array.from(buildTargets.external)
+            Array.from(buildTargets.external.normal)
           );
 
           if (generateIntermediatesFor === IntermediateTranspilationEnvironment.Test) {
@@ -638,8 +640,8 @@ build targets: ${_allBuildTargets.length} file${_allBuildTargets.length !== 1 ? 
 ${SHORT_TAB}   internal${isPartialBuild ? ' (before filter)' : ''}: ${buildTargets.internal.size} file${
               buildTargets.internal.size !== 1 ? 's' : ''
             }
-${SHORT_TAB}   external${isPartialBuild ? ' (before filter)' : ''}: ${buildTargets.external.size} file${
-              buildTargets.external.size !== 1 ? 's' : ''
+${SHORT_TAB}   external${isPartialBuild ? ' (before filter)' : ''}: ${buildTargets.external.normal.size} file${
+              buildTargets.external.normal.size !== 1 ? 's' : ''
             }
 ${SHORT_TAB}   -
 ${SHORT_TAB}   assets${isPartialBuild ? '  (after filter)' : ''}  : ${allBuildAssetTargets.length} file${
@@ -668,7 +670,10 @@ aliases imported: ${
                       (strings, [alias, count]) => {
                         const [fromSources, fromAssets] = strings;
 
-                        (alias.startsWith(assetPrefix) ? fromAssets : fromSources).push(
+                        (alias.startsWith(prefixAssetImport)
+                          ? fromAssets
+                          : fromSources
+                        ).push(
                           `${SHORT_TAB}${alias} (from ${count} file${count !== 1 ? 's' : ''})`
                         );
 
@@ -1150,14 +1155,8 @@ distrib root: ${absoluteOutputDirPath}
 
               const [distImportEntries, otherImportEntries, pseudodecoratorEntries] =
                 await Promise.all([
-                  gatherImportEntriesFromFiles(distFiles, {
-                    excludeTypeImports: false,
-                    useCached: true
-                  }),
-                  gatherImportEntriesFromFiles(allOtherFiles, {
-                    excludeTypeImports: false,
-                    useCached: true
-                  }),
+                  gatherImportEntriesFromFiles(distFiles, { useCached: true }),
+                  gatherImportEntriesFromFiles(allOtherFiles, { useCached: true }),
                   gatherPseudodecoratorEntriesFromFiles(allOtherFilesPlusBuildTargets, {
                     useCached: true
                   })
@@ -1215,9 +1214,10 @@ distrib root: ${absoluteOutputDirPath}
                 otherImportEntries.length
               );
 
-              for (const [filepath, specifiers] of distImportEntries) {
+              for (const [filepath, specifiers_] of distImportEntries) {
                 const dbg1 = dbg.extend('1-prod');
                 const isTypescriptDefinitionFile = filepath.endsWith('.d.ts');
+                const specifiers = specifiers_.normal.union(specifiers_.typeOnly);
 
                 dbg1('checking %O import specifiers in %O', specifiers.size, filepath);
                 dbg1('isTypescriptDefinitionFile: %O', isTypescriptDefinitionFile);
@@ -1315,8 +1315,10 @@ distrib root: ${absoluteOutputDirPath}
                 }
               }
 
-              for (const [filepath, specifiers] of otherImportEntries) {
+              for (const [filepath, specifiers_] of otherImportEntries) {
                 const dbg2 = dbg.extend('2-dev');
+                const specifiers = specifiers_.normal.union(specifiers_.typeOnly);
+
                 dbg2('checking %O import specifiers in %O', specifiers.size, filepath);
 
                 for (const specifier_ of specifiers) {
@@ -1650,8 +1652,7 @@ distrib root: ${absoluteOutputDirPath}
         }
       }
 
-      // TODO: move this into xscripts project lint
-      async function lintAllTypescriptFilesForSpecifierOk() {
+      async function lintNonSourceTypescriptFilesForSpecifierOk() {
         const { cwdPackage } = projectMetadata;
         const wellKnownAliases = generateRawAliasMap(projectMetadata);
 
@@ -1667,21 +1668,18 @@ distrib root: ${absoluteOutputDirPath}
         // * From rawSpecifiersToExternalTargetPaths
         const nonSourceTypescriptEntries = gatherImportEntriesFromFiles.sync(
           nonSourceTypescriptFiles,
-          {
-            // ? Ensure specifierOk checks also performed on type-only imports
-            excludeTypeImports: false,
-            useCached: true
-          }
+          { useCached: true }
         );
 
-        for (const [path, specifiers] of nonSourceTypescriptEntries) {
+        for (const [path, specifiers_] of nonSourceTypescriptEntries) {
           const specifierPackage = pathToPackage(path, projectMetadata);
+          const specifiers = specifiers_.normal.union(specifiers_.typeOnly);
 
           const specifierPackageId = isWorkspacePackage(specifierPackage)
             ? specifierPackage.id
             : undefined;
 
-          for (const specifier of specifiers.values()) {
+          for (const specifier of specifiers) {
             ensureRawSpecifierOk(wellKnownAliases, specifier, {
               // ? Allow testverse imports in non-source typescript files
               errorIfTestverseEncountered: false,
