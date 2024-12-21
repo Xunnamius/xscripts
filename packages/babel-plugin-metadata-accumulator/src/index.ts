@@ -17,13 +17,17 @@ import {
 
 import { ErrorMessage } from 'rootverse+babel-plugin-metadata-accumulator:src/error.ts';
 
+import type { EmptyObject } from 'type-fest';
+
 // TODO: turn this into an actual plugin package with tests
 
 export type AccumulatedMetadata = {
   /**
-   * A set containing accumulated import metadata.
+   * Two sets, one containing the accumulated import metadata for all
+   * "type-only" imports and the other containing the same information but for
+   * all "normal" imports.
    */
-  imports: Set<string>;
+  imports: { normal: Set<string>; typeOnly: Set<string> };
 };
 
 /**
@@ -44,16 +48,7 @@ export type PluginAndAccumulator = {
 /**
  * The options that can be passed to this plugin from babel.
  */
-export type Options = {
-  /**
-   * If `true`, "type-only" and "typeof" imports will be ignored by the
-   * accumulator, including imports that aren't marked type-only but all their
-   * specifiers _are_ marked type-only.
-   *
-   * @default true
-   */
-  excludeTypeImports?: boolean;
-};
+export type Options = EmptyObject;
 
 /**
  * @internal
@@ -74,11 +69,13 @@ export function createMetadataAccumulatorPlugin(): PluginAndAccumulator {
       visitor: {
         Program(_path, state) {
           const sourceFilePath = stateToFilename(state);
-          accumulator.set(sourceFilePath, { imports: new Set() });
+          accumulator.set(sourceFilePath, {
+            imports: { normal: new Set(), typeOnly: new Set() }
+          });
         },
 
         ImportDeclaration(path, state) {
-          const { excludeTypeImports = true } = state.opts;
+          //const { excludeTypeImports = true } = state.opts;
           const isWholeTypeImport = path.node.importKind !== 'value';
           const hasOnlyTypeSpecifiers =
             path.node.specifiers.length > 0 &&
@@ -86,14 +83,16 @@ export function createMetadataAccumulatorPlugin(): PluginAndAccumulator {
               (s) => s.type === 'ImportSpecifier' && s.importKind !== 'value'
             );
 
-          if (!excludeTypeImports || (!isWholeTypeImport && !hasOnlyTypeSpecifiers)) {
-            addImportSpecifierFromPath(state, path);
+          if (isWholeTypeImport || hasOnlyTypeSpecifiers) {
+            addImportSpecifierFromPath('type-only', state, path);
+          } else {
+            addImportSpecifierFromPath('normal', state, path);
           }
         },
 
         ExportNamedDeclaration(path, state) {
           if (path.node.source) {
-            const { excludeTypeImports = true } = state.opts;
+            //const { excludeTypeImports = true } = state.opts;
             const isWholeTypeExport = path.node.exportKind !== 'value';
             const hasOnlyTypeSpecifiers =
               path.node.specifiers.length > 0 &&
@@ -101,28 +100,30 @@ export function createMetadataAccumulatorPlugin(): PluginAndAccumulator {
                 (s) => s.type === 'ExportSpecifier' && s.exportKind !== 'value'
               );
 
-            if (!excludeTypeImports || (!isWholeTypeExport && !hasOnlyTypeSpecifiers)) {
-              addImportSpecifierFromPath(state, path);
+            if (isWholeTypeExport || hasOnlyTypeSpecifiers) {
+              addImportSpecifierFromPath('type-only', state, path);
+            } else {
+              addImportSpecifierFromPath('normal', state, path);
             }
           }
         },
 
         ExportAllDeclaration(path, state) {
-          const { excludeTypeImports = true } = state.opts;
+          //const { excludeTypeImports = true } = state.opts;
           const isWholeTypeExport = path.node.exportKind !== 'value';
 
-          if (!excludeTypeImports || !isWholeTypeExport) {
-            addImportSpecifierFromPath(state, path);
+          if (isWholeTypeExport) {
+            addImportSpecifierFromPath('type-only', state, path);
+          } else {
+            addImportSpecifierFromPath('normal', state, path);
           }
         },
 
         TSImportType(path, state) {
-          const { excludeTypeImports = true } = state.opts;
+          //const { excludeTypeImports = true } = state.opts;
 
-          if (!excludeTypeImports) {
-            const firstArgument = path.node.argument;
-            addImportSpecifier(state, firstArgument.value);
-          }
+          const firstArgument = path.node.argument;
+          addImportSpecifier('type-only', state, firstArgument.value);
         },
 
         CallExpression(path, state) {
@@ -140,7 +141,7 @@ export function createMetadataAccumulatorPlugin(): PluginAndAccumulator {
               const { identifierName } = firstArgument.loc || {};
 
               if (util.isStringLiteral(firstArgument)) {
-                addImportSpecifier(state, firstArgument.value);
+                addImportSpecifier('normal', state, firstArgument.value);
               } else if (util.isIdentifier(firstArgument) && identifierName) {
                 const binding = getBinding(path.scope, identifierName);
 
@@ -149,7 +150,7 @@ export function createMetadataAccumulatorPlugin(): PluginAndAccumulator {
                   util.isVariableDeclarator(binding.path.node) &&
                   util.isStringLiteral(binding.path.node.init)
                 ) {
-                  addImportSpecifier(state, binding.path.node.init.value);
+                  addImportSpecifier('normal', state, binding.path.node.init.value);
                 }
               }
             } else {
@@ -177,11 +178,18 @@ export function createMetadataAccumulatorPlugin(): PluginAndAccumulator {
     return metadata;
   }
 
-  function addImportSpecifier(state: PluginPass, specifier: string) {
-    filenameToMetadata(stateToFilename(state)).imports.add(specifier);
+  function addImportSpecifier(
+    kind: 'type-only' | 'normal',
+    state: PluginPass,
+    specifier: string
+  ) {
+    filenameToMetadata(stateToFilename(state)).imports[
+      kind === 'type-only' ? 'typeOnly' : 'normal'
+    ].add(specifier);
   }
 
   function addImportSpecifierFromPath(
+    kind: 'type-only' | 'normal',
     state: PluginPass,
     path: NodePath<
       util.ImportDeclaration | util.ExportNamedDeclaration | util.ExportAllDeclaration
@@ -189,7 +197,7 @@ export function createMetadataAccumulatorPlugin(): PluginAndAccumulator {
   ) {
     const specifier = path.node.source?.value;
     assert(specifier, ErrorMessage.GuruMeditation() + ' (addImportSpecifierFromPath)');
-    addImportSpecifier(state, specifier);
+    addImportSpecifier(kind, state, specifier);
   }
 
   function getBinding(scope: Scope, identifierName: string): Binding {
