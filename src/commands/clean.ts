@@ -114,7 +114,7 @@ The default value for --exclude-paths includes the following regular expressions
       logStartTime({ log, startTime });
       genericLogger(
         [LogTag.IF_NOT_QUIETED],
-        `Cleaning ${scope === DefaultGlobalScope.ThisPackage ? 'this package' : 'the entire project'}...`
+        `Cleaning ${scope === DefaultGlobalScope.ThisPackage ? 'this package only' : 'the entire project'}...`
       );
 
       debug('scope: %O', scope);

@@ -645,7 +645,17 @@ type      : ${projectMetadata.type} ${
               projectAttributes[ProjectAttribute.Hybridrepo] ? '(hybridrepo) ' : ''
             }${isCwdTheProjectRoot ? 'root package' : 'workspace package (sub-root)'}
 attributes: ${Object.keys(cwdPackage.attributes).join(', ')}
-prod ready: ${generateIntermediatesFor || partialFilters.length ? `NO! (${[generateIntermediatesFor, partialFilters.length && 'filtered to partials'].filter(Boolean).join(' ')})` : 'yes'}
+prod ready: ${
+              generateIntermediatesFor || partialFilters.length
+                ? `🛑 NO! (${[
+                    generateIntermediatesFor &&
+                      `includes "${generateIntermediatesFor}" intermediates`,
+                    partialFilters.length && 'filtered to partials'
+                  ]
+                    .filter(Boolean)
+                    .join(', ')})`
+                : '🟩 yes'
+            }
 
 build targets: ${_allBuildTargets.length} file${_allBuildTargets.length !== 1 ? 's' : ''}${
               isPartialBuild
@@ -662,13 +672,13 @@ ${SHORT_TAB}   -
 ${SHORT_TAB}   assets${isPartialBuild ? '  (after filter)' : ''}  : ${allBuildAssetTargets.length} file${
               allBuildAssetTargets.length !== 1 ? 's' : ''
             }
-${SHORT_TAB}   sources${isPartialBuild ? '  (after filter)' : ''} : ${allBuildSourceTargets.length} file${
+${SHORT_TAB}   sources${isPartialBuild ? ' (after filter)' : ''}  : ${allBuildSourceTargets.length} file${
               allBuildSourceTargets.length !== 1 ? 's' : ''
             }
 
 aliases imported: ${
               isPartialBuild
-                ? '(not reported during partial builds)'
+                ? ' (not reported during partial builds)'
                 : `${aliasCountsEntries.length}\n` +
                   aliasCountsEntries
                     .map(
