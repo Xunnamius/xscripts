@@ -2,6 +2,7 @@ import { createWriteStream } from 'node:fs';
 import { pipeline } from 'node:stream/promises';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
+import escapeStringRegexp from 'escape-string-regexp~4';
 import { valid as isValidSemver } from 'semver';
 // ? Patches global Proxy and spawn functions; see documentation for details
 import '@-xun/scripts/assets/conventional.config.cjs';
@@ -304,10 +305,10 @@ Use --import-section-file to add a custom release section to the changelog. The 
 
         debug.extend('cc')('conventionalConfig: %O', conventionalConfig);
 
+        const handlebarsTemplateGlobalContext = {};
         const { default: makeChangelogSectionStream } = await import('@-xun/changelog');
         const { gitRawCommitsOpts, parserOpts, writerOpts, options } =
           conventionalConfig;
-        const handlebarsTemplateGlobalContext = {};
 
         const changelogSectionStream = makeChangelogSectionStream(
           {
@@ -397,8 +398,20 @@ Use --import-section-file to add a custom release section to the changelog. The 
 
             // ? We cast it to a string[] so currentChunk is typed correctly
             // eslint-disable-next-line @typescript-eslint/await-thenable
-            for await (const chunk of source as unknown as string[]) {
-              debug_('saw chunk: %O', chunk.slice(0, 20), '...');
+            for await (const chunk_ of source as unknown as string[]) {
+              debug_('saw chunk: %O', chunk_.slice(0, 30), '...');
+
+              const chunk =
+                outputUnreleased && isFirst
+                  ? chunk_.replace(
+                      // ? Replace "@Unreleased" with "@unreleased" in heading
+                      new RegExp(
+                        `^(#+\\s+${escapeStringRegexp(cwdPackageName)})\\[@Unreleased]`,
+                        'm'
+                      ),
+                      '$1[@unreleased]'
+                    )
+                  : chunk_;
 
               if (outputOrder === OutputOrder.Descending) {
                 debug_('descending sort order: chunk passed through as-is');
@@ -413,7 +426,6 @@ Use --import-section-file to add a custom release section to the changelog. The 
                     yield '<br />\n\n';
                   }
 
-                  isFirst = false;
                   yield chunk;
 
                   debug_(
@@ -435,6 +447,8 @@ Use --import-section-file to add a custom release section to the changelog. The 
                   yield '';
                 }
               }
+
+              isFirst = false;
             }
 
             if (withheldChangelogPatchSections.length) {
