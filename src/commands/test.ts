@@ -403,7 +403,11 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
       if (!baseline) {
         if (collectCoverage) {
-          npxJestArguments.push('--collectCoverageFrom=src/**/*.ts?(x)');
+          npxJestArguments.push(
+            `--collectCoverageFrom=${
+              'relativeRoot' in cwdPackage ? cwdPackage.relativeRoot + '/' : ''
+            }src/**/*.ts?(x)`
+          );
         }
 
         if (scope === TesterScope.Unlimited) {
@@ -566,20 +570,11 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       }
 
       npxTstycheArguments.push(...testerOptions);
-
-      if (jestTestPathPatterns.length) {
-        const jestPrefix = isCwdTheProjectRoot
-          ? ''
-          : '/' + toRelativePath(projectRoot, packageRoot);
-
-        const finalJestTestPathPatterns =
-          scope === TesterScope.ThisPackage
-            ? // ? Assumes all patterns start with a slash (/)
-              jestTestPathPatterns.map((pattern) => jestPrefix + pattern)
-            : jestTestPathPatterns;
-
-        npxJestArguments.push(...finalJestTestPathPatterns);
-      }
+      // ? We don't need to limit the test path patterns (e.g. with a
+      // ? relativeRoot prefix) since (1) we use a denylist approach instead via
+      // ? --testPathIgnorePatterns and (2) these patterns are regular
+      // ? expressions so they aren't root relative and match at any depth
+      npxJestArguments.push(...jestTestPathPatterns);
 
       debug('npxTstycheArguments: %O', npxTstycheArguments);
       debug('npxJestArguments: %O', npxJestArguments);
