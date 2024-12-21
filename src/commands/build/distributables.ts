@@ -52,7 +52,12 @@ import {
 import {
   gatherPackageBuildTargets,
   prefixAssetImport,
-  specifierToPackageName
+  prefixExternalImport,
+  prefixInternalImport,
+  prefixNormalImport,
+  prefixTypeOnlyImport,
+  specifierToPackageName,
+  type MetadataImportsPrefix
 } from 'multiverse+project-utils:analyze/gather-package-build-targets.ts';
 
 import { gatherPackageFiles } from 'multiverse+project-utils:analyze/gather-package-files.ts';
@@ -364,6 +369,16 @@ All source and asset files are further classified as either "internal" or "exter
 
 At the beginning of the build process, a build manifest is generated. It lists metadata about the package being built, including its name, if it's production-ready, several important paths, and information about the build targets: (1) how many are classified as internal vs external, (2) how many are classified as asset vs source, (3) the number of project-wide import aliases used (including per-alias file counts), and (4) the number of npm package imports used (including per-package file counts).
 
+Alias and npm package import metadata is output with additional information in the form of the following "prefix tags":
+
+- ${prefixAssetImport} - an import occurred in an asset file under the source directory (which is weird)
+- ${prefixExternalImport} - an import of this resource occurred in an internal source file
+- ${prefixInternalImport} - an import of this resource occurred in an external source file
+- ${prefixNormalImport} - an import of this resource occurred in a normal and/or internal source file
+- ${prefixTypeOnlyImport} - an import of this resource occurred in a type-only source file
+
+Note that an alias or package can be imported multiple times and hence have multiple tags.
+
 After targets are built, CLI projects will have their entry points chmod-ed to be executable, shebangs added if they do not already exist, and "bin" entries soft-linked into the node_modules/.bin directory.
 
 The only available scope is "${DistributablesBuilderScope.ThisPackage}"; hence, when invoking this command, only the package at the current working directory will be built. Use Npm's workspace features, or Turbo's, if your goal is to build distributables from multiple packages.
@@ -657,8 +672,10 @@ aliases imported: ${
                 : `${aliasCountsEntries.length}\n` +
                   aliasCountsEntries
                     .map(
-                      ([dep, count]) =>
-                        `${SHORT_TAB}${dep} (from ${count} file${count !== 1 ? 's' : ''})`
+                      ([dep, { count, prefixes }]) =>
+                        `${SHORT_TAB}${prefixesToString(prefixes)}${
+                          prefixes.has(prefixNormalImport) ? dep : greyOut(dep)
+                        } ${greyOut(`(seen ${count} time${count !== 1 ? 's' : ''})`)}`
                     )
                     .join('\n')
             }${isPartialBuild ? '\n' : '\n\n'}packages imported: ${
@@ -667,14 +684,16 @@ aliases imported: ${
                 : `${dependencyCountsEntries.length}\n` +
                   dependencyCountsEntries
                     .reduce<[string[], string[]]>(
-                      (strings, [alias, count]) => {
+                      (strings, [alias, { count, prefixes }]) => {
                         const [fromSources, fromAssets] = strings;
 
-                        (alias.startsWith(prefixAssetImport)
+                        (prefixes.has(prefixAssetImport)
                           ? fromAssets
                           : fromSources
                         ).push(
-                          `${SHORT_TAB}${alias} (from ${count} file${count !== 1 ? 's' : ''})`
+                          `${SHORT_TAB}${prefixesToString(prefixes)}${
+                            prefixes.has(prefixNormalImport) ? alias : greyOut(alias)
+                          } ${greyOut(`(seen ${count} time${count !== 1 ? 's' : ''})`)}`
                         );
 
                         return strings;
@@ -1698,4 +1717,36 @@ function toNaturalSorted<T>(array: [key: string, value: T][]) {
     // ? Natural sort using latest ES6/7 features!
     return collator.compare(keyA, keyB);
   });
+}
+
+function prefixesToString(prefixes: Set<MetadataImportsPrefix>) {
+  const orderedPrefixes = [];
+
+  // ? prefixAssetImport always goes first
+  if (prefixes.has(prefixAssetImport)) {
+    orderedPrefixes.push(prefixAssetImport);
+  }
+
+  if (prefixes.has(prefixNormalImport)) {
+    orderedPrefixes.push(prefixNormalImport);
+  }
+
+  if (prefixes.has(prefixInternalImport)) {
+    orderedPrefixes.push(greyOut(prefixInternalImport));
+  }
+
+  if (prefixes.has(prefixExternalImport)) {
+    orderedPrefixes.push(greyOut(prefixExternalImport));
+  }
+
+  if (prefixes.has(prefixTypeOnlyImport)) {
+    orderedPrefixes.push(greyOut(prefixTypeOnlyImport));
+  }
+
+  return orderedPrefixes.join(' ') + ' ';
+}
+
+// TODO: use chalk instead
+function greyOut(str: string) {
+  return `\u001B[2m\u001B[90m${str}\u001B[39m\u001B[22m`;
 }
