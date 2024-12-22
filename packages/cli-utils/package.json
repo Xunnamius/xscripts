@@ -1,6 +1,10 @@
 {
   "name": "@-xun/cli",
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xunnamius/cli-utils.git"
+  },
   "dependencies": {},
   "peerDependencies": {
     "listr2": "^8.2.3"

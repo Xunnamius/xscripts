@@ -1,6 +1,10 @@
 {
   "name": "@-xun/test",
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xunnamius/test-utils.git"
+  },
   "dependencies": {
     "simple-git": "^3.27.0"
   }
