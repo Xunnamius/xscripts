@@ -654,7 +654,7 @@ async function makeOctokit({
       debug: debug.extend('gh'),
       info: ghLog,
       warn: ghLog.message,
-      error: ghLog.warn
+      error: ghLog.message
     },
     throttle: {
       onRateLimit: (retryAfter, options, _octokit, retryCount) => {
