@@ -31,10 +31,7 @@ import {
   type Path
 } from 'multiverse+project-utils:fs.ts';
 
-import {
-  defaultChangelogTopmatter,
-  getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix
-} from 'universe:assets/transformers/_conventional.config.cjs.ts';
+import { defaultChangelogTopmatter } from 'universe:assets/transformers/_conventional.config.cjs.ts';
 
 import {
   default as format,
@@ -52,6 +49,7 @@ import { ErrorMessage } from 'universe:error.ts';
 
 import {
   checkIsNotNil,
+  getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix,
   readFile,
   runGlobalPreChecks,
   withGlobalBuilder,

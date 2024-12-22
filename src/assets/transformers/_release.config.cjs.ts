@@ -27,11 +27,6 @@ import {
 
 import { createDebugLogger } from 'multiverse+rejoinder';
 
-import {
-  getExclusionaryPathspecs,
-  noSpecialInitialCommitIndicator
-} from 'universe:assets/transformers/_conventional.config.cjs.ts';
-
 import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 
 import {
@@ -49,7 +44,12 @@ import {
 
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
-import { determineRepoWorkingTreeDirty } from 'universe:util.ts';
+
+import {
+  deriveScopeNarrowingPathspecs,
+  determineRepoWorkingTreeDirty,
+  noSpecialInitialCommitIndicator
+} from 'universe:util.ts';
 
 import type {
   XchangelogConfig,
@@ -68,6 +68,7 @@ const debug = createDebugLogger({
 });
 
 export type { ReleaseConfig };
+export { noSpecialInitialCommitIndicator };
 
 /**
  * The custom configuration object expected by the custom semantic-release
@@ -101,7 +102,7 @@ export function moduleExport({
 
   debug('releaseSectionPath: %O', releaseSectionPath);
 
-  const gitLogPathspecs = getExclusionaryPathspecs({ projectMetadata });
+  const gitLogPathspecs = deriveScopeNarrowingPathspecs({ projectMetadata });
 
   const { cwdPackage } = projectMetadata;
   const cwdPackageName = cwdPackage.json.name;

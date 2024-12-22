@@ -1,7 +1,6 @@
 import assert from 'node:assert';
 import childProcess from 'node:child_process';
 
-import { runNoRejectOnBadExit } from '@-xun/run';
 import escapeStringRegExp from 'escape-string-regexp~4';
 import clone from 'lodash.clone';
 import cloneDeepWith from 'lodash.clonedeepwith';
@@ -9,29 +8,19 @@ import deepMerge from 'lodash.mergewith';
 import semver from 'semver';
 
 import { interpolateTemplate, toSentenceCase } from 'multiverse+cli-utils:util.ts';
-
-import {
-  analyzeProjectStructure,
-  isRootPackage,
-  WorkspaceAttribute,
-  type ProjectMetadata
-} from 'multiverse+project-utils';
-
-import {
-  directoryDocumentationPackageBase,
-  directorySrcPackageBase,
-  directoryTestPackageBase,
-  toRelativePath,
-  Tsconfig,
-  xchangelogConfigProjectBase
-} from 'multiverse+project-utils:fs.ts';
-
+import { analyzeProjectStructure, type ProjectMetadata } from 'multiverse+project-utils';
+import { xchangelogConfigProjectBase } from 'multiverse+project-utils:fs.ts';
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
-import { __read_file_sync } from 'universe:util.ts';
+
+import {
+  __read_file_sync,
+  deriveScopeNarrowingPathspecs,
+  noSpecialInitialCommitIndicator
+} from 'universe:util.ts';
 
 import type {
   XchangelogCommit,
@@ -61,24 +50,6 @@ const cubby = ((
 debug('conventional.config.cjs was freshly imported, running patchers...');
 patchProxy();
 patchSpawnChild();
-
-/**
- * The Git pathspecs that should be ignored (excluded) when not considering the
- * root package. Pathspecs should be relative to _project_ root (i.e. "top"
- * pathspecs).
- *
- * Entries from `package.json::files` will be included automatically.
- */
-const rootPackageExcludedPathspecs = [
-  ':(exclude,top)' + directorySrcPackageBase,
-  ':(exclude,top)' + directoryTestPackageBase,
-  ':(exclude,top)' + directoryDocumentationPackageBase,
-  ':(exclude,top)' + Tsconfig.PackageDocumentation,
-  ':(exclude,top)' + Tsconfig.PackageLint,
-  ':(exclude,top)' + Tsconfig.PackageTypes,
-  ':(exclude,top,glob)*-lock.json',
-  ':(exclude,top,glob)*.md'
-];
 
 /**
  * The location of the handlebars templates in relation to this file's location
@@ -124,6 +95,8 @@ const specialArgumentMarkerForPaths = '_paths_';
 const specialArgumentRegExp = new RegExp(
   `^-?-(${specialArgumentMarkerForFlags}|${specialArgumentMarkerForPaths})=?(.*)`
 );
+
+export { noSpecialInitialCommitIndicator };
 
 /**
  * The inline image HTML element appended to links leading to external
@@ -356,13 +329,6 @@ export function assertEnvironment(): Omit<
 }
 
 /**
- * The value populating the XSCRIPTS_SPECIAL_INITIAL_COMMIT environment variable
- * when there was no special initialization commit reference found.
- */
-// TODO: migrate this into xpipeline
-export const noSpecialInitialCommitIndicator = 'N/A';
-
-/**
  * This function returns a `@-xun/changelog` configuration preset. See the
  * documentation for details.
  *
@@ -422,7 +388,7 @@ export function moduleExport({
           : [],
       // ? Pathspecs passed to git log; used to ignore changes in other packages
       // ? See: https://github.com/sindresorhus/dargs#usage
-      [specialArgumentMarkerForPaths]: getExclusionaryPathspecs({ projectMetadata })
+      [specialArgumentMarkerForPaths]: deriveScopeNarrowingPathspecs({ projectMetadata })
     },
 
     // ? See: https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-commits-parser#options
@@ -923,119 +889,6 @@ export function moduleExport({
       }
     ) as T;
   }
-}
-
-/**
- * Return pathspecs for excluding certain paths from consideration depending on
- * the project structure and the current working directory.
- *
- * This function takes into account {@link WorkspaceAttribute.Shared} packages
- * and is useful for narrowing the scope of tooling like xchangelog and
- * xrelease.
- */
-export function getExclusionaryPathspecs({
-  projectMetadata: { cwdPackage, rootPackage, subRootPackages }
-}: {
-  projectMetadata: ProjectMetadata;
-}) {
-  const { root: projectRoot } = rootPackage;
-  const isCwdPackageTheRootPackage = isRootPackage(cwdPackage);
-  const excludedPathspecs: string[] = [];
-
-  if (!isCwdPackageTheRootPackage) {
-    excludedPathspecs.push(
-      ...rootPackageExcludedPathspecs,
-      ...(rootPackage.json.files || []).map((file) => {
-        return ':(exclude,top)' + (file.startsWith('/') ? file.slice(1) : file);
-      })
-    );
-  }
-
-  if (subRootPackages) {
-    for (const {
-      root: packageRoot,
-      attributes: packageAttributes
-    } of subRootPackages.values()) {
-      if (
-        packageRoot !== cwdPackage.root &&
-        !packageAttributes[WorkspaceAttribute.Shared]
-      ) {
-        excludedPathspecs.push(
-          ':(exclude,top)' + toRelativePath(projectRoot, packageRoot)
-        );
-      }
-    }
-  }
-
-  debug('excludedPathspecs (intermediate): %O', excludedPathspecs);
-
-  const finalExcludedPathspecs = excludedPathspecs.filter(Boolean);
-  debug('finalExcludedPathspecs: %O', finalExcludedPathspecs);
-  return finalExcludedPathspecs;
-}
-
-/**
- * Return the commit-ish (SHA hash) of the most recent commit containing the
- * Xpipeline command suffix `[INIT]`, or being pointed to by a
- * `package-name@0.0.0-init` version tag. If no such commit could be found,
- * {@link noSpecialInitialCommitIndicator} is returned.
- *
- * @see {@link XchangelogConfig}
- */
-// TODO: migrate some part of this into xpipeline
-export async function getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix(
-  tagPrefix: string
-) {
-  const dbg = debug.extend('find-init-commit');
-
-  const [{ stdout: xpipelineReference }, { stdout: initTagReference }] =
-    await Promise.all([
-      runNoRejectOnBadExit('git', [
-        'log',
-        '-1',
-        '--pretty=format:%H',
-        '--grep',
-        String.raw`\[INIT]$`
-      ]),
-      runNoRejectOnBadExit('git', [
-        'log',
-        '-1',
-        '--pretty=format:%H',
-        `${tagPrefix}0.0.0-init`
-      ])
-    ]);
-
-  dbg('xpipelineReference: %O', xpipelineReference);
-  dbg('initTagReference: %O', initTagReference);
-
-  let reference: string;
-
-  if (xpipelineReference && initTagReference) {
-    // ? Use the most recent of the two options
-    const { exitCode: isXpipelineReferenceMoreRecent } = await runNoRejectOnBadExit(
-      'git',
-      [
-        'merge-base',
-        initTagReference,
-        '--is-ancestor',
-        xpipelineReference // ? Is xpipelineRef the ancestor of initTagRef?
-      ]
-    );
-
-    dbg('isXpipelineReferenceMoreRecent: %O', isXpipelineReferenceMoreRecent);
-
-    reference = isXpipelineReferenceMoreRecent ? xpipelineReference : initTagReference;
-  } else {
-    reference =
-      xpipelineReference || initTagReference || noSpecialInitialCommitIndicator;
-  }
-
-  dbg(
-    'latest commit with either Xpipeline init command or version tag init suffix: %O',
-    reference
-  );
-
-  return reference;
 }
 
 /**

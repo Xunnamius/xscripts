@@ -21,20 +21,36 @@ import {
 import { LogTag } from 'multiverse+cli-utils:logging.ts';
 
 import {
+  gatherPackageBuildTargets,
+  gatherPackageFiles,
+  // ? Used in documentation
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  WorkspaceAttribute
+} from 'multiverse+project-utils';
+
+import {
+  isRootPackage,
+  ProjectAttribute,
   type GenericProjectMetadata,
   type ProjectMetadata
 } from 'multiverse+project-utils:analyze/common.ts';
 
 import {
   aliasMapConfigPackageBase,
+  directoryDocumentationPackageBase,
+  directorySrcPackageBase,
+  directoryTestPackageBase,
   dotEnvConfigPackageBase,
   dotEnvConfigProjectBase,
   dotEnvDefaultConfigPackageBase,
   dotEnvDefaultConfigProjectBase,
   getInitialWorkingDirectory,
+  markdownReadmePackageBase,
   toAbsolutePath,
   toPath,
-  type AbsolutePath
+  toRelativePath,
+  type AbsolutePath,
+  type RelativePath
 } from 'multiverse+project-utils:fs.ts';
 
 import {
@@ -44,6 +60,7 @@ import {
 } from 'multiverse+rejoinder';
 
 import {
+  DefaultGlobalScope,
   globalCliArguments,
   type GlobalCliArguments,
   type GlobalExecutionContext
@@ -52,9 +69,30 @@ import {
 import { globalDebuggerNamespace } from 'universe:constant.ts';
 import { ErrorMessage } from 'universe:error.ts';
 
-import type { Merge } from 'type-fest';
+import type { LiteralUnion, Merge } from 'type-fest';
 import type { RawAliasMapping } from 'multiverse+project-utils:alias.ts';
 import type { TransformerContext } from 'universe:assets.ts';
+
+/**
+ * An array of project-root-relative glob magics matching paths that belong
+ * exclusively to the root package, if it exists. **Paths must not begin with
+ * _or contain_ a path separator character**.
+ *
+ * When determining which pathspecs to include for a subroot package, all root
+ * paths (excluding packages/) will be included except for these, which are be
+ * explicitly ignored; entries from the project root `package.json::files` will
+ * be included automatically.
+ */
+const globPathsExclusiveToRootPackage = [
+  directorySrcPackageBase,
+  directoryTestPackageBase,
+  directoryDocumentationPackageBase,
+  // ? All the TsConfig.* configuration files that are package-specific
+  'tsc.package.*',
+  '*-lock.json',
+  'CHANGELOG.md'
+  // * package.json, README.md, LICENSE, etc are added from package.json::files
+] as unknown as readonly RelativePath[];
 
 const cachedDotEnvResults = new Map<string, Partial<DotenvPopulateInput> | undefined>();
 
@@ -474,6 +512,108 @@ export async function replaceRegionsRespectively({
   return outgoingContent;
 }
 
+/**
+ * Return pathspecs for including only certain paths for consideration depending
+ * on the project structure and the current working directory.
+ *
+ * This function takes into account {@link WorkspaceAttribute.Shared} packages
+ * and is useful for narrowing the scope of tooling like xchangelog and
+ * xrelease.
+ */
+export function deriveScopeNarrowingPathspecs({
+  projectMetadata: { cwdPackage, rootPackage, type }
+}: {
+  projectMetadata: ProjectMetadata;
+}): string[] {
+  assert(
+    !rootPackage.attributes[ProjectAttribute.Monorepo] ||
+      rootPackage.attributes[ProjectAttribute.Hybridrepo] ||
+      !isRootPackage(cwdPackage),
+    ErrorMessage.GuruMeditation()
+  );
+
+  const debug = createDebugLogger({
+    namespace: `${globalDebuggerNamespace}:derive-pathspecs`
+  });
+
+  if (type === ProjectAttribute.Polyrepo) {
+    return [];
+  }
+
+  const { root: projectRoot } = rootPackage;
+  const isCwdPackageTheRootPackage = isRootPackage(cwdPackage);
+  const pathspecsWithoutSigMagic: RelativePath[] = [];
+
+  if (isCwdPackageTheRootPackage) {
+    // * Include: Everything in the package and all normal and type-only imports
+    // * Exclude: No explicit excludes
+
+    pathspecsWithoutSigMagic.push(...globPathsExclusiveToRootPackage);
+
+    const { other: relevantProjectRootPaths } = gatherPackageFiles.sync(rootPackage, {
+      useCached: true
+    });
+
+    pathspecsWithoutSigMagic.push(
+      ...deepPathsToAncestorDirnames(relevantProjectRootPaths)
+    );
+  } else {
+    // * Include: Everything in the package, all normal and type-only imports,
+    // *          and all relevant project root paths
+    // * Exclude: Irrelevant project root paths that belong exclusively to the
+    // *          root package (i.e. irrelevant paths)
+
+    pathspecsWithoutSigMagic.push(cwdPackage.relativeRoot);
+
+    const { other: relevantProjectRootPaths } = gatherPackageFiles.sync(rootPackage, {
+      useCached: true,
+      ignore: globPathsExclusiveToRootPackage
+        .concat(
+          // ? Always exclude the README.md file
+          toRelativePath(markdownReadmePackageBase),
+          (rootPackage.json.files || []).map((file) => {
+            return (file.startsWith('/') ? file.slice(1) : file) as RelativePath;
+          })
+        )
+        // ? We're going by gitignore rules, so preceding / means project root
+        // ? unlike when dealing with signature/pathspec magic
+        .map((path) => '/' + path)
+    });
+
+    pathspecsWithoutSigMagic.push(
+      ...deepPathsToAncestorDirnames(relevantProjectRootPaths)
+    );
+  }
+
+  debug(
+    'pathspecsWithoutSigMagic (before externals added): %O',
+    pathspecsWithoutSigMagic
+  );
+
+  const {
+    targets: { external }
+  } = gatherPackageBuildTargets.sync(cwdPackage, { useCached: true });
+
+  const externals = external.normal.union(external.typeOnly);
+  pathspecsWithoutSigMagic.push(...externals.values());
+
+  const pathspecsWithSigMagic = pathspecsWithoutSigMagic.map(
+    (path) => ':(top,glob)' + path
+  );
+
+  debug('pathspecsWithSigMagic: %O', pathspecsWithSigMagic);
+  return pathspecsWithSigMagic;
+
+  function deepPathsToAncestorDirnames(paths: AbsolutePath[]) {
+    // eslint-disable-next-line unicorn/no-array-reduce
+    return paths.reduce<Set<RelativePath>>((pathspecs, path) => {
+      // ? Optimize path count by only including the parent dir, if applicable
+      pathspecs.add(toRelativePath(projectRoot, path).split('/')[0] as RelativePath);
+      return pathspecs;
+    }, new Set());
+  }
+}
+
 // TODO: transmute this and related functions into @-xun/env
 
 export type LoadDotEnvSettings = {
@@ -835,6 +975,79 @@ export function checkArrayNotEmpty(argName: string, adjective = 'non-empty') {
 
 export function isNonEmptyString(o: unknown): o is string {
   return typeof o === 'string' && o.length > 0;
+}
+
+// TODO: migrate some part of this into xpipeline and hoist the other part up ^^
+
+/**
+ * The value populating the XSCRIPTS_SPECIAL_INITIAL_COMMIT environment variable
+ * when there was no special initialization commit reference found.
+ */
+export const noSpecialInitialCommitIndicator = 'N/A';
+
+/**
+ * Return the commit-ish (SHA hash) of the most recent commit containing the
+ * Xpipeline command suffix `[INIT]`, or being pointed to by a
+ * `package-name@0.0.0-init` version tag. If no such commit could be found,
+ * {@link noSpecialInitialCommitIndicator} is returned.
+ *
+ * @see {@link XchangelogConfig}
+ */
+export async function getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix(
+  tagPrefix: string
+) {
+  const debug = createDebugLogger({
+    namespace: `${globalDebuggerNamespace}:find-init-commit`
+  });
+
+  const [{ stdout: xpipelineReference }, { stdout: initTagReference }] =
+    await Promise.all([
+      runNoRejectOnBadExit('git', [
+        'log',
+        '-1',
+        '--pretty=format:%H',
+        '--grep',
+        String.raw`\[INIT]$`
+      ]),
+      runNoRejectOnBadExit('git', [
+        'log',
+        '-1',
+        '--pretty=format:%H',
+        `${tagPrefix}0.0.0-init`
+      ])
+    ]);
+
+  debug('xpipelineReference: %O', xpipelineReference);
+  debug('initTagReference: %O', initTagReference);
+
+  let reference: string;
+
+  if (xpipelineReference && initTagReference) {
+    // ? Use the most recent of the two options
+    const { exitCode: isXpipelineReferenceMoreRecent } = await runNoRejectOnBadExit(
+      'git',
+      [
+        'merge-base',
+        initTagReference,
+        '--is-ancestor',
+        xpipelineReference // ? Is xpipelineRef the ancestor of initTagRef?
+      ]
+    );
+
+    debug('isXpipelineReferenceMoreRecent: %O', isXpipelineReferenceMoreRecent);
+
+    reference = isXpipelineReferenceMoreRecent ? xpipelineReference : initTagReference;
+  } else {
+    reference =
+      xpipelineReference || initTagReference || noSpecialInitialCommitIndicator;
+  }
+
+  debug(
+    'latest commit with either Xpipeline init command or version tag init suffix: %O',
+    reference
+  );
+
+  return reference;
 }
 
 // TODO: ^^^

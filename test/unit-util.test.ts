@@ -18,9 +18,11 @@ import {
 import { createDebugLogger } from 'multiverse+rejoinder';
 
 import { type TransformerContext } from 'universe:assets.ts';
+import { DefaultGlobalScope } from 'universe:configure.ts';
 import { ErrorMessage } from 'universe:error.ts';
 
 import {
+  deriveScopeNarrowingPathspecs,
   determineRepoWorkingTreeDirty,
   getRelevantDotEnvFilePaths,
   replaceRegionsRespectively,
@@ -588,5 +590,81 @@ EXISTING Also insider
         context: dummyContext
       })
     ).resolves.toBe(dummyTemplate + additionalRegion);
+  });
+});
+
+describe('::deriveScopeNarrowingPathspecs', () => {
+  it('returns no pathspecs for polyrepo', async () => {
+    expect.hasAssertions();
+
+    const projectMetadata = fixtureToProjectMetadata('goodPolyrepo') as ProjectMetadata;
+    expect(deriveScopeNarrowingPathspecs({ projectMetadata })).toStrictEqual([]);
+  });
+
+  it('returns expected pathspecs for hybridrepo with root cwdPackage', async () => {
+    expect.hasAssertions();
+
+    const projectMetadata = fixtureToProjectMetadata(
+      'goodHybridrepo'
+    ) as ProjectMetadata;
+
+    expect(deriveScopeNarrowingPathspecs({ projectMetadata })).toStrictEqual([
+      ':(top,glob)src',
+      ':(top,glob)test',
+      ':(top,glob)docs',
+      ':(top,glob)tsc.package.docs.json',
+      ':(top,glob)tsc.package.lint.json',
+      ':(top,glob)tsc.package.types.json',
+      ':(top,glob)*-lock.json',
+      ':(top,glob)CHANGELOG.md',
+      ':(top,glob).gitignore',
+      ':(top,glob).prettierignore',
+      ':(top,glob)package.json',
+      ':(top,glob)vercel.json',
+      ':(top,glob)webpack.config.mjs'
+    ]);
+  });
+
+  it('returns expected pathspecs for hybridrepo with non-root cwdPackage', async () => {
+    expect.hasAssertions();
+
+    const projectMetadata = fixtureToProjectMetadata(
+      'goodHybridrepo',
+      'cli'
+    ) as ProjectMetadata;
+
+    expect(deriveScopeNarrowingPathspecs({ projectMetadata })).toStrictEqual([
+      ':(top,glob)packages/cli',
+      ':(top,glob).gitignore',
+      ':(top,glob).prettierignore',
+      ':(top,glob)vercel.json',
+      ':(top,glob)webpack.config.mjs'
+    ]);
+  });
+
+  it('returns expected pathspecs for non-hybrid monorepo with non-root cwdPackage', async () => {
+    expect.hasAssertions();
+
+    const projectMetadata = fixtureToProjectMetadata(
+      'goodMonorepo',
+      'pkg-1'
+    ) as ProjectMetadata;
+
+    expect(deriveScopeNarrowingPathspecs({ projectMetadata })).toStrictEqual([
+      ':(top,glob)packages/pkg-1',
+      ':(top,glob).prettierignore',
+      ':(top,glob)package.json',
+      ':(top,glob)something-else.md'
+    ]);
+  });
+
+  it('throws for non-hybrid monorepo with root cwdPackage', async () => {
+    expect.hasAssertions();
+
+    const projectMetadata = fixtureToProjectMetadata('goodMonorepo') as ProjectMetadata;
+
+    expect(() => deriveScopeNarrowingPathspecs({ projectMetadata })).toThrow(
+      ErrorMessage.GuruMeditation()
+    );
   });
 });

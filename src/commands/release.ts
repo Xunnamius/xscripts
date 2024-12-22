@@ -46,8 +46,6 @@ import {
   type ExtendedLogger
 } from 'multiverse+rejoinder';
 
-import { getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix } from 'universe:assets/transformers/_conventional.config.cjs.ts';
-
 import {
   default as renovate,
   type CustomCliArguments as RenovateCliArguments
@@ -65,6 +63,7 @@ import { attemptToRunCommand } from 'universe:task-runner.ts';
 
 import {
   determineRepoWorkingTreeDirty,
+  getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix,
   getRelevantDotEnvFilePaths,
   loadDotEnv,
   runGlobalPreChecks,

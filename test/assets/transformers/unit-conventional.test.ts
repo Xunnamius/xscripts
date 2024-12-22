@@ -16,10 +16,11 @@ import {
 
 import {
   moduleExport,
-  noSpecialInitialCommitIndicator,
   noteTitleForBreakingChange,
   wellKnownCommitTypes
 } from 'universe:assets/transformers/_conventional.config.cjs.ts';
+
+import { noSpecialInitialCommitIndicator } from 'universe:util.ts';
 
 import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
 
