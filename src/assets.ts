@@ -32,6 +32,9 @@ import { readFile } from 'universe:util.ts';
 
 import type { EmptyObject, Entry, Promisable } from 'type-fest';
 
+// ! Try not to use hardAssert, softAssert, or CliError here or in any
+// ! transformers, or in the stuff imported by them.
+
 const debug_ = createDebugLogger({ namespace: globalDebuggerNamespace });
 
 /**
@@ -59,9 +62,6 @@ export const directoryAssetTransformers = toAbsolutePath(
  * @see {@link TransformerContext}
  */
 export const directoryAssetTemplates = toAbsolutePath(__dirname, 'assets', 'templates');
-
-// TODO: ensure no usage of hardAssert, softAssert, or CliError in src/assets/*
-// TODO: (use eslint esquery for this)
 
 /**
  * These presets determine which assets will be returned by which transformers
