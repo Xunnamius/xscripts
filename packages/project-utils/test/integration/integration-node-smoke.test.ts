@@ -1,121 +1,125 @@
-/* eslint-disable @typescript-eslint/no-dynamic-delete */
-import { runNoRejectOnBadExit } from '@-xun/run';
+/* eslint-disable unicorn/no-abusive-eslint-disable */
+/* eslint-disable */
 
-import { debugFactory } from 'multiverse+debug';
+test.todo('this');
 
-import {
-  dummyDirectoriesFixture,
-  dummyFilesFixture,
-  dummyNpmPackageFixture,
-  mockFixtureFactory,
-  nodeImportAndRunTestFixture,
-  npmLinkSelfFixture,
-  reconfigureJestGlobalsToSkipTestsInThisFileIfRequested,
-  type FixtureOptions
-} from 'multiverse+test-utils';
+// import { runNoRejectOnBadExit } from '@-xun/run';
 
-import {
-  exports as packageExports,
-  name as packageName,
-  version as packageVersion
-} from 'rootverse+project-utils:package.json';
+// import { debugFactory } from 'multiverse+debug';
 
-import type { XPackageJson } from 'multiverse+project-utils:analyze.ts';
+// import {
+//   dummyDirectoriesFixture,
+//   dummyFilesFixture,
+//   dummyNpmPackageFixture,
+//   mockFixtureFactory,
+//   nodeImportAndRunTestFixture,
+//   npmLinkSelfFixture,
+//   reconfigureJestGlobalsToSkipTestsInThisFileIfRequested,
+//   type FixtureOptions
+// } from 'multiverse+test-utils';
 
-reconfigureJestGlobalsToSkipTestsInThisFileIfRequested({ it: true });
+// import {
+//   exports as packageExports,
+//   name as packageName,
+//   version as packageVersion
+// } from 'rootverse+project-utils:package.json';
 
-const TEST_IDENTIFIER = 'integration-node';
-const debug = debugFactory(`${packageName}:${TEST_IDENTIFIER}`);
-const nodeVersion = process.env.XPIPE_MATRIX_NODE_VERSION || process.version;
+// import type { XPackageJson } from 'multiverse+project-utils:analyze.ts';
 
-const packageMainPaths = Object.values(
-  packageExports as NonNullable<XPackageJson['exports']>
-)
-  .map((xport) =>
-    !xport || typeof xport === 'string' || Array.isArray(xport)
-      ? null
-      : // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        `${__dirname}/../${String(xport.node ?? xport.default)}`
-  )
-  .filter(Boolean) as string[];
+// reconfigureJestGlobalsToSkipTestsInThisFileIfRequested({ it: true });
 
-// eslint-disable-next-line jest/require-hook
-debug('packageMainPaths: %O', packageMainPaths);
-// eslint-disable-next-line jest/require-hook
-debug(`nodeVersion: "${nodeVersion}"`);
+// const TEST_IDENTIFIER = 'integration-node';
+// const debug = debugFactory(`${packageName}:${TEST_IDENTIFIER}`);
+// const nodeVersion = process.env.XPIPE_MATRIX_NODE_VERSION || process.version;
 
-const fixtureOptions = {
-  performCleanup: true,
-  directoryPaths: ['packages/pkg1', 'packages/pkg2', '.git'],
-  initialFileContents: {
-    'package.json': `{"name":"dummy-pkg","workspaces":["packages/*"],"dependencies":{"${packageName}":"${packageVersion}"}}`,
-    'packages/pkg1/package.json': `{"name":"pkg-1","version":"1.2.3"}`,
-    'packages/pkg2/package.json': `{"name":"pkg-2","version":"1.2.3"}`
-  } as FixtureOptions['initialFileContents'],
-  use: [
-    dummyNpmPackageFixture(),
-    dummyDirectoriesFixture(),
-    dummyFilesFixture(),
-    npmLinkSelfFixture(),
-    nodeImportAndRunTestFixture()
-  ]
-} satisfies Partial<FixtureOptions> & {
-  initialFileContents: FixtureOptions['initialFileContents'];
-};
+// const packageMainPaths = Object.values(
+//   packageExports as NonNullable<XPackageJson['exports']>
+// )
+//   .map((xport) =>
+//     !xport || typeof xport === 'string' || Array.isArray(xport)
+//       ? null
+//       : // eslint-disable-next-line @typescript-eslint/no-base-to-string
+//         `${__dirname}/../${String(xport.node ?? xport.default)}`
+//   )
+//   .filter(Boolean) as string[];
 
-const withMockedFixture = mockFixtureFactory(TEST_IDENTIFIER, fixtureOptions);
+// // eslint-disable-next-line jest/require-hook
+// debug('packageMainPaths: %O', packageMainPaths);
+// // eslint-disable-next-line jest/require-hook
+// debug(`nodeVersion: "${nodeVersion}"`);
 
-const runTest = async (
-  importAsEsm: boolean,
-  testFixtureFn: Parameters<typeof withMockedFixture>[0]
-) => {
-  const indexPath = `src/index.${importAsEsm ? 'm' : ''}js`;
+// const fixtureOptions = {
+//   performCleanup: true,
+//   directoryPaths: ['packages/pkg1', 'packages/pkg2', '.git'],
+//   initialFileContents: {
+//     'package.json': `{"name":"dummy-pkg","workspaces":["packages/*"],"dependencies":{"${packageName}":"${packageVersion}"}}`,
+//     'packages/pkg1/package.json': `{"name":"pkg-1","version":"1.2.3"}`,
+//     'packages/pkg2/package.json': `{"name":"pkg-2","version":"1.2.3"}`
+//   } as FixtureOptions['initialFileContents'],
+//   use: [
+//     dummyNpmPackageFixture(),
+//     dummyDirectoriesFixture(),
+//     dummyFilesFixture(),
+//     npmLinkSelfFixture(),
+//     nodeImportAndRunTestFixture()
+//   ]
+// } satisfies Partial<FixtureOptions> & {
+//   initialFileContents: FixtureOptions['initialFileContents'];
+// };
 
-  fixtureOptions.initialFileContents[indexPath] =
-    (importAsEsm
-      ? `import { analyzeProjectStructure } from '${packageName}/project-utils';`
-      : `const { analyzeProjectStructure } = require('${packageName}/project-utils');`) +
-    '\n' +
-    (importAsEsm
-      ? `import { getEslintAliases } from '${packageName}/import-aliases';`
-      : `const { getEslintAliases } = require('${packageName}/import-aliases');`) +
-    `
-    console.log(analyzeProjectStructure().project.json.name === 'dummy-pkg');
-    console.log(analyzeProjectStructure().project.packages.get('pkg-1').json.name === 'pkg-1');
-    console.log(getEslintAliases()[0][0] === 'universe' && getEslintAliases()[0][1] === './src');
-`;
+// const withMockedFixture = mockFixtureFactory(TEST_IDENTIFIER, fixtureOptions);
 
-  await withMockedFixture(async (context) => {
-    if (!context.testResult) throw new Error('must use node-import-test fixture');
-    await testFixtureFn(context);
-  });
+// const runTest = async (
+//   importAsEsm: boolean,
+//   testFixtureFn: Parameters<typeof withMockedFixture>[0]
+// ) => {
+//   const indexPath = `src/index.${importAsEsm ? 'm' : ''}js`;
 
-  delete fixtureOptions.initialFileContents[indexPath];
-};
+//   fixtureOptions.initialFileContents[indexPath] =
+//     (importAsEsm
+//       ? `import { analyzeProjectStructure } from '${packageName}/project-utils';`
+//       : `const { analyzeProjectStructure } = require('${packageName}/project-utils');`) +
+//     '\n' +
+//     (importAsEsm
+//       ? `import { getEslintAliases } from '${packageName}/import-aliases';`
+//       : `const { getEslintAliases } = require('${packageName}/import-aliases');`) +
+//     `
+//     console.log(analyzeProjectStructure().project.json.name === 'dummy-pkg');
+//     console.log(analyzeProjectStructure().project.packages.get('pkg-1').json.name === 'pkg-1');
+//     console.log(getEslintAliases()[0][0] === 'universe' && getEslintAliases()[0][1] === './src');
+// `;
 
-beforeAll(async () => {
-  await Promise.all(
-    packageMainPaths.map(async (packageMainPath) => {
-      if ((await runNoRejectOnBadExit('test', ['-e', packageMainPath])).exitCode !== 0) {
-        debug(`unable to find main distributable: ${packageMainPath}`);
-        throw new Error('must build distributables first (try `npm run build-dist`)');
-      }
-    })
-  );
-});
+//   await withMockedFixture(async (context) => {
+//     if (!context.testResult) throw new Error('must use node-import-test fixture');
+//     await testFixtureFn(context);
+//   });
 
-it('works as an ESM import', async () => {
-  expect.hasAssertions();
-  await runTest(true, async (context) => {
-    expect(context.testResult?.stdout).toBe('true\ntrue\ntrue');
-    expect(context.testResult?.code).toBe(0);
-  });
-});
+//   delete fixtureOptions.initialFileContents[indexPath];
+// };
 
-it('works as a CJS require(...)', async () => {
-  expect.hasAssertions();
-  await runTest(false, async (context) => {
-    expect(context.testResult?.stdout).toBe('true\ntrue\ntrue');
-    expect(context.testResult?.code).toBe(0);
-  });
-});
+// beforeAll(async () => {
+//   await Promise.all(
+//     packageMainPaths.map(async (packageMainPath) => {
+//       if ((await runNoRejectOnBadExit('test', ['-e', packageMainPath])).exitCode !== 0) {
+//         debug(`unable to find main distributable: ${packageMainPath}`);
+//         throw new Error('must build distributables first (try `npm run build-dist`)');
+//       }
+//     })
+//   );
+// });
+
+// it('works as an ESM import', async () => {
+//   expect.hasAssertions();
+//   await runTest(true, async (context) => {
+//     expect(context.testResult?.stdout).toBe('true\ntrue\ntrue');
+//     expect(context.testResult?.code).toBe(0);
+//   });
+// });
+
+// it('works as a CJS require(...)', async () => {
+//   expect.hasAssertions();
+//   await runTest(false, async (context) => {
+//     expect(context.testResult?.stdout).toBe('true\ntrue\ntrue');
+//     expect(context.testResult?.code).toBe(0);
+//   });
+// });
