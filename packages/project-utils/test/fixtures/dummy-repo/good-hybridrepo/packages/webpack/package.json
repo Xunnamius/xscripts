@@ -5,6 +5,12 @@
   "exports": {
     ".": "./dist/index.mjs"
   },
+  "files": [
+    "/dist",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
   "scripts": {
     "test": "echo 'it works!'"
   },

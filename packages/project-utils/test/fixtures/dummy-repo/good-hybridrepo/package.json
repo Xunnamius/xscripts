@@ -7,6 +7,12 @@
   "bin": {
     "faker": "./dist/src/cli.js"
   },
+  "files": [
+    "/dist",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/hybridrepo-owner/repo-name"
