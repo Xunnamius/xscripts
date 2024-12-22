@@ -320,6 +320,7 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       const { startTime } = state;
 
       logStartTime({ log, startTime });
+
       genericLogger(
         [LogTag.IF_NOT_QUIETED],
         `Testing ${
@@ -404,7 +405,10 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
       ];
 
       if (collectCoverage) {
-        npxJestArguments.push('--coverage');
+        npxJestArguments.push(
+          '--coverage',
+          `--coverageDirectory=${toPath(packageRoot, 'coverage')}`
+        );
       }
 
       const buildTargetPackages = new Set<Package>();
