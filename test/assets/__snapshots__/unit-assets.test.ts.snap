@@ -475,7 +475,6 @@ specification. Contributions of any kind welcome!
 
 exports[`::gatherAssetsFromAllTransformers preset: basic generates expected assets at hybridrepo 1`] = `
 [
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -525,6 +524,12 @@ exports[`::gatherAssetsFromAllTransformers preset: basic generates expected asse
   "packages/webpack/src/index.ts",
   "test/index.ts",
   "test/setup.ts",
+  "packages/webpack/test/unit-x.test.ts",
+  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/integration-node-smoke.test.ts",
+  "packages/webpack/test/integration/integration-client.test.ts",
+  "packages/webpack/test/end-to-end/.config.ts",
+  "packages/webpack/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "tsc.package.types.json",
@@ -548,7 +553,6 @@ exports[`::gatherAssetsFromAllTransformers preset: basic generates expected asse
 
 exports[`::gatherAssetsFromAllTransformers preset: basic generates expected assets at non-hybrid monorepo 1`] = `
 [
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -599,6 +603,24 @@ exports[`::gatherAssetsFromAllTransformers preset: basic generates expected asse
   "packages/pkg-import/src/index.ts",
   "test/index.ts",
   "test/setup.ts",
+  "packages/pkg-1/test/unit-x.test.ts",
+  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-1/test/integration/integration-client.test.ts",
+  "packages/pkg-1/test/end-to-end/.config.ts",
+  "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-2/test/unit-x.test.ts",
+  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-2/test/integration/integration-client.test.ts",
+  "packages/pkg-2/test/end-to-end/.config.ts",
+  "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-import/test/unit-x.test.ts",
+  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-import/test/integration/integration-client.test.ts",
+  "packages/pkg-import/test/end-to-end/.config.ts",
+  "packages/pkg-import/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "packages/pkg-1/tsc.package.types.json",
@@ -619,7 +641,6 @@ exports[`::gatherAssetsFromAllTransformers preset: basic generates expected asse
 
 exports[`::gatherAssetsFromAllTransformers preset: basic generates expected assets for polyrepo 1`] = `
 [
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -677,7 +698,6 @@ exports[`::gatherAssetsFromAllTransformers preset: basic generates expected asse
 exports[`::gatherAssetsFromAllTransformers preset: cli generates expected assets at hybridrepo 1`] = `
 [
   ".all-contributorsrc",
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -734,6 +754,12 @@ exports[`::gatherAssetsFromAllTransformers preset: cli generates expected assets
   "packages/webpack/src/index.ts",
   "test/index.ts",
   "test/setup.ts",
+  "packages/webpack/test/unit-x.test.ts",
+  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/integration-node-smoke.test.ts",
+  "packages/webpack/test/integration/integration-client.test.ts",
+  "packages/webpack/test/end-to-end/.config.ts",
+  "packages/webpack/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "tsc.package.types.json",
@@ -758,7 +784,6 @@ exports[`::gatherAssetsFromAllTransformers preset: cli generates expected assets
 exports[`::gatherAssetsFromAllTransformers preset: cli generates expected assets at non-hybrid monorepo 1`] = `
 [
   ".all-contributorsrc",
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -816,6 +841,24 @@ exports[`::gatherAssetsFromAllTransformers preset: cli generates expected assets
   "packages/pkg-import/src/index.ts",
   "test/index.ts",
   "test/setup.ts",
+  "packages/pkg-1/test/unit-x.test.ts",
+  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-1/test/integration/integration-client.test.ts",
+  "packages/pkg-1/test/end-to-end/.config.ts",
+  "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-2/test/unit-x.test.ts",
+  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-2/test/integration/integration-client.test.ts",
+  "packages/pkg-2/test/end-to-end/.config.ts",
+  "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-import/test/unit-x.test.ts",
+  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-import/test/integration/integration-client.test.ts",
+  "packages/pkg-import/test/end-to-end/.config.ts",
+  "packages/pkg-import/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "packages/pkg-1/tsc.package.types.json",
@@ -837,7 +880,6 @@ exports[`::gatherAssetsFromAllTransformers preset: cli generates expected assets
 exports[`::gatherAssetsFromAllTransformers preset: cli generates expected assets for polyrepo 1`] = `
 [
   ".all-contributorsrc",
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -959,6 +1001,12 @@ exports[`::gatherAssetsFromAllTransformers preset: default (no preset) generates
   "tailwind.config.mjs",
   "test/index.ts",
   "test/setup.ts",
+  "packages/webpack/test/unit-x.test.ts",
+  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/integration-node-smoke.test.ts",
+  "packages/webpack/test/integration/integration-client.test.ts",
+  "packages/webpack/test/end-to-end/.config.ts",
+  "packages/webpack/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "tsc.package.types.json",
@@ -1046,6 +1094,24 @@ exports[`::gatherAssetsFromAllTransformers preset: default (no preset) generates
   "tailwind.config.mjs",
   "test/index.ts",
   "test/setup.ts",
+  "packages/pkg-1/test/unit-x.test.ts",
+  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-1/test/integration/integration-client.test.ts",
+  "packages/pkg-1/test/end-to-end/.config.ts",
+  "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-2/test/unit-x.test.ts",
+  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-2/test/integration/integration-client.test.ts",
+  "packages/pkg-2/test/end-to-end/.config.ts",
+  "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-import/test/unit-x.test.ts",
+  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-import/test/integration/integration-client.test.ts",
+  "packages/pkg-import/test/end-to-end/.config.ts",
+  "packages/pkg-import/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "packages/pkg-1/tsc.package.types.json",
@@ -1136,7 +1202,6 @@ exports[`::gatherAssetsFromAllTransformers preset: default (no preset) generates
 exports[`::gatherAssetsFromAllTransformers preset: lib generates expected assets at hybridrepo 1`] = `
 [
   ".all-contributorsrc",
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1193,6 +1258,12 @@ exports[`::gatherAssetsFromAllTransformers preset: lib generates expected assets
   "packages/webpack/src/index.ts",
   "test/index.ts",
   "test/setup.ts",
+  "packages/webpack/test/unit-x.test.ts",
+  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/integration-node-smoke.test.ts",
+  "packages/webpack/test/integration/integration-client.test.ts",
+  "packages/webpack/test/end-to-end/.config.ts",
+  "packages/webpack/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "tsc.package.types.json",
@@ -1217,7 +1288,6 @@ exports[`::gatherAssetsFromAllTransformers preset: lib generates expected assets
 exports[`::gatherAssetsFromAllTransformers preset: lib generates expected assets at non-hybrid monorepo 1`] = `
 [
   ".all-contributorsrc",
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1275,6 +1345,24 @@ exports[`::gatherAssetsFromAllTransformers preset: lib generates expected assets
   "packages/pkg-import/src/index.ts",
   "test/index.ts",
   "test/setup.ts",
+  "packages/pkg-1/test/unit-x.test.ts",
+  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-1/test/integration/integration-client.test.ts",
+  "packages/pkg-1/test/end-to-end/.config.ts",
+  "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-2/test/unit-x.test.ts",
+  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-2/test/integration/integration-client.test.ts",
+  "packages/pkg-2/test/end-to-end/.config.ts",
+  "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-import/test/unit-x.test.ts",
+  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-import/test/integration/integration-client.test.ts",
+  "packages/pkg-import/test/end-to-end/.config.ts",
+  "packages/pkg-import/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "packages/pkg-1/tsc.package.types.json",
@@ -1296,7 +1384,6 @@ exports[`::gatherAssetsFromAllTransformers preset: lib generates expected assets
 exports[`::gatherAssetsFromAllTransformers preset: lib generates expected assets for polyrepo 1`] = `
 [
   ".all-contributorsrc",
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1358,7 +1445,6 @@ exports[`::gatherAssetsFromAllTransformers preset: lib generates expected assets
 exports[`::gatherAssetsFromAllTransformers preset: lib-esm generates expected assets at hybridrepo 1`] = `
 [
   ".all-contributorsrc",
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1415,6 +1501,12 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-esm generates expected as
   "packages/webpack/src/index.ts",
   "test/index.ts",
   "test/setup.ts",
+  "packages/webpack/test/unit-x.test.ts",
+  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/integration-node-smoke.test.ts",
+  "packages/webpack/test/integration/integration-client.test.ts",
+  "packages/webpack/test/end-to-end/.config.ts",
+  "packages/webpack/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "tsc.package.types.json",
@@ -1439,7 +1531,6 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-esm generates expected as
 exports[`::gatherAssetsFromAllTransformers preset: lib-esm generates expected assets at non-hybrid monorepo 1`] = `
 [
   ".all-contributorsrc",
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1497,6 +1588,24 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-esm generates expected as
   "packages/pkg-import/src/index.ts",
   "test/index.ts",
   "test/setup.ts",
+  "packages/pkg-1/test/unit-x.test.ts",
+  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-1/test/integration/integration-client.test.ts",
+  "packages/pkg-1/test/end-to-end/.config.ts",
+  "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-2/test/unit-x.test.ts",
+  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-2/test/integration/integration-client.test.ts",
+  "packages/pkg-2/test/end-to-end/.config.ts",
+  "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-import/test/unit-x.test.ts",
+  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-import/test/integration/integration-client.test.ts",
+  "packages/pkg-import/test/end-to-end/.config.ts",
+  "packages/pkg-import/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "packages/pkg-1/tsc.package.types.json",
@@ -1518,7 +1627,6 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-esm generates expected as
 exports[`::gatherAssetsFromAllTransformers preset: lib-esm generates expected assets for polyrepo 1`] = `
 [
   ".all-contributorsrc",
-  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1580,6 +1688,7 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-esm generates expected as
 exports[`::gatherAssetsFromAllTransformers preset: lib-web generates expected assets at hybridrepo 1`] = `
 [
   ".all-contributorsrc",
+  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1636,6 +1745,12 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-web generates expected as
   "packages/webpack/src/index.ts",
   "test/index.ts",
   "test/setup.ts",
+  "packages/webpack/test/unit-x.test.ts",
+  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/integration-node-smoke.test.ts",
+  "packages/webpack/test/integration/integration-client.test.ts",
+  "packages/webpack/test/end-to-end/.config.ts",
+  "packages/webpack/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "tsc.package.types.json",
@@ -1660,6 +1775,7 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-web generates expected as
 exports[`::gatherAssetsFromAllTransformers preset: lib-web generates expected assets at non-hybrid monorepo 1`] = `
 [
   ".all-contributorsrc",
+  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1717,6 +1833,24 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-web generates expected as
   "packages/pkg-import/src/index.ts",
   "test/index.ts",
   "test/setup.ts",
+  "packages/pkg-1/test/unit-x.test.ts",
+  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-1/test/integration/integration-client.test.ts",
+  "packages/pkg-1/test/end-to-end/.config.ts",
+  "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-2/test/unit-x.test.ts",
+  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-2/test/integration/integration-client.test.ts",
+  "packages/pkg-2/test/end-to-end/.config.ts",
+  "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-import/test/unit-x.test.ts",
+  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-import/test/integration/integration-client.test.ts",
+  "packages/pkg-import/test/end-to-end/.config.ts",
+  "packages/pkg-import/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "packages/pkg-1/tsc.package.types.json",
@@ -1738,6 +1872,7 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-web generates expected as
 exports[`::gatherAssetsFromAllTransformers preset: lib-web generates expected assets for polyrepo 1`] = `
 [
   ".all-contributorsrc",
+  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1798,6 +1933,7 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-web generates expected as
 
 exports[`::gatherAssetsFromAllTransformers preset: nextjs generates expected assets at hybridrepo 1`] = `
 [
+  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1850,6 +1986,12 @@ exports[`::gatherAssetsFromAllTransformers preset: nextjs generates expected ass
   "tailwind.config.mjs",
   "test/index.ts",
   "test/setup.ts",
+  "packages/webpack/test/unit-x.test.ts",
+  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/integration-node-smoke.test.ts",
+  "packages/webpack/test/integration/integration-client.test.ts",
+  "packages/webpack/test/end-to-end/.config.ts",
+  "packages/webpack/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "tsc.package.types.json",
@@ -1875,6 +2017,7 @@ exports[`::gatherAssetsFromAllTransformers preset: nextjs generates expected ass
 
 exports[`::gatherAssetsFromAllTransformers preset: nextjs generates expected assets at non-hybrid monorepo 1`] = `
 [
+  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -1928,6 +2071,24 @@ exports[`::gatherAssetsFromAllTransformers preset: nextjs generates expected ass
   "tailwind.config.mjs",
   "test/index.ts",
   "test/setup.ts",
+  "packages/pkg-1/test/unit-x.test.ts",
+  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-1/test/integration/integration-client.test.ts",
+  "packages/pkg-1/test/end-to-end/.config.ts",
+  "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-2/test/unit-x.test.ts",
+  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-2/test/integration/integration-client.test.ts",
+  "packages/pkg-2/test/end-to-end/.config.ts",
+  "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-import/test/unit-x.test.ts",
+  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-import/test/integration/integration-client.test.ts",
+  "packages/pkg-import/test/end-to-end/.config.ts",
+  "packages/pkg-import/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "packages/pkg-1/tsc.package.types.json",
@@ -1950,6 +2111,7 @@ exports[`::gatherAssetsFromAllTransformers preset: nextjs generates expected ass
 
 exports[`::gatherAssetsFromAllTransformers preset: nextjs generates expected assets for polyrepo 1`] = `
 [
+  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -2011,6 +2173,7 @@ exports[`::gatherAssetsFromAllTransformers preset: nextjs generates expected ass
 
 exports[`::gatherAssetsFromAllTransformers preset: react generates expected assets at hybridrepo 1`] = `
 [
+  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -2062,6 +2225,12 @@ exports[`::gatherAssetsFromAllTransformers preset: react generates expected asse
   "tailwind.config.mjs",
   "test/index.ts",
   "test/setup.ts",
+  "packages/webpack/test/unit-x.test.ts",
+  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/integration-node-smoke.test.ts",
+  "packages/webpack/test/integration/integration-client.test.ts",
+  "packages/webpack/test/end-to-end/.config.ts",
+  "packages/webpack/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "tsc.package.types.json",
@@ -2085,6 +2254,7 @@ exports[`::gatherAssetsFromAllTransformers preset: react generates expected asse
 
 exports[`::gatherAssetsFromAllTransformers preset: react generates expected assets at non-hybrid monorepo 1`] = `
 [
+  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -2137,6 +2307,24 @@ exports[`::gatherAssetsFromAllTransformers preset: react generates expected asse
   "tailwind.config.mjs",
   "test/index.ts",
   "test/setup.ts",
+  "packages/pkg-1/test/unit-x.test.ts",
+  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-1/test/integration/integration-client.test.ts",
+  "packages/pkg-1/test/end-to-end/.config.ts",
+  "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-2/test/unit-x.test.ts",
+  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-2/test/integration/integration-client.test.ts",
+  "packages/pkg-2/test/end-to-end/.config.ts",
+  "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
+  "packages/pkg-import/test/unit-x.test.ts",
+  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
+  "packages/pkg-import/test/integration/integration-client.test.ts",
+  "packages/pkg-import/test/end-to-end/.config.ts",
+  "packages/pkg-import/test/end-to-end/e2e-x.test.ts",
   "tsconfig.json",
   "tsc.project.lint.json",
   "packages/pkg-1/tsc.package.types.json",
@@ -2157,6 +2345,7 @@ exports[`::gatherAssetsFromAllTransformers preset: react generates expected asse
 
 exports[`::gatherAssetsFromAllTransformers preset: react generates expected assets for polyrepo 1`] = `
 [
+  ".browserslistrc",
   ".codecov.yml",
   ".editorconfig",
   ".env.default",
@@ -16279,7 +16468,7 @@ scope: unlimited
 <p align="center" width="100%">
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 2 -->
 
@@ -16302,11 +16491,11 @@ good-hybridrepo-description
 
 <br />
 
-# repo-name (good-hybridrepo)
+# repo-name (cli)
 
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 3 -->
 
@@ -16340,7 +16529,7 @@ good-hybridrepo-description
 To install repo-name:
 
 \`\`\`shell
-npm install good-hybridrepo
+npm install cli
 \`\`\`
 
 ## Usage
@@ -16483,21 +16672,21 @@ specification. Contributions of any kind welcome!
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/dm/cli?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/l/cli?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/repo-owner/repo-name/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/good-hybridrepo
+  https://xunn.at/npm-pkg-version/cli
   'Install this package using npm or yarn!'
 [x-badge-npm-link]:
-  https://npmtrends.com/good-hybridrepo
+  https://npmtrends.com/cli
 [x-badge-repo-link]: https://github.com/repo-owner/repo-name
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
@@ -16548,7 +16737,7 @@ scope: unlimited
 <p align="center" width="100%">
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 2 -->
 
@@ -16571,11 +16760,11 @@ good-hybridrepo-description
 
 <br />
 
-# repo-name (good-hybridrepo)
+# repo-name (private)
 
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 3 -->
 
@@ -16609,7 +16798,7 @@ good-hybridrepo-description
 To install repo-name:
 
 \`\`\`shell
-npm install good-hybridrepo
+npm install private
 \`\`\`
 
 ## Usage
@@ -16752,21 +16941,21 @@ specification. Contributions of any kind welcome!
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/dm/private?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/l/private?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/repo-owner/repo-name/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/good-hybridrepo
+  https://xunn.at/npm-pkg-version/private
   'Install this package using npm or yarn!'
 [x-badge-npm-link]:
-  https://npmtrends.com/good-hybridrepo
+  https://npmtrends.com/private
 [x-badge-repo-link]: https://github.com/repo-owner/repo-name
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
@@ -16817,7 +17006,7 @@ scope: unlimited
 <p align="center" width="100%">
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 2 -->
 
@@ -16840,11 +17029,11 @@ good-hybridrepo-description
 
 <br />
 
-# repo-name (good-hybridrepo)
+# repo-name (webpack)
 
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 3 -->
 
@@ -16878,7 +17067,7 @@ good-hybridrepo-description
 To install repo-name:
 
 \`\`\`shell
-npm install good-hybridrepo
+npm install webpack
 \`\`\`
 
 ## Usage
@@ -17021,21 +17210,21 @@ specification. Contributions of any kind welcome!
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/dm/webpack?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/l/webpack?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/repo-owner/repo-name/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/good-hybridrepo
+  https://xunn.at/npm-pkg-version/webpack
   'Install this package using npm or yarn!'
 [x-badge-npm-link]:
-  https://npmtrends.com/good-hybridrepo
+  https://npmtrends.com/webpack
 [x-badge-repo-link]: https://github.com/repo-owner/repo-name
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
@@ -17355,7 +17544,7 @@ scope: unlimited
 <p align="center" width="100%">
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 2 -->
 
@@ -17378,11 +17567,11 @@ good-hybridrepo-description
 
 <br />
 
-# repo-name (good-hybridrepo)
+# repo-name (cli)
 
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 3 -->
 
@@ -17416,7 +17605,7 @@ good-hybridrepo-description
 To install repo-name:
 
 \`\`\`shell
-npm install good-hybridrepo
+npm install cli
 \`\`\`
 
 ## Usage
@@ -17559,21 +17748,21 @@ specification. Contributions of any kind welcome!
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/dm/cli?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/l/cli?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/repo-owner/repo-name/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/good-hybridrepo
+  https://xunn.at/npm-pkg-version/cli
   'Install this package using npm or yarn!'
 [x-badge-npm-link]:
-  https://npmtrends.com/good-hybridrepo
+  https://npmtrends.com/cli
 [x-badge-repo-link]: https://github.com/repo-owner/repo-name
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
@@ -17624,7 +17813,7 @@ scope: unlimited
 <p align="center" width="100%">
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 2 -->
 
@@ -17647,11 +17836,11 @@ good-hybridrepo-description
 
 <br />
 
-# repo-name (good-hybridrepo)
+# repo-name (private)
 
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 3 -->
 
@@ -17685,7 +17874,7 @@ good-hybridrepo-description
 To install repo-name:
 
 \`\`\`shell
-npm install good-hybridrepo
+npm install private
 \`\`\`
 
 ## Usage
@@ -17828,21 +18017,21 @@ specification. Contributions of any kind welcome!
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/dm/private?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/l/private?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/repo-owner/repo-name/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/good-hybridrepo
+  https://xunn.at/npm-pkg-version/private
   'Install this package using npm or yarn!'
 [x-badge-npm-link]:
-  https://npmtrends.com/good-hybridrepo
+  https://npmtrends.com/private
 [x-badge-repo-link]: https://github.com/repo-owner/repo-name
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
@@ -17893,7 +18082,7 @@ scope: unlimited
 <p align="center" width="100%">
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 2 -->
 
@@ -17916,11 +18105,11 @@ good-hybridrepo-description
 
 <br />
 
-# repo-name (good-hybridrepo)
+# repo-name (webpack)
 
 <!-- xscripts-template-region-end -->
 
-good-hybridrepo-description
+<!-- TODO -->
 
 <!-- xscripts-template-region-start 3 -->
 
@@ -17954,7 +18143,7 @@ good-hybridrepo-description
 To install repo-name:
 
 \`\`\`shell
-npm install good-hybridrepo
+npm install webpack
 \`\`\`
 
 ## Usage
@@ -18097,21 +18286,21 @@ specification. Contributions of any kind welcome!
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/dm/webpack?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/good-hybridrepo?style=flat-square
+  https://img.shields.io/npm/l/webpack?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/repo-owner/repo-name/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/good-hybridrepo
+  https://xunn.at/npm-pkg-version/webpack
   'Install this package using npm or yarn!'
 [x-badge-npm-link]:
-  https://npmtrends.com/good-hybridrepo
+  https://npmtrends.com/webpack
 [x-badge-repo-link]: https://github.com/repo-owner/repo-name
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
@@ -18731,7 +18920,7 @@ scope: unlimited
 
 <br />
 
-# repo-name (pkg-1)
+# repo-name (@namespaced/pkg)
 
 <!-- xscripts-template-region-end -->
 
@@ -18769,7 +18958,7 @@ scope: unlimited
 To install repo-name:
 
 \`\`\`shell
-npm install pkg-1
+npm install @namespaced/pkg
 \`\`\`
 
 ## Usage
@@ -18912,21 +19101,21 @@ specification. Contributions of any kind welcome!
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/pkg-1?style=flat-square
+  https://img.shields.io/npm/dm/@namespaced/pkg?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/pkg-1?style=flat-square
+  https://img.shields.io/npm/l/@namespaced/pkg?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/repo-owner/repo-name/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/pkg-1
+  https://xunn.at/npm-pkg-version/@namespaced/pkg
   'Install this package using npm or yarn!'
 [x-badge-npm-link]:
-  https://npmtrends.com/pkg-1
+  https://npmtrends.com/@namespaced/pkg
 [x-badge-repo-link]: https://github.com/repo-owner/repo-name
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
@@ -19000,7 +19189,7 @@ scope: unlimited
 
 <br />
 
-# repo-name (pkg-1)
+# repo-name (@namespaced/importer)
 
 <!-- xscripts-template-region-end -->
 
@@ -19038,7 +19227,7 @@ scope: unlimited
 To install repo-name:
 
 \`\`\`shell
-npm install pkg-1
+npm install @namespaced/importer
 \`\`\`
 
 ## Usage
@@ -19181,21 +19370,21 @@ specification. Contributions of any kind welcome!
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/pkg-1?style=flat-square
+  https://img.shields.io/npm/dm/@namespaced/importer?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/pkg-1?style=flat-square
+  https://img.shields.io/npm/l/@namespaced/importer?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/repo-owner/repo-name/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/pkg-1
+  https://xunn.at/npm-pkg-version/@namespaced/importer
   'Install this package using npm or yarn!'
 [x-badge-npm-link]:
-  https://npmtrends.com/pkg-1
+  https://npmtrends.com/@namespaced/importer
 [x-badge-repo-link]: https://github.com/repo-owner/repo-name
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
@@ -19546,7 +19735,7 @@ scope: unlimited
 
 <br />
 
-# repo-name (pkg-1)
+# repo-name (@namespaced/pkg)
 
 <!-- xscripts-template-region-end -->
 
@@ -19584,7 +19773,7 @@ scope: unlimited
 To install repo-name:
 
 \`\`\`shell
-npm install pkg-1
+npm install @namespaced/pkg
 \`\`\`
 
 ## Usage
@@ -19727,21 +19916,21 @@ specification. Contributions of any kind welcome!
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/pkg-1?style=flat-square
+  https://img.shields.io/npm/dm/@namespaced/pkg?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/pkg-1?style=flat-square
+  https://img.shields.io/npm/l/@namespaced/pkg?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/repo-owner/repo-name/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/pkg-1
+  https://xunn.at/npm-pkg-version/@namespaced/pkg
   'Install this package using npm or yarn!'
 [x-badge-npm-link]:
-  https://npmtrends.com/pkg-1
+  https://npmtrends.com/@namespaced/pkg
 [x-badge-repo-link]: https://github.com/repo-owner/repo-name
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
@@ -19815,7 +20004,7 @@ scope: unlimited
 
 <br />
 
-# repo-name (pkg-1)
+# repo-name (@namespaced/importer)
 
 <!-- xscripts-template-region-end -->
 
@@ -19853,7 +20042,7 @@ scope: unlimited
 To install repo-name:
 
 \`\`\`shell
-npm install pkg-1
+npm install @namespaced/importer
 \`\`\`
 
 ## Usage
@@ -19996,21 +20185,21 @@ specification. Contributions of any kind welcome!
   'Is this package well-tested?'
 [x-badge-codecov-link]: https://codecov.io/gh/repo-owner/repo-name
 [x-badge-downloads-image]:
-  https://img.shields.io/npm/dm/pkg-1?style=flat-square
+  https://img.shields.io/npm/dm/@namespaced/importer?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
   https://img.shields.io/github/last-commit/repo-owner/repo-name?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
-  https://img.shields.io/npm/l/pkg-1?style=flat-square
+  https://img.shields.io/npm/l/@namespaced/importer?style=flat-square
   "This package's source license"
 [x-badge-license-link]:
   https://github.com/repo-owner/repo-name/blob/main/LICENSE
 [x-badge-npm-image]:
-  https://xunn.at/npm-pkg-version/pkg-1
+  https://xunn.at/npm-pkg-version/@namespaced/importer
   'Install this package using npm or yarn!'
 [x-badge-npm-link]:
-  https://npmtrends.com/pkg-1
+  https://npmtrends.com/@namespaced/importer
 [x-badge-repo-link]: https://github.com/repo-owner/repo-name
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
@@ -21127,7 +21316,7 @@ function getBabelAliases() {
     "^testverse+cli:(.+)$": "./packages/cli/test/$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
-  },
+  }
 }
 "
 `;
@@ -21204,7 +21393,7 @@ function getBabelAliases() {
     "^testverse+cli:(.+)$": "./packages/cli/test/$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
-  },
+  }
 }
 "
 `;
@@ -21281,7 +21470,7 @@ function getBabelAliases() {
     "^testverse+cli:(.+)$": "./packages/cli/test/$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
-  },
+  }
 }
 "
 `;
@@ -21358,7 +21547,7 @@ function getBabelAliases() {
     "^testverse+pkg-1:(.+)$": "./packages/pkg-1/test/$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
-  },
+  }
 }
 "
 `;
@@ -21435,7 +21624,7 @@ function getBabelAliases() {
     "^testverse+pkg-1:(.+)$": "./packages/pkg-1/test/$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
-  },
+  }
 }
 "
 `;
@@ -21492,7 +21681,7 @@ function getBabelAliases() {
     "^rootverse:(.+)$": "./$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
-  },
+  }
 }
 "
 `;
@@ -21549,7 +21738,7 @@ function getBabelAliases() {
     "^rootverse:(.+)$": "./$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
-  },
+  }
 }
 "
 `;
@@ -21606,7 +21795,7 @@ function getBabelAliases() {
     "^rootverse:(.+)$": "./$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
-  },
+  }
 }
 "
 `;
@@ -22185,7 +22374,7 @@ scope: this-package
 ⏶⏷⏶⏷⏶
 // @ts-check
 
-import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
   moduleExport,
@@ -22198,7 +22387,7 @@ import {
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:eslint' });*/
 
 const config = deepMergeConfig(
-  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  moduleExport({ derivedAliases: getEslintAliases(), ...await assertEnvironment() }),
   /**
    * @type {import('@-xun/scripts/assets/eslint.config.mjs').EslintConfig}
    */
@@ -22249,7 +22438,7 @@ function getEslintAliases() {
     ["testverse+cli:*", "./packages/cli/test/*"],
     ["testverse:*", "./test/*"],
     ["typeverse:*", "./types/*"]
-  ],
+  ]
 }
 "
 `;
@@ -22260,7 +22449,7 @@ scope: unlimited
 ⏶⏷⏶⏷⏶
 // @ts-check
 
-import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
   moduleExport,
@@ -22273,7 +22462,7 @@ import {
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:eslint' });*/
 
 const config = deepMergeConfig(
-  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  moduleExport({ derivedAliases: getEslintAliases(), ...await assertEnvironment() }),
   /**
    * @type {import('@-xun/scripts/assets/eslint.config.mjs').EslintConfig}
    */
@@ -22324,7 +22513,7 @@ function getEslintAliases() {
     ["testverse+cli:*", "./packages/cli/test/*"],
     ["testverse:*", "./test/*"],
     ["typeverse:*", "./types/*"]
-  ],
+  ]
 }
 "
 `;
@@ -22335,7 +22524,7 @@ scope: unlimited
 ⏶⏷⏶⏷⏶
 // @ts-check
 
-import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
   moduleExport,
@@ -22348,7 +22537,7 @@ import {
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:eslint' });*/
 
 const config = deepMergeConfig(
-  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  moduleExport({ derivedAliases: getEslintAliases(), ...await assertEnvironment() }),
   /**
    * @type {import('@-xun/scripts/assets/eslint.config.mjs').EslintConfig}
    */
@@ -22399,7 +22588,7 @@ function getEslintAliases() {
     ["testverse+cli:*", "./packages/cli/test/*"],
     ["testverse:*", "./test/*"],
     ["typeverse:*", "./types/*"]
-  ],
+  ]
 }
 "
 `;
@@ -22410,7 +22599,7 @@ scope: this-package
 ⏶⏷⏶⏷⏶
 // @ts-check
 
-import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
   moduleExport,
@@ -22423,7 +22612,7 @@ import {
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:eslint' });*/
 
 const config = deepMergeConfig(
-  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  moduleExport({ derivedAliases: getEslintAliases(), ...await assertEnvironment() }),
   /**
    * @type {import('@-xun/scripts/assets/eslint.config.mjs').EslintConfig}
    */
@@ -22474,7 +22663,7 @@ function getEslintAliases() {
     ["testverse+pkg-1:*", "./packages/pkg-1/test/*"],
     ["testverse:*", "./test/*"],
     ["typeverse:*", "./types/*"]
-  ],
+  ]
 }
 "
 `;
@@ -22485,7 +22674,7 @@ scope: unlimited
 ⏶⏷⏶⏷⏶
 // @ts-check
 
-import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
   moduleExport,
@@ -22498,7 +22687,7 @@ import {
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:eslint' });*/
 
 const config = deepMergeConfig(
-  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  moduleExport({ derivedAliases: getEslintAliases(), ...await assertEnvironment() }),
   /**
    * @type {import('@-xun/scripts/assets/eslint.config.mjs').EslintConfig}
    */
@@ -22549,7 +22738,7 @@ function getEslintAliases() {
     ["testverse+pkg-1:*", "./packages/pkg-1/test/*"],
     ["testverse:*", "./test/*"],
     ["typeverse:*", "./types/*"]
-  ],
+  ]
 }
 "
 `;
@@ -22560,7 +22749,7 @@ scope: unlimited
 ⏶⏷⏶⏷⏶
 // @ts-check
 
-import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
   moduleExport,
@@ -22573,7 +22762,7 @@ import {
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:eslint' });*/
 
 const config = deepMergeConfig(
-  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  moduleExport({ derivedAliases: getEslintAliases(), ...await assertEnvironment() }),
   /**
    * @type {import('@-xun/scripts/assets/eslint.config.mjs').EslintConfig}
    */
@@ -22624,7 +22813,7 @@ function getEslintAliases() {
     ["testverse+pkg-1:*", "./packages/pkg-1/test/*"],
     ["testverse:*", "./test/*"],
     ["typeverse:*", "./types/*"]
-  ],
+  ]
 }
 "
 `;
@@ -22635,7 +22824,7 @@ scope: unlimited
 ⏶⏷⏶⏷⏶
 // @ts-check
 
-import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
   moduleExport,
@@ -22648,7 +22837,7 @@ import {
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:eslint' });*/
 
 const config = deepMergeConfig(
-  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  moduleExport({ derivedAliases: getEslintAliases(), ...await assertEnvironment() }),
   /**
    * @type {import('@-xun/scripts/assets/eslint.config.mjs').EslintConfig}
    */
@@ -22679,7 +22868,7 @@ function getEslintAliases() {
     ["rootverse:*", "./*"],
     ["testverse:*", "./test/*"],
     ["typeverse:*", "./types/*"]
-  ],
+  ]
 }
 "
 `;
@@ -22690,7 +22879,7 @@ scope: this-package
 ⏶⏷⏶⏷⏶
 // @ts-check
 
-import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
   moduleExport,
@@ -22703,7 +22892,7 @@ import {
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:eslint' });*/
 
 const config = deepMergeConfig(
-  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  moduleExport({ derivedAliases: getEslintAliases(), ...await assertEnvironment() }),
   /**
    * @type {import('@-xun/scripts/assets/eslint.config.mjs').EslintConfig}
    */
@@ -22734,7 +22923,7 @@ function getEslintAliases() {
     ["rootverse:*", "./*"],
     ["testverse:*", "./test/*"],
     ["typeverse:*", "./types/*"]
-  ],
+  ]
 }
 "
 `;
@@ -22745,7 +22934,7 @@ scope: unlimited
 ⏶⏷⏶⏷⏶
 // @ts-check
 
-import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
   moduleExport,
@@ -22758,7 +22947,7 @@ import {
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:eslint' });*/
 
 const config = deepMergeConfig(
-  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  moduleExport({ derivedAliases: getEslintAliases(), ...await assertEnvironment() }),
   /**
    * @type {import('@-xun/scripts/assets/eslint.config.mjs').EslintConfig}
    */
@@ -22789,7 +22978,7 @@ function getEslintAliases() {
     ["rootverse:*", "./*"],
     ["testverse:*", "./test/*"],
     ["typeverse:*", "./types/*"]
-  ],
+  ]
 }
 "
 `;
@@ -23089,7 +23278,7 @@ function getJestAliases() {
     "^testverse+cli:(.+)$": "<rootDir>/packages/cli/test/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
-  },
+  }
 }
 "
 `;
@@ -23165,7 +23354,7 @@ function getJestAliases() {
     "^testverse+cli:(.+)$": "<rootDir>/packages/cli/test/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
-  },
+  }
 }
 "
 `;
@@ -23241,7 +23430,7 @@ function getJestAliases() {
     "^testverse+cli:(.+)$": "<rootDir>/packages/cli/test/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
-  },
+  }
 }
 "
 `;
@@ -23317,7 +23506,7 @@ function getJestAliases() {
     "^testverse+pkg-1:(.+)$": "<rootDir>/packages/pkg-1/test/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
-  },
+  }
 }
 "
 `;
@@ -23393,7 +23582,7 @@ function getJestAliases() {
     "^testverse+pkg-1:(.+)$": "<rootDir>/packages/pkg-1/test/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
-  },
+  }
 }
 "
 `;
@@ -23449,7 +23638,7 @@ function getJestAliases() {
     "^rootverse:(.+)$": "<rootDir>/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
-  },
+  }
 }
 "
 `;
@@ -23505,7 +23694,7 @@ function getJestAliases() {
     "^rootverse:(.+)$": "<rootDir>/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
-  },
+  }
 }
 "
 `;
@@ -23561,7 +23750,7 @@ function getJestAliases() {
     "^rootverse:(.+)$": "<rootDir>/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
-  },
+  }
 }
 "
 `;
@@ -24034,7 +24223,7 @@ scope: this-package
     "registry": "https://registry.npmjs.org"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.32.0"
+    "@-xun/scripts": "^1.33.0"
   },
   "dependencies": {}
 }
@@ -24119,7 +24308,7 @@ scope: unlimited
   },
   "private": false,
   "devDependencies": {
-    "@-xun/scripts": "^1.32.0"
+    "@-xun/scripts": "^1.33.0"
   },
   "workspaces": [
     "packages/*",
@@ -24454,7 +24643,7 @@ scope: unlimited
     "registry": "https://registry.npmjs.org"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.32.0"
+    "@-xun/scripts": "^1.33.0"
   },
   "dependencies": {}
 }
@@ -25495,7 +25684,7 @@ scope: unlimited
   },
   "dependencies": {},
   "devDependencies": {
-    "@-xun/scripts": "^1.32.0"
+    "@-xun/scripts": "^1.33.0"
   }
 }
 "
@@ -25579,7 +25768,7 @@ scope: this-package
   },
   "dependencies": {},
   "devDependencies": {
-    "@-xun/scripts": "^1.32.0"
+    "@-xun/scripts": "^1.33.0"
   }
 }
 "
@@ -25658,7 +25847,7 @@ scope: unlimited
   },
   "dependencies": {},
   "devDependencies": {
-    "@-xun/scripts": "^1.32.0"
+    "@-xun/scripts": "^1.33.0"
   }
 }
 "
@@ -26320,8 +26509,32 @@ module.exports = deepMergeConfig(
 "
 `;
 
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> src generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/src/index.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/src/index.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> src generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/src/index.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/src/index.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+export {};
+"
+`;
+
 exports[`::gatherAssetsFromTransformer <generated asset content snapshots> src generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/src/index.ts 1`] = `
 "key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/src/index.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> src generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/src/index.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/src/index.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 export {};
@@ -26346,6 +26559,14 @@ export {};
 
 exports[`::gatherAssetsFromTransformer <generated asset content snapshots> src generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/src/index.ts 1`] = `
 "key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/src/index.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> src generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/src/index.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/src/index.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 export {};
@@ -26598,10 +26819,10 @@ scope: this-package
 ⏶⏷⏶⏷⏶
 /**
  ** This file exports test utilities specific to this project and beyond what is
- ** exported by @-xun/test; these can be imported using \`testverse\` aliases.
+ ** exported by @-xun/test; these can be imported using the \`testverse\` alias.
  */
 
-export {};
+export * from '@-xun/test';
 "
 `;
 
@@ -26620,16 +26841,310 @@ import 'jest-extended/all';
 "
 `;
 
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
 exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/index.ts 1`] = `
 "key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/index.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 /**
  ** This file exports test utilities specific to this project and beyond what is
- ** exported by @-xun/test; these can be imported using \`testverse\` aliases.
+ ** exported by @-xun/test; these can be imported using the \`testverse\` alias.
  */
 
+export * from '@-xun/test';
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
 export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
 "
 `;
 
@@ -26648,16 +27163,102 @@ import 'jest-extended/all';
 "
 `;
 
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
 exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/index.ts 1`] = `
 "key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/index.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 /**
  ** This file exports test utilities specific to this project and beyond what is
- ** exported by @-xun/test; these can be imported using \`testverse\` aliases.
+ ** exported by @-xun/test; these can be imported using the \`testverse\` alias.
  */
 
-export {};
+export * from '@-xun/test';
 "
 `;
 
@@ -26676,16 +27277,320 @@ import 'jest-extended/all';
 "
 `;
 
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (scope=this-package): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/.config.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (scope=this-package): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/e2e-x.test.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (scope=this-package): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (scope=this-package): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-client.test.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (scope=this-package): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-node-smoke.test.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (scope=this-package): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/unit-x.test.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
 exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/test/index.ts 1`] = `
 "key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/test/index.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 /**
  ** This file exports test utilities specific to this project and beyond what is
- ** exported by @-xun/test; these can be imported using \`testverse\` aliases.
+ ** exported by @-xun/test; these can be imported using the \`testverse\` alias.
  */
 
-export {};
+export * from '@-xun/test';
 "
 `;
 
@@ -26704,16 +27609,244 @@ import 'jest-extended/all';
 "
 `;
 
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/end-to-end/.config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/end-to-end/e2e-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/config.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/integration-client.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/integration-node-smoke.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/unit-x.test.ts
+scope: unlimited
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
 exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/test/index.ts 1`] = `
 "key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/test/index.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 /**
  ** This file exports test utilities specific to this project and beyond what is
- ** exported by @-xun/test; these can be imported using \`testverse\` aliases.
+ ** exported by @-xun/test; these can be imported using the \`testverse\` alias.
  */
 
-export {};
+export * from '@-xun/test';
 "
 `;
 
@@ -26738,10 +27871,10 @@ scope: unlimited
 ⏶⏷⏶⏷⏶
 /**
  ** This file exports test utilities specific to this project and beyond what is
- ** exported by @-xun/test; these can be imported using \`testverse\` aliases.
+ ** exported by @-xun/test; these can be imported using the \`testverse\` alias.
  */
 
-export {};
+export * from '@-xun/test';
 "
 `;
 
@@ -26760,16 +27893,82 @@ import 'jest-extended/all';
 "
 `;
 
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/end-to-end/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/end-to-end/.config.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all end-to-end tests.
+
+export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/end-to-end/e2e-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/end-to-end/e2e-x.test.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * These tests run through the entire process of acquiring this software,
+// * using its features, and dealing with its error conditions across a variety
+// * of runtimes (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
+"
+`;
+
 exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/index.ts 1`] = `
 "key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/index.ts
 scope: this-package
 ⏶⏷⏶⏷⏶
 /**
  ** This file exports test utilities specific to this project and beyond what is
- ** exported by @-xun/test; these can be imported using \`testverse\` aliases.
+ ** exported by @-xun/test; these can be imported using the \`testverse\` alias.
  */
 
+export * from '@-xun/test';
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/integration/config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/integration/config.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * Configuration state and metadata shared among all integration tests.
+
 export {};
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/integration/integration-client.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/integration/integration-client.test.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * These tests verify that consumers of this software actually receive an API
+// * that behaves as described in help text and other documentation. Typically,
+// * these integration tests limit module-level mocking to peripheral concerns
+// * (e.g. mocking output handling and mocking networking while eschewing
+// * filesystem mocking) in favor of testing a "fully integrated" system.
+
+test.todo('this');
+"
+`;
+
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/integration/integration-node-smoke.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/integration/integration-node-smoke.test.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * These are relatively-simple "smoke" tests to ensure this software is
+// * fetchable/installable/executable and exits cleanly when run within the
+// * runtimes we support (e.g. the currently maintained node versions).
+// *
+// * Typically, these tests involve the use of deep mock fixtures and/or Docker
+// * containers, and are built to run in GitHub Actions CI pipelines; some can
+// * also be run locally.
+
+test.todo('this');
 "
 `;
 
@@ -26788,16 +27987,26 @@ import 'jest-extended/all';
 "
 `;
 
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/unit-x.test.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/unit-x.test.ts
+scope: this-package
+⏶⏷⏶⏷⏶
+// * These tests ensure the exported interface under test functions as expected.
+
+test.todo('this');
+"
+`;
+
 exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/index.ts 1`] = `
 "key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/index.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 /**
  ** This file exports test utilities specific to this project and beyond what is
- ** exported by @-xun/test; these can be imported using \`testverse\` aliases.
+ ** exported by @-xun/test; these can be imported using the \`testverse\` alias.
  */
 
-export {};
+export * from '@-xun/test';
 "
 `;
 
