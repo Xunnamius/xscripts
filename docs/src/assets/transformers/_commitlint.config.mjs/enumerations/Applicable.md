@@ -18,7 +18,7 @@ https://github.com/conventional-changelog/commitlint/blob/master/docs/reference/
 
 #### Defined in
 
-[src/assets/transformers/\_commitlint.config.mjs.ts:22](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets/transformers/_commitlint.config.mjs.ts#L22)
+[src/assets/transformers/\_commitlint.config.mjs.ts:22](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets/transformers/_commitlint.config.mjs.ts#L22)
 
 ***
 
@@ -28,4 +28,4 @@ https://github.com/conventional-changelog/commitlint/blob/master/docs/reference/
 
 #### Defined in
 
-[src/assets/transformers/\_commitlint.config.mjs.ts:23](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets/transformers/_commitlint.config.mjs.ts#L23)
+[src/assets/transformers/\_commitlint.config.mjs.ts:23](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets/transformers/_commitlint.config.mjs.ts#L23)

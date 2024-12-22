@@ -13,4 +13,4 @@ when there was no special initialization commit reference found.
 
 ## Defined in
 
-[src/util.ts:986](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/util.ts#L986)
+[src/util.ts:986](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/util.ts#L986)

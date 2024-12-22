@@ -41,4 +41,4 @@ monorepo at once; e.g. `npx xscripts lint --scope=unlimited`.
 
 ## Defined in
 
-[src/commands/test.ts:101](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/commands/test.ts#L101)
+[src/commands/test.ts:101](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/commands/test.ts#L101)

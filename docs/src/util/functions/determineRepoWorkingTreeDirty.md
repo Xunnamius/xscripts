@@ -18,4 +18,4 @@ the current working tree is dirty. This can be checked quickly via the
 
 ## Defined in
 
-[src/util.ts:282](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/util.ts#L282)
+[src/util.ts:282](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/util.ts#L282)

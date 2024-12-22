@@ -29,7 +29,7 @@ See the xscripts wiki for details.
 
 #### Defined in
 
-[src/assets.ts:84](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets.ts#L84)
+[src/assets.ts:84](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets.ts#L84)
 
 ***
 
@@ -45,7 +45,7 @@ See the xscripts wiki for details.
 
 #### Defined in
 
-[src/assets.ts:92](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets.ts#L92)
+[src/assets.ts:92](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets.ts#L92)
 
 ***
 
@@ -62,7 +62,7 @@ See the xscripts wiki for details.
 
 #### Defined in
 
-[src/assets.ts:101](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets.ts#L101)
+[src/assets.ts:101](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets.ts#L101)
 
 ***
 
@@ -78,7 +78,7 @@ See the xscripts wiki for details.
 
 #### Defined in
 
-[src/assets.ts:109](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets.ts#L109)
+[src/assets.ts:109](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets.ts#L109)
 
 ***
 
@@ -94,7 +94,7 @@ See the xscripts wiki for details.
 
 #### Defined in
 
-[src/assets.ts:117](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets.ts#L117)
+[src/assets.ts:117](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets.ts#L117)
 
 ***
 
@@ -109,7 +109,7 @@ See the xscripts wiki for details.
 
 #### Defined in
 
-[src/assets.ts:130](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets.ts#L130)
+[src/assets.ts:130](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets.ts#L130)
 
 ***
 
@@ -123,4 +123,4 @@ See the xscripts wiki for details.
 
 #### Defined in
 
-[src/assets.ts:123](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets.ts#L123)
+[src/assets.ts:123](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets.ts#L123)

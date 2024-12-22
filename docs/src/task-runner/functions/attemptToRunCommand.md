@@ -28,4 +28,4 @@
 
 ## Defined in
 
-[src/task-runner.ts:9](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/task-runner.ts#L9)
+[src/task-runner.ts:9](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/task-runner.ts#L9)

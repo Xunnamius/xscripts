@@ -50,4 +50,4 @@
 
 ## Defined in
 
-[src/commands/index.ts:22](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/commands/index.ts#L22)
+[src/commands/index.ts:22](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/commands/index.ts#L22)

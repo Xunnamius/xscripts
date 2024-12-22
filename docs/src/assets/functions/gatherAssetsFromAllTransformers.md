@@ -35,4 +35,4 @@ immediately load a bunch of assets into memory.
 
 ## Defined in
 
-[src/assets.ts:374](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets.ts#L374)
+[src/assets.ts:374](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets.ts#L374)

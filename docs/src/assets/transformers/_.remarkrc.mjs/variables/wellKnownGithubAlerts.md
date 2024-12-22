@@ -18,4 +18,4 @@ https://github.com/orgs/community/discussions/16925
 
 ## Defined in
 
-[src/assets/transformers/\_.remarkrc.mjs.ts:41](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets/transformers/_.remarkrc.mjs.ts#L41)
+[src/assets/transformers/\_.remarkrc.mjs.ts:41](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets/transformers/_.remarkrc.mjs.ts#L41)

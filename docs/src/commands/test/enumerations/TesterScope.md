@@ -17,4 +17,4 @@ within `./.transpiled` (with respect to the current working directory).
 
 #### Defined in
 
-[src/commands/test.ts:95](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/commands/test.ts#L95)
+[src/commands/test.ts:95](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/commands/test.ts#L95)

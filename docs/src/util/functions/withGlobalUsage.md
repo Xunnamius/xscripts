@@ -76,4 +76,4 @@ true
 
 ## Defined in
 
-[packages/bfe/src/index.ts:1265](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/packages/bfe/src/index.ts#L1265)
+[packages/bfe/src/index.ts:1265](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/packages/bfe/src/index.ts#L1265)

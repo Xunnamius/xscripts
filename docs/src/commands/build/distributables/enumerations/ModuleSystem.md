@@ -16,7 +16,7 @@ Which module system to use for transpiled output.
 
 #### Defined in
 
-[src/commands/build/distributables.ts:134](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/commands/build/distributables.ts#L134)
+[src/commands/build/distributables.ts:134](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/commands/build/distributables.ts#L134)
 
 ***
 
@@ -26,4 +26,4 @@ Which module system to use for transpiled output.
 
 #### Defined in
 
-[src/commands/build/distributables.ts:133](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/commands/build/distributables.ts#L133)
+[src/commands/build/distributables.ts:133](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/commands/build/distributables.ts#L133)

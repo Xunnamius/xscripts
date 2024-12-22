@@ -25,4 +25,4 @@ Only useful when interfacing with legacy plugins built for `eslint@<9`.
 
 ## Defined in
 
-[src/assets/transformers/\_eslint.config.mjs.ts:852](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets/transformers/_eslint.config.mjs.ts#L852)
+[src/assets/transformers/\_eslint.config.mjs.ts:852](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets/transformers/_eslint.config.mjs.ts#L852)

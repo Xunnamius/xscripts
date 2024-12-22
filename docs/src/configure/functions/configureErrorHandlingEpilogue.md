@@ -38,4 +38,4 @@
 
 ## Defined in
 
-[src/configure.ts:202](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/configure.ts#L202)
+[src/configure.ts:202](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/configure.ts#L202)

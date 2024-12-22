@@ -12,4 +12,4 @@ An array of NODE_ENV values recognized by this configuration file.
 
 ## Defined in
 
-[src/assets/transformers/\_.remarkrc.mjs.ts:52](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets/transformers/_.remarkrc.mjs.ts#L52)
+[src/assets/transformers/\_.remarkrc.mjs.ts:52](https://github.com/Xunnamius/xscripts/blob/28c221bb8a859e69003ba2447e3f5763dc92a0ec/src/assets/transformers/_.remarkrc.mjs.ts#L52)
