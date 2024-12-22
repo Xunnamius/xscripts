@@ -831,9 +831,9 @@ export async function assertEnvironment(): Promise<
 
   // * Despite the scope used by xscripts, we want as broad a configuration file
   // * as possible and we'll leave the further narrowing of scope to others.
-  const cwdTsconfigFile = isAccessible.sync(projectLintPath, { useCached: true })
+  const cwdTsconfigFile = (await isAccessible(projectLintPath, { useCached: true }))
     ? projectLintPath
-    : isAccessible.sync(projectBasePath, { useCached: true })
+    : (await isAccessible(projectBasePath, { useCached: true }))
       ? projectBasePath
       : toss(new ProjectError(ErrorMessage.CannotImportTsconfig()));
 
