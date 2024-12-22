@@ -60,6 +60,7 @@ import {
 import type { XchangelogConfig } from '@-xun/changelog' with { 'resolution-mode': 'import' };
 import type { Promisable } from 'type-fest';
 
+const chunkPreviewLength = 30;
 const extractVersionRegExp = /^#+\s(?:(?:[^[\s]*\[?@([^\s\]]+))|(?:([^\s\]]+)))/;
 
 /**
@@ -214,7 +215,7 @@ export default function command(
     builder,
     description: 'Compile a changelog from conventional commits',
     usage: withGlobalUsage(
-      `$1.
+      `$1. Every commit that touches any file under the current package's root or any file imported by a file under the current package's root will be included in the compilation.
 
 Use --output-order to control the order in which major, minor, and patch version sections will be output to the changelog. The default order is "storybook," which places patch versions below the nearest major/minor version section. The other choice is "descending," which will output sections in the more familiar chronological descending order.
 
@@ -387,7 +388,12 @@ Use --import-section-file to add a custom release section to the changelog. The 
             // ? We cast it to a string[] so currentChunk is typed correctly
             // eslint-disable-next-line @typescript-eslint/await-thenable
             for await (const currentChunk of source as unknown as string[]) {
-              debug_('passing through chunk: %O', currentChunk.slice(0, 20), '...');
+              debug_(
+                'passing through chunk: %O',
+                currentChunk.slice(0, chunkPreviewLength),
+                '...'
+              );
+
               yield currentChunk;
             }
           },
@@ -401,7 +407,7 @@ Use --import-section-file to add a custom release section to the changelog. The 
             // ? We cast it to a string[] so currentChunk is typed correctly
             // eslint-disable-next-line @typescript-eslint/await-thenable
             for await (const chunk_ of source as unknown as string[]) {
-              debug_('saw chunk: %O', chunk_.slice(0, 30), '...');
+              debug_('saw chunk: %O', chunk_.slice(0, chunkPreviewLength), '...');
 
               const chunk =
                 outputUnreleased && isFirst

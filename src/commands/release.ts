@@ -430,7 +430,7 @@ There is also --skip-tasks=${allManualPrereleaseTasks}, which will skip running 
 
 When a task executes an NPM script, it will typically select from one of several choices. If the package's package.json file is missing every NPM script a task might choose, this command will exit with an error unless (1) the task allows itself to be skipped or (2) --skip-task-missing-scripts is provided. In either case, any missing scripts are noted in a warning but otherwise ignored.
 
-The only available scope is "${ReleaseScope.ThisPackage}"; hence, when invoking this command, only the package at the current working directory will be eligible for release. Use Npm's workspace features, or Turbo's, if your goal is to potentially release multiple packages.
+The only available scope is "${ReleaseScope.ThisPackage}"; hence, when invoking this command, only the package at the current working directory will be eligible for release. Use NPM's workspace features, or Turbo's, if your goal is to potentially release multiple packages.
 
 Provide --dry-run to ensure no permanent changes to the project are made, no release is cut, and no publishing or git write operations occur. Use --dry-run to test what would happen if you were to cut a release. Note that --dry-run will NOT prevent prerelease tasks from running; however, postrelease tasks that exclusively run NPM scripts are always skipped.
 
