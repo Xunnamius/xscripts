@@ -12,7 +12,7 @@ export const { transformer } = makeTransformer(function (context) {
   // * Do not generate any files when using the "wrong" preset
   if (
     assetPreset &&
-    [AssetPreset.LibWeb, AssetPreset.React, AssetPreset.Nextjs].includes(assetPreset)
+    ![AssetPreset.LibWeb, AssetPreset.React, AssetPreset.Nextjs].includes(assetPreset)
   ) {
     return [];
   }
