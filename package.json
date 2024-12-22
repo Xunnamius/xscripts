@@ -154,13 +154,13 @@
     "debug": "^4.4.0",
     "doctoc": "^2.2.1",
     "dotenv": "^16.4.7",
-    "dotenv-cli": "^7.4.4",
+    "dotenv-cli": "^8.0.0",
     "escape-string-regexp~4": "npm:escape-string-regexp@^4.0.0",
     "eslint": "^9.17.0",
     "eslint-import-resolver-typescript": "^3.7.0",
     "eslint-plugin-import": "npm:@-xun/eslint-plugin-import-experimental@^2.32.0",
     "eslint-plugin-jest": "^28.10.0",
-    "eslint-plugin-n": "^17.15.0",
+    "eslint-plugin-n": "^17.15.1",
     "eslint-plugin-unicorn": "^56.0.1",
     "find-up~5": "npm:find-up@^5.0.0",
     "glob": "^11.0.0",
@@ -184,7 +184,7 @@
     "mdast-util-to-markdown": "^2.1.2",
     "named-app-errors": "^4.0.2",
     "node-gyp": "^11.0.0",
-    "npm-check-updates": "^17.1.11",
+    "npm-check-updates": "^17.1.12",
     "prettier": "^3.4.2",
     "remark-capitalize-headings": "^2.0.1",
     "remark-cli": "^12.0.1",
@@ -253,7 +253,7 @@
     "validate-npm-package-name": "^6.0.0"
   },
   "devDependencies": {
-    "@-xun/scripts": "^1.32.0"
+    "@-xun/scripts": "^1.33.0"
   },
   "engines": {
     "node": "18.20.0 || ^20.15.0 || >=22.5.0"
