@@ -219,7 +219,12 @@ Provide --allow-warning-comments to set the XSCRIPTS_LINT_ALLOW_WARNING_COMMENTS
 
       debug('entered handler');
 
-      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
+      const { projectMetadata } = await runGlobalPreChecks({
+        debug_,
+        projectMetadata_,
+        scope
+      });
+
       const { startTime } = state;
 
       logStartTime({ log, startTime });

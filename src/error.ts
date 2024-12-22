@@ -9,6 +9,8 @@ import {
   ProjectError
 } from 'multiverse+project-utils:error.ts';
 
+import { DefaultGlobalScope } from 'universe:configure.ts';
+
 import type {
   ImportSpecifier,
   ProjectAttribute,
@@ -130,7 +132,10 @@ export const ErrorMessage = {
     return 'this project appears to be a CLI project but has one or more poorly configured "bin" entries in package.json';
   },
   CannotRunOutsideRoot() {
-    return 'the current working directory must be the project root or a workspace (package) sub-root';
+    return 'the current working directory must be the project root or a workspace (package) sub-root to run this command';
+  },
+  CannotRunInNonHybridMonorepoRootPackage() {
+    return `the current working directory must be a workspace (package) sub-root to run this command with --scope=${DefaultGlobalScope.ThisPackage}`;
   },
   CleanCalledWithoutForce() {
     return 'no deletions were performed (try again with --force)';

@@ -314,7 +314,12 @@ Currently, this command only functions with origin repositories hosted on GitHub
 
       debug('entered handler');
 
-      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
+      const { projectMetadata } = await runGlobalPreChecks({
+        debug_,
+        projectMetadata_,
+        scope
+      });
+
       const { startTime } = state;
 
       logStartTime({ log, startTime });

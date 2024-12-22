@@ -71,7 +71,7 @@ export default function command({
 
       debug('entered handler');
 
-      await runGlobalPreChecks({ debug_, projectMetadata_ });
+      await runGlobalPreChecks({ debug_, projectMetadata_, scope });
       const { startTime } = state;
 
       logStartTime({ log, startTime });

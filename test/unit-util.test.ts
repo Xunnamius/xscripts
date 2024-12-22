@@ -27,6 +27,8 @@ import {
   runGlobalPreChecks
 } from 'universe:util.ts';
 
+import { fixtureToProjectMetadata } from 'testverse+project-utils:helpers/dummy-repo.ts';
+
 const dummyDebugger = createDebugLogger({ namespace: 'fake' });
 dummyDebugger.enabled = false;
 
@@ -35,7 +37,11 @@ describe('::runGlobalPreChecks', () => {
     expect.hasAssertions();
 
     await expect(
-      runGlobalPreChecks({ debug_: dummyDebugger, projectMetadata_: undefined })
+      runGlobalPreChecks({
+        debug_: dummyDebugger,
+        projectMetadata_: undefined,
+        scope: DefaultGlobalScope.Unlimited
+      })
     ).rejects.toMatchObject({ message: ErrorMessage.CannotRunOutsideRoot() });
   });
 
@@ -43,14 +49,15 @@ describe('::runGlobalPreChecks', () => {
     expect.hasAssertions();
 
     const fakeProjectMetadata = {
-      cwdPackage: { root: '/fake' as AbsolutePath },
-      rootPackage: { root: '/fake' as AbsolutePath }
+      cwdPackage: { root: '/fake' as AbsolutePath, attributes: {} },
+      rootPackage: { root: '/fake' as AbsolutePath, attributes: {} }
     } as ProjectMetadata;
 
     await expect(
       runGlobalPreChecks({
         debug_: dummyDebugger,
-        projectMetadata_: fakeProjectMetadata
+        projectMetadata_: fakeProjectMetadata,
+        scope: DefaultGlobalScope.Unlimited
       })
     ).rejects.toMatchObject({ message: ErrorMessage.CannotRunOutsideRoot() });
 
@@ -60,10 +67,69 @@ describe('::runGlobalPreChecks', () => {
       (
         await runGlobalPreChecks({
           debug_: dummyDebugger,
-          projectMetadata_: fakeProjectMetadata
+          projectMetadata_: fakeProjectMetadata,
+          scope: DefaultGlobalScope.Unlimited
         })
       ).projectMetadata
     ).toBe(fakeProjectMetadata);
+  });
+
+  it('throws if the scope=this-package, cwdPackage is the root package, and the project is a non-hybrid monorepo', async () => {
+    expect.hasAssertions();
+
+    {
+      const fakeProjectMetadata = fixtureToProjectMetadata(
+        'goodPolyrepo'
+      ) as ProjectMetadata;
+
+      fakeProjectMetadata.cwdPackage.root = getInitialWorkingDirectory();
+
+      expect(
+        (
+          await runGlobalPreChecks({
+            debug_: dummyDebugger,
+            projectMetadata_: fakeProjectMetadata,
+            scope: DefaultGlobalScope.ThisPackage
+          })
+        ).projectMetadata
+      ).toBe(fakeProjectMetadata);
+    }
+
+    {
+      const fakeProjectMetadata = fixtureToProjectMetadata(
+        'goodHybridrepo'
+      ) as ProjectMetadata;
+
+      fakeProjectMetadata.cwdPackage.root = getInitialWorkingDirectory();
+
+      expect(
+        (
+          await runGlobalPreChecks({
+            debug_: dummyDebugger,
+            projectMetadata_: fakeProjectMetadata,
+            scope: DefaultGlobalScope.ThisPackage
+          })
+        ).projectMetadata
+      ).toBe(fakeProjectMetadata);
+    }
+
+    {
+      const fakeProjectMetadata = fixtureToProjectMetadata(
+        'goodMonorepo'
+      ) as ProjectMetadata;
+
+      fakeProjectMetadata.cwdPackage.root = getInitialWorkingDirectory();
+
+      await expect(
+        runGlobalPreChecks({
+          debug_: dummyDebugger,
+          projectMetadata_: fakeProjectMetadata,
+          scope: DefaultGlobalScope.ThisPackage
+        })
+      ).rejects.toMatchObject({
+        message: ErrorMessage.CannotRunInNonHybridMonorepoRootPackage()
+      });
+    }
   });
 });
 

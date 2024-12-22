@@ -153,7 +153,12 @@ With respect to .prettierignore being the single source of truth for formatters:
 
       debug('entered handler');
 
-      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
+      const { projectMetadata } = await runGlobalPreChecks({
+        debug_,
+        projectMetadata_,
+        scope
+      });
+
       const { startTime } = state;
 
       logStartTime({ log, startTime });

@@ -311,7 +311,12 @@ Provide --skip-slow-tests (or -x) to set the XSCRIPTS_TEST_JEST_SKIP_SLOW_TESTS 
 
       debug('entered handler');
 
-      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
+      const { projectMetadata } = await runGlobalPreChecks({
+        debug_,
+        projectMetadata_,
+        scope
+      });
+
       const { startTime } = state;
 
       logStartTime({ log, startTime });

@@ -103,7 +103,12 @@ This command runs Husky along with any post-npm-install scripts asynchronously a
 
       debug('entered handler');
 
-      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
+      const { projectMetadata } = await runGlobalPreChecks({
+        debug_,
+        projectMetadata_,
+        scope
+      });
+
       const { startTime } = state;
 
       logStartTime({ log, startTime });

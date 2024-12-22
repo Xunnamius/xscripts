@@ -416,7 +416,12 @@ Finally, note that, when attempting to build a Next.js package, this command wil
 
       debug('entered handler');
 
-      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
+      const { projectMetadata } = await runGlobalPreChecks({
+        debug_,
+        projectMetadata_,
+        scope
+      });
+
       const { startTime } = state;
       let isBuildAlreadyOutput = false;
 

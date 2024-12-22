@@ -464,12 +464,11 @@ WARNING: this command is NOT DESIGNED TO HANDLE CONCURRENT EXECUTION ON THE SAME
       debug('tasksInRunOrder: %O', tasksInRunOrder);
 
       const {
-        projectMetadata: {
-          cwdPackage: { json: cwdPackageJson }
-        }
-      } = await runGlobalPreChecks({ debug_, projectMetadata_ });
+        projectMetadata: { cwdPackage }
+      } = await runGlobalPreChecks({ debug_, projectMetadata_, scope });
 
       const { startTime } = state;
+      const { json: cwdPackageJson } = cwdPackage;
       const { scripts: cwdPackageJsonScripts = {} } = cwdPackageJson;
 
       logStartTime({ log, startTime });

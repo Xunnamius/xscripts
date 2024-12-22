@@ -109,7 +109,7 @@ The default value for --exclude-paths includes the following regular expressions
           cwdPackage: { root: packageRoot },
           rootPackage: { root: projectRoot }
         }
-      } = await runGlobalPreChecks({ debug_, projectMetadata_ });
+      } = await runGlobalPreChecks({ debug_, projectMetadata_, scope });
 
       logStartTime({ log, startTime });
       genericLogger(

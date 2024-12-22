@@ -1,4 +1,5 @@
 /* eslint-disable unicorn/prevent-abbreviations */
+import assert from 'node:assert';
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
 
@@ -11,8 +12,6 @@ import {
   type DotenvParseOutput,
   type DotenvPopulateInput
 } from 'dotenv';
-
-import { softAssert } from 'multiverse+cli-utils:error.ts';
 
 import {
   withStandardBuilder,
@@ -181,31 +180,57 @@ export { withStandardUsage as withGlobalUsage };
  */
 export async function runGlobalPreChecks({
   debug_,
-  projectMetadata_
+  projectMetadata_,
+  scope
 }: {
   debug_: GlobalExecutionContext['debug_'];
   projectMetadata_: GlobalExecutionContext['projectMetadata'];
+  scope: LiteralUnion<DefaultGlobalScope, string>;
 }): Promise<{
   projectMetadata: NonNullable<GlobalExecutionContext['projectMetadata']>;
 }> {
   const debug = debug_.extend('globalPreChecks');
 
-  softAssert(projectMetadata_, ErrorMessage.CannotRunOutsideRoot());
-
-  const cwd = toAbsolutePath(getInitialWorkingDirectory());
+  assert(projectMetadata_, ErrorMessage.CannotRunOutsideRoot());
 
   const {
-    rootPackage: { root: projectRoot },
-    cwdPackage: { root: packageRoot }
+    rootPackage: { root: projectRoot, attributes: projectAttributes },
+    cwdPackage
   } = projectMetadata_;
+
+  const cwd = toAbsolutePath(getInitialWorkingDirectory());
+  const { root: packageRoot } = cwdPackage;
 
   debug('project root: %O', projectRoot);
   debug('cwdPackage root: %O', packageRoot);
-  debug('cwd (must match one of the above): %O', cwd);
+  debug('cwd: %O', cwd);
 
-  softAssert(
-    [projectRoot, packageRoot].includes(cwd),
-    ErrorMessage.CannotRunOutsideRoot()
+  debug.message(
+    'the following invariant must hold: cwd === project root or cwd === cwdPackage root'
+  );
+
+  assert([projectRoot, packageRoot].includes(cwd), ErrorMessage.CannotRunOutsideRoot());
+
+  const scopeIsThisPackage = scope === DefaultGlobalScope.ThisPackage;
+  const cwdPackageIsRootPackage = isRootPackage(cwdPackage);
+  const projectIsMonorepo = projectAttributes[ProjectAttribute.Monorepo];
+  const projectIsHybridrepo = projectAttributes[ProjectAttribute.Hybridrepo];
+
+  debug('scopeIsThisPackage: %O', scopeIsThisPackage);
+  debug('cwdPackageIsRootPackage: %O', cwdPackageIsRootPackage);
+  debug('projectIsMonorepo: %O', projectIsMonorepo);
+  debug('projectIsHybridrepo: %O', projectIsHybridrepo);
+
+  debug.message(
+    'at least one of the following invariants must hold: scopeIsThisPackage=false, cwdPackageIsRootPackage=false, projectIsMonorepo=false, or projectIsHybridrepo=true'
+  );
+
+  assert(
+    !scopeIsThisPackage ||
+      !cwdPackageIsRootPackage ||
+      !projectIsMonorepo ||
+      projectIsHybridrepo,
+    ErrorMessage.CannotRunInNonHybridMonorepoRootPackage()
   );
 
   return { projectMetadata: projectMetadata_ };
@@ -687,7 +712,7 @@ export async function importAdditionalRawAliasMappings(
         debug('returning aliases import as an array from %O', aliasMapPath);
         return aliasMap;
       } else {
-        softAssert(ErrorMessage.BadMjsImport(aliasMapPath));
+        assert.fail(ErrorMessage.BadMjsImport(aliasMapPath));
       }
     } else {
       throw new Error(ErrorMessage.DefaultImportFalsy());

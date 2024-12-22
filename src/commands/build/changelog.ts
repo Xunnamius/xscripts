@@ -243,7 +243,11 @@ Use --import-section-file to add a custom release section to the changelog. The 
 
       debug('entered handler');
 
-      const { projectMetadata } = await runGlobalPreChecks({ debug_, projectMetadata_ });
+      const { projectMetadata } = await runGlobalPreChecks({
+        debug_,
+        projectMetadata_,
+        scope
+      });
       const { startTime } = state;
 
       logStartTime({ log, startTime });
