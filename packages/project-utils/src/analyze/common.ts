@@ -446,8 +446,9 @@ export type ProjectFiles = {
 /**
  * In the context of a {@link Package}, this type represents a collection of
  * {@link AbsolutePath}s, one for each file under the package root that is not
- * ignored by Git. However, note that files under `${packageRoot}/dist`, while
- * usually ignored by Git, will _not_ be automatically ignored by this function.
+ * ignored by Git or part of another workspace package. However, note that files
+ * under `${packageRoot}/dist`, while usually ignored by Git, will _not_ be
+ * automatically ignored by this function.
  *
  * The collection is organized by location and utility.
  */

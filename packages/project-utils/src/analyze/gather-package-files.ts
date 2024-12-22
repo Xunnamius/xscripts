@@ -196,7 +196,7 @@ function gatherPackageFiles_(
       ignoreAndPackages
     );
 
-    debug('globOptions: %O', otherGlob);
+    debug('globOptions: %O', globOptions);
 
     packageFiles.dist = globSync(distGlob, {
       ...globOptions,
