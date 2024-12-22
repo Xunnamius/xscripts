@@ -677,7 +677,7 @@ ${SHORT_TAB}   -
 ${SHORT_TAB}   assets${isPartialBuild ? '  (after filter)' : ''}  : ${allBuildAssetTargets.length} file${
               allBuildAssetTargets.length !== 1 ? 's' : ''
             }
-${SHORT_TAB}   sources${isPartialBuild ? ' (after filter)' : ''}  : ${allBuildSourceTargets.length} file${
+${SHORT_TAB}   sources${isPartialBuild ? ' (after filter) ' : ''} : ${allBuildSourceTargets.length} file${
               allBuildSourceTargets.length !== 1 ? 's' : ''
             }
 
