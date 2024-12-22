@@ -1456,7 +1456,7 @@ See the xscripts wiki documentation for more details on this command and all ava
         alias: 'skip-asset-path',
         array: true,
         string: true,
-        description: 'skip regenerating assets matching a regular expression',
+        description: 'Skip regenerating assets matching a regular expression',
         default: []
       }
     },
