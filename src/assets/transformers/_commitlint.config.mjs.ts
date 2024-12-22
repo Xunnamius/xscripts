@@ -27,6 +27,7 @@ export function moduleExport() {
   return {
     extends: ['@commitlint/config-conventional'],
     rules: {
+      'header-max-length': [ErrorLevel.Warn, Applicable.FailIfEncountered, 100],
       'body-case': [ErrorLevel.Warn, Applicable.FailIfEncountered, 'sentence-case'],
       'body-full-stop': [ErrorLevel.Warn, Applicable.FailIfEncountered],
       'header-trim': [ErrorLevel.Warn, Applicable.FailIfEncountered],
