@@ -9,6 +9,9 @@ export const { transformer } = makeTransformer(function (context) {
   return generatePerPackageAssets(context, async function ({ toPackageAbsolutePath }) {
     const outputDir = toPackageAbsolutePath(directorySrcPackageBase);
 
+    // TODO: For cli projects, add black-flag boilerplate and also for
+    // TODO: package.json (add BF, BFE, xcli packages to dependencies)
+
     // ? Only create this file if its parent directory does not already exist
     if (!(await isAccessible(outputDir, { useCached: true }))) {
       return [
