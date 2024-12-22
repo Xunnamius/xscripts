@@ -23963,6 +23963,12 @@ scope: this-package
   "bin": {
     "faker": "./dist/src/cli.js"
   },
+  "files": [
+    "/dist",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hybridrepo-owner/repo-name.git"
@@ -23996,12 +24002,6 @@ scope: this-package
       ]
     }
   },
-  "files": [
-    "/dist",
-    "/LICENSE",
-    "/package.json",
-    "/README.md"
-  ],
   "scripts": {
     "build": "npm run build:dist --",
     "build:changelog": "NODE_NO_WARNINGS=1 xscripts build changelog",
@@ -24383,6 +24383,12 @@ scope: unlimited
   "bin": {
     "faker": "./dist/src/cli.js"
   },
+  "files": [
+    "/dist",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hybridrepo-owner/repo-name.git"
@@ -24416,12 +24422,6 @@ scope: unlimited
       ]
     }
   },
-  "files": [
-    "/dist",
-    "/LICENSE",
-    "/package.json",
-    "/README.md"
-  ],
   "scripts": {
     "build": "npm run build:dist --",
     "build:changelog": "NODE_NO_WARNINGS=1 xscripts build changelog",
@@ -24472,6 +24472,12 @@ scope: unlimited
   "bin": {
     "executable": "./dist/index.js"
   },
+  "files": [
+    "/dist",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hybridrepo-owner/repo-name.git"
@@ -24527,12 +24533,6 @@ scope: unlimited
       ]
     }
   },
-  "files": [
-    "/dist",
-    "/LICENSE",
-    "/package.json",
-    "/README.md"
-  ],
   "engines": {
     "node": "^18.20.0 || ^20.18.0 || ^22.12.0 || >=23.3.0"
   },
@@ -24631,6 +24631,12 @@ scope: unlimited
   "exports": {
     ".": "./dist/index.mjs"
   },
+  "files": [
+    "/dist",
+    "/LICENSE",
+    "/package.json",
+    "/README.md"
+  ],
   "scripts": {
     "test": "npm run test:package:unit --",
     "build": "npm run build:dist --",
@@ -24681,12 +24687,6 @@ scope: unlimited
       ]
     }
   },
-  "files": [
-    "/dist",
-    "/LICENSE",
-    "/package.json",
-    "/README.md"
-  ],
   "engines": {
     "node": "^18.20.0 || ^20.18.0 || ^22.12.0 || >=23.3.0"
   },
