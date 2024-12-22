@@ -65,26 +65,41 @@ const tstycheVacuousSuccessMessage =
 export enum Test {
   /**
    * Include type tests from the chosen scope.
+   *
+   * Does not include code coverage results by default.
    */
   Type = 'type',
   /**
    * Include unit tests from the chosen scope.
+   *
+   * Does not include code coverage results by default.
    */
   Unit = 'unit',
   /**
    * Include integration tests from the chosen scope.
+   *
+   * Does not include code coverage results by default.
    */
   Integration = 'integration',
   /**
    * Include end-to-end tests from the chosen scope.
+   *
+   * Does not include code coverage results by default.
    */
   EndToEnd = 'end-to-end',
   /**
-   * Include all possible test from the chosen scope.
+   * Include _all possible tests_ from the chosen scope.
+   *
+   * Does not include code coverage results by default.
+   */
+  All = 'all',
+  /**
+   * This option is identical to {@link Test.All} except it _excludes end-to-end
+   * tests_.
    *
    * Will also include code coverage results by default.
    */
-  All = 'all'
+  AllLocal = 'all-local'
 }
 
 export enum _TesterScope {
@@ -132,11 +147,17 @@ export default function command({
   state,
   projectMetadata: projectMetadata_
 }: AsStrictExecutionContext<GlobalExecutionContext>) {
+  const allActualTests = tests.filter(
+    (test) => ![Test.All, Test.AllLocal].includes(test)
+  );
+
+  const allActualLocalTests = allActualTests.filter(
+    (test) => ![Test.EndToEnd].includes(test)
+  );
+
   const [builder, withGlobalHandler] = withGlobalBuilder<CustomCliArguments>(
     (blackFlag) => {
       blackFlag.parserConfiguration({ 'unknown-options-as-args': true });
-
-      const allActualTests = tests.filter((test) => test !== Test.All);
 
       return {
         scope: {
@@ -148,7 +169,7 @@ export default function command({
           array: true,
           choices: tests,
           description: 'Which kinds of test to run',
-          default: allActualTests,
+          default: allActualLocalTests,
           check: checkArrayNotEmpty('--tests'),
           coerce(tests: Test[]) {
             return Array.from(
@@ -157,6 +178,10 @@ export default function command({
                   switch (test) {
                     case Test.All: {
                       return allActualTests;
+                    }
+
+                    case Test.AllLocal: {
+                      return allActualLocalTests;
                     }
 
                     default: {
@@ -223,7 +248,11 @@ export default function command({
           description:
             'Repeat entire Jest (not Tstyche) test suite --repeat times after initial run',
           default: 0,
-          conflicts: [{ tests: Test.Type }, { tests: Test.All }],
+          conflicts: [
+            { tests: Test.Type },
+            { tests: Test.All },
+            { tests: Test.AllLocal }
+          ],
           check: checkIsNotNegative('repeat')
         },
         'collect-coverage': {
@@ -235,7 +264,7 @@ export default function command({
           subOptionOf: {
             tests: {
               when: (tests: Test[], { scope }) =>
-                tests.includes(Test.All) && scope === TesterScope.Unlimited,
+                tests.includes(Test.AllLocal) && scope === TesterScope.Unlimited,
               update(oldOptionConfig) {
                 return {
                   ...oldOptionConfig,
@@ -270,12 +299,14 @@ export default function command({
 
   return {
     builder,
-    description: 'Run available type, unit, integration, and/or e2e tests',
+    description: 'Run available type, unit, integration, and/or end-to-end tests',
     usage: `Usage: $000 [options] [extra-arguments-passed-to-underlying-runner]
 
 $1.
 
-Currently, --tests=type tests are executed by the Tstyche test runner while all others are executed by the Jest test runner. Therefore, all test files should be appropriately named (e.g. "\${type}-\${name}.test.ts") and exist under a package's ./test directory.
+Currently, "type" tests (i.e. --test=type or --tests=type) are executed by the Tstyche test runner while all other kinds are executed by the Jest test runner; said kinds are: "${allActualTests.filter((t) => t !== Test.Type).join('", "')}". It is for this reason that all test files should be appropriately named (e.g. "\${kind}-\${name}.test.ts"), and should exist under a package's ./test directory.
+
+There are two additional meta test kinds: --test=${Test.All} and --test=${Test.AllLocal}. "${Test.All}" runs all possible tests while "${Test.AllLocal}" runs all possible tests EXCEPT "end-to-end".
 
 Any unrecognized flags/arguments provided after the --tester-options flag are always passed through directly to each tester. For Jest, they are inserted after computed arguments but before test path patterns, e.g. \`--reporters=... --testPathIgnorePatterns=... <your extra args> -- testPathPattern1 testPathPattern2\`. For Tstyche, they are inserted after all other arguments, e.g. \`--computed-arg-1=... computed-arg-2 <your extra args>\`.
 
@@ -285,7 +316,7 @@ Alternatively, you can provide --baseline when you want to construct your own cu
 
 Also by default (if the CI environment variable is not defined), this command prevents the value of the DEBUG environment variable, if given, from propagating down into tests since this can cause strange output-related problems. Provide --propagate-debug-env to allow the value of DEBUG to be seen by test files and the rest of the test environment, including tests.
 
-Provide --collect-coverage to instruct Jest to collect coverage information. --collect-coverage is false by default unless --scope=${TesterScope.Unlimited} and --tests=${Test.All}, in which case it will be true by default. Note that Tstyche never provides coverage information; this flag only affects Jest.
+Provide --collect-coverage to instruct Jest to collect coverage information. --collect-coverage is false by default unless --scope=${TesterScope.Unlimited} and --tests=${Test.AllLocal}, in which case it will be true by default. Note that Tstyche never provides coverage information; this flag only affects Jest.
 
 For detecting flakiness in tests, which is almost always a sign of deep developer error, provide --repeat; e.g. \`--repeat 100\`. Note that this flag cannot be used when running Tstyche "type" tests.
 
