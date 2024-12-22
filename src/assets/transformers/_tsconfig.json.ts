@@ -217,6 +217,7 @@ export const { transformer } = makeTransformer(async function (context) {
     ...// * Every package gets these files except non-hybrid monorepo roots
     (await generatePerPackageAssets(context, async function ({ toPackageAbsolutePath }) {
       // TODO: don't these need to be tweaked more for monorepo packages?
+      // TODO: if so, use contextWithCwdPackage
       return [
         {
           path: toPackageAbsolutePath(Tsconfig.PackageTypes),
