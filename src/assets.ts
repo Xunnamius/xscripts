@@ -626,6 +626,7 @@ export async function generatePerPackageAssets(
   adder: (helpers: {
     package_: Package;
     toPackageAbsolutePath: TransformerContext['toPackageAbsolutePath'];
+    contextWithCwdPackage: TransformerContext;
   }) => Promisable<Asset[] | undefined>,
   {
     includeRootPackageInNonHybridMonorepo = false
@@ -655,7 +656,8 @@ export async function generatePerPackageAssets(
     return Promise.resolve(
       adder({
         package_: cwdPackage,
-        toPackageAbsolutePath: toSpecificPackageAbsolutePath(cwdPackage)
+        toPackageAbsolutePath: toSpecificPackageAbsolutePath(cwdPackage),
+        contextWithCwdPackage: { ...transformerContext }
       })
     ).then((result) => result || []);
   } else {
@@ -673,7 +675,14 @@ export async function generatePerPackageAssets(
       allPackages.map((package_) =>
         adder({
           package_: package_,
-          toPackageAbsolutePath: toSpecificPackageAbsolutePath(package_)
+          toPackageAbsolutePath: toSpecificPackageAbsolutePath(package_),
+          contextWithCwdPackage: {
+            ...transformerContext,
+            projectMetadata: {
+              ...transformerContext.projectMetadata,
+              cwdPackage: package_
+            }
+          }
         })
       )
     );

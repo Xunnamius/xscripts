@@ -1006,7 +1006,8 @@ describe('::generatePerPackageAssets', () => {
             package_: expect.objectContaining({
               root: dummyProjectMetadata.rootPackage.root
             }),
-            toPackageAbsolutePath: expect.any(Function)
+            toPackageAbsolutePath: expect.any(Function),
+            contextWithCwdPackage: expect.any(Object)
           }
         ]
       ]);
@@ -1031,7 +1032,8 @@ describe('::generatePerPackageAssets', () => {
         ].map(({ root }) => [
           {
             package_: expect.objectContaining({ root }),
-            toPackageAbsolutePath: expect.any(Function)
+            toPackageAbsolutePath: expect.any(Function),
+            contextWithCwdPackage: expect.any(Object)
           }
         ])
       );
@@ -1054,7 +1056,8 @@ describe('::generatePerPackageAssets', () => {
           ({ root }) => [
             {
               package_: expect.objectContaining({ root }),
-              toPackageAbsolutePath: expect.any(Function)
+              toPackageAbsolutePath: expect.any(Function),
+              contextWithCwdPackage: expect.any(Object)
             }
           ]
         )
@@ -1084,7 +1087,8 @@ describe('::generatePerPackageAssets', () => {
       ].map(({ root }) => [
         {
           package_: expect.objectContaining({ root }),
-          toPackageAbsolutePath: expect.any(Function)
+          toPackageAbsolutePath: expect.any(Function),
+          contextWithCwdPackage: expect.any(Object)
         }
       ])
     );
@@ -1117,10 +1121,106 @@ describe('::generatePerPackageAssets', () => {
           package_: expect.objectContaining({
             root: dummyProjectMetadata.subRootPackages!.get('pkg-1')!.root
           }),
-          toPackageAbsolutePath: expect.any(Function)
+          toPackageAbsolutePath: expect.any(Function),
+          contextWithCwdPackage: expect.any(Object)
         }
       ]
     ]);
+  });
+
+  it('calls adder function with correct transformerContext.projectMetadata.cwdPackage', async () => {
+    expect.hasAssertions();
+
+    const dummyProjectMetadata = fixtureToProjectMetadata(
+      'goodMonorepo'
+    ) as TransformerContext['projectMetadata'];
+
+    const { subRootPackages: pkgs_, rootPackage } = dummyProjectMetadata;
+    const pkgs = pkgs_!.values().toArray();
+
+    {
+      const adder = jest.fn();
+
+      await generatePerPackageAssets(
+        {
+          ...dummyContext,
+          projectMetadata: dummyProjectMetadata,
+          asset: 'dummy',
+          scope: DefaultGlobalScope.Unlimited
+        },
+        adder
+      );
+
+      expect(adder.mock.calls).toStrictEqual([
+        [
+          expect.objectContaining({
+            contextWithCwdPackage: expect.objectContaining({
+              projectMetadata: expect.objectContaining({ cwdPackage: pkgs[0] })
+            })
+          })
+        ],
+        [
+          expect.objectContaining({
+            contextWithCwdPackage: expect.objectContaining({
+              projectMetadata: expect.objectContaining({ cwdPackage: pkgs[1] })
+            })
+          })
+        ],
+        [
+          expect.objectContaining({
+            contextWithCwdPackage: expect.objectContaining({
+              projectMetadata: expect.objectContaining({ cwdPackage: pkgs[2] })
+            })
+          })
+        ]
+      ]);
+    }
+
+    {
+      const adder = jest.fn();
+
+      await generatePerPackageAssets(
+        {
+          ...dummyContext,
+          projectMetadata: dummyProjectMetadata,
+          asset: 'dummy',
+          scope: DefaultGlobalScope.Unlimited
+        },
+        adder,
+        { includeRootPackageInNonHybridMonorepo: true }
+      );
+
+      expect(adder.mock.calls).toStrictEqual([
+        [
+          expect.objectContaining({
+            contextWithCwdPackage: expect.objectContaining({
+              projectMetadata: expect.objectContaining({ cwdPackage: rootPackage })
+            })
+          })
+        ],
+        [
+          expect.objectContaining({
+            contextWithCwdPackage: expect.objectContaining({
+              projectMetadata: expect.objectContaining({ cwdPackage: pkgs[0] })
+            })
+          })
+        ],
+        [
+          expect.objectContaining({
+            contextWithCwdPackage: expect.objectContaining({
+              projectMetadata: expect.objectContaining({ cwdPackage: pkgs[1] })
+            })
+          })
+        ],
+        [
+          expect.objectContaining({
+            contextWithCwdPackage: expect.objectContaining({
+              projectMetadata: expect.objectContaining({ cwdPackage: pkgs[2] })
+            })
+          })
+        ]
+      ]);
+    }
   });
 
   it('returns empty array when adder function returns void', async () => {

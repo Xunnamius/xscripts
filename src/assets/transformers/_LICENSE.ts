@@ -23,11 +23,12 @@ export const { transformer } = makeTransformer(function (context) {
   // * Every package gets these files, including non-hybrid monorepo roots
   return generatePerPackageAssets(
     context,
-    async function ({ toPackageAbsolutePath }) {
+    async function ({ toPackageAbsolutePath, contextWithCwdPackage }) {
       return [
         {
           path: toPackageAbsolutePath(markdownLicensePackageBase),
-          generate: () => compileTemplate('LICENSE' as RelativePath, { ...context })
+          generate: () =>
+            compileTemplate('LICENSE' as RelativePath, contextWithCwdPackage)
         }
       ];
     },

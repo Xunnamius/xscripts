@@ -194,7 +194,7 @@ export const { transformer } = makeTransformer(function (context) {
   // * Every package gets these files, including non-hybrid monorepo roots
   return generatePerPackageAssets(
     context,
-    function ({ package_ }) {
+    function ({ package_, contextWithCwdPackage }) {
       const { json: packageJson } = package_;
 
       const { owner, repo } = parsePackageJsonRepositoryIntoOwnerAndRepo(packageJson);
@@ -223,7 +223,7 @@ export const { transformer } = makeTransformer(function (context) {
             generate: () =>
               stringify(
                 generateBasePolyrepoXPackageJson(finalPackageJson, repoUrl),
-                context
+                contextWithCwdPackage
               )
           }
         ];
@@ -245,7 +245,7 @@ export const { transformer } = makeTransformer(function (context) {
                         finalPackageJson,
                         repoUrl
                       ),
-                      context
+                      contextWithCwdPackage
                     )
                 }
               ]
@@ -261,7 +261,7 @@ export const { transformer } = makeTransformer(function (context) {
                         finalPackageJson,
                         repoUrl
                       ),
-                      context
+                      contextWithCwdPackage
                     )
                 }
               ];
@@ -272,7 +272,7 @@ export const { transformer } = makeTransformer(function (context) {
               generate: () =>
                 stringify(
                   generateBaseMonorepoPackageRootXPackageJson(finalPackageJson, repoUrl),
-                  context
+                  contextWithCwdPackage
                 )
             }
           ];

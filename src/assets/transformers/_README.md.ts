@@ -57,25 +57,31 @@ export const { transformer } = makeTransformer(async function (context) {
     })),
 
     ...// * Every package gets these files except non-hybrid monorepo roots
-    (await generatePerPackageAssets(context, async function ({ toPackageAbsolutePath }) {
-      const path = toPackageAbsolutePath(markdownReadmePackageBase);
+    (await generatePerPackageAssets(
+      context,
+      async function ({ toPackageAbsolutePath, contextWithCwdPackage }) {
+        const path = toPackageAbsolutePath(markdownReadmePackageBase);
 
-      return [
-        {
-          path,
-          generate: async () => {
-            return replaceRegionsRespectively({
-              outputPath: path,
-              templateContent: replaceStandardStrings(
-                await compileTemplate('README.package.md' as RelativePath, context),
-                context
-              ),
-              context
-            });
+        return [
+          {
+            path,
+            generate: async () => {
+              return replaceRegionsRespectively({
+                outputPath: path,
+                templateContent: replaceStandardStrings(
+                  await compileTemplate(
+                    'README.package.md' as RelativePath,
+                    contextWithCwdPackage
+                  ),
+                  contextWithCwdPackage
+                ),
+                context: contextWithCwdPackage
+              });
+            }
           }
-        }
-      ];
-    }))
+        ];
+      }
+    ))
   ];
 });
 
