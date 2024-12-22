@@ -135,7 +135,7 @@ export const { transformer } = makeTransformer(function (context) {
         deriveAliasesForJest(generateRawAliasMap(projectMetadata)),
         undefined,
         4
-      ).replace(/^}/m, '  }')},`
+      ).replace(/^}/m, '  }')}`
     : 'return {}';
 
   // * Only the root package gets these files

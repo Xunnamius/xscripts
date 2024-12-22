@@ -763,7 +763,7 @@ export const { transformer } = makeTransformer(function ({
         .replaceAll(/\[\s+"/g, '["')
         .replaceAll(/",\s+"/g, '", "')
         .replaceAll(/"\s+\]/g, '"]')
-        .replace(/^]/m, '  ]')},`
+        .replace(/^]/m, '  ]')}`
     : 'return []';
 
   return [
@@ -772,7 +772,7 @@ export const { transformer } = makeTransformer(function ({
       generate: () => /*js*/ `
 // @ts-check
 
-import { deepMergeConfig } from '@-xun/scripts/assets.ts';
+import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
   moduleExport,
@@ -785,7 +785,7 @@ import {
 /*const debug = createDebugLogger({ namespace: '${globalDebuggerNamespace}:config:eslint' });*/
 
 const config = deepMergeConfig(
-  moduleExport({ derivedAliases: getEslintAliases(), ...assertEnvironment() }),
+  moduleExport({ derivedAliases: getEslintAliases(), ...await assertEnvironment() }),
   /**
    * @type {import('@-xun/scripts/assets/${asset}').EslintConfig}
    */
