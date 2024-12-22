@@ -46,4 +46,4 @@
 
 ## Defined in
 
-[src/commands/start.ts:33](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/start.ts#L33)
+[src/commands/start.ts:33](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/commands/start.ts#L33)

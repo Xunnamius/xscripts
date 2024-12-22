@@ -14,4 +14,4 @@ content.
 
 ## Defined in
 
-[src/assets.ts:42](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/assets.ts#L42)
+[src/assets.ts:42](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets.ts#L42)

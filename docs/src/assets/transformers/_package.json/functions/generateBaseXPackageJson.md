@@ -602,4 +602,4 @@ Please note that the top-level `private` property of `package.json` **must** be 
 
 ## Defined in
 
-[src/assets/transformers/\_package.json.ts:38](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/assets/transformers/_package.json.ts#L38)
+[src/assets/transformers/\_package.json.ts:38](https://github.com/Xunnamius/xscripts/blob/3a8e3952522a9aa3e84a1990f6fcb2207da32534/src/assets/transformers/_package.json.ts#L38)
