@@ -24,7 +24,7 @@
 
 ### description
 
-> **description**: `string` = `'Create a brand new project from one of several templates'`
+> **description**: `string` = `'Create a brand new project from one of several presets'`
 
 ### handler()
 
@@ -46,4 +46,4 @@
 
 ## Defined in
 
-[src/commands/project/init.ts:34](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/project/init.ts#L34)
+[src/commands/project/init.ts:34](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/project/init.ts#L34)

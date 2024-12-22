@@ -25,7 +25,26 @@ The description reported to the user when the task is run.
 
 #### Defined in
 
-[src/commands/release.ts:206](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L206)
+[src/commands/release.ts:215](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L215)
+
+***
+
+### allowMissingNpmScripts?
+
+> `optional` **allowMissingNpmScripts**: `boolean`
+
+Whether the task will automatically fail if none of the scripts given in
+`npmScripts` exist in the package's `package.json`.
+
+#### Default
+
+```ts
+false
+```
+
+#### Defined in
+
+[src/commands/release.ts:204](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L204)
 
 ***
 
@@ -38,7 +57,7 @@ task.
 
 #### Defined in
 
-[src/commands/release.ts:215](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L215)
+[src/commands/release.ts:224](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L224)
 
 ***
 
@@ -50,7 +69,7 @@ The description reported to the user when `--help` is called.
 
 #### Defined in
 
-[src/commands/release.ts:210](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L210)
+[src/commands/release.ts:219](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L219)
 
 ***
 
@@ -77,20 +96,20 @@ supplies `--hush`/`--quiet`/`--silent`.
 
 #### Defined in
 
-[src/commands/release.ts:230](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L230)
+[src/commands/release.ts:239](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L239)
 
 ***
 
 ### npmScripts?
 
-> `optional` **npmScripts**: (`"version"` \| `"prepublish"` \| `"prepare"` \| `"prepublishOnly"` \| `"prepack"` \| `"postpack"` \| `"publish"` \| `"postpublish"` \| `"preinstall"` \| `"install"` \| `"postinstall"` \| `"preuninstall"` \| `"uninstall"` \| `"postuninstall"` \| `"preversion"` \| `"postversion"` \| `"pretest"` \| `"test"` \| `"posttest"` \| `"prestop"` \| `"stop"` \| `"poststop"` \| `"prestart"` \| `"start"` \| `"poststart"` \| `"prerestart"` \| `"restart"` \| `"postrestart"` \| `"build"` \| `"build:changelog"` \| `"build:dist"` \| `"build:docs"` \| `"clean"` \| `"format"` \| `"info"` \| `"lint"` \| `"lint:package"` \| `"lint:packages"` \| `"lint:project"` \| `"list-tasks"` \| `"release"` \| `"renovate"` \| `"dev"` \| `"test:package:all"` \| `"test:package:e2e"` \| `"test:package:integration"` \| `"test:package:unit"` \| `"test:packages:all"`)[]
+> `optional` **npmScripts**: (`"version"` \| `"prepublish"` \| `"prepare"` \| `"prepublishOnly"` \| `"prepack"` \| `"postpack"` \| `"publish"` \| `"postpublish"` \| `"preinstall"` \| `"install"` \| `"postinstall"` \| `"preuninstall"` \| `"uninstall"` \| `"postuninstall"` \| `"preversion"` \| `"postversion"` \| `"pretest"` \| `"test"` \| `"posttest"` \| `"prestop"` \| `"stop"` \| `"poststop"` \| `"prestart"` \| `"start"` \| `"poststart"` \| `"prerestart"` \| `"restart"` \| `"postrestart"` \| `"build"` \| `"build:changelog"` \| `"build:dist"` \| `"build:docs"` \| `"clean"` \| `"deploy"` \| `"format"` \| `"info"` \| `"lint"` \| `"lint:package"` \| `"lint:packages"` \| `"lint:project"` \| `"list-tasks"` \| `"release"` \| `"renovate"` \| `"dev"` \| `"test:package:all"` \| `"test:package:e2e"` \| `"test:package:integration"` \| `"test:package:unit"` \| `"test:packages:all"`)[]
 
 Run only the first NPM script in `npmScripts` that is found in the
 package's `package.json`.
 
 #### Defined in
 
-[src/commands/release.ts:200](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L200)
+[src/commands/release.ts:209](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L209)
 
 ***
 
@@ -102,7 +121,7 @@ A function called when the task is triggered.
 
 #### Defined in
 
-[src/commands/release.ts:234](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L234)
+[src/commands/release.ts:243](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L243)
 
 ***
 
@@ -114,4 +133,4 @@ Whether the task can be skipped by the user or not.
 
 #### Defined in
 
-[src/commands/release.ts:195](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L195)
+[src/commands/release.ts:197](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L197)

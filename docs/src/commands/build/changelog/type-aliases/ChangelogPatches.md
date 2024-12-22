@@ -10,9 +10,9 @@
 
 An array of zero or more [ChangelogPatch](ChangelogPatch.md)es.
 
-`changelog.patch.js` (or `changelog.patch.[cm]js`) can export via default
-either `ChangelogPatches` or a [ChangelogPatcherFunction](ChangelogPatcherFunction.md).
+`changelog.patch.mjs` can export via default either `ChangelogPatches` or a
+[ChangelogPatcherFunction](ChangelogPatcherFunction.md).
 
 ## Defined in
 
-[src/commands/build/changelog.ts:539](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/build/changelog.ts#L539)
+[src/commands/build/changelog.ts:83](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/build/changelog.ts#L83)

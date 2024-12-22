@@ -28,7 +28,7 @@ This is the default scope for most commands.
 
 #### Defined in
 
-[src/configure.ts:62](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/configure.ts#L62)
+[src/configure.ts:62](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/configure.ts#L62)
 
 ***
 
@@ -43,4 +43,4 @@ monorepo at once; e.g. `npx xscripts lint --scope=unlimited`.
 
 #### Defined in
 
-[src/configure.ts:69](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/configure.ts#L69)
+[src/configure.ts:69](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/configure.ts#L69)

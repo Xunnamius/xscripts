@@ -295,18 +295,6 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### BadChangelogPatcher()
-
-#### Parameters
-
-##### path
-
-`string`
-
-#### Returns
-
-`string`
-
 ### BadEnginesNodeInPackageJson()
 
 #### Parameters
@@ -326,6 +314,18 @@ punctuation and capitalization rules as the other error messages.
 `string`
 
 ### BadGeneratedChangelogSection()
+
+#### Returns
+
+`string`
+
+### BadMjsImport()
+
+#### Parameters
+
+##### path
+
+`string`
 
 #### Returns
 
@@ -373,7 +373,7 @@ punctuation and capitalization rules as the other error messages.
 
 `string`
 
-### BadRepositoryInCwdPackageJson()
+### BadRepositoryInPackageJson()
 
 #### Parameters
 
@@ -468,6 +468,12 @@ punctuation and capitalization rules as the other error messages.
 ##### path
 
 `string`
+
+#### Returns
+
+`string`
+
+### CannotRunInNonHybridMonorepoRootPackage()
 
 #### Returns
 
@@ -721,6 +727,12 @@ readonly `string`[]
 
 `string`
 
+### PreparationRunnerExecutionFailed()
+
+#### Returns
+
+`string`
+
 ### ReleaseEnvironmentValidationFailed()
 
 #### Returns
@@ -939,7 +951,7 @@ readonly `string`[]
 
 `boolean`
 
-###### next
+###### nextjs
 
 `boolean`
 
@@ -969,4 +981,4 @@ readonly `string`[]
 
 ## Defined in
 
-[src/error.ts:61](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/error.ts#L61)
+[src/error.ts:63](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/error.ts#L63)

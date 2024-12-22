@@ -8,18 +8,17 @@
 
 > **Asset**: `object`
 
-An asset maps an absolute output path and the function that generates content
-to output.
+An _asset_ maps an absolute output path and a function that generates output.
 
 ## Type declaration
 
 ### generate()
 
-> **generate**: () => `Promisable`\<`string`\>
+> **generate**: () => `Promisable`\<`string` \| *typeof* [`$delete`](../variables/$delete.md)\>
 
 #### Returns
 
-`Promisable`\<`string`\>
+`Promisable`\<`string` \| *typeof* [`$delete`](../variables/$delete.md)\>
 
 ### path
 
@@ -27,4 +26,4 @@ to output.
 
 ## Defined in
 
-[src/assets.ts:54](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/assets.ts#L54)
+[src/assets.ts:161](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/assets.ts#L161)

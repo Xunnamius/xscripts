@@ -12,4 +12,4 @@ An array of NODE_ENV values recognized by this configuration file.
 
 ## Defined in
 
-[src/assets/transformers/\_jest.config.mjs.ts:43](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/assets/transformers/_jest.config.mjs.ts#L43)
+[src/assets/transformers/\_jest.config.mjs.ts:44](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/assets/transformers/_jest.config.mjs.ts#L44)

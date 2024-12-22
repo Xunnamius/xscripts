@@ -29,10 +29,14 @@ returning it (or throwing a CliError if undefined).
 
 `undefined` \| `ProjectMetadata`
 
+#### scope
+
+`LiteralUnion`\<[`DefaultGlobalScope`](../../configure/enumerations/DefaultGlobalScope.md), `string`\>
+
 ## Returns
 
 `Promise`\<\{ `projectMetadata`: `NonNullable`\<[`GlobalExecutionContext`](../../configure/type-aliases/GlobalExecutionContext.md)\[`"projectMetadata"`\]\>; \}\>
 
 ## Defined in
 
-[src/util.ts:122](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/util.ts#L122)
+[src/util.ts:219](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/util.ts#L219)

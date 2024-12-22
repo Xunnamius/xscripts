@@ -13,8 +13,8 @@ An object comprised of `path`-`generate` entries from one or more
 
 ## Index Signature
 
- \[`assetPath`: `AbsolutePath`\]: () => `Promisable`\<`string`\>
+ \[`assetPath`: `AbsolutePath`\]: () => `Promisable`\<`string` \| *typeof* [`$delete`](../variables/$delete.md)\>
 
 ## Defined in
 
-[src/assets.ts:66](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/assets.ts#L66)
+[src/assets.ts:176](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/assets.ts#L176)

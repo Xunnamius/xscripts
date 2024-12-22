@@ -188,7 +188,7 @@
 
 #### github-delete-all-releases.longHelpDescription
 
-> `readonly` **longHelpDescription**: "This renovation will delete from the origin repository all releases associated with the current package (if \`--scope=this-package\`) or every possible release in existence (if \`--scope=unlimited\`).\n\n⚠️🚧 This is an INCREDIBLY DANGEROUS command that should ONLY be used to clear out unrelated releases after forking a repository."
+> `readonly` **longHelpDescription**: "This renovation will delete from the origin repository all releases associated with the current package (if --scope=this-package) or every possible release in existence (if --scope=unlimited).\n\n⚠️🚧 This is an INCREDIBLY DANGEROUS command that should ONLY be used to clear out unrelated releases after forking a repository."
 
 #### github-delete-all-releases.requiresForce
 
@@ -248,7 +248,7 @@
 
 #### github-kill-master.shortHelpDescription
 
-> `readonly` **shortHelpDescription**: "Rename and remove all references to any legacy \"master\" branch(es)" = `'Rename and remove all references to any legacy "master" branch(es)'`
+> `readonly` **shortHelpDescription**: "Rename and remove all references to any legacy \"master\" ref(s)" = `'Rename and remove all references to any legacy "master" ref(s)'`
 
 #### github-kill-master.subOptions
 
@@ -337,6 +337,10 @@
 #### github-reconfigure-repo.actionDescription
 
 > `readonly` **actionDescription**: `"Reconfiguring origin repository settings"` = `'Reconfiguring origin repository settings'`
+
+#### github-reconfigure-repo.conflicts
+
+> `readonly` **conflicts**: [`"deprecate"`, `"undeprecate"`, `"github-rename-repo"`, `"github-pause-rulesets"`, `"github-kill-master"`, `"generate-scoped-tags"`]
 
 #### github-reconfigure-repo.emoji
 
@@ -907,6 +911,10 @@ BfeBuilderObjectValueExtensions.implies
 
 > `readonly` **actionDescription**: `"Regenerating targeted configuration and template assets"` = `'Regenerating targeted configuration and template assets'`
 
+#### regenerate-assets.conflicts
+
+> `readonly` **conflicts**: [`"synchronize-interdependencies"`, `"update-dependencies"`]
+
 #### regenerate-assets.emoji
 
 > `readonly` **emoji**: `"♻️"` = `'♻️'`
@@ -914,19 +922,25 @@ BfeBuilderObjectValueExtensions.implies
 #### regenerate-assets.longHelpDescription
 
 > `readonly` **longHelpDescription**: \`
-This renovation will regenerate one or more files in the project, each represented by an "asset". An asset is a collection mapping one or more project-root-relative "asset paths" (relative to the project root) to their generated contents. When writing content to its respective asset path on the filesystem, existing files are overwritten, missing files are created, and obsolete files are deleted.
+This renovation will regenerate one or more files in the project, each represented by an "asset". An asset is a collection mapping output paths to generated content. When writing out content to an output path, existing files are overwritten, missing files are created, and obsolete files are deleted.
 
-Provide --assets-preset to specify which assets to regenerate. The parameter accepts one of the following presets: $\{string\}. The asset paths of assets included in the preset will be targeted for renovation unless that path is also matched by --skip-asset-paths.
+Provide --assets-preset (required) to specify which assets to regenerate. The parameter accepts one of the following presets: $\{string\}. The paths of assets included in the preset will be targeted for renovation except those paths matched by --skip-asset-paths.
 
-Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the asset paths to be written out. Any asset paths matching one of the aforesaid regular expressions will be discarded instead of written out.
+Use --skip-asset-paths to further narrow which files are regenerated. The parameter accepts regular expressions that are matched against the paths to be written out. Any paths matching one of the aforesaid regular expressions will have their contents discarded instead of written out.
 
-When regenerating files containing import aliases, --with-aliases-loaded-from can be used to include aliases in addition to the hardcoded aliases that come with xscripts. The --with-aliases-loaded-from parameter expects a path to a JavaScript file with an alias map (i.e. RawAliasMapping\[\]) as its default export.
+This renovation attempts to import the "import-aliases.mjs" file if it exists at the root of the project. Use this file to provide additional \`RawAliasMapping\[\]\`s to include when regenerating files defining the project's import aliases. See the xscripts wiki documentation for further details.
+
+When renovating Markdown files with templates divided into replacer regions via the magic comments "$\{string\}" and "\<!-- xscripts-template-region-end --\>", this command will perform so-called "regional replacements" where only the content between the "start" and "end" comments will be modified. Regions without matching ids are ignored.
+
+When regional replacements are performed, matching non-numeric reference definitions will be overwritten respectively, and new definitions will be appended. However, when attempting to renovate a Markdown file and either (1) it does not have replacer regions when its corresponding template contains replacer regions or (2) --force is used, the entire file will be overwritten instead.
+
+Note that only certain Markdown files support regional replacements. See the xscripts wiki documentation for more details.
 
 After invoking this renovation, you should use your IDE's diff tools to compare and contrast the latest best practices with the project's current configuration setup.
 
-This renovation should be re-run each time a package is added to, or removed from, a xscripts-compliant monorepo.
+This renovation should be re-run each time a package is added to, or removed from, a xscripts-compliant monorepo but should NEVER be run in a CI environment or anywhere logs can be viewed publicly.
 
-See the xscripts wiki documentation for details on all available assets and their asset paths.
+See the xscripts wiki documentation for more details on this command and all available assets.
 \`
 
 #### regenerate-assets.requiresForce
@@ -951,11 +965,425 @@ See the xscripts wiki documentation for details on all available assets and thei
 
 #### regenerate-assets.subOptions.assets-preset.choices
 
-> `readonly` **choices**: [`RenovationPreset`](../enumerations/RenovationPreset.md)[] = `renovationPresets`
+> `readonly` **choices**: [`AssetPreset`](../../../../assets/enumerations/AssetPreset.md)[] = `assetPresets`
 
 #### regenerate-assets.subOptions.assets-preset.description
 
-> `readonly` **description**: `"Select a hardcoded set of assets to regenerate"` = `'Select a hardcoded set of assets to regenerate'`
+> `readonly` **description**: `"Select a set of assets to target for regeneration"` = `'Select a set of assets to target for regeneration'`
+
+#### regenerate-assets.subOptions.assets-preset.subOptionOf
+
+> `readonly` **subOptionOf**: `object`
+
+#### regenerate-assets.subOptions.assets-preset.subOptionOf.regenerate-assets
+
+> `readonly` **regenerate-assets**: `object`
+
+#### regenerate-assets.subOptions.assets-preset.subOptionOf.regenerate-assets.when()
+
+> `readonly` **when**: (`superOptionValue`) => `any`
+
+##### Parameters
+
+###### superOptionValue
+
+`any`
+
+##### Returns
+
+`any`
+
+#### regenerate-assets.subOptions.assets-preset.subOptionOf.regenerate-assets.update()
+
+##### Parameters
+
+###### oldOptionConfig
+
+`BfeBuilderObjectValueWithoutSubOptionOfExtension`\<`Record`\<`string`, `unknown`\>, [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\>
+
+##### Returns
+
+`object`
+
+###### alias?
+
+> `optional` **alias**: `string` \| readonly `string`[]
+
+string or array of strings, alias(es) for the canonical option key, see `alias()`
+
+###### array?
+
+> `optional` **array**: `boolean`
+
+boolean, interpret option as an array, see `array()`
+
+###### boolean?
+
+> `optional` **boolean**: `boolean`
+
+boolean, interpret option as a boolean flag, see `boolean()`
+
+###### check?
+
+> `optional` **check**: `BfeCheckFunction`\<`Record`\<`string`, `unknown`\>, [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\> \| `BfeCheckFunction`\<`Record`\<..., ...\>, [`GlobalExecutionContext`](../../../../configure/type-aliases/GlobalExecutionContext.md)\>[]
+
+`check` is the declarative option-specific version of vanilla yargs's
+`yargs::check()`. Also supports async and promise-returning functions.
+
+This function receives the `currentArgumentValue`, which you are free to
+type as you please, and the fully parsed `argv`. If this function throws,
+the exception will bubble. If this function returns an instance of `Error`,
+a string, or any non-truthy value (including `undefined` or not returning
+anything), Black Flag will throw a `CliError` on your behalf.
+
+You may also pass an array of check functions, each being executed after
+the other. Note that providing an array of one or more async check
+functions will result in them being awaited concurrently.
+
+See [the
+documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#check)
+for details.
+
+###### choices?
+
+> `optional` **choices**: `Choices`
+
+value or array of values, limit valid option arguments to a predefined set, see `choices()`
+
+###### coerce()?
+
+> `optional` **coerce**: (`arg`) => `any`
+
+`coerce` transforms an original `argv` value into another one. This is
+equivalent to `coerce` from vanilla yargs.
+
+However, unlike vanilla yargs and Black Flag, the `coerce` function will
+_always_ receive an array if the option was configured with `{ array: true
+}`.
+
+Note that **a defaulted argument will not result in this function being
+called.** Only arguments given via `argv` trigger `coerce`. This is vanilla
+yargs behavior.
+
+###### Parameters
+
+###### arg
+
+`any`
+
+###### Returns
+
+`any`
+
+###### config?
+
+> `optional` **config**: `boolean`
+
+boolean, interpret option as a path to a JSON config file, see `config()`
+
+###### configParser()?
+
+> `optional` **configParser**: (`configPath`) => `object`
+
+function, provide a custom config parsing function, see `config()`
+
+###### Parameters
+
+###### configPath
+
+`string`
+
+###### Returns
+
+`object`
+
+###### conflicts?
+
+> `optional` **conflicts**: `BfeBuilderObjectValueExtensionValue`
+
+`conflicts` enables checks to ensure the specified arguments, or
+argument-value pairs, are _never_ given conditioned on the existence of
+another argument. For example:
+
+```jsonc
+{
+  "x": { "conflicts": "y" }, // ◄ Disallows y if x is given
+  "y": {}
+}
+```
+
+Note: if an argument-value pair is specified and said argument is
+configured as an array (`{ array: true }`), it will be searched for the
+specified value. Otherwise, a strict deep equality check is performed.
+
+###### count?
+
+> `optional` **count**: `boolean`
+
+boolean, interpret option as a count of boolean flags, see `count()`
+
+###### default?
+
+> `optional` **default**: `unknown`
+
+`default` will set a default value for an argument. This is equivalent to
+`default` from vanilla yargs.
+
+However, unlike vanilla yargs and Black Flag, this default value is applied
+towards the end of BFE's execution, enabling its use alongside keys like
+`conflicts`. See [the
+documentation](https://github.com/Xunnamius/black-flag-extensions?tab=readme-ov-file#support-for-default-with-conflictsrequiresetc)
+for details.
+
+Note also that a defaulted argument will not be coerced by the `coerce`
+setting. Only arguments given via `argv` trigger `coerce`. This is vanilla
+yargs behavior.
+
+###### defaultDescription?
+
+> `optional` **defaultDescription**: `string`
+
+string, use this description for the default value in help content, see `default()`
+
+###### demandThisOption
+
+> **demandThisOption**: `true` = `true`
+
+###### demandThisOptionIf?
+
+> `optional` **demandThisOptionIf**: `BfeBuilderObjectValueExtensionValue`
+
+`demandThisOptionIf` enables checks to ensure an argument is given when at
+least one of the specified groups of arguments, or argument-value pairs, is
+also given. For example:
+
+```jsonc
+{
+  "x": {},
+  "y": { "demandThisOptionIf": "x" }, // ◄ Demands y if x is given
+  "z": { "demandThisOptionIf": "x" } // ◄ Demands z if x is given
+}
+```
+
+Note: if an argument-value pair is specified and said argument is
+configured as an array (`{ array: true }`), it will be searched for the
+specified value. Otherwise, a strict deep equality check is performed.
+
+###### demandThisOptionOr?
+
+> `optional` **demandThisOptionOr**: `BfeBuilderObjectValueExtensionValue`
+
+`demandThisOptionOr` enables non-optional inclusive disjunction checks per
+group. Put another way, `demandThisOptionOr` enforces a "logical or"
+relation within groups of required options. For example:
+
+```jsonc
+{
+  "x": { "demandThisOptionOr": ["y", "z"] }, // ◄ Demands x or y or z
+  "y": { "demandThisOptionOr": ["x", "z"] },
+  "z": { "demandThisOptionOr": ["x", "y"] }
+}
+```
+
+Note: if an argument-value pair is specified and said argument is
+configured as an array (`{ array: true }`), it will be searched for the
+specified value. Otherwise, a strict deep equality check is performed.
+
+###### demandThisOptionXor?
+
+> `optional` **demandThisOptionXor**: `BfeBuilderObjectValueExtensionValue`
+
+`demandThisOptionXor` enables non-optional exclusive disjunction checks per
+exclusivity group. Put another way, `demandThisOptionXor` enforces mutual
+exclusivity within groups of required options. For example:
+
+```jsonc
+{
+  // ▼ Disallows ∅, z, w, xy, xyw, xyz, xyzw
+  "x": { "demandThisOptionXor": ["y"] },
+  "y": { "demandThisOptionXor": ["x"] },
+  // ▼ Disallows ∅, x, y, zw, xzw, yzw, xyzw
+  "z": { "demandThisOptionXor": ["w"] },
+  "w": { "demandThisOptionXor": ["z"] }
+}
+```
+
+Note: if an argument-value pair is specified and said argument is
+configured as an array (`{ array: true }`), it will be searched for the
+specified value. Otherwise, a strict deep equality check is performed.
+
+###### deprecate?
+
+> `optional` **deprecate**: `string` \| `boolean`
+
+boolean or string, mark the argument as deprecated, see `deprecateOption()`
+
+###### deprecated?
+
+> `optional` **deprecated**: `string` \| `boolean`
+
+boolean or string, mark the argument as deprecated, see `deprecateOption()`
+
+###### desc?
+
+> `optional` **desc**: `string`
+
+string, the option description for help content, see `describe()`
+
+###### describe?
+
+> `optional` **describe**: `string`
+
+string, the option description for help content, see `describe()`
+
+###### description?
+
+> `optional` **description**: `string`
+
+string, the option description for help content, see `describe()`
+
+###### global?
+
+> `optional` **global**: `boolean`
+
+boolean, indicate that this key should not be reset when a command is invoked, see `global()`
+
+###### group?
+
+> `optional` **group**: `string`
+
+string, when displaying usage instructions place the option under an alternative group heading, see `group()`
+
+###### hidden?
+
+> `optional` **hidden**: `boolean`
+
+don't display option in help output.
+
+###### implies?
+
+> `optional` **implies**: `BfeBuilderObjectValueExtensionObject` \| `BfeBuilderObjectValueExtensionObject`[]
+
+`implies` will set default values for the specified arguments conditioned
+on the existence of another argument. These implied defaults will override
+any `default` configurations of the specified arguments.
+
+If any of the specified arguments are explicitly given on the command line,
+their values must match the specified argument-value pairs respectively
+(which is the behavior of `requires`/`conflicts`). Use `looseImplications`
+to modify this behavior.
+
+Hence, `implies` only accepts one or more argument-value pairs and not raw
+strings. For example:
+
+```jsonc
+{
+  "x": { "implies": { "y": true } }, // ◄ x is now synonymous with xy
+  "y": {}
+}
+```
+
+###### See
+
+ - BfeBuilderObjectValueExtensions.looseImplications
+ - BfeBuilderObjectValueExtensions.vacuousImplications
+
+###### looseImplications?
+
+> `optional` **looseImplications**: `boolean`
+
+When `looseImplications` is set to `true`, any implied arguments, when
+explicitly given on the command line, will _override_ their configured
+implications instead of causing an error.
+
+###### Default
+
+```ts
+false
+```
+
+###### See
+
+BfeBuilderObjectValueExtensions.implies
+
+###### nargs?
+
+> `optional` **nargs**: `number`
+
+number, specify how many arguments should be consumed for the option, see `nargs()`
+
+###### normalize?
+
+> `optional` **normalize**: `boolean`
+
+boolean, apply path.normalize() to the option, see `normalize()`
+
+###### number?
+
+> `optional` **number**: `boolean`
+
+boolean, interpret option as a number, `number()`
+
+###### requires?
+
+> `optional` **requires**: `BfeBuilderObjectValueExtensionValue`
+
+`requires` enables checks to ensure the specified arguments, or
+argument-value pairs, are given conditioned on the existence of another
+argument. For example:
+
+```jsonc
+{
+  "x": { "requires": "y" }, // ◄ Disallows x without y
+  "y": {}
+}
+```
+
+Note: if an argument-value pair is specified and said argument is
+configured as an array (`{ array: true }`), it will be searched for the
+specified value. Otherwise, a strict deep equality check is performed.
+
+###### requiresArg?
+
+> `optional` **requiresArg**: `boolean`
+
+boolean, require the option be specified with a value, see `requiresArg()`
+
+###### skipValidation?
+
+> `optional` **skipValidation**: `boolean`
+
+boolean, skips validation if the option is present, see `skipValidation()`
+
+###### string?
+
+> `optional` **string**: `boolean`
+
+boolean, interpret option as a string, see `string()`
+
+###### type?
+
+> `optional` **type**: `"array"` \| `"count"` \| `PositionalOptionsType`
+
+###### vacuousImplications?
+
+> `optional` **vacuousImplications**: `boolean`
+
+When `vacuousImplications` is set to `true` and the option is also
+configured as a "boolean" type, the implications configured via `implies`
+will still be applied to `argv` even if said option has a `false` value in
+`argv`. In the same scenario except with `vacuousImplications` set to
+`false`, the implications configured via `implies` are instead ignored.
+
+###### Default
+
+```ts
+false
+```
+
+###### See
+
+BfeBuilderObjectValueExtensions.implies
 
 #### regenerate-assets.subOptions.skip-asset-paths
 
@@ -975,33 +1403,9 @@ See the xscripts wiki documentation for details on all available assets and thei
 
 #### regenerate-assets.subOptions.skip-asset-paths.description
 
-> `readonly` **description**: `"Asset paths matching these regular expressions are discarded when regenerating"` = `'Asset paths matching these regular expressions are discarded when regenerating'`
+> `readonly` **description**: `"skip regenerating assets matching a regular expression"` = `'skip regenerating assets matching a regular expression'`
 
 #### regenerate-assets.subOptions.skip-asset-paths.string
-
-> `readonly` **string**: `true` = `true`
-
-#### regenerate-assets.subOptions.skip-asset-paths.coerce()
-
-##### Parameters
-
-###### assets
-
-`string`[]
-
-##### Returns
-
-`RegExp`[]
-
-#### regenerate-assets.subOptions.with-aliases-loaded-from
-
-> `readonly` **with-aliases-loaded-from**: `object`
-
-#### regenerate-assets.subOptions.with-aliases-loaded-from.description
-
-> `readonly` **description**: `"Additional import aliases are sourced from this file when regenerating"` = `'Additional import aliases are sourced from this file when regenerating'`
-
-#### regenerate-assets.subOptions.with-aliases-loaded-from.string
 
 > `readonly` **string**: `true` = `true`
 
@@ -1195,8 +1599,8 @@ See the xscripts wiki documentation for details on all available assets and thei
 
 ## See
 
-[RenovationTask](../type-aliases/RenovationTask.md)
+RenovationTask
 
 ## Defined in
 
-[src/commands/project/renovate.ts:772](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/project/renovate.ts#L772)
+[src/commands/project/renovate.ts:684](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/project/renovate.ts#L684)

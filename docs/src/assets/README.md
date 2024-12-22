@@ -8,6 +8,10 @@
 
 ## Index
 
+### Enumerations
+
+- [AssetPreset](enumerations/AssetPreset.md)
+
 ### Type Aliases
 
 - [Asset](type-aliases/Asset.md)
@@ -23,8 +27,12 @@
 
 ### Variables
 
+- [$delete](variables/$delete.md)
+- [assetPresets](variables/assetPresets.md)
 - [directoryAssetTemplates](variables/directoryAssetTemplates.md)
 - [directoryAssetTransformers](variables/directoryAssetTransformers.md)
+- [libAssetPresets](variables/libAssetPresets.md)
+- [reactAssetPresets](variables/reactAssetPresets.md)
 
 ### Functions
 
@@ -34,4 +42,6 @@
 - [deepMergeConfig](functions/deepMergeConfig.md)
 - [gatherAssetsFromAllTransformers](functions/gatherAssetsFromAllTransformers.md)
 - [gatherAssetsFromTransformer](functions/gatherAssetsFromTransformer.md)
+- [generatePerPackageAssets](functions/generatePerPackageAssets.md)
+- [generateRootOnlyAssets](functions/generateRootOnlyAssets.md)
 - [makeTransformer](functions/makeTransformer.md)

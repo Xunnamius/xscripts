@@ -24,3 +24,9 @@
 - [success](functions/success.md)
 - [transformer](functions/transformer.md)
 - [verifyConditions](functions/verifyConditions.md)
+
+## References
+
+### noSpecialInitialCommitIndicator
+
+Re-exports [noSpecialInitialCommitIndicator](../../../util/variables/noSpecialInitialCommitIndicator.md)

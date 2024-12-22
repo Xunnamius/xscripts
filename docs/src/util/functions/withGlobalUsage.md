@@ -6,7 +6,7 @@
 
 # Function: withGlobalUsage()
 
-> **withGlobalUsage**(`altDescription`, `options`?): `string`
+> **withGlobalUsage**(`altDescription`, `__namedParameters`): `string`
 
 Generate command usage text consistently yet flexibly.
 
@@ -19,11 +19,11 @@ Defaults to: `Usage: $000\n\n${altDescription}` where `altDescription` is
 
 `string` = `'$1.'`
 
-### options?
+### \_\_namedParameters
 
 #### appendPeriod
 
-`boolean`
+`boolean` = `true`
 
 Whether a period will be appended to the resultant string or not. A
 period is only appended if one is not already appended.
@@ -34,9 +34,21 @@ period is only appended if one is not already appended.
 true
 ```
 
+#### includeOptions
+
+`boolean` = `prependNewlines`
+
+Whether the string `' [...options]'` will be appended to the first line of usage text
+
+**Default**
+
+```ts
+options.prependNewlines
+```
+
 #### prependNewlines
 
-`boolean`
+`boolean` = `true`
 
 Whether newlines will be prepended to `altDescription` or not.
 
@@ -48,7 +60,7 @@ true
 
 #### trim
 
-`boolean`
+`boolean` = `true`
 
 Whether `altDescription` will be `trim()`'d or not.
 
@@ -64,4 +76,4 @@ true
 
 ## Defined in
 
-[packages/bfe/src/index.ts:1265](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/packages/bfe/src/index.ts#L1265)
+[packages/bfe/src/index.ts:1265](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/packages/bfe/src/index.ts#L1265)

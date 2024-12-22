@@ -8,14 +8,20 @@
 
 ## Index
 
+### Type Aliases
+
+- [GeneratorParameters](type-aliases/GeneratorParameters.md)
+
 ### Variables
 
-- [baseHybridrepoProjectRootXPackageJson](variables/baseHybridrepoProjectRootXPackageJson.md)
-- [baseMonorepoPackageRootXPackageJson](variables/baseMonorepoPackageRootXPackageJson.md)
-- [baseMonorepoProjectRootXPackageJson](variables/baseMonorepoProjectRootXPackageJson.md)
-- [basePolyrepoXPackageJson](variables/basePolyrepoXPackageJson.md)
-- [baseXPackageJson](variables/baseXPackageJson.md)
+- [githubUrlRegExp](variables/githubUrlRegExp.md)
 
 ### Functions
 
+- [generateBaseHybridrepoProjectRootXPackageJson](functions/generateBaseHybridrepoProjectRootXPackageJson.md)
+- [generateBaseMonorepoPackageRootXPackageJson](functions/generateBaseMonorepoPackageRootXPackageJson.md)
+- [generateBaseMonorepoProjectRootXPackageJson](functions/generateBaseMonorepoProjectRootXPackageJson.md)
+- [generateBasePolyrepoXPackageJson](functions/generateBasePolyrepoXPackageJson.md)
+- [generateBaseXPackageJson](functions/generateBaseXPackageJson.md)
+- [parsePackageJsonRepositoryIntoOwnerAndRepo](functions/parsePackageJsonRepositoryIntoOwnerAndRepo.md)
 - [transformer](functions/transformer.md)

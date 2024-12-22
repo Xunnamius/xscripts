@@ -17,8 +17,8 @@ accepts a `changelog` string and `patches`, which is an array of
 [ChangelogPatches](ChangelogPatches.md). `patcher` can be used to quickly apply an array of
 `patches` to the given `changelog` string. Its use is entirely optional.
 
-`changelog.patch.js` (or `changelog.patch.[cm]js`) can export via default
-either `ChangelogPatcherFunction` or a [ChangelogPatches](ChangelogPatches.md) array.
+`changelog.patch.mjs` can export via default either
+`ChangelogPatcherFunction` or a [ChangelogPatches](ChangelogPatches.md) array.
 
 ## Parameters
 
@@ -36,4 +36,4 @@ either `ChangelogPatcherFunction` or a [ChangelogPatches](ChangelogPatches.md) a
 
 ## Defined in
 
-[src/commands/build/changelog.ts:554](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/build/changelog.ts#L554)
+[src/commands/build/changelog.ts:98](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/build/changelog.ts#L98)

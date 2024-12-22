@@ -10,8 +10,17 @@
 
 ### Type Aliases
 
+- [ImportedAliasMap](type-aliases/ImportedAliasMap.md)
 - [LoadDotEnvSettings](type-aliases/LoadDotEnvSettings.md)
 - [LoadDotEnvSimplifiedSettings](type-aliases/LoadDotEnvSimplifiedSettings.md)
+- [RawAliasMapperFunction](type-aliases/RawAliasMapperFunction.md)
+
+### Variables
+
+- [magicStringReplacerRegionEnd](variables/magicStringReplacerRegionEnd.md)
+- [magicStringReplacerRegionStart](variables/magicStringReplacerRegionStart.md)
+- [noSpecialInitialCommitIndicator](variables/noSpecialInitialCommitIndicator.md)
+- [replacerRegionMatcherRegExp](variables/replacerRegionMatcherRegExp.md)
 
 ### Functions
 
@@ -21,14 +30,17 @@
 - [checkIsNotNegative](functions/checkIsNotNegative.md)
 - [checkIsNotNil](functions/checkIsNotNil.md)
 - [copyFile](functions/copyFile.md)
+- [deriveScopeNarrowingPathspecs](functions/deriveScopeNarrowingPathspecs.md)
 - [determineRepoWorkingTreeDirty](functions/determineRepoWorkingTreeDirty.md)
-- [findOneConfigurationFile](functions/findOneConfigurationFile.md)
+- [getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix](functions/getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix.md)
 - [getRelevantDotEnvFilePaths](functions/getRelevantDotEnvFilePaths.md)
 - [hasExitCode](functions/hasExitCode.md)
+- [importAdditionalRawAliasMappings](functions/importAdditionalRawAliasMappings.md)
 - [isNonEmptyString](functions/isNonEmptyString.md)
 - [loadDotEnv](functions/loadDotEnv.md)
 - [makeDirectory](functions/makeDirectory.md)
 - [readFile](functions/readFile.md)
+- [replaceRegionsRespectively](functions/replaceRegionsRespectively.md)
 - [runGlobalPreChecks](functions/runGlobalPreChecks.md)
 - [withGlobalBuilder](functions/withGlobalBuilder.md)
 - [withGlobalUsage](functions/withGlobalUsage.md)

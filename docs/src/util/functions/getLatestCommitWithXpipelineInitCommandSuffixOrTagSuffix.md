@@ -1,8 +1,8 @@
-[**@-xun/scripts**](../../../../../README.md)
+[**@-xun/scripts**](../../../README.md)
 
 ***
 
-[@-xun/scripts](../../../../../README.md) / [src/assets/transformers/\_conventional.config.cjs](../README.md) / getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix
+[@-xun/scripts](../../../README.md) / [src/util](../README.md) / getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix
 
 # Function: getLatestCommitWithXpipelineInitCommandSuffixOrTagSuffix()
 
@@ -29,4 +29,4 @@ XchangelogConfig
 
 ## Defined in
 
-[src/assets/transformers/\_conventional.config.cjs.ts:983](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/assets/transformers/_conventional.config.cjs.ts#L983)
+[src/util.ts:996](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/util.ts#L996)

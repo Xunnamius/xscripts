@@ -35,4 +35,4 @@ A thin wrapper around lodash's mergeWith that does not mutate
 
 ## Defined in
 
-[src/assets.ts:567](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/assets.ts#L567)
+[src/assets.ts:573](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/assets.ts#L573)

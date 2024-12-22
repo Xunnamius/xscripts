@@ -32,7 +32,7 @@ files, meaning they'll only be read once.**
 
 ### Defined in
 
-[src/util.ts:290](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/util.ts#L290)
+[src/util.ts:673](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/util.ts#L673)
 
 ## Call Signature
 
@@ -60,7 +60,7 @@ files, meaning they'll only be read once.**
 
 ### Defined in
 
-[src/util.ts:304](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/util.ts#L304)
+[src/util.ts:687](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/util.ts#L687)
 
 ## Call Signature
 
@@ -95,7 +95,7 @@ files, meaning they'll only be read once.**
 
 ### Defined in
 
-[src/util.ts:321](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/util.ts#L321)
+[src/util.ts:704](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/util.ts#L704)
 
 ## Call Signature
 
@@ -130,4 +130,4 @@ files, meaning they'll only be read once.**
 
 ### Defined in
 
-[src/util.ts:339](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/util.ts#L339)
+[src/util.ts:722](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/util.ts#L722)

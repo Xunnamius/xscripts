@@ -30,7 +30,30 @@ The description reported to the user when the task is run.
 
 #### Defined in
 
-[src/commands/release.ts:206](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L206)
+[src/commands/release.ts:215](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L215)
+
+***
+
+### allowMissingNpmScripts?
+
+> `optional` **allowMissingNpmScripts**: `boolean`
+
+Whether the task will automatically fail if none of the scripts given in
+`npmScripts` exist in the package's `package.json`.
+
+#### Default
+
+```ts
+false
+```
+
+#### Inherited from
+
+`Omit.allowMissingNpmScripts`
+
+#### Defined in
+
+[src/commands/release.ts:204](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L204)
 
 ***
 
@@ -40,7 +63,7 @@ The description reported to the user when the task is run.
 
 #### Defined in
 
-[src/commands/release.ts:258](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L258)
+[src/commands/release.ts:267](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L267)
 
 ***
 
@@ -56,7 +79,7 @@ The description reported to the user when `--help` is called.
 
 #### Defined in
 
-[src/commands/release.ts:210](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L210)
+[src/commands/release.ts:219](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L219)
 
 ***
 
@@ -87,7 +110,7 @@ supplies `--hush`/`--quiet`/`--silent`.
 
 #### Defined in
 
-[src/commands/release.ts:230](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L230)
+[src/commands/release.ts:239](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L239)
 
 ***
 
@@ -97,7 +120,7 @@ supplies `--hush`/`--quiet`/`--silent`.
 
 #### Defined in
 
-[src/commands/release.ts:257](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L257)
+[src/commands/release.ts:266](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L266)
 
 ***
 
@@ -113,7 +136,7 @@ A function called when the task is triggered.
 
 #### Defined in
 
-[src/commands/release.ts:234](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L234)
+[src/commands/release.ts:243](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L243)
 
 ***
 
@@ -123,4 +146,4 @@ A function called when the task is triggered.
 
 #### Defined in
 
-[src/commands/release.ts:256](https://github.com/Xunnamius/xscripts/blob/f7b55e778c8646134a23d934fd2791d564a72b57/src/commands/release.ts#L256)
+[src/commands/release.ts:265](https://github.com/Xunnamius/xscripts/blob/08b8dd169c5f24bef791b640ada35bc11e6e6e8e/src/commands/release.ts#L265)
