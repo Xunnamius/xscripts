@@ -1,4 +1,4 @@
-import { rm } from 'node:fs/promises';
+import { mkdir, rm } from 'node:fs/promises';
 
 import { CliError, type ChildConfiguration } from '@black-flag/core';
 import libsodium from 'libsodium-wrappers';
@@ -27,6 +27,7 @@ import { type Package } from 'multiverse+project-utils:analyze.ts';
 import {
   packageJsonConfigPackageBase,
   toAbsolutePath,
+  toDirname,
   toPath,
   toRelativePath
 } from 'multiverse+project-utils:fs.ts';
@@ -1518,11 +1519,20 @@ See the xscripts wiki documentation for more details on this command and all ava
           outputPathString,
           generateContent
         ]) {
-          const outputPath = toRelativePath(projectRoot, outputPathString);
+          const absoluteOutputPath = outputPathString;
+          const relativeOutputPath = toRelativePath(projectRoot, outputPathString);
+          const absoluteOutputParentPath = toDirname(absoluteOutputPath);
 
-          if (skipAssetPaths.some((r) => r.test(outputPath))) {
-            debug('skipped asset due to --skip-asset-paths exclusion: %O', outputPath);
-            log(`🟧 ${outputPath}`);
+          debug('absoluteOutputPath: %O', absoluteOutputPath);
+          debug('relativeOutputPath: %O', relativeOutputPath);
+          debug('absoluteOutputParentPath: %O', absoluteOutputParentPath);
+
+          if (skipAssetPaths.some((r) => r.test(relativeOutputPath))) {
+            debug(
+              'skipped asset due to --skip-asset-paths exclusion: %O',
+              absoluteOutputPath
+            );
+            log(`🟧 ${relativeOutputPath}`);
             return;
           }
 
@@ -1532,18 +1542,21 @@ See the xscripts wiki documentation for more details on this command and all ava
             if (content === $delete) {
               debug.message(
                 'deleting asset due to presence of $delete symbol: %O',
-                outputPath
+                absoluteOutputPath
               );
-              await rm(outputPath, { force: true });
-              log(`🗑️ ${outputPath}`);
+              await rm(absoluteOutputPath, { force: true });
+              log(`🗑️ ${relativeOutputPath}`);
             } else {
-              await writeFile(outputPath, content);
-              log(`✅ ${outputPath}`);
+              await mkdir(absoluteOutputParentPath, { mode: 0o775, recursive: true });
+              await writeFile(absoluteOutputPath, content);
+              log(`✅ ${relativeOutputPath}`);
             }
           } catch (error) {
             debug.error('content generation failure: %O', error);
-            log.error(`❗ ${outputPath}`);
-            throw new Error('wrapper', { cause: { error, outputPath } });
+            log.error(`❗ ${relativeOutputPath}`);
+            throw new Error('wrapper', {
+              cause: { error, outputPath: absoluteOutputPath }
+            });
           }
         })
       );
@@ -1607,12 +1620,12 @@ See the xscripts wiki documentation for more details on this command and all ava
           () =>
             log([LogTag.IF_NOT_HUSHED], 'Formatter sub-command completed successfully'),
           (error: unknown) => {
-            debug.error(error);
+            debug.error('formatter sub-command failed:', error);
             log.warn(
               [LogTag.IF_NOT_SILENCED],
-              'Formatter sub-command failed: %O',
-              String(error)
+              'Formatter sub-command experienced a non-fatal failure; please check related configuration files'
             );
+            log.warn([LogTag.IF_NOT_SILENCED], error);
           }
         );
       }
