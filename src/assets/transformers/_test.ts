@@ -2,8 +2,8 @@ import { directoryTestPackageBase } from 'multiverse+project-utils:fs.ts';
 
 import { generateRootOnlyAssets, makeTransformer } from 'universe:assets.ts';
 
-export const { transformer } = makeTransformer(function (context) {
-  const { toProjectAbsolutePath } = context;
+export const { transformer } = makeTransformer(async function (context) {
+  const { toProjectAbsolutePath, forceOverwritePotentiallyDestructive: force } = context;
 
   // * Only the root package gets these files
   return generateRootOnlyAssets(context, function () {
