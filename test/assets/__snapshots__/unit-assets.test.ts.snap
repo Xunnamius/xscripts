@@ -23183,11 +23183,7 @@ scope: this-package
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  assertEnvironment,
-  moduleExport
-} from '@-xun/scripts/assets/jest.config.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -23259,11 +23255,7 @@ scope: unlimited
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  assertEnvironment,
-  moduleExport
-} from '@-xun/scripts/assets/jest.config.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -23335,11 +23327,7 @@ scope: unlimited
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  assertEnvironment,
-  moduleExport
-} from '@-xun/scripts/assets/jest.config.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -23411,11 +23399,7 @@ scope: unlimited
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  assertEnvironment,
-  moduleExport
-} from '@-xun/scripts/assets/jest.config.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -23487,11 +23471,7 @@ scope: unlimited
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  assertEnvironment,
-  moduleExport
-} from '@-xun/scripts/assets/jest.config.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -23563,11 +23543,7 @@ scope: unlimited
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  assertEnvironment,
-  moduleExport
-} from '@-xun/scripts/assets/jest.config.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -23619,11 +23595,7 @@ scope: this-package
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  assertEnvironment,
-  moduleExport
-} from '@-xun/scripts/assets/jest.config.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -23675,11 +23647,7 @@ scope: unlimited
 'use strict';
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  assertEnvironment,
-  moduleExport
-} from '@-xun/scripts/assets/jest.config.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
