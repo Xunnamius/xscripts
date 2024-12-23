@@ -1,5 +1,6 @@
 #!/bin/sh
-# {@xscripts/notExtraneous husky}
+
+# TODO: make this work natively on Windows
 
 beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
 

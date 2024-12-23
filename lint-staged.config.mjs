@@ -1,14 +1,17 @@
-// {@xscripts/notExtraneous lint-staged}
+// @ts-check
+'use strict';
 
-/**
- * These scripts are the constituent parts of the `npm run format` command.
- *
- * ! Unlike other lint-staged scripts, since this project is itself xscripts,
- * ! we avoid using npx here. For any other project, npx should be used.
- */
-export default {
-  '*.md': './node_modules/@-xun/scripts/dist/src/cli.js format --only-markdown --files',
-  'package.json':
-    './node_modules/@-xun/scripts/dist/src/cli.js format --only-package-json --files',
-  '*': './node_modules/@-xun/scripts/dist/src/cli.js format --only-prettier --files'
-};
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/lint-staged.config.mjs';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:lint-staged' });*/
+
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/

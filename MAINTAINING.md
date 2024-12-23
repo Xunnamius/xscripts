@@ -32,22 +32,25 @@ As a maintainer, you're fine to make your branches on the main repo or on your
 own fork. Either way is fine.
 
 When we receive a pull request, a GitHub Actions build is kicked off
-automatically (see [`.github/workflows`][3]). We avoid merging anything that
-fails the Actions workflow.
+automatically (see [`.github/workflows`][3]). We usually avoid merging anything
+that fails our Actions workflows.
 
 Please review PRs and focus on the code rather than the individual. You never
 know when this is someone's first ever PR and we want their experience to be as
 positive as possible, so be uplifting and constructive.
 
-When you merge the pull request, 99% of the time you should use the [rebase and
-merge][4] feature. This keeps our git history clean. If commit messages need to
-be adjusted, maintainers should force push new commits with adjusted messages to
-the PR branch before merging it in.
+When you merge the pull request, you should do so via either the [rebase and
+merge][4] or [squash and merge][5] features. This keeps our git history clean.
 
-The [squash and merge][5] feature can also be used, but keep in mind that
-squashing commits will likely damage the [generated][6] [CHANGELOG.md][7],
-hinder [bisection][8], and result in [non-atomic commits][9], so use it
-sparingly.
+If commit messages need to be adjusted, maintainers should force push new
+commits with adjusted messages to the PR branch before merging it in.
+
+> [!CAUTION]
+>
+> **Always favor rebase over squash for large and/or complex contributions**
+> since squashing commits may damage the [generated][6] [CHANGELOG.md][7],
+> hinder [bisection][8], yield [non-atomic commits][9], and could even result in
+> [the wrong version][26] being [released][10].
 
 ## Releases
 
@@ -66,7 +69,7 @@ commit message convention][25] which drives our releases.**
 > [!IMPORTANT]
 >
 > **UNDER NO CIRCUMSTANCES** should any of your commit messages contain the
-> phrases `BREAKING:`, `BREAKING CHANGE:`, or `BREAKING CHANGES:` unless the
+> strings `BREAKING:`, `BREAKING CHANGE:`, or `BREAKING CHANGES:` unless the
 > goal is to release a new major version.
 
 ### Manual Releases
@@ -88,9 +91,13 @@ locally.
 Before proceeding with a manual release, first ensure all dependencies are
 installed and all necessary secrets are available.
 
+> [!TIP]
+>
 > You only need to run the following commands if you have not run `npm install`
 > at least once.
 
+> [!IMPORTANT]
+>
 > These command should only be run at the project root level and not in any
 > individual package root.
 
@@ -107,23 +114,25 @@ npm ci
 To release all packages in a repository:
 
 ```bash
-# Do a dry run first:
+# Do a Turbo dry run first:
 npx turbo release --dry-run
-# Then do the actual release:
+# Then do the actual Turbo-based release:
 npx turbo release
 ```
 
 To release one or more specific packages:
 
 ```bash
-# Do a dry run first:
+# Do a Turbo dry run first:
 npx turbo release --filter=pkg-1 --filter=pkg-2 --dry-run
-# Then do the actual release:
+# Then do the actual Turbo-based release:
 npx turbo release --filter=pkg-1 --filter=pkg-2
 ```
 
 #### Manual Release Method 2: By Hand
 
+> [!WARNING]
+>
 > Note that, in a monorepo/hybridrepo, relying on these commands to manually cut
 > a release may result in a non-functional package being released if said
 > package depends on other packages in the project that have unreleased changes.
@@ -135,17 +144,25 @@ There are two ways to execute the release procedure by hand. The first is by
 leveraging the release script:
 
 ```bash
-# Do a dry run first:
+# Do a xscripts dry run first:
 npm run release -- --dry-run
-# Then do the actual release:
-npm run release --
+# Then do the actual xscripts-based release:
+npm run release
 ```
+
+> [!NOTE]
+>
+> See `npx xscripts release --help` for more options.
 
 The second way is by running the following npm scripts in the specified order:
 
+> [!WARNING]
+>
 > If one of these steps fails, you should address the failure before running the
 > next step.
 
+> [!TIP]
+>
 > These commands should be run with the root of the individual package you're
 > trying to release as the current working directory. Using `npm -w` also works.
 
@@ -157,11 +174,8 @@ The second way is by running the following npm scripts in the specified order:
 # 3. Format this package's files.
 npm run format
 
-# 4. Lint all recognized source file types under the current working directory.
+# 4. Lint every file in the package and any files imported by those files.
 npm run lint:package
-# The above only lints the current package if in a monorepo. To lint the entire
-# monorepo, use the following instead:
-#npm run lint:packages:all
 
 # 5. Build this package's distributables.
 npm run build
@@ -169,35 +183,22 @@ npm run build
 # 6. Build this package's documentation (AFTER format for correct line numbers).
 npm run build:docs
 
-# 7. Run all of this package's tests and generate coverage data.
+# 7. Run all of this package's tests and the tests of any package imported by
+# source files in this package, then generate coverage data.
 npm run test:package:all
-# The above only tests the current package if in a monorepo. To test the entire
-# monorepo, use the following instead:
-#npm run test:packages:all
 
-# 8. Perform any renovations, such as synchronizing versions of interdependent
-# packages in a monorepo.
-npm run renovate
-# You can additionally optionally run project-wide sanity and validity checks
-# across the entire repository using the following:
-#npm run lint:project
-
-# 9. Trigger xrelease locally to publish a new release of this package. This
+# 8. Trigger xrelease locally to publish a new release of this package. This
 # requires having valid tokens for NPM, GitHub, and Codecov each with the
 # appropriate permissions.
 #
 # Do a dry run first:
 npm run release -- --skip-tasks manual --dry-run
 # Then review CHANGELOG.md and, after making sure the next release includes the
-# commits you're expecting, reset/revert CHANGELOG.md and do the actual release:
-npm run release -- --skip-prerelease-tasks
+# commits you're expecting, do the actual release:
+npm run release -- --skip-tasks manual
 ```
 
 ## Deprecation and End of Life
-
-> "Everything that has a beginning has an end, Neo."
->
-> — Agent Smith, The Matrix Revolutions (2003)
 
 Sometimes, for a variety of reasons, the maintenance window on a project may
 close for good. It happens. And when it does, there is a need to make clear to
@@ -207,6 +208,8 @@ maintenance is intended.
 
 With somber focus, the following steps should be taken:
 
+> [!TIP]
+>
 > If you're using [xscripts][12], all of this can be done automatically:
 >
 > ```bash
@@ -217,6 +220,8 @@ With somber focus, the following steps should be taken:
 
 ### Deprecate the Remote (GitHub) repository
 
+> [!IMPORTANT]
+>
 > If the deprecated project is using [xscripts][12]/[xpipeline][14], at least
 > one of the commits created as a result of following these instructions must be
 > of the [`build` type][15] so that a final "deprecated" version with updated
@@ -335,7 +340,7 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/black-flag/blob/eec78609146a92cab29caa9d1fa05a0581e5bd3f/release.config.js#L27
+  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
@@ -355,3 +360,4 @@ Thank you so much for helping to maintain this project!
 [24]: #manual-release-method-1-semi-automated
 [25]:
   https://github.com/conventional-changelog-archived-repos/conventional-changelog-angular/blob/ed32559941719a130bb0327f886d6a32a8cbc2ba/convention.md
+[26]: https://github.com/semantic-release/commit-analyzer

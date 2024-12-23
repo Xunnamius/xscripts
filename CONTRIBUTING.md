@@ -79,7 +79,8 @@ At this point, you're ready to create your PR and ✨ contribute ✨!
 
 [atomic-commits]: https://www.codewithjason.com/atomic-commits-testing
 [choose-new-issue]: https://github.com/Xunnamius/xscripts/issues/new/choose
-[code-of-conduct]: /.github/CODE_OF_CONDUCT.md
+[code-of-conduct]:
+  https://github.com/Xunnamius/xscripts/.github/CODE_OF_CONDUCT.md
 [codecov]: https://about.codecov.io
 [conventional-commits]: https://www.conventionalcommits.org/en/v1.0.0#summary
 [cosmetic-commits]:

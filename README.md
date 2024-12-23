@@ -1,14 +1,19 @@
+<!-- xscripts-template-region-start 1 -->
+
 <p align="center" width="100%">
   <img width="300" src="./xscripts.png">
 </p>
 
 <p align="center" width="100%">
-The NPM-based tooling that underpin all of my projects
+<!-- xscripts-template-region-end -->
+
+The NPM-based tooling that underpin all of my projects.
+
+<!-- xscripts-template-region-start 2 -->
+
 </p>
 
 <hr />
-
-<!-- badges-start -->
 
 <div align="center">
 
@@ -23,21 +28,24 @@ The NPM-based tooling that underpin all of my projects
 
 </div>
 
-<!-- badges-end -->
-
 <br />
 
 # xscripts (@-xun/scripts)
 
+<!-- xscripts-template-region-end -->
+
 `xscripts` is a highly-opinionated personal tool for building, linting, and
 deploying my NPM-based projects. Similar in intent to kcd-scripts,
 react-scripts, etc.
+
+<!-- xscripts-template-region-start 3 -->
 
 <br />
 
 ---
 
 <!-- remark-ignore-start -->
+<!-- xscripts-template-region-end -->
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -50,11 +58,14 @@ react-scripts, etc.
   - [Contributors](#contributors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!-- xscripts-template-region-start 4 -->
 <!-- remark-ignore-end -->
 
 <br />
 
 ## Install
+
+<!-- xscripts-template-region-end -->
 
 You can install this package globally:
 
@@ -80,6 +91,8 @@ npx @-xun/scripts ...
 
 TODO
 
+<!-- xscripts-template-region-start 5 -->
+
 ## Appendix
 
 Further documentation can be found under [`docs/`][x-repo-docs].
@@ -87,9 +100,13 @@ Further documentation can be found under [`docs/`][x-repo-docs].
 ### Published Package Details
 
 This is a [CJS2 package][x-pkg-cjs-mojito] with statically-analyzable exports
-built by Babel for Node.js versions that are not end-of-life. For TypeScript
-users, this package supports both `"Node10"` and `"Node16"` module resolution
-strategies.
+built by Babel for use in Node.js versions that are not end-of-life. For
+TypeScript users, this package supports both `"Node10"` and `"Node16"` module
+resolution strategies.
+
+<!-- xscripts-template-region-end -->
+<!-- TODO: custom details here -->
+<!-- xscripts-template-region-start 6 -->
 
 <details><summary>Expand details</summary>
 
@@ -105,20 +122,24 @@ Each entry point (i.e. `ENTRY`) in [`package.json`'s
 `exports[ENTRY]`][x-repo-package-json] object includes one or more [export
 conditions][x-pkg-exports-conditions]. These entries may or may not include: an
 [`exports[ENTRY].types`][x-pkg-exports-types-key] condition pointing to a type
-declarations file for TypeScript and IDEs, an
+declaration file for TypeScript and IDEs, a
 [`exports[ENTRY].module`][x-pkg-exports-module-key] condition pointing to
-(usually ESM) source for Webpack/Rollup, an `exports[ENTRY].node` condition
-pointing to (usually CJS2) source for Node.js `require` _and `import`_, an
-`exports[ENTRY].default` condition pointing to source for browsers and other
-environments, and [other conditions][x-pkg-exports-conditions] not enumerated
-here. Check the [package.json][x-repo-package-json] file to see which export
-conditions are supported.
+(usually ESM) source for Webpack/Rollup, a `exports[ENTRY].node` and/or
+`exports[ENTRY].default` condition pointing to (usually CJS2) source for Node.js
+`require`/`import` and for browsers and other environments, and [other
+conditions][x-pkg-exports-conditions] not enumerated here. Check the
+[package.json][x-repo-package-json] file to see which export conditions are
+supported.
 
-Though [`package.json`][x-repo-package-json] includes
-[`{ "type": "commonjs" }`][x-pkg-type], note that any ESM-only entry points will
-be ES module (`.mjs`) files. Finally, [`package.json`][x-repo-package-json] also
-includes the [`sideEffects`][x-pkg-side-effects-key] key, which is `false` for
+Note that, regardless of the [`{ "type": "..." }`][x-pkg-type] specified in
+[`package.json`][x-repo-package-json], any JavaScript files written in ESM
+syntax (including distributables) will always have the `.mjs` extension. Note
+also that [`package.json`][x-repo-package-json] may include the
+[`sideEffects`][x-pkg-side-effects-key] key, which is almost always `false` for
 optimal [tree shaking][x-pkg-tree-shaking] where appropriate.
+
+<!-- xscripts-template-region-end -->
+<!-- TODO: custom details here -->
 
 </details>
 
@@ -130,8 +151,8 @@ See [LICENSE][x-repo-license].
 
 **[New issues][x-repo-choose-new-issue] and [pull requests][x-repo-pr-compare]
 are always welcome and greatly appreciated! 🤩** Just as well, you can [star 🌟
-this project][x-badge-repo-link] to let me know you found it useful! ✊🏿 Or you
-could [buy me a beer][x-repo-sponsor] 🥺Thank you!
+this project][x-badge-repo-link] to let me know you found it useful! ✊🏿 Or [buy
+me a beer][x-repo-sponsor], I'd appreciate it. Thank you!
 
 See [CONTRIBUTING.md][x-repo-contributing] and [SUPPORT.md][x-repo-support] for
 more information.
@@ -157,7 +178,7 @@ key][x-repo-all-contributors-emojis]):
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://xunn.io/"><img src="https://avatars.githubusercontent.com/u/656017?v=4?s=100" width="100px;" alt="Bernard"/><br /><sub><b>Bernard</b></sub></a><br /><a href="#infra-Xunnamius" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/Xunnamius/xscripts/commits?author=Xunnamius" title="Code">💻</a> <a href="https://github.com/Xunnamius/xscripts/commits?author=Xunnamius" title="Documentation">📖</a> <a href="#maintenance-Xunnamius" title="Maintenance">🚧</a> <a href="https://github.com/Xunnamius/xscripts/commits?author=Xunnamius" title="Tests">⚠️</a> <a href="https://github.com/Xunnamius/xscripts/pulls?q=is%3Apr+reviewed-by%3AXunnamius" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://xunn.io/"><img src="https://avatars.githubusercontent.com/u/656017?v=4?s=100" width="100px;" alt="Bernard"/><br /><sub><b>Bernard</b></sub></a><br /><a href="#infra-Xunnamius" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/Xunnamius/@-xun/scripts/commits?author=Xunnamius" title="Code">💻</a> <a href="https://github.com/Xunnamius/@-xun/scripts/commits?author=Xunnamius" title="Documentation">📖</a> <a href="#maintenance-Xunnamius" title="Maintenance">🚧</a> <a href="https://github.com/Xunnamius/@-xun/scripts/commits?author=Xunnamius" title="Tests">⚠️</a> <a href="https://github.com/Xunnamius/@-xun/scripts/pulls?q=is%3Apr+reviewed-by%3AXunnamius" title="Reviewed Pull Requests">👀</a></td>
     </tr>
   </tbody>
   <tfoot>
@@ -189,7 +210,7 @@ specification. Contributions of any kind welcome!
   https://img.shields.io/npm/dm/@-xun/scripts?style=flat-square
   'Number of times this package has been downloaded per month'
 [x-badge-lastcommit-image]:
-  https://img.shields.io/github/last-commit/xunnamius/xscripts?style=flat-square
+  https://img.shields.io/github/last-commit/Xunnamius/xscripts?style=flat-square
   'Latest commit timestamp'
 [x-badge-license-image]:
   https://img.shields.io/npm/l/@-xun/scripts?style=flat-square
@@ -199,7 +220,7 @@ specification. Contributions of any kind welcome!
   https://xunn.at/npm-pkg-version/@-xun/scripts
   'Install this package using npm or yarn!'
 [x-badge-npm-link]: https://npmtrends.com/@-xun/scripts
-[x-badge-repo-link]: https://github.com/xunnamius/xscripts
+[x-badge-repo-link]: https://github.com/Xunnamius/xscripts
 [x-badge-semanticrelease-image]:
   https://xunn.at/badge-semantic-release
   'This repo practices continuous integration and deployment!'
@@ -223,11 +244,11 @@ specification. Contributions of any kind welcome!
 [x-repo-all-contributors]: https://github.com/all-contributors/all-contributors
 [x-repo-all-contributors-emojis]: https://allcontributors.org/docs/en/emoji-key
 [x-repo-choose-new-issue]:
-  https://github.com/xunnamius/xscripts/issues/new/choose
+  https://github.com/Xunnamius/xscripts/issues/new/choose
 [x-repo-contributing]: /CONTRIBUTING.md
 [x-repo-docs]: docs
 [x-repo-license]: ./LICENSE
 [x-repo-package-json]: package.json
-[x-repo-pr-compare]: https://github.com/xunnamius/xscripts/compare
+[x-repo-pr-compare]: https://github.com/Xunnamius/xscripts/compare
 [x-repo-sponsor]: https://github.com/sponsors/Xunnamius
 [x-repo-support]: /.github/SUPPORT.md

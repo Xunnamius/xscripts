@@ -7,7 +7,6 @@ coverage:
     patch:
       default:
         informational: true
-# TODO: project-wide flags like project.<branch>
 # * Well-known flag syntax: package.<branch>_<package-id>
 # * <package>-id will be the WorkspacePackageId or "root" for RootPackages
 flag_management:

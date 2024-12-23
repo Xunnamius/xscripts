@@ -1,30 +1,17 @@
-export default {
-  extends: ['@commitlint/config-conventional'],
-  rules: {
-    'header-max-length': [1, 'always', 100],
-    'body-case': [1, 'always', 'sentence-case'],
-    'body-full-stop': [1, 'always'],
-    'header-trim': [1, 'always'],
-    'body-leading-blank': [2, 'always'],
-    'footer-leading-blank': [2, 'always'],
-    'type-enum': [
-      2,
-      'always',
-      [
-        'feat',
-        'feature',
-        'fix',
-        'perf',
-        'revert',
-        'build',
-        'docs',
-        'style',
-        'refactor',
-        'test',
-        'ci',
-        'cd',
-        'chore'
-      ]
-    ]
-  }
-};
+// @ts-check
+'use strict';
+
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/commitlint.config.mjs';
+// TODO: publish latest rejoinder package first, then update configs to use it
+//import { createDebugLogger } = from 'rejoinder';
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
+
+const config = deepMergeConfig(moduleExport(), {
+  // Any custom configs here will be deep merged with moduleExport's result
+});
+
+export default config;
+
+/*debug('exported config: %O', config);*/

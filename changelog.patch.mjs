@@ -1,4 +1,5 @@
 // @ts-check
+
 /**
  * @type {import('@-xun/scripts/commands/build/changelog').ChangelogPatches}
  */

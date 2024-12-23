@@ -1,5 +1,6 @@
 #!/bin/sh
-# {@xscripts/notExtraneous husky}
+
+# TODO: make this work natively on Windows
 
 beginswith() { case $2 in "$1"*) true;; *) false;; esac; }
 
@@ -10,6 +11,6 @@ fi
 
 NODE_NO_WARNINGS=1 commitlint -e
 # ? -xx === --skip-slow-tests --skip-slow-tests === skip really slow unit tests
-if [ -z $GAC_VERIFY_SIMPLE ]; then npm run test -- -xx; fi
+if [ -z "$GAC_VERIFY_SIMPLE" ]; then npm run test -- -xx; fi
 echo
 NODE_NO_WARNINGS=1 node spellcheck-commit.cjs
