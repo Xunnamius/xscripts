@@ -525,7 +525,7 @@ exports[`::gatherAssetsFromAllTransformers preset: basic generates expected asse
   "test/index.ts",
   "test/setup.ts",
   "packages/webpack/test/unit-x.test.ts",
-  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/.config.ts",
   "packages/webpack/test/integration/integration-node-smoke.test.ts",
   "packages/webpack/test/integration/integration-client.test.ts",
   "packages/webpack/test/end-to-end/.config.ts",
@@ -604,19 +604,19 @@ exports[`::gatherAssetsFromAllTransformers preset: basic generates expected asse
   "test/index.ts",
   "test/setup.ts",
   "packages/pkg-1/test/unit-x.test.ts",
-  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/.config.ts",
   "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-1/test/integration/integration-client.test.ts",
   "packages/pkg-1/test/end-to-end/.config.ts",
   "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-2/test/unit-x.test.ts",
-  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/.config.ts",
   "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-2/test/integration/integration-client.test.ts",
   "packages/pkg-2/test/end-to-end/.config.ts",
   "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-import/test/unit-x.test.ts",
-  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/.config.ts",
   "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-import/test/integration/integration-client.test.ts",
   "packages/pkg-import/test/end-to-end/.config.ts",
@@ -755,7 +755,7 @@ exports[`::gatherAssetsFromAllTransformers preset: cli generates expected assets
   "test/index.ts",
   "test/setup.ts",
   "packages/webpack/test/unit-x.test.ts",
-  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/.config.ts",
   "packages/webpack/test/integration/integration-node-smoke.test.ts",
   "packages/webpack/test/integration/integration-client.test.ts",
   "packages/webpack/test/end-to-end/.config.ts",
@@ -842,19 +842,19 @@ exports[`::gatherAssetsFromAllTransformers preset: cli generates expected assets
   "test/index.ts",
   "test/setup.ts",
   "packages/pkg-1/test/unit-x.test.ts",
-  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/.config.ts",
   "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-1/test/integration/integration-client.test.ts",
   "packages/pkg-1/test/end-to-end/.config.ts",
   "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-2/test/unit-x.test.ts",
-  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/.config.ts",
   "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-2/test/integration/integration-client.test.ts",
   "packages/pkg-2/test/end-to-end/.config.ts",
   "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-import/test/unit-x.test.ts",
-  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/.config.ts",
   "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-import/test/integration/integration-client.test.ts",
   "packages/pkg-import/test/end-to-end/.config.ts",
@@ -1002,7 +1002,7 @@ exports[`::gatherAssetsFromAllTransformers preset: default (no preset) generates
   "test/index.ts",
   "test/setup.ts",
   "packages/webpack/test/unit-x.test.ts",
-  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/.config.ts",
   "packages/webpack/test/integration/integration-node-smoke.test.ts",
   "packages/webpack/test/integration/integration-client.test.ts",
   "packages/webpack/test/end-to-end/.config.ts",
@@ -1095,19 +1095,19 @@ exports[`::gatherAssetsFromAllTransformers preset: default (no preset) generates
   "test/index.ts",
   "test/setup.ts",
   "packages/pkg-1/test/unit-x.test.ts",
-  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/.config.ts",
   "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-1/test/integration/integration-client.test.ts",
   "packages/pkg-1/test/end-to-end/.config.ts",
   "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-2/test/unit-x.test.ts",
-  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/.config.ts",
   "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-2/test/integration/integration-client.test.ts",
   "packages/pkg-2/test/end-to-end/.config.ts",
   "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-import/test/unit-x.test.ts",
-  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/.config.ts",
   "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-import/test/integration/integration-client.test.ts",
   "packages/pkg-import/test/end-to-end/.config.ts",
@@ -1259,7 +1259,7 @@ exports[`::gatherAssetsFromAllTransformers preset: lib generates expected assets
   "test/index.ts",
   "test/setup.ts",
   "packages/webpack/test/unit-x.test.ts",
-  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/.config.ts",
   "packages/webpack/test/integration/integration-node-smoke.test.ts",
   "packages/webpack/test/integration/integration-client.test.ts",
   "packages/webpack/test/end-to-end/.config.ts",
@@ -1346,19 +1346,19 @@ exports[`::gatherAssetsFromAllTransformers preset: lib generates expected assets
   "test/index.ts",
   "test/setup.ts",
   "packages/pkg-1/test/unit-x.test.ts",
-  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/.config.ts",
   "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-1/test/integration/integration-client.test.ts",
   "packages/pkg-1/test/end-to-end/.config.ts",
   "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-2/test/unit-x.test.ts",
-  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/.config.ts",
   "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-2/test/integration/integration-client.test.ts",
   "packages/pkg-2/test/end-to-end/.config.ts",
   "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-import/test/unit-x.test.ts",
-  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/.config.ts",
   "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-import/test/integration/integration-client.test.ts",
   "packages/pkg-import/test/end-to-end/.config.ts",
@@ -1502,7 +1502,7 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-esm generates expected as
   "test/index.ts",
   "test/setup.ts",
   "packages/webpack/test/unit-x.test.ts",
-  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/.config.ts",
   "packages/webpack/test/integration/integration-node-smoke.test.ts",
   "packages/webpack/test/integration/integration-client.test.ts",
   "packages/webpack/test/end-to-end/.config.ts",
@@ -1589,19 +1589,19 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-esm generates expected as
   "test/index.ts",
   "test/setup.ts",
   "packages/pkg-1/test/unit-x.test.ts",
-  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/.config.ts",
   "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-1/test/integration/integration-client.test.ts",
   "packages/pkg-1/test/end-to-end/.config.ts",
   "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-2/test/unit-x.test.ts",
-  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/.config.ts",
   "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-2/test/integration/integration-client.test.ts",
   "packages/pkg-2/test/end-to-end/.config.ts",
   "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-import/test/unit-x.test.ts",
-  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/.config.ts",
   "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-import/test/integration/integration-client.test.ts",
   "packages/pkg-import/test/end-to-end/.config.ts",
@@ -1746,7 +1746,7 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-web generates expected as
   "test/index.ts",
   "test/setup.ts",
   "packages/webpack/test/unit-x.test.ts",
-  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/.config.ts",
   "packages/webpack/test/integration/integration-node-smoke.test.ts",
   "packages/webpack/test/integration/integration-client.test.ts",
   "packages/webpack/test/end-to-end/.config.ts",
@@ -1834,19 +1834,19 @@ exports[`::gatherAssetsFromAllTransformers preset: lib-web generates expected as
   "test/index.ts",
   "test/setup.ts",
   "packages/pkg-1/test/unit-x.test.ts",
-  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/.config.ts",
   "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-1/test/integration/integration-client.test.ts",
   "packages/pkg-1/test/end-to-end/.config.ts",
   "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-2/test/unit-x.test.ts",
-  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/.config.ts",
   "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-2/test/integration/integration-client.test.ts",
   "packages/pkg-2/test/end-to-end/.config.ts",
   "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-import/test/unit-x.test.ts",
-  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/.config.ts",
   "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-import/test/integration/integration-client.test.ts",
   "packages/pkg-import/test/end-to-end/.config.ts",
@@ -1987,7 +1987,7 @@ exports[`::gatherAssetsFromAllTransformers preset: nextjs generates expected ass
   "test/index.ts",
   "test/setup.ts",
   "packages/webpack/test/unit-x.test.ts",
-  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/.config.ts",
   "packages/webpack/test/integration/integration-node-smoke.test.ts",
   "packages/webpack/test/integration/integration-client.test.ts",
   "packages/webpack/test/end-to-end/.config.ts",
@@ -2072,19 +2072,19 @@ exports[`::gatherAssetsFromAllTransformers preset: nextjs generates expected ass
   "test/index.ts",
   "test/setup.ts",
   "packages/pkg-1/test/unit-x.test.ts",
-  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/.config.ts",
   "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-1/test/integration/integration-client.test.ts",
   "packages/pkg-1/test/end-to-end/.config.ts",
   "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-2/test/unit-x.test.ts",
-  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/.config.ts",
   "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-2/test/integration/integration-client.test.ts",
   "packages/pkg-2/test/end-to-end/.config.ts",
   "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-import/test/unit-x.test.ts",
-  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/.config.ts",
   "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-import/test/integration/integration-client.test.ts",
   "packages/pkg-import/test/end-to-end/.config.ts",
@@ -2226,7 +2226,7 @@ exports[`::gatherAssetsFromAllTransformers preset: react generates expected asse
   "test/index.ts",
   "test/setup.ts",
   "packages/webpack/test/unit-x.test.ts",
-  "packages/webpack/test/integration/config.ts",
+  "packages/webpack/test/integration/.config.ts",
   "packages/webpack/test/integration/integration-node-smoke.test.ts",
   "packages/webpack/test/integration/integration-client.test.ts",
   "packages/webpack/test/end-to-end/.config.ts",
@@ -2308,19 +2308,19 @@ exports[`::gatherAssetsFromAllTransformers preset: react generates expected asse
   "test/index.ts",
   "test/setup.ts",
   "packages/pkg-1/test/unit-x.test.ts",
-  "packages/pkg-1/test/integration/config.ts",
+  "packages/pkg-1/test/integration/.config.ts",
   "packages/pkg-1/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-1/test/integration/integration-client.test.ts",
   "packages/pkg-1/test/end-to-end/.config.ts",
   "packages/pkg-1/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-2/test/unit-x.test.ts",
-  "packages/pkg-2/test/integration/config.ts",
+  "packages/pkg-2/test/integration/.config.ts",
   "packages/pkg-2/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-2/test/integration/integration-client.test.ts",
   "packages/pkg-2/test/end-to-end/.config.ts",
   "packages/pkg-2/test/end-to-end/e2e-x.test.ts",
   "packages/pkg-import/test/unit-x.test.ts",
-  "packages/pkg-import/test/integration/config.ts",
+  "packages/pkg-import/test/integration/.config.ts",
   "packages/pkg-import/test/integration/integration-node-smoke.test.ts",
   "packages/pkg-import/test/integration/integration-client.test.ts",
   "packages/pkg-import/test/end-to-end/.config.ts",
@@ -2407,7 +2407,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> .all-
 scope: this-package
 ⏶⏷⏶⏷⏶
 {
-  "projectName": "good-hybridrepo",
+  "projectName": "repo-name",
   "projectOwner": "Xunnamius",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -2444,7 +2444,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> .all-
 scope: unlimited
 ⏶⏷⏶⏷⏶
 {
-  "projectName": "good-hybridrepo",
+  "projectName": "repo-name",
   "projectOwner": "Xunnamius",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -2481,7 +2481,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> .all-
 scope: unlimited
 ⏶⏷⏶⏷⏶
 {
-  "projectName": "good-hybridrepo",
+  "projectName": "repo-name",
   "projectOwner": "Xunnamius",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -2518,7 +2518,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> .all-
 scope: unlimited
 ⏶⏷⏶⏷⏶
 {
-  "projectName": "good-monorepo-no-src",
+  "projectName": "repo-name",
   "projectOwner": "Xunnamius",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -2555,7 +2555,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> .all-
 scope: unlimited
 ⏶⏷⏶⏷⏶
 {
-  "projectName": "good-monorepo-no-src",
+  "projectName": "repo-name",
   "projectOwner": "Xunnamius",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -2592,7 +2592,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> .all-
 scope: unlimited
 ⏶⏷⏶⏷⏶
 {
-  "projectName": "good-polyrepo-no-src",
+  "projectName": "repo-name",
   "projectOwner": "Xunnamius",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -2629,7 +2629,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> .all-
 scope: this-package
 ⏶⏷⏶⏷⏶
 {
-  "projectName": "good-polyrepo-no-src",
+  "projectName": "repo-name",
   "projectOwner": "Xunnamius",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -2666,7 +2666,7 @@ exports[`::gatherAssetsFromTransformer <generated asset content snapshots> .all-
 scope: unlimited
 ⏶⏷⏶⏷⏶
 {
-  "projectName": "good-polyrepo-no-src",
+  "projectName": "repo-name",
   "projectOwner": "Xunnamius",
   "repoType": "github",
   "repoHost": "https://github.com",
@@ -9520,11 +9520,7 @@ scope: this-package
 // @ts-check
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  moduleExport,
-  assertEnvironment
-} from '@-xun/scripts/assets/.remarkrc.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/.remarkrc.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -9554,11 +9550,7 @@ scope: unlimited
 // @ts-check
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  moduleExport,
-  assertEnvironment
-} from '@-xun/scripts/assets/.remarkrc.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/.remarkrc.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -9588,11 +9580,7 @@ scope: unlimited
 // @ts-check
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  moduleExport,
-  assertEnvironment
-} from '@-xun/scripts/assets/.remarkrc.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/.remarkrc.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -9622,11 +9610,7 @@ scope: unlimited
 // @ts-check
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  moduleExport,
-  assertEnvironment
-} from '@-xun/scripts/assets/.remarkrc.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/.remarkrc.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -9656,11 +9640,7 @@ scope: unlimited
 // @ts-check
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  moduleExport,
-  assertEnvironment
-} from '@-xun/scripts/assets/.remarkrc.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/.remarkrc.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -9690,11 +9670,7 @@ scope: unlimited
 // @ts-check
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  moduleExport,
-  assertEnvironment
-} from '@-xun/scripts/assets/.remarkrc.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/.remarkrc.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -9724,11 +9700,7 @@ scope: this-package
 // @ts-check
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  moduleExport,
-  assertEnvironment
-} from '@-xun/scripts/assets/.remarkrc.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/.remarkrc.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -9758,11 +9730,7 @@ scope: unlimited
 // @ts-check
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  moduleExport,
-  assertEnvironment
-} from '@-xun/scripts/assets/.remarkrc.mjs';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/.remarkrc.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
@@ -13303,13 +13271,13 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
@@ -13673,13 +13641,13 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
@@ -14043,13 +14011,13 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
@@ -14413,13 +14381,13 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
@@ -14783,13 +14751,13 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
@@ -15153,13 +15121,13 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
@@ -15523,13 +15491,13 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
@@ -15893,13 +15861,13 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
@@ -21254,8 +21222,8 @@ scope: this-package
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/babel.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -21293,27 +21261,27 @@ function getBabelAliases() {
   return {
     "^universe:(.+)$": "./src/$1",
     "^universe$": "./src/index.js",
-    "^multiverse+webpack:(.+)$": "./packages/webpack/src/$1",
-    "^multiverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/src/$1",
-    "^multiverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/src/$1",
-    "^multiverse+private:(.+)$": "./packages/private/src/$1",
-    "^multiverse+cli:(.+)$": "./packages/cli/src/$1",
-    "^multiverse+webpack$": "./packages/webpack/src/index.js",
-    "^multiverse+unnamed-esm$": "./packages/unnamed-esm/src/index.js",
-    "^multiverse+unnamed-cjs$": "./packages/unnamed-cjs/src/index.js",
-    "^multiverse+private$": "./packages/private/src/index.js",
-    "^multiverse+cli$": "./packages/cli/src/index.js",
-    "^rootverse+webpack:(.+)$": "./packages/webpack/$1",
-    "^rootverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/$1",
-    "^rootverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/$1",
-    "^rootverse+private:(.+)$": "./packages/private/$1",
-    "^rootverse+cli:(.+)$": "./packages/cli/$1",
+    "^multiverse\\\\+webpack:(.+)$": "./packages/webpack/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2desm:(.+)$": "./packages/unnamed-esm/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dcjs:(.+)$": "./packages/unnamed-cjs/src/$1",
+    "^multiverse\\\\+private:(.+)$": "./packages/private/src/$1",
+    "^multiverse\\\\+cli:(.+)$": "./packages/cli/src/$1",
+    "^multiverse\\\\+webpack$": "./packages/webpack/src/index.js",
+    "^multiverse\\\\+unnamed\\\\x2desm$": "./packages/unnamed-esm/src/index.js",
+    "^multiverse\\\\+unnamed\\\\x2dcjs$": "./packages/unnamed-cjs/src/index.js",
+    "^multiverse\\\\+private$": "./packages/private/src/index.js",
+    "^multiverse\\\\+cli$": "./packages/cli/src/index.js",
+    "^rootverse\\\\+webpack:(.+)$": "./packages/webpack/$1",
+    "^rootverse\\\\+unnamed\\\\x2desm:(.+)$": "./packages/unnamed-esm/$1",
+    "^rootverse\\\\+unnamed\\\\x2dcjs:(.+)$": "./packages/unnamed-cjs/$1",
+    "^rootverse\\\\+private:(.+)$": "./packages/private/$1",
+    "^rootverse\\\\+cli:(.+)$": "./packages/cli/$1",
     "^rootverse:(.+)$": "./$1",
-    "^testverse+webpack:(.+)$": "./packages/webpack/test/$1",
-    "^testverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/test/$1",
-    "^testverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/test/$1",
-    "^testverse+private:(.+)$": "./packages/private/test/$1",
-    "^testverse+cli:(.+)$": "./packages/cli/test/$1",
+    "^testverse\\\\+webpack:(.+)$": "./packages/webpack/test/$1",
+    "^testverse\\\\+unnamed\\\\x2desm:(.+)$": "./packages/unnamed-esm/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dcjs:(.+)$": "./packages/unnamed-cjs/test/$1",
+    "^testverse\\\\+private:(.+)$": "./packages/private/test/$1",
+    "^testverse\\\\+cli:(.+)$": "./packages/cli/test/$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
   }
@@ -21331,8 +21299,8 @@ scope: unlimited
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/babel.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -21370,27 +21338,27 @@ function getBabelAliases() {
   return {
     "^universe:(.+)$": "./src/$1",
     "^universe$": "./src/index.js",
-    "^multiverse+webpack:(.+)$": "./packages/webpack/src/$1",
-    "^multiverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/src/$1",
-    "^multiverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/src/$1",
-    "^multiverse+private:(.+)$": "./packages/private/src/$1",
-    "^multiverse+cli:(.+)$": "./packages/cli/src/$1",
-    "^multiverse+webpack$": "./packages/webpack/src/index.js",
-    "^multiverse+unnamed-esm$": "./packages/unnamed-esm/src/index.js",
-    "^multiverse+unnamed-cjs$": "./packages/unnamed-cjs/src/index.js",
-    "^multiverse+private$": "./packages/private/src/index.js",
-    "^multiverse+cli$": "./packages/cli/src/index.js",
-    "^rootverse+webpack:(.+)$": "./packages/webpack/$1",
-    "^rootverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/$1",
-    "^rootverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/$1",
-    "^rootverse+private:(.+)$": "./packages/private/$1",
-    "^rootverse+cli:(.+)$": "./packages/cli/$1",
+    "^multiverse\\\\+webpack:(.+)$": "./packages/webpack/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2desm:(.+)$": "./packages/unnamed-esm/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dcjs:(.+)$": "./packages/unnamed-cjs/src/$1",
+    "^multiverse\\\\+private:(.+)$": "./packages/private/src/$1",
+    "^multiverse\\\\+cli:(.+)$": "./packages/cli/src/$1",
+    "^multiverse\\\\+webpack$": "./packages/webpack/src/index.js",
+    "^multiverse\\\\+unnamed\\\\x2desm$": "./packages/unnamed-esm/src/index.js",
+    "^multiverse\\\\+unnamed\\\\x2dcjs$": "./packages/unnamed-cjs/src/index.js",
+    "^multiverse\\\\+private$": "./packages/private/src/index.js",
+    "^multiverse\\\\+cli$": "./packages/cli/src/index.js",
+    "^rootverse\\\\+webpack:(.+)$": "./packages/webpack/$1",
+    "^rootverse\\\\+unnamed\\\\x2desm:(.+)$": "./packages/unnamed-esm/$1",
+    "^rootverse\\\\+unnamed\\\\x2dcjs:(.+)$": "./packages/unnamed-cjs/$1",
+    "^rootverse\\\\+private:(.+)$": "./packages/private/$1",
+    "^rootverse\\\\+cli:(.+)$": "./packages/cli/$1",
     "^rootverse:(.+)$": "./$1",
-    "^testverse+webpack:(.+)$": "./packages/webpack/test/$1",
-    "^testverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/test/$1",
-    "^testverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/test/$1",
-    "^testverse+private:(.+)$": "./packages/private/test/$1",
-    "^testverse+cli:(.+)$": "./packages/cli/test/$1",
+    "^testverse\\\\+webpack:(.+)$": "./packages/webpack/test/$1",
+    "^testverse\\\\+unnamed\\\\x2desm:(.+)$": "./packages/unnamed-esm/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dcjs:(.+)$": "./packages/unnamed-cjs/test/$1",
+    "^testverse\\\\+private:(.+)$": "./packages/private/test/$1",
+    "^testverse\\\\+cli:(.+)$": "./packages/cli/test/$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
   }
@@ -21408,8 +21376,8 @@ scope: unlimited
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/babel.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -21447,27 +21415,27 @@ function getBabelAliases() {
   return {
     "^universe:(.+)$": "./src/$1",
     "^universe$": "./src/index.js",
-    "^multiverse+webpack:(.+)$": "./packages/webpack/src/$1",
-    "^multiverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/src/$1",
-    "^multiverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/src/$1",
-    "^multiverse+private:(.+)$": "./packages/private/src/$1",
-    "^multiverse+cli:(.+)$": "./packages/cli/src/$1",
-    "^multiverse+webpack$": "./packages/webpack/src/index.js",
-    "^multiverse+unnamed-esm$": "./packages/unnamed-esm/src/index.js",
-    "^multiverse+unnamed-cjs$": "./packages/unnamed-cjs/src/index.js",
-    "^multiverse+private$": "./packages/private/src/index.js",
-    "^multiverse+cli$": "./packages/cli/src/index.js",
-    "^rootverse+webpack:(.+)$": "./packages/webpack/$1",
-    "^rootverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/$1",
-    "^rootverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/$1",
-    "^rootverse+private:(.+)$": "./packages/private/$1",
-    "^rootverse+cli:(.+)$": "./packages/cli/$1",
+    "^multiverse\\\\+webpack:(.+)$": "./packages/webpack/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2desm:(.+)$": "./packages/unnamed-esm/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dcjs:(.+)$": "./packages/unnamed-cjs/src/$1",
+    "^multiverse\\\\+private:(.+)$": "./packages/private/src/$1",
+    "^multiverse\\\\+cli:(.+)$": "./packages/cli/src/$1",
+    "^multiverse\\\\+webpack$": "./packages/webpack/src/index.js",
+    "^multiverse\\\\+unnamed\\\\x2desm$": "./packages/unnamed-esm/src/index.js",
+    "^multiverse\\\\+unnamed\\\\x2dcjs$": "./packages/unnamed-cjs/src/index.js",
+    "^multiverse\\\\+private$": "./packages/private/src/index.js",
+    "^multiverse\\\\+cli$": "./packages/cli/src/index.js",
+    "^rootverse\\\\+webpack:(.+)$": "./packages/webpack/$1",
+    "^rootverse\\\\+unnamed\\\\x2desm:(.+)$": "./packages/unnamed-esm/$1",
+    "^rootverse\\\\+unnamed\\\\x2dcjs:(.+)$": "./packages/unnamed-cjs/$1",
+    "^rootverse\\\\+private:(.+)$": "./packages/private/$1",
+    "^rootverse\\\\+cli:(.+)$": "./packages/cli/$1",
     "^rootverse:(.+)$": "./$1",
-    "^testverse+webpack:(.+)$": "./packages/webpack/test/$1",
-    "^testverse+unnamed-esm:(.+)$": "./packages/unnamed-esm/test/$1",
-    "^testverse+unnamed-cjs:(.+)$": "./packages/unnamed-cjs/test/$1",
-    "^testverse+private:(.+)$": "./packages/private/test/$1",
-    "^testverse+cli:(.+)$": "./packages/cli/test/$1",
+    "^testverse\\\\+webpack:(.+)$": "./packages/webpack/test/$1",
+    "^testverse\\\\+unnamed\\\\x2desm:(.+)$": "./packages/unnamed-esm/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dcjs:(.+)$": "./packages/unnamed-cjs/test/$1",
+    "^testverse\\\\+private:(.+)$": "./packages/private/test/$1",
+    "^testverse\\\\+cli:(.+)$": "./packages/cli/test/$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
   }
@@ -21485,8 +21453,8 @@ scope: unlimited
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/babel.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -21524,27 +21492,27 @@ function getBabelAliases() {
   return {
     "^universe:(.+)$": "./src/$1",
     "^universe$": "./src/index.js",
-    "^multiverse+unnamed-pkg-2:(.+)$": "./packages/unnamed-pkg-2/src/$1",
-    "^multiverse+unnamed-pkg-1:(.+)$": "./packages/unnamed-pkg-1/src/$1",
-    "^multiverse+pkg-import:(.+)$": "./packages/pkg-import/src/$1",
-    "^multiverse+pkg-2:(.+)$": "./packages/pkg-2/src/$1",
-    "^multiverse+pkg-1:(.+)$": "./packages/pkg-1/src/$1",
-    "^multiverse+unnamed-pkg-2$": "./packages/unnamed-pkg-2/src/index.js",
-    "^multiverse+unnamed-pkg-1$": "./packages/unnamed-pkg-1/src/index.js",
-    "^multiverse+pkg-import$": "./packages/pkg-import/src/index.js",
-    "^multiverse+pkg-2$": "./packages/pkg-2/src/index.js",
-    "^multiverse+pkg-1$": "./packages/pkg-1/src/index.js",
-    "^rootverse+unnamed-pkg-2:(.+)$": "./packages/unnamed-pkg-2/$1",
-    "^rootverse+unnamed-pkg-1:(.+)$": "./packages/unnamed-pkg-1/$1",
-    "^rootverse+pkg-import:(.+)$": "./packages/pkg-import/$1",
-    "^rootverse+pkg-2:(.+)$": "./packages/pkg-2/$1",
-    "^rootverse+pkg-1:(.+)$": "./packages/pkg-1/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "./packages/unnamed-pkg-2/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "./packages/unnamed-pkg-1/src/$1",
+    "^multiverse\\\\+pkg\\\\x2dimport:(.+)$": "./packages/pkg-import/src/$1",
+    "^multiverse\\\\+pkg\\\\x2d2:(.+)$": "./packages/pkg-2/src/$1",
+    "^multiverse\\\\+pkg\\\\x2d1:(.+)$": "./packages/pkg-1/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d2$": "./packages/unnamed-pkg-2/src/index.js",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d1$": "./packages/unnamed-pkg-1/src/index.js",
+    "^multiverse\\\\+pkg\\\\x2dimport$": "./packages/pkg-import/src/index.js",
+    "^multiverse\\\\+pkg\\\\x2d2$": "./packages/pkg-2/src/index.js",
+    "^multiverse\\\\+pkg\\\\x2d1$": "./packages/pkg-1/src/index.js",
+    "^rootverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "./packages/unnamed-pkg-2/$1",
+    "^rootverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "./packages/unnamed-pkg-1/$1",
+    "^rootverse\\\\+pkg\\\\x2dimport:(.+)$": "./packages/pkg-import/$1",
+    "^rootverse\\\\+pkg\\\\x2d2:(.+)$": "./packages/pkg-2/$1",
+    "^rootverse\\\\+pkg\\\\x2d1:(.+)$": "./packages/pkg-1/$1",
     "^rootverse:(.+)$": "./$1",
-    "^testverse+unnamed-pkg-2:(.+)$": "./packages/unnamed-pkg-2/test/$1",
-    "^testverse+unnamed-pkg-1:(.+)$": "./packages/unnamed-pkg-1/test/$1",
-    "^testverse+pkg-import:(.+)$": "./packages/pkg-import/test/$1",
-    "^testverse+pkg-2:(.+)$": "./packages/pkg-2/test/$1",
-    "^testverse+pkg-1:(.+)$": "./packages/pkg-1/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "./packages/unnamed-pkg-2/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "./packages/unnamed-pkg-1/test/$1",
+    "^testverse\\\\+pkg\\\\x2dimport:(.+)$": "./packages/pkg-import/test/$1",
+    "^testverse\\\\+pkg\\\\x2d2:(.+)$": "./packages/pkg-2/test/$1",
+    "^testverse\\\\+pkg\\\\x2d1:(.+)$": "./packages/pkg-1/test/$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
   }
@@ -21562,8 +21530,8 @@ scope: unlimited
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/babel.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -21601,27 +21569,27 @@ function getBabelAliases() {
   return {
     "^universe:(.+)$": "./src/$1",
     "^universe$": "./src/index.js",
-    "^multiverse+unnamed-pkg-2:(.+)$": "./packages/unnamed-pkg-2/src/$1",
-    "^multiverse+unnamed-pkg-1:(.+)$": "./packages/unnamed-pkg-1/src/$1",
-    "^multiverse+pkg-import:(.+)$": "./packages/pkg-import/src/$1",
-    "^multiverse+pkg-2:(.+)$": "./packages/pkg-2/src/$1",
-    "^multiverse+pkg-1:(.+)$": "./packages/pkg-1/src/$1",
-    "^multiverse+unnamed-pkg-2$": "./packages/unnamed-pkg-2/src/index.js",
-    "^multiverse+unnamed-pkg-1$": "./packages/unnamed-pkg-1/src/index.js",
-    "^multiverse+pkg-import$": "./packages/pkg-import/src/index.js",
-    "^multiverse+pkg-2$": "./packages/pkg-2/src/index.js",
-    "^multiverse+pkg-1$": "./packages/pkg-1/src/index.js",
-    "^rootverse+unnamed-pkg-2:(.+)$": "./packages/unnamed-pkg-2/$1",
-    "^rootverse+unnamed-pkg-1:(.+)$": "./packages/unnamed-pkg-1/$1",
-    "^rootverse+pkg-import:(.+)$": "./packages/pkg-import/$1",
-    "^rootverse+pkg-2:(.+)$": "./packages/pkg-2/$1",
-    "^rootverse+pkg-1:(.+)$": "./packages/pkg-1/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "./packages/unnamed-pkg-2/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "./packages/unnamed-pkg-1/src/$1",
+    "^multiverse\\\\+pkg\\\\x2dimport:(.+)$": "./packages/pkg-import/src/$1",
+    "^multiverse\\\\+pkg\\\\x2d2:(.+)$": "./packages/pkg-2/src/$1",
+    "^multiverse\\\\+pkg\\\\x2d1:(.+)$": "./packages/pkg-1/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d2$": "./packages/unnamed-pkg-2/src/index.js",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d1$": "./packages/unnamed-pkg-1/src/index.js",
+    "^multiverse\\\\+pkg\\\\x2dimport$": "./packages/pkg-import/src/index.js",
+    "^multiverse\\\\+pkg\\\\x2d2$": "./packages/pkg-2/src/index.js",
+    "^multiverse\\\\+pkg\\\\x2d1$": "./packages/pkg-1/src/index.js",
+    "^rootverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "./packages/unnamed-pkg-2/$1",
+    "^rootverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "./packages/unnamed-pkg-1/$1",
+    "^rootverse\\\\+pkg\\\\x2dimport:(.+)$": "./packages/pkg-import/$1",
+    "^rootverse\\\\+pkg\\\\x2d2:(.+)$": "./packages/pkg-2/$1",
+    "^rootverse\\\\+pkg\\\\x2d1:(.+)$": "./packages/pkg-1/$1",
     "^rootverse:(.+)$": "./$1",
-    "^testverse+unnamed-pkg-2:(.+)$": "./packages/unnamed-pkg-2/test/$1",
-    "^testverse+unnamed-pkg-1:(.+)$": "./packages/unnamed-pkg-1/test/$1",
-    "^testverse+pkg-import:(.+)$": "./packages/pkg-import/test/$1",
-    "^testverse+pkg-2:(.+)$": "./packages/pkg-2/test/$1",
-    "^testverse+pkg-1:(.+)$": "./packages/pkg-1/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "./packages/unnamed-pkg-2/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "./packages/unnamed-pkg-1/test/$1",
+    "^testverse\\\\+pkg\\\\x2dimport:(.+)$": "./packages/pkg-import/test/$1",
+    "^testverse\\\\+pkg\\\\x2d2:(.+)$": "./packages/pkg-2/test/$1",
+    "^testverse\\\\+pkg\\\\x2d1:(.+)$": "./packages/pkg-1/test/$1",
     "^testverse:(.+)$": "./test/$1",
     "^typeverse:(.+)$": "./types/$1"
   }
@@ -21639,8 +21607,8 @@ scope: unlimited
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/babel.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -21696,8 +21664,8 @@ scope: this-package
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/babel.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -21753,8 +21721,8 @@ scope: unlimited
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/babel.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -21943,10 +21911,10 @@ scope: this-package
 // @ts-check
 'use strict';
 
-import { deepMergeConfig } = from '@-xun/scripts/assets';
-import { moduleExport } = from '@-xun/scripts/assets/commitlint.config.mjs';
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/commitlint.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
-//import { createDebugLogger } = from 'rejoinder';
+//import { createDebugLogger } from 'rejoinder';
 
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
 
@@ -21967,10 +21935,10 @@ scope: unlimited
 // @ts-check
 'use strict';
 
-import { deepMergeConfig } = from '@-xun/scripts/assets';
-import { moduleExport } = from '@-xun/scripts/assets/commitlint.config.mjs';
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/commitlint.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
-//import { createDebugLogger } = from 'rejoinder';
+//import { createDebugLogger } from 'rejoinder';
 
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
 
@@ -21991,10 +21959,10 @@ scope: unlimited
 // @ts-check
 'use strict';
 
-import { deepMergeConfig } = from '@-xun/scripts/assets';
-import { moduleExport } = from '@-xun/scripts/assets/commitlint.config.mjs';
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/commitlint.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
-//import { createDebugLogger } = from 'rejoinder';
+//import { createDebugLogger } from 'rejoinder';
 
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
 
@@ -22015,10 +21983,10 @@ scope: unlimited
 // @ts-check
 'use strict';
 
-import { deepMergeConfig } = from '@-xun/scripts/assets';
-import { moduleExport } = from '@-xun/scripts/assets/commitlint.config.mjs';
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/commitlint.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
-//import { createDebugLogger } = from 'rejoinder';
+//import { createDebugLogger } from 'rejoinder';
 
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
 
@@ -22039,10 +22007,10 @@ scope: unlimited
 // @ts-check
 'use strict';
 
-import { deepMergeConfig } = from '@-xun/scripts/assets';
-import { moduleExport } = from '@-xun/scripts/assets/commitlint.config.mjs';
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/commitlint.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
-//import { createDebugLogger } = from 'rejoinder';
+//import { createDebugLogger } from 'rejoinder';
 
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
 
@@ -22063,10 +22031,10 @@ scope: unlimited
 // @ts-check
 'use strict';
 
-import { deepMergeConfig } = from '@-xun/scripts/assets';
-import { moduleExport } = from '@-xun/scripts/assets/commitlint.config.mjs';
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/commitlint.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
-//import { createDebugLogger } = from 'rejoinder';
+//import { createDebugLogger } from 'rejoinder';
 
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
 
@@ -22087,10 +22055,10 @@ scope: this-package
 // @ts-check
 'use strict';
 
-import { deepMergeConfig } = from '@-xun/scripts/assets';
-import { moduleExport } = from '@-xun/scripts/assets/commitlint.config.mjs';
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/commitlint.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
-//import { createDebugLogger } = from 'rejoinder';
+//import { createDebugLogger } from 'rejoinder';
 
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
 
@@ -22111,10 +22079,10 @@ scope: unlimited
 // @ts-check
 'use strict';
 
-import { deepMergeConfig } = from '@-xun/scripts/assets';
-import { moduleExport } = from '@-xun/scripts/assets/commitlint.config.mjs';
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/commitlint.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
-//import { createDebugLogger } = from 'rejoinder';
+//import { createDebugLogger } from 'rejoinder';
 
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
 
@@ -22136,8 +22104,8 @@ scope: this-package
 'use strict';
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22166,8 +22134,8 @@ scope: unlimited
 'use strict';
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22196,8 +22164,8 @@ scope: unlimited
 'use strict';
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22226,8 +22194,8 @@ scope: unlimited
 'use strict';
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22256,8 +22224,8 @@ scope: unlimited
 'use strict';
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22286,8 +22254,8 @@ scope: unlimited
 'use strict';
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22316,8 +22284,8 @@ scope: this-package
 'use strict';
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22346,8 +22314,8 @@ scope: unlimited
 'use strict';
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22377,8 +22345,8 @@ scope: this-package
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/eslint.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22452,8 +22420,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/eslint.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22527,8 +22495,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/eslint.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22602,8 +22570,8 @@ scope: this-package
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/eslint.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22677,8 +22645,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/eslint.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22752,8 +22720,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/eslint.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22827,8 +22795,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/eslint.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22882,8 +22850,8 @@ scope: this-package
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/eslint.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -22937,8 +22905,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/eslint.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -23217,8 +23185,8 @@ scope: this-package
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -23255,27 +23223,27 @@ function getJestAliases() {
   return {
     "^universe:(.+)$": "<rootDir>/src/$1",
     "^universe$": "<rootDir>/src/index.ts",
-    "^multiverse+webpack:(.+)$": "<rootDir>/packages/webpack/src/$1",
-    "^multiverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/src/$1",
-    "^multiverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/src/$1",
-    "^multiverse+private:(.+)$": "<rootDir>/packages/private/src/$1",
-    "^multiverse+cli:(.+)$": "<rootDir>/packages/cli/src/$1",
-    "^multiverse+webpack$": "<rootDir>/packages/webpack/src/index.ts",
-    "^multiverse+unnamed-esm$": "<rootDir>/packages/unnamed-esm/src/index.ts",
-    "^multiverse+unnamed-cjs$": "<rootDir>/packages/unnamed-cjs/src/index.ts",
-    "^multiverse+private$": "<rootDir>/packages/private/src/index.ts",
-    "^multiverse+cli$": "<rootDir>/packages/cli/src/index.ts",
-    "^rootverse+webpack:(.+)$": "<rootDir>/packages/webpack/$1",
-    "^rootverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/$1",
-    "^rootverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/$1",
-    "^rootverse+private:(.+)$": "<rootDir>/packages/private/$1",
-    "^rootverse+cli:(.+)$": "<rootDir>/packages/cli/$1",
+    "^multiverse\\\\+webpack:(.+)$": "<rootDir>/packages/webpack/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2desm:(.+)$": "<rootDir>/packages/unnamed-esm/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dcjs:(.+)$": "<rootDir>/packages/unnamed-cjs/src/$1",
+    "^multiverse\\\\+private:(.+)$": "<rootDir>/packages/private/src/$1",
+    "^multiverse\\\\+cli:(.+)$": "<rootDir>/packages/cli/src/$1",
+    "^multiverse\\\\+webpack$": "<rootDir>/packages/webpack/src/index.ts",
+    "^multiverse\\\\+unnamed\\\\x2desm$": "<rootDir>/packages/unnamed-esm/src/index.ts",
+    "^multiverse\\\\+unnamed\\\\x2dcjs$": "<rootDir>/packages/unnamed-cjs/src/index.ts",
+    "^multiverse\\\\+private$": "<rootDir>/packages/private/src/index.ts",
+    "^multiverse\\\\+cli$": "<rootDir>/packages/cli/src/index.ts",
+    "^rootverse\\\\+webpack:(.+)$": "<rootDir>/packages/webpack/$1",
+    "^rootverse\\\\+unnamed\\\\x2desm:(.+)$": "<rootDir>/packages/unnamed-esm/$1",
+    "^rootverse\\\\+unnamed\\\\x2dcjs:(.+)$": "<rootDir>/packages/unnamed-cjs/$1",
+    "^rootverse\\\\+private:(.+)$": "<rootDir>/packages/private/$1",
+    "^rootverse\\\\+cli:(.+)$": "<rootDir>/packages/cli/$1",
     "^rootverse:(.+)$": "<rootDir>/$1",
-    "^testverse+webpack:(.+)$": "<rootDir>/packages/webpack/test/$1",
-    "^testverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/test/$1",
-    "^testverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/test/$1",
-    "^testverse+private:(.+)$": "<rootDir>/packages/private/test/$1",
-    "^testverse+cli:(.+)$": "<rootDir>/packages/cli/test/$1",
+    "^testverse\\\\+webpack:(.+)$": "<rootDir>/packages/webpack/test/$1",
+    "^testverse\\\\+unnamed\\\\x2desm:(.+)$": "<rootDir>/packages/unnamed-esm/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dcjs:(.+)$": "<rootDir>/packages/unnamed-cjs/test/$1",
+    "^testverse\\\\+private:(.+)$": "<rootDir>/packages/private/test/$1",
+    "^testverse\\\\+cli:(.+)$": "<rootDir>/packages/cli/test/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
   }
@@ -23293,8 +23261,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -23331,27 +23299,27 @@ function getJestAliases() {
   return {
     "^universe:(.+)$": "<rootDir>/src/$1",
     "^universe$": "<rootDir>/src/index.ts",
-    "^multiverse+webpack:(.+)$": "<rootDir>/packages/webpack/src/$1",
-    "^multiverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/src/$1",
-    "^multiverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/src/$1",
-    "^multiverse+private:(.+)$": "<rootDir>/packages/private/src/$1",
-    "^multiverse+cli:(.+)$": "<rootDir>/packages/cli/src/$1",
-    "^multiverse+webpack$": "<rootDir>/packages/webpack/src/index.ts",
-    "^multiverse+unnamed-esm$": "<rootDir>/packages/unnamed-esm/src/index.ts",
-    "^multiverse+unnamed-cjs$": "<rootDir>/packages/unnamed-cjs/src/index.ts",
-    "^multiverse+private$": "<rootDir>/packages/private/src/index.ts",
-    "^multiverse+cli$": "<rootDir>/packages/cli/src/index.ts",
-    "^rootverse+webpack:(.+)$": "<rootDir>/packages/webpack/$1",
-    "^rootverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/$1",
-    "^rootverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/$1",
-    "^rootverse+private:(.+)$": "<rootDir>/packages/private/$1",
-    "^rootverse+cli:(.+)$": "<rootDir>/packages/cli/$1",
+    "^multiverse\\\\+webpack:(.+)$": "<rootDir>/packages/webpack/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2desm:(.+)$": "<rootDir>/packages/unnamed-esm/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dcjs:(.+)$": "<rootDir>/packages/unnamed-cjs/src/$1",
+    "^multiverse\\\\+private:(.+)$": "<rootDir>/packages/private/src/$1",
+    "^multiverse\\\\+cli:(.+)$": "<rootDir>/packages/cli/src/$1",
+    "^multiverse\\\\+webpack$": "<rootDir>/packages/webpack/src/index.ts",
+    "^multiverse\\\\+unnamed\\\\x2desm$": "<rootDir>/packages/unnamed-esm/src/index.ts",
+    "^multiverse\\\\+unnamed\\\\x2dcjs$": "<rootDir>/packages/unnamed-cjs/src/index.ts",
+    "^multiverse\\\\+private$": "<rootDir>/packages/private/src/index.ts",
+    "^multiverse\\\\+cli$": "<rootDir>/packages/cli/src/index.ts",
+    "^rootverse\\\\+webpack:(.+)$": "<rootDir>/packages/webpack/$1",
+    "^rootverse\\\\+unnamed\\\\x2desm:(.+)$": "<rootDir>/packages/unnamed-esm/$1",
+    "^rootverse\\\\+unnamed\\\\x2dcjs:(.+)$": "<rootDir>/packages/unnamed-cjs/$1",
+    "^rootverse\\\\+private:(.+)$": "<rootDir>/packages/private/$1",
+    "^rootverse\\\\+cli:(.+)$": "<rootDir>/packages/cli/$1",
     "^rootverse:(.+)$": "<rootDir>/$1",
-    "^testverse+webpack:(.+)$": "<rootDir>/packages/webpack/test/$1",
-    "^testverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/test/$1",
-    "^testverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/test/$1",
-    "^testverse+private:(.+)$": "<rootDir>/packages/private/test/$1",
-    "^testverse+cli:(.+)$": "<rootDir>/packages/cli/test/$1",
+    "^testverse\\\\+webpack:(.+)$": "<rootDir>/packages/webpack/test/$1",
+    "^testverse\\\\+unnamed\\\\x2desm:(.+)$": "<rootDir>/packages/unnamed-esm/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dcjs:(.+)$": "<rootDir>/packages/unnamed-cjs/test/$1",
+    "^testverse\\\\+private:(.+)$": "<rootDir>/packages/private/test/$1",
+    "^testverse\\\\+cli:(.+)$": "<rootDir>/packages/cli/test/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
   }
@@ -23369,8 +23337,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -23407,27 +23375,27 @@ function getJestAliases() {
   return {
     "^universe:(.+)$": "<rootDir>/src/$1",
     "^universe$": "<rootDir>/src/index.ts",
-    "^multiverse+webpack:(.+)$": "<rootDir>/packages/webpack/src/$1",
-    "^multiverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/src/$1",
-    "^multiverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/src/$1",
-    "^multiverse+private:(.+)$": "<rootDir>/packages/private/src/$1",
-    "^multiverse+cli:(.+)$": "<rootDir>/packages/cli/src/$1",
-    "^multiverse+webpack$": "<rootDir>/packages/webpack/src/index.ts",
-    "^multiverse+unnamed-esm$": "<rootDir>/packages/unnamed-esm/src/index.ts",
-    "^multiverse+unnamed-cjs$": "<rootDir>/packages/unnamed-cjs/src/index.ts",
-    "^multiverse+private$": "<rootDir>/packages/private/src/index.ts",
-    "^multiverse+cli$": "<rootDir>/packages/cli/src/index.ts",
-    "^rootverse+webpack:(.+)$": "<rootDir>/packages/webpack/$1",
-    "^rootverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/$1",
-    "^rootverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/$1",
-    "^rootverse+private:(.+)$": "<rootDir>/packages/private/$1",
-    "^rootverse+cli:(.+)$": "<rootDir>/packages/cli/$1",
+    "^multiverse\\\\+webpack:(.+)$": "<rootDir>/packages/webpack/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2desm:(.+)$": "<rootDir>/packages/unnamed-esm/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dcjs:(.+)$": "<rootDir>/packages/unnamed-cjs/src/$1",
+    "^multiverse\\\\+private:(.+)$": "<rootDir>/packages/private/src/$1",
+    "^multiverse\\\\+cli:(.+)$": "<rootDir>/packages/cli/src/$1",
+    "^multiverse\\\\+webpack$": "<rootDir>/packages/webpack/src/index.ts",
+    "^multiverse\\\\+unnamed\\\\x2desm$": "<rootDir>/packages/unnamed-esm/src/index.ts",
+    "^multiverse\\\\+unnamed\\\\x2dcjs$": "<rootDir>/packages/unnamed-cjs/src/index.ts",
+    "^multiverse\\\\+private$": "<rootDir>/packages/private/src/index.ts",
+    "^multiverse\\\\+cli$": "<rootDir>/packages/cli/src/index.ts",
+    "^rootverse\\\\+webpack:(.+)$": "<rootDir>/packages/webpack/$1",
+    "^rootverse\\\\+unnamed\\\\x2desm:(.+)$": "<rootDir>/packages/unnamed-esm/$1",
+    "^rootverse\\\\+unnamed\\\\x2dcjs:(.+)$": "<rootDir>/packages/unnamed-cjs/$1",
+    "^rootverse\\\\+private:(.+)$": "<rootDir>/packages/private/$1",
+    "^rootverse\\\\+cli:(.+)$": "<rootDir>/packages/cli/$1",
     "^rootverse:(.+)$": "<rootDir>/$1",
-    "^testverse+webpack:(.+)$": "<rootDir>/packages/webpack/test/$1",
-    "^testverse+unnamed-esm:(.+)$": "<rootDir>/packages/unnamed-esm/test/$1",
-    "^testverse+unnamed-cjs:(.+)$": "<rootDir>/packages/unnamed-cjs/test/$1",
-    "^testverse+private:(.+)$": "<rootDir>/packages/private/test/$1",
-    "^testverse+cli:(.+)$": "<rootDir>/packages/cli/test/$1",
+    "^testverse\\\\+webpack:(.+)$": "<rootDir>/packages/webpack/test/$1",
+    "^testverse\\\\+unnamed\\\\x2desm:(.+)$": "<rootDir>/packages/unnamed-esm/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dcjs:(.+)$": "<rootDir>/packages/unnamed-cjs/test/$1",
+    "^testverse\\\\+private:(.+)$": "<rootDir>/packages/private/test/$1",
+    "^testverse\\\\+cli:(.+)$": "<rootDir>/packages/cli/test/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
   }
@@ -23445,8 +23413,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -23483,27 +23451,27 @@ function getJestAliases() {
   return {
     "^universe:(.+)$": "<rootDir>/src/$1",
     "^universe$": "<rootDir>/src/index.ts",
-    "^multiverse+unnamed-pkg-2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/src/$1",
-    "^multiverse+unnamed-pkg-1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/src/$1",
-    "^multiverse+pkg-import:(.+)$": "<rootDir>/packages/pkg-import/src/$1",
-    "^multiverse+pkg-2:(.+)$": "<rootDir>/packages/pkg-2/src/$1",
-    "^multiverse+pkg-1:(.+)$": "<rootDir>/packages/pkg-1/src/$1",
-    "^multiverse+unnamed-pkg-2$": "<rootDir>/packages/unnamed-pkg-2/src/index.ts",
-    "^multiverse+unnamed-pkg-1$": "<rootDir>/packages/unnamed-pkg-1/src/index.ts",
-    "^multiverse+pkg-import$": "<rootDir>/packages/pkg-import/src/index.ts",
-    "^multiverse+pkg-2$": "<rootDir>/packages/pkg-2/src/index.ts",
-    "^multiverse+pkg-1$": "<rootDir>/packages/pkg-1/src/index.ts",
-    "^rootverse+unnamed-pkg-2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/$1",
-    "^rootverse+unnamed-pkg-1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/$1",
-    "^rootverse+pkg-import:(.+)$": "<rootDir>/packages/pkg-import/$1",
-    "^rootverse+pkg-2:(.+)$": "<rootDir>/packages/pkg-2/$1",
-    "^rootverse+pkg-1:(.+)$": "<rootDir>/packages/pkg-1/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/src/$1",
+    "^multiverse\\\\+pkg\\\\x2dimport:(.+)$": "<rootDir>/packages/pkg-import/src/$1",
+    "^multiverse\\\\+pkg\\\\x2d2:(.+)$": "<rootDir>/packages/pkg-2/src/$1",
+    "^multiverse\\\\+pkg\\\\x2d1:(.+)$": "<rootDir>/packages/pkg-1/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d2$": "<rootDir>/packages/unnamed-pkg-2/src/index.ts",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d1$": "<rootDir>/packages/unnamed-pkg-1/src/index.ts",
+    "^multiverse\\\\+pkg\\\\x2dimport$": "<rootDir>/packages/pkg-import/src/index.ts",
+    "^multiverse\\\\+pkg\\\\x2d2$": "<rootDir>/packages/pkg-2/src/index.ts",
+    "^multiverse\\\\+pkg\\\\x2d1$": "<rootDir>/packages/pkg-1/src/index.ts",
+    "^rootverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/$1",
+    "^rootverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/$1",
+    "^rootverse\\\\+pkg\\\\x2dimport:(.+)$": "<rootDir>/packages/pkg-import/$1",
+    "^rootverse\\\\+pkg\\\\x2d2:(.+)$": "<rootDir>/packages/pkg-2/$1",
+    "^rootverse\\\\+pkg\\\\x2d1:(.+)$": "<rootDir>/packages/pkg-1/$1",
     "^rootverse:(.+)$": "<rootDir>/$1",
-    "^testverse+unnamed-pkg-2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/test/$1",
-    "^testverse+unnamed-pkg-1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/test/$1",
-    "^testverse+pkg-import:(.+)$": "<rootDir>/packages/pkg-import/test/$1",
-    "^testverse+pkg-2:(.+)$": "<rootDir>/packages/pkg-2/test/$1",
-    "^testverse+pkg-1:(.+)$": "<rootDir>/packages/pkg-1/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/test/$1",
+    "^testverse\\\\+pkg\\\\x2dimport:(.+)$": "<rootDir>/packages/pkg-import/test/$1",
+    "^testverse\\\\+pkg\\\\x2d2:(.+)$": "<rootDir>/packages/pkg-2/test/$1",
+    "^testverse\\\\+pkg\\\\x2d1:(.+)$": "<rootDir>/packages/pkg-1/test/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
   }
@@ -23521,8 +23489,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -23559,27 +23527,27 @@ function getJestAliases() {
   return {
     "^universe:(.+)$": "<rootDir>/src/$1",
     "^universe$": "<rootDir>/src/index.ts",
-    "^multiverse+unnamed-pkg-2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/src/$1",
-    "^multiverse+unnamed-pkg-1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/src/$1",
-    "^multiverse+pkg-import:(.+)$": "<rootDir>/packages/pkg-import/src/$1",
-    "^multiverse+pkg-2:(.+)$": "<rootDir>/packages/pkg-2/src/$1",
-    "^multiverse+pkg-1:(.+)$": "<rootDir>/packages/pkg-1/src/$1",
-    "^multiverse+unnamed-pkg-2$": "<rootDir>/packages/unnamed-pkg-2/src/index.ts",
-    "^multiverse+unnamed-pkg-1$": "<rootDir>/packages/unnamed-pkg-1/src/index.ts",
-    "^multiverse+pkg-import$": "<rootDir>/packages/pkg-import/src/index.ts",
-    "^multiverse+pkg-2$": "<rootDir>/packages/pkg-2/src/index.ts",
-    "^multiverse+pkg-1$": "<rootDir>/packages/pkg-1/src/index.ts",
-    "^rootverse+unnamed-pkg-2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/$1",
-    "^rootverse+unnamed-pkg-1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/$1",
-    "^rootverse+pkg-import:(.+)$": "<rootDir>/packages/pkg-import/$1",
-    "^rootverse+pkg-2:(.+)$": "<rootDir>/packages/pkg-2/$1",
-    "^rootverse+pkg-1:(.+)$": "<rootDir>/packages/pkg-1/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/src/$1",
+    "^multiverse\\\\+pkg\\\\x2dimport:(.+)$": "<rootDir>/packages/pkg-import/src/$1",
+    "^multiverse\\\\+pkg\\\\x2d2:(.+)$": "<rootDir>/packages/pkg-2/src/$1",
+    "^multiverse\\\\+pkg\\\\x2d1:(.+)$": "<rootDir>/packages/pkg-1/src/$1",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d2$": "<rootDir>/packages/unnamed-pkg-2/src/index.ts",
+    "^multiverse\\\\+unnamed\\\\x2dpkg\\\\x2d1$": "<rootDir>/packages/unnamed-pkg-1/src/index.ts",
+    "^multiverse\\\\+pkg\\\\x2dimport$": "<rootDir>/packages/pkg-import/src/index.ts",
+    "^multiverse\\\\+pkg\\\\x2d2$": "<rootDir>/packages/pkg-2/src/index.ts",
+    "^multiverse\\\\+pkg\\\\x2d1$": "<rootDir>/packages/pkg-1/src/index.ts",
+    "^rootverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/$1",
+    "^rootverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/$1",
+    "^rootverse\\\\+pkg\\\\x2dimport:(.+)$": "<rootDir>/packages/pkg-import/$1",
+    "^rootverse\\\\+pkg\\\\x2d2:(.+)$": "<rootDir>/packages/pkg-2/$1",
+    "^rootverse\\\\+pkg\\\\x2d1:(.+)$": "<rootDir>/packages/pkg-1/$1",
     "^rootverse:(.+)$": "<rootDir>/$1",
-    "^testverse+unnamed-pkg-2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/test/$1",
-    "^testverse+unnamed-pkg-1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/test/$1",
-    "^testverse+pkg-import:(.+)$": "<rootDir>/packages/pkg-import/test/$1",
-    "^testverse+pkg-2:(.+)$": "<rootDir>/packages/pkg-2/test/$1",
-    "^testverse+pkg-1:(.+)$": "<rootDir>/packages/pkg-1/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dpkg\\\\x2d2:(.+)$": "<rootDir>/packages/unnamed-pkg-2/test/$1",
+    "^testverse\\\\+unnamed\\\\x2dpkg\\\\x2d1:(.+)$": "<rootDir>/packages/unnamed-pkg-1/test/$1",
+    "^testverse\\\\+pkg\\\\x2dimport:(.+)$": "<rootDir>/packages/pkg-import/test/$1",
+    "^testverse\\\\+pkg\\\\x2d2:(.+)$": "<rootDir>/packages/pkg-2/test/$1",
+    "^testverse\\\\+pkg\\\\x2d1:(.+)$": "<rootDir>/packages/pkg-1/test/$1",
     "^testverse:(.+)$": "<rootDir>/test/$1",
     "^typeverse:(.+)$": "<rootDir>/types/$1"
   }
@@ -23597,8 +23565,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -23653,8 +23621,8 @@ scope: this-package
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -23709,8 +23677,8 @@ scope: unlimited
 import { deepMergeConfig } from '@-xun/scripts/assets';
 
 import {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } from '@-xun/scripts/assets/jest.config.mjs';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
@@ -26293,7 +26261,12 @@ scope: this-package
 'use strict';
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/release.config.cjs');
+
+const {
+  assertEnvironment,
+  moduleExport
+} = require('@-xun/scripts/assets/release.config.cjs');
+
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
 
@@ -26321,7 +26294,12 @@ scope: unlimited
 'use strict';
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/release.config.cjs');
+
+const {
+  assertEnvironment,
+  moduleExport
+} = require('@-xun/scripts/assets/release.config.cjs');
+
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
 
@@ -26349,7 +26327,12 @@ scope: unlimited
 'use strict';
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/release.config.cjs');
+
+const {
+  assertEnvironment,
+  moduleExport
+} = require('@-xun/scripts/assets/release.config.cjs');
+
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
 
@@ -26377,7 +26360,12 @@ scope: unlimited
 'use strict';
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/release.config.cjs');
+
+const {
+  assertEnvironment,
+  moduleExport
+} = require('@-xun/scripts/assets/release.config.cjs');
+
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
 
@@ -26405,7 +26393,12 @@ scope: unlimited
 'use strict';
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/release.config.cjs');
+
+const {
+  assertEnvironment,
+  moduleExport
+} = require('@-xun/scripts/assets/release.config.cjs');
+
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
 
@@ -26433,7 +26426,12 @@ scope: unlimited
 'use strict';
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/release.config.cjs');
+
+const {
+  assertEnvironment,
+  moduleExport
+} = require('@-xun/scripts/assets/release.config.cjs');
+
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
 
@@ -26461,7 +26459,12 @@ scope: this-package
 'use strict';
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/release.config.cjs');
+
+const {
+  assertEnvironment,
+  moduleExport
+} = require('@-xun/scripts/assets/release.config.cjs');
+
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
 
@@ -26489,7 +26492,12 @@ scope: unlimited
 'use strict';
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/release.config.cjs');
+
+const {
+  assertEnvironment,
+  moduleExport
+} = require('@-xun/scripts/assets/release.config.cjs');
+
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
 
@@ -26867,8 +26875,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/cli/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -26943,8 +26951,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/private/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27019,8 +27027,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27108,8 +27116,8 @@ export * from '@-xun/test';
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27199,8 +27207,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at hybridrepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-hybridrepo/packages/webpack/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27303,8 +27311,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (scope=this-package): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (scope=this-package): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/.config.ts
 scope: this-package
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27379,8 +27387,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27455,8 +27463,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27531,8 +27539,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27635,8 +27643,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-1/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27711,8 +27719,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-2/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27787,8 +27795,8 @@ test.todo('this');
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets at non-hybrid monorepo: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-monorepo-no-src/packages/pkg-import/test/integration/.config.ts
 scope: unlimited
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
@@ -27932,8 +27940,8 @@ export * from '@-xun/test';
 "
 `;
 
-exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/integration/config.ts 1`] = `
-"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/integration/config.ts
+exports[`::gatherAssetsFromTransformer <generated asset content snapshots> test generates expected assets for polyrepo (with force): /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/integration/.config.ts 1`] = `
+"key: /repos/xscripts/packages/project-utils/test/fixtures/dummy-repo/good-polyrepo-no-src/test/integration/.config.ts
 scope: this-package
 ⏶⏷⏶⏷⏶
 // * Configuration state and metadata shared among all integration tests.
