@@ -340,13 +340,13 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/Xunnamius/xrelease
 [11]:
-  https://github.com/Xunnamius/xscripts/blob/68d5bda031da6af194e5d5f3199eeac7c7416076/src/assets/_release.config.cjs.ts#L147-L157
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_release.config.cjs.ts#L147-L157
 [12]: https://github.com/Xunnamius/xscripts
 [13]:
   https://github.com/RichardLitt/knowledge/blob/master/github/how-to-deprecate-a-repository-on-github.md
 [14]: https://github.com/Xunnamius/pipeline
 [15]:
-  https://github.com/Xunnamius/xscripts/blob/4563bfe4a8d340a8373603d6c8210e79f714e59b/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
+  https://github.com/Xunnamius/xscripts/blob/151f64052b9160fca6dd519ea6e6787a95160544/src/assets/transformers/_conventional.config.cjs.ts#L264-L277
 [16]: https://github.com/orgs/community/discussions/54372
 [17]: https://github.com/orgs/community/discussions/16925
 [18]: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#description-1
