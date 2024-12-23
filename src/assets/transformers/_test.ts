@@ -54,7 +54,7 @@ test.todo('this');`
           },
 
           {
-            path: toProjectAbsolutePath(outputDir, 'integration', 'config.ts'),
+            path: toProjectAbsolutePath(outputDir, 'integration', '.config.ts'),
             generate: () => /*js*/ `
 // * Configuration state and metadata shared among all integration tests.
 
