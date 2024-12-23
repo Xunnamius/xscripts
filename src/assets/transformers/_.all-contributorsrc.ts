@@ -9,11 +9,7 @@ import {
 // {@xscripts/notExtraneous all-contributors-cli}
 
 export const { transformer } = makeTransformer(function (context) {
-  const {
-    toProjectAbsolutePath,
-    assetPreset,
-    projectMetadata: { rootPackage }
-  } = context;
+  const { toProjectAbsolutePath, assetPreset, repoName } = context;
 
   // * Do not generate any files when using the "wrong" preset
   if (!libAssetPresets.includes(assetPreset)) {
@@ -28,7 +24,7 @@ export const { transformer } = makeTransformer(function (context) {
         generate: () =>
           JSON.stringify(
             {
-              projectName: rootPackage.json.name,
+              projectName: repoName,
               projectOwner: 'Xunnamius',
               repoType: 'github',
               repoHost: 'https://github.com',
