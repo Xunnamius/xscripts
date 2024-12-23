@@ -10,9 +10,18 @@ export const globalDebuggerNamespace = 'xproject';
  *                          ^
  * ```
  *
+ * Note that this delimiter is not escaped for use in regular expressions.
+ *
  * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Syntax
  */
-export const uriSchemeDelimiter = ':';
+export const uriSchemeDelimiterUnescaped = ':';
+
+/**
+ * @see {@link uriSchemeDelimiterUnescaped}
+ *
+ * This delimiter is escaped for use in regular expressions.
+ */
+export const uriSchemeDelimiterEscaped = ':';
 
 /**
  * ```text
@@ -21,6 +30,15 @@ export const uriSchemeDelimiter = ':';
  *             ^
  * ```
  *
+ * Note that this delimiter is not escaped for use in regular expressions.
+ *
  * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Syntax
  */
-export const uriSchemeSubDelimiter = '+';
+export const uriSchemeSubDelimiterUnescaped = '+';
+
+/**
+ * @see {@link uriSchemeSubDelimiterUnescaped}
+ *
+ * This delimiter is escaped for use in regular expressions.
+ */
+export const uriSchemeSubDelimiterEscaped = String.raw`\+`;

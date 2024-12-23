@@ -6,8 +6,9 @@ import { type Arrayable } from 'type-fest';
 import { type GenericProjectMetadata } from 'rootverse+project-utils:src/analyze/common.ts';
 
 import {
-  uriSchemeDelimiter,
-  uriSchemeSubDelimiter
+  uriSchemeDelimiterEscaped,
+  uriSchemeDelimiterUnescaped,
+  uriSchemeSubDelimiterUnescaped
 } from 'rootverse+project-utils:src/constant.ts';
 
 import { ErrorMessage, ProjectError } from 'rootverse+project-utils:src/error.ts';
@@ -22,7 +23,10 @@ import {
 
 import { type WorkspacePackageId } from 'rootverse+project-utils:src/index.ts';
 
-export { uriSchemeDelimiter, uriSchemeSubDelimiter };
+export {
+  uriSchemeDelimiterUnescaped as uriSchemeDelimiter,
+  uriSchemeSubDelimiterUnescaped as uriSchemeSubDelimiter
+};
 
 /**
  * A regex containing illegal alias key characters.
@@ -354,7 +358,7 @@ export function generateRawAliasMap(
       multiverseAliases.push(
         makeRawAliasMapping(
           {
-            alias: `${WellKnownImportAlias.Multiverse}${uriSchemeSubDelimiter}${id}`,
+            alias: `${WellKnownImportAlias.Multiverse}${uriSchemeSubDelimiterUnescaped}${id}`,
             group: WellKnownImportAlias.Multiverse,
             packageId: id
           },
@@ -365,7 +369,7 @@ export function generateRawAliasMap(
       testverseAliases.push(
         makeRawAliasMapping(
           {
-            alias: `${WellKnownImportAlias.Testverse}${uriSchemeSubDelimiter}${id}`,
+            alias: `${WellKnownImportAlias.Testverse}${uriSchemeSubDelimiterUnescaped}${id}`,
             group: WellKnownImportAlias.Testverse,
             packageId: id
           },
@@ -376,7 +380,7 @@ export function generateRawAliasMap(
       rootverseAliases.push(
         makeRawAliasMapping(
           {
-            alias: `${WellKnownImportAlias.Rootverse}${uriSchemeSubDelimiter}${id}`,
+            alias: `${WellKnownImportAlias.Rootverse}${uriSchemeSubDelimiterUnescaped}${id}`,
             group: WellKnownImportAlias.Rootverse,
             packageId: id
           },
@@ -391,7 +395,7 @@ export function generateRawAliasMap(
       multiverseAliases.push(
         makeRawAliasMapping(
           {
-            alias: `${WellKnownImportAlias.Multiverse}${uriSchemeSubDelimiter}${id}`,
+            alias: `${WellKnownImportAlias.Multiverse}${uriSchemeSubDelimiterUnescaped}${id}`,
             suffix: 'exact',
             group: WellKnownImportAlias.Multiverse,
             packageId: id
@@ -453,14 +457,14 @@ export function deriveAliasesForBabel(rawAliasMappings: readonly RawAliasMapping
         rawAlias.suffix === 'exact'
           ? '$'
           : rawAlias.suffix === 'open'
-            ? `${uriSchemeDelimiter}(.+)$`
+            ? `${uriSchemeDelimiterEscaped}(.+)$`
             : '';
 
       const pathSuffix =
         (rawPath.suffix === 'open' ? '/$1' : '') + (rawPath.extensionless ? '' : '.js');
 
       return [
-        aliasPrefix + rawAlias.alias + aliasSuffix,
+        aliasPrefix + escapeStringRegExp(rawAlias.alias) + aliasSuffix,
         '.' + (rawPath.path.length ? `/${rawPath.path}` : '') + pathSuffix
       ];
     })
@@ -475,7 +479,8 @@ export function deriveAliasesForBabel(rawAliasMappings: readonly RawAliasMapping
  */
 export function deriveAliasesForEslint(rawAliasMappings: readonly RawAliasMapping[]) {
   return rawAliasMappings.map(([rawAlias, rawPath]) => {
-    const aliasSuffix = rawAlias.suffix === 'open' ? `${uriSchemeDelimiter}*` : '';
+    const aliasSuffix =
+      rawAlias.suffix === 'open' ? `${uriSchemeDelimiterUnescaped}*` : '';
     const pathSuffix =
       (rawPath.suffix === 'open' ? '/*' : '') + (rawPath.extensionless ? '' : '.ts');
 
@@ -498,7 +503,7 @@ export function deriveAliasesForWebpack(
 ) {
   return Object.fromEntries(
     rawAliasMappings.map(([rawAlias, rawPath]) => {
-      const aliasSuffix = rawAlias.suffix === 'open' ? uriSchemeDelimiter : '';
+      const aliasSuffix = rawAlias.suffix === 'open' ? uriSchemeDelimiterUnescaped : '';
       const pathSuffix =
         (rawPath.suffix === 'open' ? '/' : '') + (rawPath.extensionless ? '' : '.ts');
 
@@ -524,7 +529,7 @@ export function deriveAliasesForNextJs(
 ) {
   return Object.fromEntries(
     rawAliasMappings.map(([rawAlias, rawPath]) => {
-      const aliasSuffix = rawAlias.suffix === 'open' ? uriSchemeDelimiter : '';
+      const aliasSuffix = rawAlias.suffix === 'open' ? uriSchemeDelimiterUnescaped : '';
       const pathSuffix =
         (rawPath.suffix === 'open' ? '/' : '') + (rawPath.extensionless ? '' : '.ts');
 
@@ -551,14 +556,14 @@ export function deriveAliasesForJest(rawAliasMappings: readonly RawAliasMapping[
         rawAlias.suffix === 'exact'
           ? '$'
           : rawAlias.suffix === 'open'
-            ? `${uriSchemeDelimiter}(.+)$`
+            ? `${uriSchemeDelimiterEscaped}(.+)$`
             : '';
 
       const pathSuffix =
         (rawPath.suffix === 'open' ? '/$1' : '') + (rawPath.extensionless ? '' : '.ts');
 
       return [
-        aliasPrefix + rawAlias.alias + aliasSuffix,
+        aliasPrefix + escapeStringRegExp(rawAlias.alias) + aliasSuffix,
         '<rootDir>' + (rawPath.path.length ? `/${rawPath.path}` : '') + pathSuffix
       ];
     })
@@ -576,7 +581,8 @@ export function deriveAliasesForTypeScript(
 ) {
   return Object.fromEntries(
     rawAliasMappings.map(([rawAlias, rawPath]) => {
-      const aliasSuffix = rawAlias.suffix === 'open' ? `${uriSchemeDelimiter}*` : '';
+      const aliasSuffix =
+        rawAlias.suffix === 'open' ? `${uriSchemeDelimiterUnescaped}*` : '';
       const pathSuffix =
         (rawPath.suffix === 'open' ? '*' : '') + (rawPath.extensionless ? '' : '.ts');
 
@@ -751,7 +757,7 @@ export function ensureRawSpecifierOk(
   }
 
   // ? Fail if the specifier === "index.extensionToAppend"
-  if (specifier.endsWith(`${uriSchemeDelimiter}index${extensionToAppend}`)) {
+  if (specifier.endsWith(`${uriSchemeDelimiterUnescaped}index${extensionToAppend}`)) {
     throw new ProjectError(ErrorMessage.SpecifierNotOkUnnecessaryIndex(specifier, path));
   }
 
@@ -776,7 +782,7 @@ export function rawAliasToRegExp({
   suffix
 }: Omit<RawAlias, 'regExp'>): RegExp {
   return new RegExp(
-    `${prefix === 'exact' ? '^' : ''}${escapeStringRegExp(alias)}${suffix === 'exact' ? '$' : suffix === 'open' ? `${uriSchemeDelimiter}(.+)$` : ''}`
+    `${prefix === 'exact' ? '^' : ''}${escapeStringRegExp(alias)}${suffix === 'exact' ? '$' : suffix === 'open' ? `${uriSchemeDelimiterEscaped}(.+)$` : ''}`
   );
 }
 

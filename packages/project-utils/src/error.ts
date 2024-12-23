@@ -5,8 +5,8 @@ import { makeNamedError } from 'named-app-errors';
 import { type WorkspacePackageName } from 'rootverse+project-utils:src/analyze/common.ts';
 
 import {
-  uriSchemeDelimiter,
-  uriSchemeSubDelimiter
+  uriSchemeDelimiterUnescaped,
+  uriSchemeSubDelimiterUnescaped
 } from 'rootverse+project-utils:src/constant.ts';
 
 import type { WellKnownImportAlias } from 'rootverse+project-utils:src/alias.ts';
@@ -363,10 +363,10 @@ export const ErrorMessage = {
     return `encountered illegal import specifier "${specifier}": all non-exact aliases must end with an extension${path ? ` in ${path}` : ''}`;
   },
   SpecifierNotOkUnnecessaryIndex(specifier: string, path?: string) {
-    return `encountered illegal import specifier "${specifier}": this specifier should be replaced with "${specifier.split(uriSchemeDelimiter)[0]}" or the "index.ts" file renamed to something else${path ? ` in ${path}` : ''}`;
+    return `encountered illegal import specifier "${specifier}": this specifier should be replaced with "${specifier.split(uriSchemeDelimiterUnescaped)[0]}" or the "index.ts" file renamed to something else${path ? ` in ${path}` : ''}`;
   },
   SpecifierNotOkSelfReferential(specifier: string, path?: string) {
-    return `encountered illegal import specifier "${specifier}": this specifier should be replaced with "rootverse${uriSchemeSubDelimiter}${specifier.split(uriSchemeSubDelimiter).at(-1)!.replace(uriSchemeDelimiter, `${uriSchemeDelimiter}src/`)}"${path ? ` in ${path}` : ''}`;
+    return `encountered illegal import specifier "${specifier}": this specifier should be replaced with "rootverse${uriSchemeSubDelimiterUnescaped}${specifier.split(uriSchemeSubDelimiterUnescaped).at(-1)!.replace(uriSchemeDelimiterUnescaped, `${uriSchemeDelimiterUnescaped}src/`)}"${path ? ` in ${path}` : ''}`;
   },
   UnknownWorkspacePackageName(name: WorkspacePackageName) {
     return `this project has no workspace package named "${name}"`;
