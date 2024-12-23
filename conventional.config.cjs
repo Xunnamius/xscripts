@@ -2,8 +2,8 @@
 'use strict';
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/conventional.config.cjs');
 
 // TODO: publish latest rejoinder package first, then update configs to use it

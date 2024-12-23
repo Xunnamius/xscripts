@@ -284,8 +284,8 @@ export const { transformer } = makeTransformer(function (context) {
 'use strict';
 
 const {
-  moduleExport,
-  assertEnvironment
+  assertEnvironment,
+  moduleExport
 } = require('@-xun/scripts/assets/${asset}');
 
 // TODO: publish latest rejoinder package first, then update configs to use it

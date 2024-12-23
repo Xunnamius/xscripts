@@ -311,11 +311,7 @@ export const { transformer } = makeTransformer(function (context) {
 // @ts-check
 
 import { deepMergeConfig } from '@-xun/scripts/assets';
-
-import {
-  moduleExport,
-  assertEnvironment
-} from '@-xun/scripts/assets/${asset}';
+import { assertEnvironment, moduleExport } from '@-xun/scripts/assets/${asset}';
 
 // TODO: publish latest rejoinder package first, then update configs to use it
 //import { createDebugLogger } from 'rejoinder';
