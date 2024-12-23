@@ -54,10 +54,10 @@ export const { transformer } = makeTransformer(function (context) {
 // @ts-check
 'use strict';
 
-import { deepMergeConfig } = from '@-xun/scripts/assets';
-import { moduleExport } = from '@-xun/scripts/assets/${asset}';
+import { deepMergeConfig } from '@-xun/scripts/assets';
+import { moduleExport } from '@-xun/scripts/assets/${asset}';
 // TODO: publish latest rejoinder package first, then update configs to use it
-//import { createDebugLogger } = from 'rejoinder';
+//import { createDebugLogger } from 'rejoinder';
 
 /*const debug = createDebugLogger({ namespace: '${globalDebuggerNamespace}:config:commitlint' });*/
 
