@@ -51,7 +51,7 @@ const tsconfigFiles = {
     "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    ${makeGeneratedAliasesWarningComment(4)}
+${makeGeneratedAliasesWarningComment(4)}
     "paths": {derivedAliasesSourceSnippet},
     "resolveJsonModule": true,
     "skipLibCheck": true,
