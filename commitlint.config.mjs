@@ -4,7 +4,7 @@
 import { deepMergeConfig } from '@-xun/scripts/assets';
 import { moduleExport } from '@-xun/scripts/assets/commitlint.config.mjs';
 // TODO: publish latest rejoinder package first, then update configs to use it
-//import { createDebugLogger } = from 'rejoinder';
+//import { createDebugLogger } from 'rejoinder';
 
 /*const debug = createDebugLogger({ namespace: 'xscripts:config:commitlint' });*/
 

@@ -1,6 +1,7 @@
 {
   "name": "@-xun/scripts",
   "version": "1.33.0",
+  "private": false,
   "description": "The scripts and assets powering Xunnamius's NPM-based projects",
   "keywords": [
     "Xunnamius"

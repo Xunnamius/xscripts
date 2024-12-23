@@ -1,8 +1,6 @@
 // @ts-check
 'use strict';
 
-const debug = require('debug')('xscripts:semantic-release-config');
-
 const { deepMergeConfig } = require('@-xun/scripts/assets');
 
 const {
@@ -10,11 +8,19 @@ const {
   moduleExport
 } = require('@-xun/scripts/assets/release.config.cjs');
 
+// TODO: publish latest rejoinder package first, then update configs to use it
+//const { createDebugLogger } = require('rejoinder');
+
+/*const debug = createDebugLogger({ namespace: 'xscripts:config:release' });*/
+
 module.exports = deepMergeConfig(
   moduleExport(assertEnvironment({ projectRoot: __dirname })),
+  /**
+   * @type {import('@-xun/scripts/assets/release.config.cjs').ReleaseConfig}
+   */
   {
     // Any custom configs here will be deep merged with moduleExport's result
   }
 );
 
-debug('exports: %O', module.exports);
+/*debug('exported config: %O', module.exports);*/
