@@ -213,7 +213,12 @@ export const { transformer } = makeTransformer(function (context) {
 'use strict';
 
 const { deepMergeConfig } = require('@-xun/scripts/assets');
-const { moduleExport } = require('@-xun/scripts/assets/${asset}');
+
+const {
+  moduleExport,
+  assertEnvironment
+} = require('@-xun/scripts/assets/${asset}');
+
 // TODO: publish latest rejoinder package first, then update configs to use it
 //const { createDebugLogger } = require('rejoinder');
 
